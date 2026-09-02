@@ -1,0 +1,35 @@
+{
+    "name": "ملخصات شاملة",
+    "description": "هذه الصفحة مخصصة لعرض ملخصات كافة المقررات",
+    "items": [
+        {
+            "id": 1,
+            "title": "ملخص 1",
+            "description": "",
+            "type": "documents",
+            "preview_url": "21",
+            "download_url": "12"
+        },
+        {
+            "id": 2,
+            "title": "شرح كامل TEST",
+            "description": "",
+            "type": "videos",
+            "preview_url": "31"
+        },
+        {
+            "id": 3,
+            "title": "اختبار تفاعلي",
+            "description": "",
+            "type": "quizzes",
+            "preview_url": "صثص",
+            "time-ms": "1754955273178"
+        },
+        {
+            "id": 4,
+            "title": "تعليق الدراسة في شمال الشرقية",
+            "description": "عاجل: مراسلنا: تعليق الدراسة في محافظة شمال الشرقية نتيجة تعرض المحافظة لكذا كذا",
+            "type": "resources"
+        }
+    ]
+}

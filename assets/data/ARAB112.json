@@ -1,0 +1,33 @@
+{
+    "name": "مقرر النحو 1",
+    "description": "",
+    "url": "https://rawafid.jassim.one/c/ARAB112",
+    "items": [
+        {
+            "id": 1,
+            "title": "مقارنة بين المدرستين البصريّة والكوفيّة",
+            "description": "",
+            "type": "documents",
+            "preview_url": "https://drive.google.com/file/d/1H0i913VHo2JGmirN0YSMt9NsYTZSTBNK/view?usp=drive_link",
+            "download_url": "https://m.jassim.one/ARAB112/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9%20%D8%A8%D9%8A%D9%86%20%D8%A7%D9%84%D9%85%D8%AF%D8%B1%D8%B3%D8%AA%D9%8A%D9%86%20%D8%A7%D9%84%D8%A8%D8%B5%D8%B1%D9%8A%D9%91%D8%A9%20%D9%88%D8%A7%D9%84%D9%83%D9%88%D9%81%D9%8A%D9%91%D8%A9.pdf",
+            "time-ms": "1758589343636"
+        },
+        {
+            "id": 2,
+            "title": "الاختبار التعويضي الأول",
+            "description": "",
+            "type": "documents",
+            "preview_url": "https://drive.google.com/file/d/1luHKOYKuERNaZwfcxNbZBm9zVNAdGvrP/view?usp=drive_link",
+            "download_url": "https://m.jassim.one/ARAB112/%D8%A7%D9%84%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%20%D8%A7%D9%84%D8%AA%D8%B9%D9%88%D9%8A%D8%B6%D9%8A%20%D8%A7%D9%84%D8%A3%D9%88%D9%84%20-%20%D9%85%D9%82%D8%B1%D8%B1%20%D8%A7%D9%84%D9%86%D8%AD%D9%88%201.pdf",
+            "time-ms": "1758589343636"
+        },
+        {
+            "id": 3,
+            "title": "الفرق بين البناء والإعراب",
+            "description": "",
+            "type": "videos",
+            "preview_url": "https://www.youtube.com/watch?v=bu0_j3hsW2o",
+            "time-ms": "1758589343636"
+        }
+    ]
+}

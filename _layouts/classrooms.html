@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title | default: "البحث عن القاعات" }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <meta property="og:title" content="{{ page.title | default: 'دليل القاعات - روافد' }}">
+  <meta property="og:description" content="دليل تفاعلي للبحث عن أماكن القاعات الدراسية.">
+  <meta property="og:image" content="{{ '/images/cover.png' | relative_url }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+
+  <script>
+    (function() {
+        const savedTheme = localStorage.getItem('rawafed-theme');
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    })();
+  </script>
+
+  <style>
+    /* === المتغيرات والألوان === */
+    :root {
+      --primary-color: #1a2ac6;
+      --bg-body: #f4f6fb;
+      --bg-card: #ffffff;
+      --border-color: #ccd1e0;
+      --text-main: #2d2d2d;
+      --text-muted: #666666;
+      --bg-code: #f4f6fb;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+      --radius-md: 12px;
+      --hover-bg: #e0e7ff;
+    }
+
+    html[data-theme="dark"] {
+      --primary-color: #7986cb;
+      --bg-body: #121212;
+      --bg-card: #1e1e1e;
+      --border-color: #333333;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --bg-code: #2c2c2c;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+      --hover-bg: #2c2e3e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-top: 80px;
+      padding-bottom: 40px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+    /* === Header & Actions === */
+    .tool-header {
+      margin-bottom: 30px;
+      margin-top: 20px;
+      border-right: 4px solid var(--primary-color);
+      padding-right: 15px;
+    }
+    .tool-header h1 { font-size: 1.5rem; font-weight: 700; }
+    .tool-header p { color: var(--text-muted); margin-top: 5px; }
+
+    /* === Search Box Styles === */
+    .search-box-container {
+        background: var(--bg-card);
+        padding: 20px;
+        border-radius: var(--radius-md);
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    .input-wrapper { position: relative; }
+
+    .search-input {
+        background: var(--bg-body);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 12px 40px 12px 15px;
+        border-radius: 8px;
+        font-size: 1rem;
+        width: 100%;
+        outline: none;
+        transition: 0.3s;
+    }
+    .search-input:focus { border-color: var(--primary-color); }
+
+    .search-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    /* === AutoComplete List === */
+    .suggestions-list {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        left: 0;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        max-height: 250px;
+        overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        display: none;
+    }
+
+    .suggestion-item {
+        padding: 12px 15px;
+        cursor: pointer;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        transition: background 0.2s;
+    }
+    .suggestion-item:last-child { border-bottom: none; }
+    .suggestion-item:hover { background: var(--hover-bg); }
+    
+    .s-name { font-weight: 600; font-size: 0.95rem; color: var(--text-main); }
+    .s-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* === Result Card Styles === */
+    .course-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        display: none; 
+        animation: slideUp 0.4s ease forwards;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header {
+        background: var(--bg-code);
+        padding: 15px 25px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .location-badge {
+        background: var(--bg-body);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        border: 1px solid var(--border-color);
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .card-body { padding: 30px 25px; text-align: center; }
+    
+    .college-name {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+    }
+
+    .room-name {
+        font-size: 1.2rem;
+        color: var(--text-main);
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .room-description {
+        font-size: 1rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        direction: rtl;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .info-box {
+        background: var(--bg-body);
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        text-align: center;
+    }
+    
+    .info-label { font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 5px; }
+    .info-value { font-size: 1.3rem; font-weight: 700; color: var(--text-main); }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-muted);
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 15px; opacity: 0.3; }
+
+  </style>
+</head>
+<body>
+
+  {% include header.html %}
+
+  <div class="container">
+      
+    <div class="tool-header">
+      <div>
+          <h1>البحث عن القاعات</h1>
+          <p>أدخل اسم القاعة أو رقمها أو أي وصف للبحث</p>
+      </div>
+    </div>
+
+    <div class="search-box-container">
+        <label style="display:block; margin-bottom:10px; font-weight:600; font-size:0.9rem;">بحث شامل (الاسم، الرقم، الوصف):</label>
+        <div class="input-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن: مسرح، مختبر، يمين، COBA..." autocomplete="off">
+            
+            <div id="suggestionsList" class="suggestions-list"></div>
+        </div>
+    </div>
+
+    <div id="resultContainer">
+        
+        <div class="empty-state" id="emptyState">
+            <i class="fas fa-map-marked-alt empty-icon"></i>
+            <p>ابدأ بالكتابة للبحث في القاعات</p>
+        </div>
+
+        <div class="course-card" id="roomCard">
+            <div class="card-header">
+                <span style="font-weight:600; color:var(--text-muted);">تفاصيل المكان</span>
+                <span class="location-badge" id="rType">قاعة دراسية</span>
+            </div>
+            
+            <div class="card-body">
+                <h2 class="college-name" id="rCollege">-</h2>
+                <div class="room-name" id="rName">-</div>
+                <div class="room-description" id="rDesc" style="display: none;"></div>
+
+                <div class="info-grid">
+                    <div class="info-box">
+                        <span class="info-label"><i class="fas fa-layer-group"></i> الطابق</span>
+                        <span class="info-value" id="rFloor">-</span>
+                    </div>
+                    
+                    <div class="info-box">
+                        <span class="info-label"><i class="fas fa-door-open"></i> رقم القاعة</span>
+                        <span class="info-value" id="rNumber">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </div>
+
+  {% include footer.html %}
+
+<script>
+  let hallsDB = [];
+
+  const searchInput = document.getElementById('searchInput');
+  const suggestionsList = document.getElementById('suggestionsList');
+  const emptyState = document.getElementById('emptyState');
+  const roomCard = document.getElementById('roomCard');
+
+  window.addEventListener('DOMContentLoaded', () => {
+      fetchHallsData();
+  });
+
+  async function fetchHallsData() {
+      try {
+          const jsonPath = "{{ '/assets/plans/rooms.json' | relative_url }}";
+          
+          const response = await fetch(jsonPath);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          hallsDB = data;
+          console.log("تم تحميل بيانات القاعات بنجاح:", hallsDB.length);
+
+      } catch (error) {
+          console.error("خطأ في تحميل ملف rooms.json:", error);
+      }
+  }
+
+  // === هنا تم التعديل ليشمل البحث الوصف والنوع ===
+  searchInput.addEventListener('input', function() {
+      const query = this.value.toLowerCase().trim();
+      suggestionsList.innerHTML = '';
+      
+      if (query.length === 0) {
+          suggestionsList.style.display = 'none';
+          return;
+      }
+
+      // شروط البحث الموسعة
+      const matches = hallsDB.filter(hall => 
+          (hall.name && hall.name.toLowerCase().includes(query)) || 
+          (hall.number && hall.number.toString().includes(query)) ||
+          (hall.college && hall.college.toLowerCase().includes(query)) ||
+          (hall.type && hall.type.toLowerCase().includes(query)) ||        // البحث في النوع (مثل: مسرح)
+          (hall.description && hall.description.toLowerCase().includes(query)) // البحث في الوصف (مثل: يمين، يسار)
+      );
+
+      if (matches.length > 0) {
+          matches.forEach(hall => {
+              const item = document.createElement('div');
+              item.className = 'suggestion-item';
+              
+              // تحسين طريقة عرض النتيجة في القائمة لتشمل نوع القاعة
+              item.innerHTML = `
+                  <span class="s-name">${hall.name}</span>
+                  <span class="s-meta">${hall.college} - ${hall.type || 'قاعة'}</span>
+              `;
+              
+              item.addEventListener('click', () => {
+                  displayRoom(hall);
+                  suggestionsList.style.display = 'none';
+                  searchInput.value = hall.name;
+              });
+              
+              suggestionsList.appendChild(item);
+          });
+          suggestionsList.style.display = 'block';
+      } else {
+          suggestionsList.style.display = 'none';
+      }
+  });
+
+  document.addEventListener('click', function(e) {
+      if (!searchInput.contains(e.target) && !suggestionsList.contains(e.target)) {
+          suggestionsList.style.display = 'none';
+      }
+  });
+
+  function displayRoom(hall) {
+      emptyState.style.display = 'none';
+      
+      roomCard.style.display = 'none';
+      setTimeout(() => roomCard.style.display = 'block', 10);
+      
+      document.getElementById('rCollege').innerText = hall.college || "غير محدد";
+      document.getElementById('rName').innerText = hall.name;
+      document.getElementById('rFloor').innerText = hall.floor || "-";
+      document.getElementById('rNumber').innerText = hall.number || "-";
+      document.getElementById('rType').innerText = hall.type || "قاعة دراسية";
+
+      const descElement = document.getElementById('rDesc');
+      if (hall.description && hall.description.trim() !== "") {
+          descElement.innerText = hall.description;
+          descElement.style.display = "block";
+      } else {
+          descElement.style.display = "none";
+      }
+  }
+</script>
+
+</body>
+</html>

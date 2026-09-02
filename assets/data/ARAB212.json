@@ -1,0 +1,94 @@
+{
+    "name": "مقرر الشعر العباسي",
+    "description": "",
+    "url": "https://rawafid.jassim.one/c/ARAB212",
+    "items": [
+        {
+            "id": 1,
+            "title": "منصّة رحلة المتنبي",
+            "description": "منصة إلكترونية عن المتنبي\nتم إطلاق المنصة تحت إشراف الدكتورة أسماء شنقار.",
+            "type": "links",
+            "image_url": "images/mtnbi1.png",
+            "preview_url": "https://motanabi.jassim.one",
+            "time-ms": "1763453087338"
+        },
+        {
+            "id": 2,
+            "title": "ملخص الملامح السياسية والاجتماعية والعقلية في العصر العباسي الأول",
+            "description": "إعداد: هاجر الجحافية",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB212/%D9%85%D9%84%D8%AE%D8%B5-%D8%A7%D9%84%D9%85%D9%84%D8%A7%D9%85%D8%AD-%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%B3%D9%8A%D8%A9-%D9%88%D8%A7%D9%84%D8%A7%D8%AC%D8%AA%D9%85%D8%A7%D8%B9%D9%8A%D8%A9-%D9%88%D8%A7%D9%84%D8%B9%D9%82%D9%84%D9%8A%D8%A9.pdf",
+            "time-ms": "1763453087339"
+        },
+        {
+            "id": 3,
+            "title": "ملخص 25 صفحة - الشعر العباسي",
+            "description": "",
+            "type": "documents",
+            "preview_url": "https://drive.google.com/file/d/1igL8imfaIx0nJxg9aXX5L1kQ0_4x8u-p/view?usp=drive_link",
+            "download_url": "https://m.jassim.one/ARAB212/%D9%85%D9%84%D8%AE%D8%B5%20%D8%A7%D9%84%D8%B4%D8%B9%D8%B1%20%D8%A7%D9%84%D8%B9%D8%A8%D8%A7%D8%B3%D9%8A.pdf",
+            "time-ms": "1763453087339"
+        },
+        {
+            "id": 4,
+            "title": "ملخص الشعر العباسي 2",
+            "description": "",
+            "type": "documents",
+            "preview_url": "https://drive.google.com/file/d/1KA-cwhhBwXXEVRhRO4_1HONGwry3Sbn_/view?usp=drive_link",
+            "download_url": "https://m.jassim.one/ARAB212/%D9%85%D9%84%D8%AE%D8%B5%20%D8%A7%D9%84%D8%B4%D8%B9%D8%B1%20%D8%A7%D9%84%D8%B9%D8%A8%D8%A7%D8%B3%D9%8A%202.pdf",
+            "time-ms": "1763453087339"
+        },
+        {
+            "id": 5,
+            "title": "تحليل قصيدة الخيل والليل للمتنبي - الشعر العباسي",
+            "description": "",
+            "type": "documents",
+            "preview_url": "https://drive.google.com/file/d/1O5FyEySZpNR9GW1j953ItP-gPANwSA1g/view?usp=drive_link",
+            "download_url": "https://m.jassim.one/ARAB212/%D8%AA%D8%AD%D9%84%D9%8A%D9%84%20%D9%82%D8%B5%D9%8A%D8%AF%D8%A9%20%D8%A7%D9%84%D8%AE%D9%8A%D9%84%20%D9%88%D8%A7%D9%84%D9%84%D9%8A%D9%84%20%D9%84%D9%84%D9%85%D8%AA%D9%86%D8%A8%D9%8A%20-%20%D8%A7%D9%84%D8%B4%D8%B9%D8%B1%20%D8%A7%D9%84%D8%B9%D8%A8%D8%A7%D8%B3%D9%8A.pdf",
+            "time-ms": "1763453087339"
+        },
+        {
+            "id": 6,
+            "title": "مناقشة الأبيات (1-11) - الخيل والليل والبيداء تعرفني",
+            "description": "",
+            "type": "documents",
+            "preview_url": "https://drive.google.com/file/d/1twzZNP9BUn9i1_KhP5XSKxOACOgSJn3N/view?usp=drive_link",
+            "download_url": "https://m.jassim.one/ARAB212/%D9%85%D9%86%D8%A7%D9%82%D8%B4%D8%A9%20%D8%A7%D9%84%D8%A3%D8%A8%D9%8A%D8%A7%D8%AA%20(1-11)%20-%20%D8%A7%D9%84%D8%AE%D9%8A%D9%84%20%D9%88%D8%A7%D9%84%D9%84%D9%8A%D9%84%20%D9%88%D8%A7%D9%84%D8%A8%D9%8A%D8%AF%D8%A7%D8%A1%20%D8%AA%D8%B9%D8%B1%D9%81%D9%86%D9%8A.pdf",
+            "time-ms": "1763453087339"
+        },
+        {
+            "id": 7,
+            "title": "مناقشة الجزء الثاني - الخيل والليل والبيداء تعرفني",
+            "description": "",
+            "type": "documents",
+            "preview_url": "https://drive.google.com/file/d/11P7v9uKi9E44C93FC3S6oZvh13REM5nE/view?usp=drive_link",
+            "download_url": "https://m.jassim.one/ARAB212/%D9%85%D9%86%D8%A7%D9%82%D8%B4%D8%A9%20%D8%A7%D9%84%D8%AC%D8%B2%D8%A1%20%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%8A%20-%20%D8%A7%D9%84%D8%AE%D9%8A%D9%84%20%D9%88%D8%A7%D9%84%D9%84%D9%8A%D9%84%20%D9%88%D8%A7%D9%84%D8%A8%D9%8A%D8%AF%D8%A7%D8%A1%20%D8%AA%D8%B9%D8%B1%D9%81%D9%86%D9%8A.pdf",
+            "time-ms": "1763453087339"
+        },
+        {
+            "id": 8,
+            "title": "مناقشة الجزء الثالث - الخيل والليل والبيداء تعرفني",
+            "description": "",
+            "type": "documents",
+            "preview_url": "https://drive.google.com/file/d/12a3NOdpwIlwOr2MIle-i23EAbV5Qw7d9/view?usp=drive_link",
+            "download_url": "https://m.jassim.one/ARAB212/%D9%85%D9%86%D8%A7%D9%82%D8%B4%D8%A9%20%D8%A7%D9%84%D8%AC%D8%B2%D8%A1%20%D8%A7%D9%84%D8%AB%D8%A7%D9%84%D8%AB%20-%20%D8%A7%D9%84%D8%AE%D9%8A%D9%84%20%D9%88%D8%A7%D9%84%D9%84%D9%8A%D9%84%20%D9%88%D8%A7%D9%84%D8%A8%D9%8A%D8%AF%D8%A7%D8%A1%20%D8%AA%D8%B9%D8%B1%D9%81%D9%86%D9%8A.pdf",
+            "time-ms": "1763453087339"
+        },
+        {
+            "id": 9,
+            "title": "شرح قصيدة واحر قلباه",
+            "description": "إعداد الطالب: محمد بن سلطان العامري",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB212/%D8%B4%D8%B1%D8%AD%20%D9%82%D8%B5%D9%8A%D8%AF%D8%A9%20%D9%88%D8%A7%D8%AD%D8%B1%20%D9%82%D9%84%D8%A8%D8%A7%D9%87.pdf",
+            "time-ms": "1763453087339"
+        },
+        {
+            "id": 10,
+            "title": "شرح قصيدة واحر قلباه",
+            "description": "إعداد: هاجر الجحافية",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB212/%D8%B4%D8%B1%D8%AD-%D9%82%D8%B5%D9%8A%D8%AF%D8%A9-%D9%88%D8%A7%D8%AD%D8%B1-%D9%82%D9%84%D8%A8%D8%A7%D9%87.pdf",
+            "time-ms": "1763453087339"
+        }
+    ]
+}

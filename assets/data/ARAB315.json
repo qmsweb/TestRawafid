@@ -1,0 +1,31 @@
+{
+    "name": "مقرر علم الدلالة",
+    "description": "",
+    "url": "https://rawafid.jassim.one/c/ARAB315",
+    "items": [
+        {
+            "id": 1,
+            "title": "اختبار تفاعلي شامل لكل وحدات علم الدلالة",
+            "description": "",
+            "type": "quizzes",
+            "preview_url": "https://rawafid.jassim.one/exam?i=315-genral1",
+            "time-ms": "1767897509750"
+        },
+        {
+            "id": 2,
+            "title": "ملخص علم الدلالة",
+            "description": "إعداد: عمرو عمر سليمان العبري",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB315/%E2%80%8E%E2%81%A8%D9%85%D9%84%D8%AE%D8%B5%20%D8%B9%D9%84%D9%85%20%D8%A7%D9%84%D8%AF%D9%84%D8%A7%D9%84%D8%A9%E2%81%A9.pdf",
+            "time-ms": "1767897509750"
+        },
+        {
+            "id": 3,
+            "title": "ملخص شامل لكل وحدات علم الدلالة (بعد التعديل)",
+            "description": "إعداد: هاجر الجحافية",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB315/%D9%85%D9%84%D8%AE%D8%B5%20%D9%84%D9%83%D9%84%20%D8%AF%D8%B1%D9%88%D8%B3%20%D8%B9%D9%84%D9%85%20%D8%A7%D9%84%D8%AF%D9%84%D8%A7%D9%84%D8%A9%20-%20%D9%87%D8%A7%D8%AC%D8%B1%20%D8%A7%D9%84%D8%AC%D8%AD%D8%A7%D9%81%D9%8A%D8%A9.pdf",
+            "time-ms": "1767897509750"
+        }
+    ]
+}

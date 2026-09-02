@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>كليم</title>
+  <!-- خطوط عربية من Google -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- أيقونات (Font Awesome) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+  <style>
+    /* المتغيرات */
+    :root {
+        --bg: #f3f6f9;
+        --card: #ffffff;
+        --muted: #64748b;
+        --accent: #1a2ac6;    
+        --text: #0f172a;
+        --border: rgba(15, 23, 42, 0.04);
+        --shadow: rgba(15, 23, 42, 0.06);
+        --user-bubble: #1a2ac6;
+        --user-text: #ffffff;
+        --success: #2233de;
+        --warning: #f59e0b;
+        
+        /* أحجام الخطوط النسبية */
+        --font-sm: 0.875rem;
+        --font-md: 1rem;
+        --font-lg: 1.125rem;
+        --font-xl: 1.25rem;
+    }
+    
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    html, body {
+        height: 100%;
+        width: 100%;
+    }
+    
+    body {
+        font-family: 'Cairo', system-ui, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
+    
+    /* حاوية رئيسية بدون حواف */
+    .container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+    
+    /* شعار البوت في أعلى يمين الشاشة */
+    .logo-wrap {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 10;
+    }
+    
+    .logo {
+        width: 4.25rem;
+        height: 4.25rem;
+        object-fit: cover;
+        border-radius: 0.75rem;
+        box-shadow: 0 0.375rem 1.125rem var(--shadow);
+        border: 1px solid var(--border);
+    }
+    
+    .card {
+        background: var(--card);
+        border-radius: 0;
+        box-shadow: none;
+        overflow: hidden;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1.125rem 1.25rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--card);
+        position: relative;
+    }
+    
+    header .title {
+        font-weight: 700;
+        font-size: var(--font-xl);
+    }
+    
+    /* مساحة المحادثة - بخلفية بيضاء */
+    #chat {
+        flex: 1;
+        padding: 1.125rem;
+        overflow: auto;
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+        min-height: 300px;
+        width: 100%;
+    }
+    
+    .messages {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .bubble {
+        max-width: 85%;
+        padding: 0.75rem 0.875rem;
+        border-radius: 0.75rem;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+    
+    .user {
+        align-self: flex-start;
+        background: var(--user-bubble);
+        color: var(--user-text);
+        border: 1px solid rgba(14, 165, 164, 0.2);
+        box-shadow: 0 4px 12px rgba(14, 165, 164, 0.1);
+    }
+    
+    .bot {
+        align-self: flex-end;
+        background: #ffffff;
+        color: var(--text);
+        border: 1px solid rgba(14, 165, 132, 0.08);
+        box-shadow: 0 0.25rem 0.75rem rgba(14, 165, 132, 0.03);
+    }
+    
+    /* نموذج الإرسال */
+    form {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0.875rem;
+        border-top: 1px solid var(--border);
+        align-items: center;
+        background: var(--card);
+    }
+    
+    textarea {
+        flex: 1;
+        min-height: 3.5rem;
+        resize: vertical;
+        padding: 0.625rem 0.75rem;
+        border-radius: 0.625rem;
+        border: 1px solid var(--border);
+        font-size: var(--font-md);
+        font-family: 'Cairo', sans-serif;
+        max-height: 200px;
+        transition: all 0.3s ease;
+        font-size: 16px;
+    }
+    
+    textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(14, 165, 164, 0.2);
+        outline: none;
+    }
+    
+    /* زر الإرسال أيقونة */
+    .send-btn {
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 0.625rem;
+        display: inline-grid;
+        place-items: center;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+    }
+    
+    .send-btn:hover {
+        background: #0d9493;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(14, 165, 132, 0.2);
+    }
+    
+    .send-btn:disabled {
+        opacity: .6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .meta {
+        padding: 0.75rem 1.125rem;
+        font-size: var(--font-sm);
+        color: var(--muted);
+        border-top: 1px solid var(--border);
+        background: var(--card);
+    }
+    
+    /* استجابة صغيرة عند كتابة النظام */
+    .system-note {
+        padding: 0.625rem 1rem;
+        font-size: var(--font-sm);
+        color: var(--muted);
+        background: linear-gradient(90deg, #f8fafc, #ffffff);
+        border-top: 1px solid rgba(15, 23, 42, 0.02);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    /* زر مسح المحادثة */
+    .clear-btn {
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 1.1rem;
+        padding: 0.5rem;
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .clear-btn:hover {
+        color: #ef4444;
+    }
+    
+    .save-notice {
+        color: var(--success);
+        font-size: 0.85rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        background: rgba(16, 185, 129, 0.1);
+        animation: fadeIn 0.5s;
+    }
+    
+    .command-notice {
+        color: var(--warning);
+        font-size: 0.85rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        background: rgba(245, 158, 11, 0.1);
+        animation: fadeIn 0.5s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    /* مؤشر تحميل */
+    .loader {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid rgba(14, 165, 164, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--accent);
+        animation: spin 1s linear infinite;
+        margin-right: 5px;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* أزرار الروابط */
+    .link-buttons-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+    
+    .link-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        color: #475569;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+    }
+    
+    .link-button:hover {
+        background-color: #f1f5f9;
+        border-color: #cbd5e1;
+        transform: translateY(-1px);
+    }
+    
+    .link-button img {
+        width: 16px;
+        height: 16px;
+        object-fit: contain;
+    }
+    
+    /* استجابات للشاشات المختلفة */
+    @media (max-width: 768px) {
+        :root {
+            --font-sm: 0.8125rem;
+            --font-md: 0.9375rem;
+            --font-lg: 1rem;
+            --font-xl: 1.125rem;
+        }
+        
+        .logo {
+            width: 3.5rem;
+            height: 3.5rem;
+        }
+        
+        .bubble {
+            max-width: 90%;
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .logo-wrap {
+            top: 0.5rem;
+            right: 0.5rem;
+        }
+        
+        header {
+            padding: 0.875rem;
+        }
+        
+        #chat {
+            padding: 0.75rem;
+        }
+        
+        .bubble {
+            max-width: 95%;
+            padding: 0.625rem 0.75rem;
+        }
+        
+        form {
+            padding: 0.625rem;
+        }
+        
+        textarea {
+            min-height: 3rem;
+            font-size: 16px;
+        }
+        
+        .send-btn {
+            width: 3rem;
+            height: 3rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .bubble {
+            max-width: 100%;
+        }
+        
+        .meta {
+            padding: 0.5rem;
+            text-align: center;
+        }
+        
+        header {
+            flex-direction: column;
+            gap: 0.25rem;
+            text-align: center;
+        }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-wrap">
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="شعار كليم" class="logo" />
+    </div>
+
+    <div class="card" role="application">
+      <header>
+        <button class="clear-btn" id="clearChat" title="مسح المحادثة">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+        <div>
+          <div class="title">كليم <span id="commandsStatus" class="loader" style="display: none;"></span></div>
+        </div>
+        <div style="display: none;">
+          <small class="meta">المسار: <code>https://api.groq.com/openai/v1/chat/completions</code></small>
+        </div>
+      </header>
+
+      <div id="chat" aria-live="polite">
+        <div class="messages" id="messages"></div>
+      </div>
+
+      <form id="sendForm" autocomplete="off">
+        <textarea id="prompt" placeholder="اكتب رسالتك هنا..." required></textarea>
+        <button type="submit" class="send-btn" id="sendBtn" title="إرسال"><i class="fa-solid fa-paper-plane" style="font-size:18px"></i></button>
+      </form>
+
+      <div class="system-note">
+        <span>قد تصدر عن كليم بعض الإجابات الخاطئة</span>
+        <div>
+          <span id="saveNotice" class="save-notice" style="display:none;">تم حفظ المحادثة!</span>
+          <span id="commandNotice" class="command-notice" style="display:none;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***** اضف مفتاحك هنا (استبدله بقيمة حقيقية) *****/
+    const GROQ_API_KEY = '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';
+
+    // رابط ملف الأوامر الخارجي - يمكنك تغييره إلى رابط ملفك
+    const EXTERNAL_COMMANDS_URL = 'https://raw.githubusercontent.com/qmsweb/rawafid/main/Kaleem/commands.txt';
+
+    /* شخصية كليم الأساسية (رسالة النظام) */
+    const baseSystemMessage = {
+      role: 'system',
+      content: `اسمك هو "كليم".\nأنت مساعد أكاديمي متخصص فقط في مجال التربية واللغة العربية.\nأجب دائمًا بالعربية الفصحى وبشكل واضح ومختصر.\n\nالتعليمات الخاصة:\n1. إذا سألك أحد: "هل أنت GPT؟" أو أي سؤال مشابه، فاجب: "لا، أنا كليم مساعدك المتخصص في التربية واللغة العربية".\n2. إذا سألك أحد عن "روافد"، فاجب: "روافد منصة تعليمية موجهة لطلبة جامعة الشرقية، من تطوير جاسم الفارسي".\n3. إذا طرح المستخدم سؤالًا خارج مجال التربية واللغة العربية، اجب بلباقة: "أنا مختص بالتربية واللغة العربية فقط".`
+    };
+
+    // متغير للأوامر الإضافية
+    let additionalCommands = '';
+
+    // مصفوفة المحادثة تحفظ الرسائل التي سترسل إلى الـ API
+    let conversation = [];
+
+    const messagesEl = document.getElementById('messages');
+    const form = document.getElementById('sendForm');
+    const promptEl = document.getElementById('prompt');
+    const sendBtn = document.getElementById('sendBtn');
+    const clearBtn = document.getElementById('clearChat');
+    const saveNotice = document.getElementById('saveNotice');
+    const commandNotice = document.getElementById('commandNotice');
+    const commandsStatus = document.getElementById('commandsStatus');
+
+    // دالة لاستخراج الروابط من النص
+    function extractLinks(text) {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      return text.match(urlRegex) || [];
+    }
+
+    // دالة لاستخراج اسم النطاق من الرابط
+    function getDomainName(url) {
+      try {
+        const domain = new URL(url).hostname;
+        return domain.replace('www.', '');
+      } catch (e) {
+        return url;
+      }
+    }
+
+    // دالة لإنشاء زر رابط
+    function createLinkButton(url) {
+      const domain = getDomainName(url);
+      const button = document.createElement('a');
+      button.href = url;
+      button.target = '_blank';
+      button.rel = 'noopener noreferrer';
+      button.className = 'link-button';
+      
+      // إضافة أيقونة الموقع
+      const favicon = document.createElement('img');
+      favicon.src = `https://www.google.com/s2/favicons?domain=${getDomainName(url)}&sz=32`;
+      favicon.alt = `${domain} favicon`;
+      button.appendChild(favicon);
+      
+      // إضافة اسم الموقع
+      const span = document.createElement('span');
+      span.textContent = domain;
+      button.appendChild(span);
+      
+      return button;
+    }
+
+    // دالة لإنشاء رسالة النظام مع دمج الأوامر الإضافية
+    function createSystemMessage() {
+      let content = baseSystemMessage.content;
+      
+      if (additionalCommands && additionalCommands.trim() !== '') {
+        content += '\n\n<!-- أوامر إضافية -->\n' + additionalCommands;
+      }
+      
+      return {
+        role: 'system',
+        content: content
+      };
+    }
+
+    // دالة لتحديث المحادثة مع رسالة النظام المحدثة
+    function updateSystemMessage() {
+      if (conversation.length > 0 && conversation[0].role === 'system') {
+        conversation[0] = createSystemMessage();
+      }
+    }
+
+    // دالة لتحميل الأوامر من ملف خارجي
+    async function loadExternalCommands() {
+      try {
+        commandsStatus.style.display = 'inline-block';
+        commandNotice.textContent = 'جاري تحميل البيانات...';
+        commandNotice.style.display = 'inline';
+        
+        const response = await fetch(EXTERNAL_COMMANDS_URL);
+        
+        if (!response.ok) {
+          throw new Error(`فشل في تحميل الملف: ${response.status}`);
+        }
+        
+        const commandsText = await response.text();
+        
+        if (commandsText.trim()) {
+          additionalCommands = commandsText;
+          updateSystemMessage();
+          commandNotice.textContent = 'مرحبا';
+          setTimeout(() => {
+            commandNotice.style.display = 'none';
+          }, 3000);
+        } else {
+          commandNotice.textContent = 'قاعدة البيانات فارغة';
+          setTimeout(() => {
+            commandNotice.style.display = 'none';
+          }, 3000);
+        }
+      } catch (error) {
+        console.error('خطأ في تحميل البيانات:', error);
+        commandNotice.textContent = 'فشل في تحميل البيانات';
+        setTimeout(() => {
+          commandNotice.style.display = 'none';
+        }, 3000);
+      } finally {
+        commandsStatus.style.display = 'none';
+      }
+    }
+
+    // دالة لحفظ المحادثة في localStorage
+    function saveConversation() {
+      localStorage.setItem('kaleem_conversation', JSON.stringify(conversation));
+      
+      saveNotice.style.display = 'inline';
+      setTimeout(() => {
+        saveNotice.style.display = 'none';
+      }, 2000);
+    }
+
+    // دالة لتحميل المحادثة من localStorage
+    function loadConversation() {
+      const saved = localStorage.getItem('kaleem_conversation');
+      
+      if (saved) {
+        try {
+          conversation = JSON.parse(saved);
+          updateSystemMessage();
+          return true;
+        } catch (e) {
+          console.error('خطأ في تحميل المحادثة:', e);
+          conversation = [createSystemMessage()];
+          return false;
+        }
+      }
+      return false;
+    }
+
+    // دالة لعرض المحادثة المحفوظة
+    function displaySavedMessages() {
+      messagesEl.innerHTML = '';
+      // تخطي رسالة النظام في العرض
+      conversation.slice(1).forEach(msg => {
+        if (msg.role === 'user') {
+          addBubble(msg.content, 'user');
+        } else if (msg.role === 'assistant') {
+          addBubble(msg.content, 'bot');
+        }
+      });
+    }
+
+    function addBubble(text, who='user'){
+      const div = document.createElement('div');
+      div.className = 'bubble ' + (who === 'user' ? 'user' : 'bot');
+      
+      // إذا كان الرد من البوت ويحتوي على روابط
+      if (who === 'bot') {
+        const links = extractLinks(text);
+        let processedText = text;
+        
+        // إخفاء الروابط من النص
+        links.forEach(link => {
+          processedText = processedText.replace(link, '');
+        });
+        
+        // إضافة النص المعالج
+        const textNode = document.createElement('div');
+        textNode.textContent = processedText;
+        div.appendChild(textNode);
+        
+        // إذا كان هناك روابط، إضافة أزرار لها
+        if (links.length > 0) {
+          const linkButtonsContainer = document.createElement('div');
+          linkButtonsContainer.className = 'link-buttons-container';
+          
+          links.forEach(link => {
+            const button = createLinkButton(link);
+            linkButtonsContainer.appendChild(button);
+          });
+          
+          div.appendChild(linkButtonsContainer);
+        }
+      } else {
+        // للمستخدمين، عرض النص كما هو
+        div.textContent = text;
+      }
+      
+      messagesEl.appendChild(div);
+      // تمرير للعرض
+      const chat = document.getElementById('chat');
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    async function callGroqAPI(messages){
+      if (!GROQ_API_KEY || GROQ_API_KEY === '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'){
+        throw new Error('ضع مفتاح Groq API في المتغير GROQ_API_KEY داخل الكود.');
+      }
+
+      const body = {
+        model: 'deepseek-r1-distill-llama-70b',
+        messages: messages,
+        temperature: 0.25,
+        stream: false
+      };
+
+      const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + GROQ_API_KEY
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!resp.ok){
+        const txt = await resp.text().catch(()=>resp.statusText);
+        throw new Error('خطأ من الخادم: ' + resp.status + ' — ' + txt);
+      }
+
+      const data = await resp.json();
+      const reply = data?.choices?.[0]?.message?.content || '';
+      return reply.trim();
+    }
+
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const text = promptEl.value.trim();
+      if (!text) return;
+
+      // إضافة فقاعة المستخدم
+      addBubble(text, 'user');
+      conversation.push({ role: 'user', content: text });
+      
+      // حفظ المحادثة
+      saveConversation();
+
+      // تعطيل الإدخال أثناء الطلب
+      promptEl.value = '';
+      promptEl.disabled = true;
+      sendBtn.disabled = true;
+
+      try{
+        const reply = await callGroqAPI(conversation);
+        // إضافة فقاعة البوت
+        addBubble(reply || '—', 'bot');
+        conversation.push({ role: 'assistant', content: reply });
+        
+        // حفظ المحادثة مرة أخرى بعد إضافة الرد
+        saveConversation();
+      }catch(err){
+        addBubble('خطأ: ' + err.message, 'bot');
+      }finally{
+        promptEl.disabled = false;
+        sendBtn.disabled = false;
+        promptEl.focus();
+      }
+    });
+
+    // زر مسح المحادثة
+    clearBtn.addEventListener('click', () => {
+      if (confirm('هل أنت متأكد من رغبتك في مسح محادثة كليم؟')) {
+        localStorage.removeItem('kaleem_conversation');
+        conversation = [createSystemMessage()];
+        messagesEl.innerHTML = '';
+        addBubble('مرحبًا — أنا كليم، مساعدك المتخصص في التربية واللغة العربية. كيف أساعدك اليوم؟', 'bot');
+        saveNotice.textContent = 'تم مسح المحادثة!';
+        saveNotice.style.display = 'inline';
+        setTimeout(() => {
+          saveNotice.style.display = 'none';
+        }, 2000);
+      }
+    });
+
+    // ترحيب افتراضي يظهر عند فتح الصفحة
+    window.addEventListener('load', async ()=>{
+      // تحميل الأوامر الخارجية أولاً
+      await loadExternalCommands();
+      
+      // ثم تحميل المحادثة المحفوظة
+      const hasSaved = loadConversation();
+      
+      if (hasSaved && conversation.length > 1) {
+        displaySavedMessages();
+      } else {
+        conversation = [createSystemMessage()];
+        addBubble('مرحبًا — أنا كليم، مساعدك المتخصص في التربية واللغة العربية. كيف أساعدك اليوم؟', 'bot');
+      }
+      
+      // تحديد حقل النص تلقائيًا عند تحميل الصفحة
+      promptEl.focus();
+    });
+  </script>
+</body>
+</html>

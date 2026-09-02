@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page.title }} | روافد</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400..800&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="{{ '/topbar.css' | relative_url }}" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <meta property="og:title" content="{{ page.title }} - روافد" id="og-title">
+    <meta property="og:description" content="{{ page.description | default: 'تصفح مستندات وفيديوهات وملاحظات المقررات الدراسية بسهولة.' }}" id="og-description">
+    <meta property="og:image" content="{{ page.image | default: '/images/cover3.png' | relative_url }}" id="og-image">
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ page.title }} - روافد">
+    <meta name="twitter:description" content="{{ page.description | default: 'تصفح مستندات وفيديوهات وملاحظات المقررات الدراسية بسهولة.' }}">
+    <meta name="twitter:image" content="{{ page.image | default: '/images/cover3.png' | relative_url }}">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('rawafed-theme');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+
+    <style>
+        :root {
+            /* الوضع الفاتح */
+            --primary-color: #1a2ac6;
+            --bg-body: #ffffff;
+            --bg-card: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-main: #2d2d2d;
+            --text-muted: #666666;
+            --border-color: #e7e7e7;
+            --hover-bg: #e0e7ff;
+            
+            /* ألوان الحالة */
+            --correct-bg: #4CAF50;
+            --correct-text: #ffffff;
+            --wrong-bg: #F44336;
+            --wrong-text: #ffffff;
+            
+            /* أزرار المقال */
+            --btn-essay-bg: #ffffff;
+            --btn-essay-border: #ccd1e0;
+        }
+
+        /* الوضع الداكن */
+        [data-theme="dark"] {
+            --primary-color: #7986cb;
+            --bg-body: #1e1e1e;
+            --bg-card: #1e1e1e;
+            --bg-secondary: #2c2c2c;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border-color: #333333;
+            --hover-bg: #2c2e3e;
+
+            --correct-bg: #388e3c;
+            --correct-text: #ffffff;
+            --wrong-bg: #d32f2f;
+            --wrong-text: #ffffff;
+
+            --btn-essay-bg: #2c2c2c;
+            --btn-essay-border: #444444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "IBM Plex Sans Arabic", sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            font-family: "IBM Plex Sans Arabic", sans-serif;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            background: var(--bg-card);
+            flex: 1;
+            width: 100%;
+        }
+
+        /* إخفاء العناصر الخاصة بالطباعة في العرض العادي */
+        #print-only-logo, #print-eval-table, .print-essay-lines, #printable-qr-section, .print-letter {
+            display: none;
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-direction: row-reverse;
+            flex-wrap: wrap; 
+            gap: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 25px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        #print-btn {
+            background-color: var(--text-muted);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+            margin-right: auto;
+        }
+        #print-btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        .divider-text {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 40px 0 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .info-header {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .info-description {
+            font-size: 16px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .question-item {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-card);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .question-text {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--text-main);
+            width: 100%;
+        }
+
+        .question-content-span {
+            flex: 1;
+            text-align: right;
+            padding-left: 15px;
+        }
+
+        .question-subtext {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: -10px;
+            margin-bottom: 15px;
+            font-weight: normal;
+            text-align: right;
+        }
+
+        .points-badge {
+            flex-shrink: 0;
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .choice-label {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+            cursor: pointer;
+            text-align: right;
+            justify-content: flex-start;
+        }
+
+        .choice-label:hover {
+            background-color: var(--hover-bg);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .choice-label.correct {
+            background-color: var(--correct-bg);
+            color: var(--correct-text);
+            border-color: var(--correct-bg);
+        }
+
+        .choice-label.wrong {
+            background-color: var(--wrong-bg);
+            color: var(--wrong-text);
+            border-color: var(--wrong-bg);
+        }
+
+        .choice-radio {
+            margin-left: 10px;
+            margin-right: 0;
+        }
+
+        .essay-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+
+        .essay-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .essay-btn.selected-essay {
+            border: 2px solid var(--primary-color);
+            background-color: var(--hover-bg);
+            color: var(--primary-color);
+        }
+
+        .essay-btn.selected-essay::after {
+            content: "✓";
+            margin-right: 5px;
+            font-weight: bold;
+        }
+
+        .essay-btn.show-answer-btn,
+        .essay-btn.dont-know-btn {
+            background-color: var(--btn-essay-bg);
+            color: var(--primary-color);
+            border: 1px solid var(--btn-essay-border);
+        }
+
+        .essay-btn.selected-essay.show-answer-btn,
+        .essay-btn.selected-essay.dont-know-btn {
+            background-color: var(--hover-bg);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .essay-answer {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            border-right: 4px solid var(--primary-color);
+            display: none;
+            text-align: right;
+            direction: rtl;
+            color: var(--text-main);
+            white-space: pre-wrap;
+            line-height: 1.8;
+        }
+
+        #submit-btn, #review-btn {
+            display: block;
+            margin: 25px auto 10px;
+            padding: 12px 30px;
+            font-size: 16px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: "IBM Plex Sans Arabic", sans-serif;
+            background-color: var(--primary-color);
+        }
+
+        #submit-btn:hover, #review-btn:hover { opacity: 0.9; }
+        #review-btn { background-color: #FF9800; display: none; }
+
+        #result {
+            margin-top: 30px;
+            display: none;
+            text-align: right;
+            direction: rtl;
+        }
+
+        .score-gauge-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0 40px;
+        }
+        .score-gauge {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: conic-gradient(var(--border-color) 100%, transparent 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: background 1.5s ease-out;
+        }
+        .score-gauge::before {
+            content: "";
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            background-color: var(--bg-card);
+            border-radius: 50%;
+        }
+        .score-gauge-text {
+            position: relative;
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--primary-color);
+            z-index: 1;
+        }
+        .score-details {
+            margin-top: 15px;
+            font-size: 18px;
+            color: var(--text-muted);
+            font-weight: bold;
+            background: var(--bg-secondary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .wrong-answer-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .wrong-answer-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+        }
+        .wrong-answer-q {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+        .answer-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+        .answer-badge {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+            min-width: 110px;
+            text-align: center;
+        }
+        .badge-wrong { background-color: var(--wrong-bg); }
+        .badge-correct { background-color: var(--correct-bg); }
+        .answer-text {
+            font-size: 15px;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+        .points-lost {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border-color);
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .points-lost strong {
+            color: var(--wrong-bg);
+            font-size: 15px;
+        }
+
+        .quiz-info-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 25px;
+            text-align: center;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-family: "IBM Plex Sans Arabic", sans-serif;
+        }
+
+        .quiz-info-table th, .quiz-info-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            color: var(--text-main);
+        }
+
+        .quiz-info-table th { background-color: var(--primary-color); color: white; font-weight: 600; }
+        .quiz-info-table tbody td { background-color: var(--bg-secondary); }
+
+        .question-image {
+            width: 100%;
+            max-width: 500px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: block;
+        }
+
+        .image-question-container { text-align: center; margin: 15px 0; }
+
+        .instructions-question {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            text-align: right;
+            text-align: justify;
+            color: var(--text-main);
+        }
+
+        .instructions-header {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 15px;
+        }
+
+        .instructions-description {
+            font-size: 16px;
+            color: var(--text-main);
+            line-height: 1.7;
+        }
+
+        /* === تنسيقات الصح والخطأ التفاعلية === */
+        .tf-interactive-container {
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            background-color: var(--bg-card);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            break-inside: avoid;
+        }
+        
+        .tf-print-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; 
+            font-weight: bold;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: var(--text-main);
+        }
+
+        .tf-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            direction: rtl; 
+            gap: 15px;
+            justify-content: space-between;
+        }
+
+        .tf-box {
+            width: 35px;
+            height: 35px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            flex-shrink: 0;
+            position: relative;
+            cursor: pointer;
+            background-color: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: auto;
+            margin-left: 0;
+            transition: all 0.2s;
+            color: var(--text-main);
+        }
+
+        .tf-box:hover {
+            border-color: var(--primary-color);
+        }
+
+        .tf-text {
+            flex-grow: 1;
+            font-weight: bold;
+            line-height: 1.6;
+            text-align: right;
+            padding-top: 5px;
+            color: var(--text-main);
+        }
+
+        .tf-popup {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            display: none;
+            flex-direction: row;
+            gap: 5px;
+            padding: 5px;
+            z-index: 10;
+            margin-top: 8px;
+        }
+
+        .tf-popup.show {
+            display: flex;
+        }
+
+        .tf-popup-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .tf-popup-btn.btn-true { color: var(--correct-bg); }
+        .tf-popup-btn.btn-false { color: var(--wrong-bg); }
+        .tf-popup-btn:hover { background: var(--hover-bg); }
+
+        .correct-icon-true { color: var(--correct-bg); }
+        .correct-icon-false { color: var(--wrong-bg); }
+
+        /* === إعدادات الطباعة === */
+        @media print {
+            :root, [data-theme="dark"] {
+                --primary-color: #000000 !important;
+                --bg-body: #ffffff !important;
+                --bg-card: #ffffff !important;
+                --bg-secondary: #ffffff !important;
+                --text-main: #000000 !important;
+                --text-muted: #333333 !important;
+                --border-color: #000000 !important;
+                --hover-bg: #ffffff !important;
+            }
+
+            header, footer, #submit-btn, #review-btn, #result, .essay-buttons, #print-btn, .top-bar, .site-header {
+                display: none !important;
+            }
+
+            #questions-container {
+                display: block !important;
+            }
+
+            /* تنسيقات الطباعة لمربع الصح والخطأ */
+            .tf-interactive-container {
+                border: 1px solid #000 !important;
+                box-shadow: none !important;
+                background-color: transparent !important;
+                padding: 10px !important;
+                margin-bottom: 10px !important;
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+
+            .tf-print-header { border-bottom: 1px solid #000 !important; }
+            .tf-row { align-items: flex-start !important; }
+            .tf-box {
+                border: 1px solid #000 !important;
+                background-color: transparent !important;
+                width: 25px !important;
+                height: 25px !important;
+            }
+            .tf-box i { color: #000 !important; font-size: 16px !important; }
+            .tf-popup { display: none !important; }
+
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                direction: rtl !important;
+                font-size: 14px !important;
+            }
+
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            table, .quiz-info-table, #print-eval-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                margin-bottom: 25px !important;
+                border: 1px solid #000 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+
+            th, td {
+                border: 1px solid #000 !important;
+                padding: 10px !important;
+                color: #000 !important;
+                text-align: center !important;
+                background-color: transparent !important;
+            }
+
+            th {
+                background-color: #f0f0f0 !important;
+                font-weight: bold !important;
+            }
+
+            #print-only-logo { display: block !important; text-align: center; margin-bottom: 20px; }
+            #print-eval-table { display: table !important; }
+
+            .question-item, .instructions-question {
+                border: 1px solid #000 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                background-color: #fff !important;
+                margin-bottom: 10px !important;
+                padding: 10px 15px !important;
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+            
+            .question-text { margin-bottom: 8px !important; }
+
+            .choices-container {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: wrap !important;
+                gap: 15px !important;
+                justify-content: flex-start !important;
+            }
+
+            .choice-label {
+                background-color: transparent !important;
+                border: none !important;
+                padding: 0 !important;
+                color: #000 !important;
+                flex: 0 1 auto !important;
+            }
+            
+            .choice-radio { display: none !important; }
+            
+            .print-letter { 
+                display: inline-block !important; 
+                margin-left: 5px; 
+                font-weight: bold;
+            }
+
+            .points-badge {
+                background-color: transparent !important;
+                color: #000 !important;
+                border: 1px solid #000 !important;
+                padding: 2px 6px !important;
+            }
+
+            .quiz-front-page {
+                display: block;
+                width: 100%;
+                break-after: page; 
+                page-break-after: always;
+                min-height: 90vh;
+            }
+
+            .essay-answer { display: none !important; }
+
+            .print-essay-lines {
+                display: block !important;
+                margin-top: 10px;
+                width: 100%;
+            }
+
+            .writing-line {
+                border-bottom: 1px dotted #888;
+                height: 28px !important;
+                width: 100%;
+                margin-bottom: 5px !important;
+            }
+            
+            .full-page-question {
+                break-before: page;
+                page-break-before: always;
+                min-height: 95vh;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .full-page-question .print-essay-lines {
+                flex-grow: 1;
+            }
+
+            #printable-answer-key {
+                display: block !important;
+                break-before: page;
+                page-break-before: always;
+                direction: rtl;
+                padding-top: 30px;
+                color: #000 !important;
+            }
+
+            .answer-key-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                margin-bottom: 0 !important;
+            }
+            .answer-key-table th {
+                background-color: #e0e7ff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                border: 2px solid #1a2ac6 !important;
+                padding: 10px !important;
+                color: #000 !important;
+            }
+            .answer-key-table td {
+                border: 1px solid #000 !important;
+                padding: 8px !important;
+            }
+            .answer-key-table tbody tr:nth-child(even) {
+                background-color: #f8f9fa !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            #printable-qr-section {
+                display: flex !important;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                break-before: auto;
+                page-break-inside: avoid;
+                text-align: center;
+                margin-top: 20px;
+                padding: 20px;
+                width: 60%; 
+                margin-left: auto;
+                margin-right: auto;
+                background-color: #e0e7ff !important; 
+                border: 2px solid #1a2ac6 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            #printable-qr-section h3 {
+                color: #1a2ac6 !important;
+                font-size: 18px; 
+                margin-top: 10px;
+                font-weight: bold;
+            }
+            
+            #qrcode-container {
+                padding: 10px;
+                background: white;
+                border-radius: 8px;
+                border: 1px solid #1a2ac6;
+            }
+        }
+
+        #printable-answer-key { display: none; }
+    </style>
+</head>
+<body>
+    
+    {% include header.html %}
+
+    <div class="container">
+        
+        {{ content }}
+
+        <div class="quiz-front-page">
+            <div id="print-only-logo">
+                <img src="{{ '/images/rawafid-blue.png' | relative_url }}" alt="روافد" style="max-width: 150px; height: auto;">
+            </div>
+            
+            <div class="quiz-header">
+                <button id="print-btn" onclick="printQuizPDF()">
+                    <i class="fa-solid fa-print"></i> طباعة الاختبار PDF
+                </button>
+                <h1 id="quiz-title">الاختبار</h1>
+
+            </div>
+
+            <table class="quiz-info-table" id="quiz-info-table">
+                <thead>
+                    <tr>
+                        <th>اسم المقرر</th>
+                        <th>رمز المقرر</th>
+                        <th>الدرجة الكلية</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="subject-name"></td>
+                        <td id="subject-code"></td>
+                        <td id="subject-total-score"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table id="print-eval-table">
+                <thead>
+                    <tr>
+                        <th colspan="4" style="font-size: 18px;">جدول التقييم الذاتي للطالب</th>
+                    </tr>
+                    <tr>
+                        <th style="width: 40%;">معيار التقييم</th>
+                        <th style="width: 20%;">ممتاز</th>
+                        <th style="width: 20%;">جيد جدًا</th>
+                        <th style="width: 20%;">بحاجة للمراجعة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: right;">فهم الأسئلة واستيعاب المطلوب</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">دقة الإجابات وصحتها العلمية</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">إدارة الوقت أثناء الحل</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;"><strong>التقدير العام للمستوى</strong></td>
+                        <td colspan="3"></td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+
+        <div id="questions-container"></div>
+        <button id="submit-btn">تأكيد الإجابات</button>
+        <button id="review-btn">مراجعة الإجابات</button>
+        <div id="result"></div>
+    </div>
+
+    {% include footer.html %}
+
+    <script>
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('rawafed-theme', newTheme);
+        }
+
+        const questionsContainer = document.getElementById('questions-container');
+        const submitButton = document.getElementById('submit-btn');
+        const reviewButton = document.getElementById('review-btn');
+        const resultElement = document.getElementById('result');
+        const quizTitleElement = document.getElementById('quiz-title');
+        const subjectNameElement = document.getElementById('subject-name');
+        const subjectCodeElement = document.getElementById('subject-code');
+        const subjectTotalScoreElement = document.getElementById('subject-total-score');
+        
+        const arabicLetters = ['أ', 'ب', 'ج', 'د', 'هـ', 'و', 'ز', 'ح', 'ط', 'ي'];
+
+        let quizData = [];
+        let currentQuiz = 0;
+        const userAnswers = [];
+        const wrongAnswers = [];
+        let reviewMode = false;
+
+        window.addEventListener('beforeunload', function (e) {
+            if (userAnswers.some(answer => answer !== undefined)) {
+                e.preventDefault();
+                e.returnValue = 'هل تريد إعادة تحميل النموذج وحذف الإجابات؟';
+                return 'هل تريد إعادة تحميل النموذج وحذف الإجابات؟';
+            }
+        });
+
+        // إغلاق أي قائمة منبثقة للصح والخطأ عند النقر في أي مكان آخر
+        document.addEventListener('click', () => {
+            if(reviewMode) return;
+            document.querySelectorAll('.tf-popup.show').forEach(p => p.classList.remove('show'));
+        });
+
+        function printQuizPDF() {
+            if (!quizData[currentQuiz] || !quizData[currentQuiz].questions) {
+                alert('لا توجد أسئلة للطباعة');
+                return;
+            }
+
+            const oldKey = document.getElementById('printable-answer-key');
+            if (oldKey) oldKey.remove();
+            
+            const oldQr = document.getElementById('printable-qr-section');
+            if (oldQr) oldQr.remove();
+
+            const keyDiv = document.createElement('div');
+            keyDiv.id = 'printable-answer-key';
+            
+            let keyHTML = '';
+            let qCount = 1;
+            let tableOpen = false;
+            const rowsPerPage = 25; 
+
+            quizData[currentQuiz].questions.forEach((q, index) => {
+                if (q.divider || q.type === 'info' || q.type === 'instructions') return;
+                
+                if (!tableOpen) {
+                    keyHTML += `
+                    <div style="page-break-inside: avoid; margin-bottom: 30px;">
+                        <div style="text-align: center; margin-bottom: 15px; border-bottom: 3px double #1a2ac6; padding-bottom: 10px;">
+                            <h2 style="margin:0; font-size: 20px; color: #1a2ac6;">نموذج الإجابة ${qCount > 1 ? '(يتبع)' : ''}</h2>
+                            <p style="margin:5px 0; font-size: 14px; font-weight: bold;">${quizTitleElement.textContent}</p>
+                        </div>
+                        <table class="answer-key-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%;">رقم السؤال</th>
+                                    <th>الإجابة الصحيحة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    tableOpen = true;
+                }
+
+                const cleanAnswer = q.answer ? q.answer.replace(/\n/g, '<br>') : '—';
+                keyHTML += `
+                    <tr>
+                        <td style="text-align: center; font-weight: bold;">${qCount}</td>
+                        <td style="text-align: right; line-height: 1.6;">${cleanAnswer}</td>
+                    </tr>
+                `;
+                
+                if (qCount % rowsPerPage === 0) {
+                    keyHTML += `</tbody></table></div>`;
+                    tableOpen = false;
+                }
+                qCount++;
+            });
+
+            if (tableOpen) {
+                keyHTML += `</tbody></table></div>`;
+            }
+
+            keyDiv.innerHTML = keyHTML;
+            document.querySelector('.container').appendChild(keyDiv);
+
+            const qrDiv = document.createElement('div');
+            qrDiv.id = 'printable-qr-section';
+            
+            const qrContainer = document.createElement('div');
+            qrContainer.id = 'qrcode-container';
+            qrDiv.appendChild(qrContainer);
+
+            const qrText = document.createElement('h3');
+            qrText.textContent = "امسح للوصول إلى النسخة التفاعلية";
+            qrDiv.appendChild(qrText);
+
+            const frontPageContainer = document.querySelector('.quiz-front-page');
+            frontPageContainer.appendChild(qrDiv);
+
+            new QRCode(qrContainer, {
+                text: window.location.href,
+                width: 128, 
+                height: 128,
+                colorDark : "#1a2ac6", 
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            const allRadios = document.querySelectorAll('input[type="radio"]');
+            const checkedStates = new Map();
+            allRadios.forEach((radio, index) => {
+                if(radio.checked) {
+                    checkedStates.set(index, true);
+                    radio.checked = false; 
+                }
+            });
+
+            setTimeout(() => {
+                window.print();
+                allRadios.forEach((radio, index) => {
+                    if(checkedStates.has(index)) {
+                        radio.checked = true;
+                    }
+                });
+            }, 500);
+        }
+
+        function getExamCode() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('i');
+        }
+
+        function formatPoints(p) {
+            if (p === 1) return 'درجة واحدة';
+            if (p === 2) return 'درجتان';
+            if (p >= 3 && p <= 10) return `${p} درجات`;
+            return `${p} درجة`;
+        }
+
+        async function loadQuizData() {
+            const examCode = getExamCode();
+            if (!examCode) {
+                questionsContainer.innerHTML = '<p>⚠️ لم يتم تحديد رمز الاختبار.</p>';
+                submitButton.style.display = 'none';
+                return;
+            }
+
+            try {
+                const res = await fetch(`{{ '/assets/online/' | relative_url }}${examCode}.yaml`);
+                if (!res.ok) throw new Error('تعذر تحميل بيانات الاختبار');
+                const yamlText = await res.text();
+                quizData = jsyaml.load(yamlText);
+
+                if (quizData[currentQuiz]) {
+                    if (quizData[currentQuiz].title) {
+                        quizTitleElement.textContent = quizData[currentQuiz].title;
+                        document.title = quizData[currentQuiz].title + ' | روافد';
+                    }
+                    
+                    subjectNameElement.textContent = quizData[currentQuiz]['subject-name'] || 'غير محدد';
+                    subjectCodeElement.textContent = quizData[currentQuiz]['subject-code'] || examCode;
+
+                    let totalPoints = 0;
+                    quizData[currentQuiz].questions.forEach(q => {
+                        if (q.divider) return;
+                        if (q.type === 'info') return;
+                        if (q.type === 'instructions') return;
+                        totalPoints += q.points || 1;
+                    });
+                    subjectTotalScoreElement.textContent = totalPoints;
+                }
+                renderAllQuestions();
+            } catch (err) {
+                questionsContainer.innerHTML = `<p>❌ ${err.message}</p>`;
+                submitButton.style.display = 'none';
+            }
+        }
+
+        function renderAllQuestions() {
+            const quiz = quizData[currentQuiz];
+            if (!quiz || !quiz.questions || quiz.questions.length === 0) {
+                questionsContainer.innerHTML = '<p>لا توجد أسئلة متاحة</p>';
+                submitButton.style.display = 'none';
+                return;
+            }
+
+            questionsContainer.innerHTML = '';
+            let questionNumber = 1;
+
+            let currentTfContainer = null;
+            let currentTfScoreSpan = null;
+            let currentTfScore = 0;
+
+            quiz.questions.forEach((q, qIndex) => {
+                if (q.divider || q.type !== 'tf') {
+                    currentTfContainer = null;
+                    currentTfScore = 0;
+                }
+
+                if (q.divider) {
+                    const dividerDiv = document.createElement('div');
+                    dividerDiv.className = 'divider-text';
+                    dividerDiv.textContent = q.divider;
+                    questionsContainer.appendChild(dividerDiv);
+                    return;
+                }
+                
+                if (q.type === 'instructions') {
+                    const instructionsDiv = document.createElement('div');
+                    instructionsDiv.className = 'instructions-question';
+                    if (q.mainTitle) {
+                        const mainTitle = document.createElement('div');
+                        mainTitle.className = 'instructions-header';
+                        mainTitle.textContent = q.mainTitle;
+                        instructionsDiv.appendChild(mainTitle);
+                    }
+                    if (q.description) {
+                        const description = document.createElement('p');
+                        description.className = 'instructions-description';
+                        description.textContent = q.description;
+                        instructionsDiv.appendChild(description);
+                    }
+                    questionsContainer.appendChild(instructionsDiv);
+                    return; 
+                }
+                
+                if (q.type === 'tf') {
+                    if (!currentTfContainer) {
+                        currentTfContainer = document.createElement('div');
+                        currentTfContainer.className = 'tf-interactive-container';
+                        
+                        const headerDiv = document.createElement('div');
+                        headerDiv.className = 'tf-print-header';
+                        
+                        const titleSpan = document.createElement('span');
+                        titleSpan.textContent = "ضع علامة (✓) أو (✗) أمام العبارات التالية:";
+                        
+                        currentTfScoreSpan = document.createElement('span');
+                        currentTfScoreSpan.className = 'points-badge'; 
+                        currentTfScoreSpan.textContent = "";
+                        
+                        headerDiv.appendChild(titleSpan);
+                        headerDiv.appendChild(currentTfScoreSpan);
+                        currentTfContainer.appendChild(headerDiv);
+                        
+                        questionsContainer.appendChild(currentTfContainer);
+                        currentTfScore = 0;
+                    }
+                    
+                    const pts = q.points || 1;
+                    currentTfScore += pts;
+                    currentTfScoreSpan.textContent = ` ${formatPoints(currentTfScore)}`;
+                    
+                    const tfRow = document.createElement('div');
+                    tfRow.className = 'tf-row question-item-tf';
+                    tfRow.dataset.questionIndex = qIndex;
+                    
+                    const text = document.createElement('div');
+                    text.className = 'tf-text';
+                    text.innerHTML = `${questionNumber}. ${q.question.replace(/\n/g, '<br>')}`;
+
+                    const box = document.createElement('div');
+                    box.className = 'tf-box';
+                    
+                    const iconDisplay = document.createElement('i');
+                    iconDisplay.className = 'fa-solid fa-fw';
+                    iconDisplay.style.display = 'none';
+
+                    const popup = document.createElement('div');
+                    popup.className = 'tf-popup';
+
+                    const btnTrue = document.createElement('button');
+                    btnTrue.className = 'tf-popup-btn btn-true';
+                    btnTrue.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    
+                    const btnFalse = document.createElement('button');
+                    btnFalse.className = 'tf-popup-btn btn-false';
+                    btnFalse.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+
+                    let trueIndex = 0;
+                    let falseIndex = 1;
+                    if(q.choices) {
+                        const tIdx = q.choices.findIndex(c => c.includes('صح') || c.includes('صواب'));
+                        if(tIdx !== -1) trueIndex = tIdx;
+                        const fIdx = q.choices.findIndex(c => c.includes('خطأ'));
+                        if(fIdx !== -1) falseIndex = fIdx;
+                    }
+
+                    btnTrue.onclick = (e) => {
+                        e.stopPropagation();
+                        if(reviewMode) return;
+                        userAnswers[qIndex] = trueIndex;
+                        iconDisplay.className = 'fa-solid fa-fw fa-check correct-icon-true';
+                        iconDisplay.style.display = 'inline-block';
+                        popup.classList.remove('show');
+                    };
+
+                    btnFalse.onclick = (e) => {
+                        e.stopPropagation();
+                        if(reviewMode) return;
+                        userAnswers[qIndex] = falseIndex;
+                        iconDisplay.className = 'fa-solid fa-fw fa-xmark correct-icon-false';
+                        iconDisplay.style.display = 'inline-block';
+                        popup.classList.remove('show');
+                    };
+
+                    popup.appendChild(btnTrue);
+                    popup.appendChild(btnFalse);
+
+                    box.appendChild(iconDisplay);
+                    box.appendChild(popup);
+
+                    box.onclick = (e) => {
+                        if(reviewMode) return;
+                        document.querySelectorAll('.tf-popup.show').forEach(p => {
+                            if(p !== popup) p.classList.remove('show');
+                        });
+                        popup.classList.toggle('show');
+                        e.stopPropagation();
+                    };
+                    
+                    tfRow.appendChild(text);
+                    tfRow.appendChild(box);
+                    
+                    currentTfContainer.appendChild(tfRow);
+                    questionNumber++;
+                    return; // الخروج من الحلقة لهذا السؤال فقط
+                }
+
+                // للأسئلة الأخرى
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item';
+                if (q.type === 'info') questionDiv.classList.add('info-question');
+                questionDiv.dataset.questionIndex = qIndex;
+
+                if (q.type === 'info') {
+                    if (q.mainTitle) {
+                        const mainTitle = document.createElement('div');
+                        mainTitle.className = 'info-header';
+                        mainTitle.textContent = q.mainTitle;
+                        questionDiv.appendChild(mainTitle);
+                    }
+                    if (q.description) {
+                        const description = document.createElement('p');
+                        description.className = 'info-description';
+                        description.textContent = q.description;
+                        questionDiv.appendChild(description);
+                    }
+                }
+
+                const questionTextDiv = document.createElement('div');
+                questionTextDiv.className = 'question-text';
+
+                const textSpan = document.createElement('span');
+                textSpan.className = 'question-content-span';
+                const formattedQuestion = q.question.replace(/\n/g, '<br>');
+                textSpan.innerHTML = `${questionNumber}. ${formattedQuestion}`;
+                questionTextDiv.appendChild(textSpan);
+
+                if (q.type !== 'info') {
+                    const pointsBadge = document.createElement('span');
+                    pointsBadge.className = 'points-badge';
+                    const p = q.points || 1;
+                    pointsBadge.textContent = formatPoints(p);
+                    questionTextDiv.appendChild(pointsBadge);
+                }
+
+                questionDiv.appendChild(questionTextDiv);
+
+                if (q.image) {
+                    const imageContainer = document.createElement('div');
+                    imageContainer.className = 'image-question-container';
+                    const questionImage = document.createElement('img');
+                    questionImage.src = q.image;
+                    questionImage.alt = 'صورة السؤال';
+                    questionImage.className = 'question-image';
+                    imageContainer.appendChild(questionImage);
+                    questionDiv.appendChild(imageContainer);
+                }
+
+                if (q.subtext) {
+                    const subtextParagraph = document.createElement('p');
+                    subtextParagraph.className = 'question-subtext';
+                    subtextParagraph.textContent = q.subtext;
+                    questionDiv.appendChild(subtextParagraph);
+                }
+
+                if (q.type === 'essay' || q.type === 'essay-image') {
+                    const buttonsDiv = document.createElement('div');
+                    buttonsDiv.className = 'essay-buttons';
+                    const showAnswerBtn = document.createElement('button');
+                    showAnswerBtn.className = 'essay-btn show-answer-btn';
+                    showAnswerBtn.textContent = 'أعرف الإجابة';
+                    showAnswerBtn.addEventListener('click', () => selectEssayAnswer(qIndex, 1, showAnswerBtn, dontKnowBtn));
+                    const dontKnowBtn = document.createElement('button');
+                    dontKnowBtn.className = 'essay-btn dont-know-btn';
+                    dontKnowBtn.textContent = 'لا أعرف';
+                    dontKnowBtn.addEventListener('click', () => selectEssayAnswer(qIndex, -1, dontKnowBtn, showAnswerBtn));
+                    buttonsDiv.appendChild(showAnswerBtn);
+                    buttonsDiv.appendChild(dontKnowBtn);
+                    questionDiv.appendChild(buttonsDiv);
+                    
+                    const answerDiv = document.createElement('div');
+                    answerDiv.className = 'essay-answer';
+                    answerDiv.innerHTML = `<strong>الإجابة:</strong> ${q.answer}`;
+                    questionDiv.appendChild(answerDiv);
+
+                    const linesContainer = document.createElement('div');
+                    linesContainer.className = 'print-essay-lines';
+                    
+                    let points = q.points || 1;
+                    let lineCount = 3;
+
+                    if (points >= 10) {
+                        lineCount = 23; 
+                        questionDiv.classList.add('full-page-question');
+                    } else if (points > 2) {
+                        lineCount = Math.floor(points * 2.5);
+                    }
+
+                    for(let i=0; i<lineCount; i++) {
+                        const line = document.createElement('div');
+                        line.className = 'writing-line';
+                        linesContainer.appendChild(line);
+                    }
+                    questionDiv.appendChild(linesContainer);
+
+                } else if (q.type === 'mcq' || q.type === 'mcq-image') {
+                    const choicesDiv = document.createElement('div');
+                    choicesDiv.className = 'choices-container';
+                    q.choices.forEach((choice, cIndex) => {
+                        const label = document.createElement('label');
+                        label.className = 'choice-label';
+                        
+                        const printLetterSpan = document.createElement('span');
+                        printLetterSpan.className = 'print-letter';
+                        const letter = arabicLetters[cIndex] || (cIndex + 1);
+                        printLetterSpan.textContent = letter + '- ';
+                        label.appendChild(printLetterSpan);
+
+                        const radio = document.createElement('input');
+                        radio.type = 'radio';
+                        radio.name = `question-${qIndex}`;
+                        radio.value = cIndex;
+                        radio.className = 'choice-radio';
+                        radio.addEventListener('change', () => selectChoice(qIndex, cIndex, label));
+                        label.appendChild(radio);
+                        
+                        label.appendChild(document.createTextNode(choice));
+                        choicesDiv.appendChild(label);
+                    });
+                    questionDiv.appendChild(choicesDiv);
+                }
+                questionsContainer.appendChild(questionDiv);
+                questionNumber++;
+            });
+        }
+
+        function selectEssayAnswer(qIndex, choice, selectedBtn, otherBtn) {
+            if (reviewMode) return;
+            userAnswers[qIndex] = choice;
+            const questionDiv = selectedBtn.closest('.question-item');
+            const allBtns = questionDiv.querySelectorAll('.essay-btn');
+            allBtns.forEach(btn => btn.classList.remove('selected-essay'));
+            selectedBtn.classList.add('selected-essay');
+            if (choice === 1) {
+                const answerDiv = questionDiv.querySelector('.essay-answer');
+                answerDiv.style.display = 'block';
+            }
+        }
+
+        function selectChoice(qIndex, cIndex, selectedLabel) {
+            if (reviewMode) return;
+            userAnswers[qIndex] = cIndex;
+            const questionDiv = document.querySelector(`.question-item[data-question-index="${qIndex}"]`);
+            const choiceLabels = questionDiv.querySelectorAll('.choice-label');
+            choiceLabels.forEach(label => label.classList.remove('selected'));
+            selectedLabel.classList.add('selected');
+        }
+
+        function submitAllAnswers() {
+            const quiz = quizData[currentQuiz];
+            let allAnswered = true;
+            quiz.questions.forEach((q, qIndex) => {
+                if (q.divider || q.type === 'info' || q.type === 'instructions') return;
+                if (userAnswers[qIndex] === undefined) allAnswered = false;
+            });
+
+            if (!allAnswered) {
+                alert('الرجاء الإجابة على جميع الأسئلة قبل الإرسال');
+                return;
+            }
+
+            let earnedPoints = 0;
+            let totalPoints = 0;
+            wrongAnswers.length = 0;
+
+            quiz.questions.forEach((q, qIndex) => {
+                if (q.divider || q.type === 'info' || q.type === 'instructions') return;
+                const questionPoints = q.points || 1;
+                totalPoints += questionPoints;
+
+                if (q.type === 'essay' || q.type === 'essay-image') {
+                    if (userAnswers[qIndex] === 1) {
+                        earnedPoints += questionPoints;
+                    } else if (userAnswers[qIndex] === -1) {
+                        wrongAnswers.push({
+                            question: q.question,
+                            userAnswer: "لا أعرف",
+                            correctAnswer: q.answer,
+                            points: questionPoints
+                        });
+                    }
+                } else if (q.type === 'mcq' || q.type === 'mcq-image' || q.type === 'tf') {
+                    const userAnswerIndex = userAnswers[qIndex];
+                    const correctAnswerIndex = q.choices ? q.choices.indexOf(q.answer) : (q.answer === 'صح' ? 0 : 1);
+                    if (userAnswerIndex === correctAnswerIndex) {
+                        earnedPoints += questionPoints;
+                    } else {
+                        wrongAnswers.push({
+                            question: q.question,
+                            userAnswer: q.choices && q.choices[userAnswerIndex] ? q.choices[userAnswerIndex] : "إجابة خاطئة",
+                            correctAnswer: q.answer,
+                            points: questionPoints
+                        });
+                    }
+                }
+            });
+
+            questionsContainer.style.display = 'none';
+            submitButton.style.display = 'none';
+            reviewButton.style.display = 'block';
+            showResult(earnedPoints, totalPoints);
+            window.scrollTo(0, 0);
+        }
+
+        function showResult(earnedPoints, totalPoints) {
+            resultElement.style.display = 'block';
+            const percentage = Math.round((earnedPoints * 100) / totalPoints) || 0;
+            
+            let resultHTML = `
+                <div class="score-gauge-container">
+                    <div class="score-gauge" style="background: conic-gradient(var(--border-color) 100%, transparent 0);">
+                        <span class="score-gauge-text">0%</span>
+                    </div>
+                    <div class="score-details">${earnedPoints} من ${totalPoints} درجة</div>
+                </div>
+            `;
+
+            if (wrongAnswers.length > 0) {
+                resultHTML += `
+                    <div style="margin-bottom:20px; font-size:22px; font-weight:bold; color:var(--text-main); border-bottom:2px solid var(--primary-color); padding-bottom:10px; display:inline-block;">
+                        مراجعة الإجابات الخاطئة
+                    </div>
+                    <div class="wrong-answers-list">
+                `;
+                
+                wrongAnswers.forEach(ans => {
+                    const formattedQuestion = ans.question.replace(/\n/g, '<br>');
+                    resultHTML += `
+                        <div class="wrong-answer-card">
+                            <div class="wrong-answer-q">${formattedQuestion}</div>
+                            <div class="answer-row">
+                                <span class="answer-badge badge-wrong">إجابتك</span>
+                                <span class="answer-text">${ans.userAnswer || "لم تجب"}</span>
+                            </div>
+                            <div class="answer-row">
+                                <span class="answer-badge badge-correct">الإجابة الصحيحة</span>
+                                <span class="answer-text">${ans.correctAnswer}</span>
+                            </div>
+                            <div class="points-lost">
+                                الدرجات المفقودة في هذا السؤال: <strong>${ans.points}</strong>
+                            </div>
+                        </div>`;
+                });
+                resultHTML += '</div>';
+            } else if (totalPoints > 0) {
+                resultHTML += `
+                    <div style="text-align:center; padding: 20px; background:var(--correct-bg); color:white; border-radius:12px; font-weight:bold; font-size:18px; margin-top: 20px;">
+                        أحسنت! جميع إجاباتك صحيحة.
+                    </div>`;
+            }
+            
+            resultElement.innerHTML = resultHTML;
+
+            setTimeout(() => {
+                const gauge = document.querySelector('.score-gauge');
+                const text = document.querySelector('.score-gauge-text');
+                if(gauge && text) {
+                    gauge.style.background = `conic-gradient(var(--primary-color) ${percentage}%, var(--border-color) 0)`;
+                    text.textContent = `${percentage}%`;
+                }
+            }, 100);
+        }
+
+        function reviewAnswers() {
+            reviewMode = true;
+            questionsContainer.style.display = 'block';
+            resultElement.style.display = 'none';
+            reviewButton.style.display = 'none';
+            submitButton.style.display = 'none';
+
+            const quiz = quizData[currentQuiz];
+            quiz.questions.forEach((q, qIndex) => {
+                if (q.divider || q.type === 'info' || q.type === 'instructions') return;
+
+                if (q.type === 'tf') {
+                    const tfRow = document.querySelector(`.tf-row[data-question-index="${qIndex}"]`);
+                    if (!tfRow) return;
+                    const box = tfRow.querySelector('.tf-box');
+                    const popup = tfRow.querySelector('.tf-popup');
+                    if (popup) popup.remove(); 
+
+                    let trueIndex = 0; let falseIndex = 1;
+                    if(q.choices) {
+                        const tIdx = q.choices.findIndex(c => c.includes('صح') || c.includes('صواب'));
+                        if(tIdx !== -1) trueIndex = tIdx;
+                        const fIdx = q.choices.findIndex(c => c.includes('خطأ'));
+                        if(fIdx !== -1) falseIndex = fIdx;
+                    }
+
+                    const userAnswerIndex = userAnswers[qIndex];
+                    const correctAnswerIndex = q.choices ? q.choices.indexOf(q.answer) : trueIndex;
+                    
+                    box.style.color = 'white';
+                    
+                    if (userAnswerIndex === correctAnswerIndex) {
+                        box.style.borderColor = 'var(--correct-bg)';
+                        box.style.backgroundColor = 'var(--correct-bg)';
+                        const icon = box.querySelector('i.fa-fw');
+                        if (icon) {
+                            icon.className = `fa-solid fa-fw ${correctAnswerIndex === trueIndex ? 'fa-check' : 'fa-xmark'}`;
+                            icon.style.display = 'inline-block';
+                            icon.style.color = 'white';
+                        }
+                    } else {
+                        box.style.borderColor = 'var(--wrong-bg)';
+                        box.style.backgroundColor = 'var(--wrong-bg)';
+                        const icon = box.querySelector('i.fa-fw');
+                        if(icon && userAnswerIndex !== undefined) {
+                            icon.className = `fa-solid fa-fw ${userAnswerIndex === trueIndex ? 'fa-check' : 'fa-xmark'}`;
+                            icon.style.display = 'inline-block';
+                            icon.style.color = 'white';
+                        }
+
+                        const correctIcon = document.createElement('div');
+                        correctIcon.style.color = 'var(--wrong-bg)';
+                        correctIcon.style.fontSize = '14px';
+                        correctIcon.style.marginTop = '8px';
+                        correctIcon.innerHTML = `الإجابة الصحيحة: <i class="fa-solid ${correctAnswerIndex === trueIndex ? 'fa-check' : 'fa-xmark'}"></i>`;
+                        tfRow.querySelector('.tf-text').appendChild(correctIcon);
+                    }
+                } else {
+                    const questionDiv = document.querySelector(`.question-item[data-question-index="${qIndex}"]`);
+                    if (q.type === 'essay' || q.type === 'essay-image') {
+                        const answerDiv = questionDiv.querySelector('.essay-answer');
+                        answerDiv.style.display = 'block';
+                        const essayButtons = questionDiv.querySelector('.essay-buttons');
+                        essayButtons.style.display = 'none';
+                    } else if (q.type === 'mcq' || q.type === 'mcq-image') {
+                        const userAnswerIndex = userAnswers[qIndex];
+                        const correctAnswerIndex = q.choices.indexOf(q.answer);
+                        const choiceLabels = questionDiv.querySelectorAll('.choice-label');
+                        choiceLabels.forEach((label, btnIndex) => {
+                            const radio = label.querySelector('input[type="radio"]');
+                            if (btnIndex === correctAnswerIndex) {
+                                label.classList.add('correct');
+                            } else if (btnIndex === userAnswerIndex && btnIndex !== correctAnswerIndex) {
+                                label.classList.add('wrong');
+                            }
+                            radio.disabled = true;
+                        });
+                    }
+                }
+            });
+        }
+
+        submitButton.addEventListener('click', submitAllAnswers);
+        reviewButton.addEventListener('click', reviewAnswers);
+        loadQuizData();
+    </script>
+</body>
+</html>

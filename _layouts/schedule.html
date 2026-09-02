@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title | default: "منشئ الجدول الدراسي" }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <meta property="og:title" content="{{ page.title | default: 'روافد' }}">
+  <meta property="og:description" content="أداة لتنظيم وطباعة الجدول الدراسي الجامعي.">
+  <meta property="og:image" content="{{ '/images/schedule.png' | relative_url }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('rawafed-theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+    /* === المتغيرات والألوان === */
+    :root {
+      --primary-color: #1a2ac6;
+      --bg-body: #f4f6fb;
+      --bg-card: #ffffff;
+      --border-color: #ccd1e0;
+      --text-main: #2d2d2d;
+      --text-muted: #666666;
+      --bg-code: #f4f6fb;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+      --radius-md: 12px;
+    }
+
+    html[data-theme="dark"] {
+      --primary-color: #7986cb;
+      --bg-body: #121212;
+      --bg-card: #1e1e1e;
+      --border-color: #333333;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --bg-code: #2c2c2c;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-top: 80px;
+      padding-bottom: 40px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+    /* === Header & Actions === */
+    .tool-header {
+      margin-bottom: 30px;
+      margin-top: 20px;
+      border-right: 4px solid var(--primary-color);
+      padding-right: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .tool-header h1 { font-size: 1.5rem; font-weight: 700; }
+    .tool-header p { color: var(--text-muted); margin-top: 5px; }
+
+    .header-actions { display: flex; gap: 10px; }
+
+    .action-btn {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+        padding: 6px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: 0.2s;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .action-btn:hover { background: var(--bg-code); color: var(--primary-color); border-color: var(--primary-color); }
+    .primary-btn { background: var(--primary-color) !important; color: white !important; border: none !important; }
+    .primary-btn:hover { opacity: 0.9; }
+    .delete-btn { color: #e74c3c !important; border-color: #e74c3c !important; }
+    .delete-btn:hover { background: #e74c3c !important; color: white !important; }
+
+    /* === Form Styles === */
+    .ios-list-group {
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        margin-bottom: 30px;
+        border: 1px solid var(--border-color);
+    }
+
+    .list-header {
+        background: var(--bg-code);
+        padding: 10px 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .form-content { padding: 20px; }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 15px;
+    }
+
+    .input-group { display: flex; flex-direction: column; gap: 8px; }
+    .full-width { grid-column: span 3; }
+
+    .input-field {
+        background: var(--bg-body);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: 0.2s;
+        width: 100%;
+    }
+    .input-field:focus { border-color: var(--primary-color); outline: none; }
+
+    label { font-weight: 600; font-size: 0.9rem; color: var(--text-main); }
+
+    /* Checkboxes */
+    .days-container {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        padding: 5px 0;
+    }
+    .day-option {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    /* === Schedule Table (Result) === */
+    .schedule-preview {
+        background: white;
+        padding: 0;
+        border-radius: 8px;
+        overflow-x: auto;
+    }
+
+    .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+        font-size: 0.95rem;
+    }
+
+    .schedule-table th, .schedule-table td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: center;
+        vertical-align: middle;
+        color: black; /* Always black for readability/printing */
+    }
+
+    .schedule-table th {
+        background-color: #f8f9fa;
+        font-weight: 700;
+        height: 50px;
+    }
+
+    .schedule-table td { height: 60px; }
+
+    /* Course Detail Cell Styling */
+    .course-details {
+        text-align: right !important;
+        padding-right: 15px !important;
+    }
+    .course-title { font-weight: 800; font-size: 1.1rem; display: block; margin-bottom: 4px; }
+    .course-meta { display: block; font-size: 0.85rem; color: #444; }
+    .course-meta span { margin-left: 10px; }
+    .course-meta i { margin-left: 4px; color: #666; }
+
+    .time-slot {
+        font-weight: 600;
+        display: block;
+        background: #f1f3f5;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+    }
+
+    /* === Responsive === */
+    @media (max-width: 768px) {
+        .form-grid { grid-template-columns: 1fr; }
+        .full-width { grid-column: span 1; }
+        .tool-header { flex-direction: column; align-items: flex-start; }
+        .header-actions { width: 100%; flex-wrap: wrap; }
+        .action-btn { flex: 1; justify-content: center; }
+    }
+
+    /* === Print Styles (PDF) === */
+    @media print {
+        @page { size: landscape; margin: 10mm; }
+        body { background: white; padding: 0; color: black; }
+        
+        .no-print, header, footer, .tool-header, .ios-list-group, .action-btn { 
+            display: none !important; 
+        }
+
+        .container { 
+            max-width: 100%; 
+            width: 100%; 
+            padding: 0; 
+            margin: 0; 
+        }
+
+        .schedule-preview {
+            border: none;
+            box-shadow: none;
+            display: block !important;
+        }
+
+        .schedule-table {
+            border: 2px solid black;
+            width: 100%;
+        }
+
+        .schedule-table th, .schedule-table td {
+            border: 1px solid black !important;
+            color: black !important;
+        }
+
+        .schedule-table th {
+            background-color: #eee !important;
+            -webkit-print-color-adjust: exact;
+        }
+        
+        /* Ensure specific columns have correct widths in print */
+        .col-day { width: 14%; }
+        .col-info { width: 30%; }
+    }
+  </style>
+</head>
+<body>
+
+  {% include header.html %}
+
+  <div class="container">
+    
+    <div class="tool-header no-print">
+      <div>
+          <h1>منشئ الجدول الدراسي</h1>
+          <p>أدخل مقرراتك يدويًا ثم اطبع الجدول بصيغة PDF</p>
+      </div>
+      
+      <div class="header-actions">
+          <button class="action-btn" onclick="clearTable()">
+            <i class="fas fa-trash-alt"></i> حذف الجدول
+          </button>
+          <button class="action-btn primary-btn" onclick="printSchedule()">
+            <i class="fas fa-print"></i> طباعة / PDF
+          </button>
+      </div>
+    </div>
+
+    <div class="ios-list-group no-print">
+        <div class="list-header">
+            <span>إضافة مقرر جديد</span>
+        </div>
+        
+        <div class="form-content">
+            <div class="form-grid">
+                
+                <div class="input-group">
+                    <label>اسم المقرر</label>
+                    <input type="text" id="cName" class="input-field" placeholder="النحو العربي">
+                </div>
+
+                <div class="input-group">
+                    <label>الدكتور</label>
+                    <input type="text" id="cProf" class="input-field" placeholder="د. محمد...">
+                </div>
+
+                <div class="input-group">
+                    <label>القاعة</label>
+                    <input type="text" id="cRoom" class="input-field" placeholder="101 / عن بعد">
+                </div>
+
+                <div class="input-group">
+                    <label>التوقيت</label>
+                    <input type="text" id="cTime" class="input-field" placeholder="08:00 - 10:00">
+                </div>
+                
+                <div class="input-group full-width">
+                    <label>الأيام</label>
+                    <div class="days-container">
+                        <label class="day-option"><input type="checkbox" value="sun"> الأحد</label>
+                        <label class="day-option"><input type="checkbox" value="mon"> الإثنين</label>
+                        <label class="day-option"><input type="checkbox" value="tue"> الثلاثاء</label>
+                        <label class="day-option"><input type="checkbox" value="wed"> الأربعاء</label>
+                        <label class="day-option"><input type="checkbox" value="thu"> الخميس</label>
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="margin-top: 25px;">
+                <button class="action-btn primary-btn" onclick="addCourse()" style="width: 100%; justify-content: center; padding: 12px;">
+                    <i class="fas fa-plus-circle"></i> إضافة للجدول
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-container" style="display:none;">
+        <div class="ios-list-group schedule-preview">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th class="col-day">الخميس</th>
+                        <th class="col-day">الأربعاء</th>
+                        <th class="col-day">الثلاثاء</th>
+                        <th class="col-day">الإثنين</th>
+                        <th class="col-day">الأحد</th>
+                        <th class="col-info">بيانات المقرر</th>
+                        <th class="no-print" style="width: 50px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="scheduleBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+  </div>
+
+  {% include footer.html %}
+
+<script>
+  /* === Theme Logic === */
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('rawafed-theme', newTheme);
+  }
+
+  /* === Schedule Logic === */
+  function addCourse() {
+      // 1. Get Values
+      const name = document.getElementById('cName').value.trim();
+      const prof = document.getElementById('cProf').value.trim();
+      const room = document.getElementById('cRoom').value.trim();
+      const time = document.getElementById('cTime').value.trim();
+      
+      // Get Days
+      const days = Array.from(document.querySelectorAll('.days-container input:checked')).map(cb => cb.value);
+
+      if (!name || days.length === 0) {
+          alert('يرجى إدخال اسم المقرر واختيار يوم واحد على الأقل');
+          return;
+      }
+
+      // 2. Show Table
+      document.getElementById('result-container').style.display = 'block';
+
+      // 3. Build Row
+      const tbody = document.getElementById('scheduleBody');
+      const tr = document.createElement('tr');
+
+      // Helper for cells
+      const createDayCell = (dayCode) => {
+          if (days.includes(dayCode)) {
+              return `<td><span class="time-slot">${time}</span></td>`;
+          } else {
+              return `<td>-</td>`;
+          }
+      };
+
+      // HTML Structure for Row (RTL: Thu -> Sun)
+      tr.innerHTML = `
+          ${createDayCell('thu')}
+          ${createDayCell('wed')}
+          ${createDayCell('tue')}
+          ${createDayCell('mon')}
+          ${createDayCell('sun')}
+          
+          <td class="course-details">
+              <span class="course-title">${name}</span>
+              <div class="course-meta">
+                  <span><i class="fas fa-map-marker-alt"></i> ${room}</span>
+                  <span><i class="fas fa-user-tie"></i> ${prof}</span>
+              </div>
+          </td>
+
+          <td class="no-print">
+              <button class="action-btn delete-btn" style="padding: 5px 10px;" onclick="this.closest('tr').remove()">
+                  <i class="fas fa-times"></i>
+              </button>
+          </td>
+      `;
+
+      tbody.appendChild(tr);
+
+      // 4. Reset Form
+      document.getElementById('cName').value = '';
+      document.getElementById('cTime').value = ''; 
+      // Keep Room/Prof as they might be similar (Optional UX choice)
+  }
+
+  function clearTable() {
+      if(confirm('هل أنت متأكد من حذف الجدول بالكامل؟')) {
+          document.getElementById('scheduleBody').innerHTML = '';
+          document.getElementById('result-container').style.display = 'none';
+      }
+  }
+
+  function printSchedule() {
+      window.print();
+  }
+</script>
+
+</body>
+</html>

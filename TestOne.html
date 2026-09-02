@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عيد التحرير</title>
+    
+    <!-- استدعاء خط IBM Plex Sans Arabic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            /* خلفية مؤقتة مطابقة للجو العام للتصميم */
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 100%), 
+                        url('https://images.unsplash.com/photo-1518349619113-03114f061387?q=80&w=1080&auto=format&fit=crop') center/cover no-repeat;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #ffffff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .main-content {
+            margin-top: 15vh;
+            text-align: center;
+            padding: 0 20px;
+            z-index: 1;
+        }
+
+        .top-logo {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            max-width: 600px;
+            text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* حاوية الشريط السفلي */
+        .bottom-nav-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 450px;
+            background-color: #1a1615;
+            border-radius: 16px;
+            z-index: 9999; /* تم الرفع لضمان قابليته للنقر والتفاعل دائماً */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        /* القائمة المنسدلة */
+        .nav-menu {
+            height: 0;
+            overflow: hidden; /* تم إضافته لضمان عدم حجب القائمة المخفية للنقرات */
+            transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* خصائص القائمة عند الفتح */
+        .bottom-nav-container.open .nav-menu {
+            height: 180px; 
+            padding-top: 10px;
+        }
+
+        .nav-menu a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 15px 0;
+            width: 100%;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        .nav-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* الشريط الثابت السفلي */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            border-top: 1px solid transparent;
+            transition: border-color 0.4s ease;
+        }
+
+        /* خط فاصل يظهر عند فتح القائمة */
+        .bottom-nav-container.open .nav-bar {
+            border-top-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-logo {
+            width: 50px;
+            height: auto;
+        }
+
+        .menu-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+        }
+
+        /* إخفاء الأيقونات حسب حالة القائمة */
+        .icon-close {
+            display: none;
+        }
+        
+        .bottom-nav-container.open .icon-menu {
+            display: none;
+        }
+        
+        .bottom-nav-container.open .icon-close {
+            display: block;
+        }
+
+        /* تجاوب مع الشاشات الصغيرة */
+        @media (max-width: 480px) {
+            .title { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="main-content">
+        <img src="https://raw.githubusercontent.com/qmsweb/TestRawafid/main/images/FADAAT-WHITE.png" alt="شعار علوي" class="top-logo">
+        <h1 class="title">عيد التحرير</h1>
+        <p class="description">
+            بمرور عام على تحرير سوريا، نحتفل بفخر بهذا اليوم الذي وحّد مشاعرنا وأعاد إلينا شعور الانتماء بعد طول غياب. عيد التحرير هو بداية حكاية مستمرة يكتب فصولها السوريون عاماً بعد عام، بوحدتهم، ورؤيتهم، ومسؤوليتهم في إعادة بناء وطنهم.
+        </p>
+    </main>
+
+    <nav class="bottom-nav-container" id="bottomNav">
+        <!-- القائمة المنسدلة (تتوسع لأعلى) -->
+        <div class="nav-menu" id="navMenu">
+            <a href="#">اليوم الوطني</a>
+            <a href="#">الفعاليات</a>
+            <a href="#">تواصل معنا</a>
+        </div>
+
+        <!-- الشريط الثابت -->
+        <div class="nav-bar">
+            <!-- الشعار على اليمين -->
+            <img src="https://raw.githubusercontent.com/qmsweb/TestRawafid/main/images/FADAAT-WHITE.png" alt="شعار مصغر" class="nav-logo">
+            
+            <!-- زر القائمة على اليسار -->
+            <button class="menu-btn" id="menuToggleBtn">
+                <!-- أيقونة القائمة (الخطين المتوازيين) -->
+                <svg class="icon-menu" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="4" y1="9" x2="20" y2="9"></line>
+                    <line x1="4" y1="15" x2="20" y2="15"></line>
+                </svg>
+                <!-- أيقونة الإغلاق -->
+                <svg class="icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // التأكد من تحميل كامل عناصر HTML قبل تطبيق أحداث النقر 
+        document.addEventListener('DOMContentLoaded', function() {
+            const navContainer = document.getElementById('bottomNav');
+            const menuBtn = document.getElementById('menuToggleBtn');
+
+            // التبديل بين الفتح والإغلاق وإضافة كلاس open
+            menuBtn.addEventListener('click', function() {
+                navContainer.classList.toggle('open');
+            });
+        });
+    </script>
+</body>
+</html>

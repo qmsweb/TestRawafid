@@ -1,0 +1,23 @@
+{
+    "name": "مقرر الصرف",
+    "description": "",
+    "url": "https://rawafid.jassim.one/c/ARAB215",
+    "items": [
+        {
+            "id": 1,
+            "title": "اختبار في الميزان الصرفي",
+            "description": "اختبار تفاعلي في الدرس الأول",
+            "type": "quizzes",
+            "preview_url": "exam?i=215-1",
+            "time-ms": "1762891702768"
+        },
+        {
+            "id": 2,
+            "title": "ملخص عام في الصرف",
+            "description": "إعداد: هاجر الجحافية",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB215/%D9%85%D9%84%D8%AE%D8%B5%20%D8%A7%D9%84%D8%B5%D8%B1%D9%81.pdf",
+            "time-ms": "1762891702768"
+        }
+    ]
+}

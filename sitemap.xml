@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://rawafid.jassim.one/</loc>
+  <lastmod>2026-02-03T21:57:55+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://rawafid.jassim.one/about</loc>
+  <lastmod>2026-02-03T21:57:55+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://rawafid.jassim.one/tools</loc>
+  <lastmod>2026-02-03T21:57:55+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://rawafid.jassim.one/contact</loc>
+  <lastmod>2026-02-03T21:57:55+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://rawafid.jassim.one/index.html</loc>
+  <lastmod>2026-02-03T21:57:55+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://rawafid.jassim.one/blog</loc>
+  <lastmod>2026-08-23T00:00:00+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://rawafid.jassim.one/blog/first</loc>
+  <lastmod>2026-01-20T00:00:00+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://rawafid.jassim.one/blog/testone</loc>
+  <lastmod>2026-08-23T00:00:00+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://rawafid.jassim.one/blog/myart</loc>
+  <lastmod>2026-08-23T00:00:00+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
+</urlset>

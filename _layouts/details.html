@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>{{ page.title | default: "روافد" }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="{{ '/assets/css/topbar.css' | relative_url }}" />
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('rawafed-theme');
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+    /* === إعدادات الألوان والمتغيرات === */
+    :root {
+      --primary-color: #1a2ac6;
+      --primary-dark: #121e9ec4;
+      --text-color: #1d1d1d;
+      --text-muted: #666666;
+      --bg-color: #f8f9fc;
+      --bg-card: #ffffff;
+      --border-color: #e0e0e0;
+      --bg-pdf: #f4f4f7;
+      --btn-secondary-bg: #eff3ff;
+      --btn-secondary-text: #1a2ac6;
+    }
+
+    [data-theme="dark"] {
+      --primary-color: #7986cb; 
+      --primary-dark: #5c6bc0;
+      --text-color: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --bg-color: #121212;
+      --bg-card: #1e1e1e;
+      --border-color: #333333;
+      --bg-pdf: #2c2c2c;
+      --btn-secondary-bg: #2c2e3e;
+      --btn-secondary-text: #7986cb;
+    }
+
+    * { box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; }
+
+    body {
+      margin: 0; padding: 0; 
+      background-color: var(--bg-color); 
+      color: var(--text-color);
+      padding-bottom: 90px;
+      padding-top: 60px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .nav-header {
+      margin-top: 30px; 
+      padding: 0 20px;
+      margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: space-between; 
+      max-width: 900px; margin-left: auto; margin-right: auto;
+    }
+
+    .action-buttons-top {
+      display: flex; gap: 8px;
+    }
+
+    .back-btn, .share-btn-top, .print-btn-top, .related-btn-top {
+      text-decoration: none; color: var(--primary-color); 
+      font-weight: 700; font-size: 0.9rem;
+      display: inline-flex; align-items: center; gap: 8px; 
+      padding: 8px 16px;
+      background: var(--bg-card); 
+      border-radius: 50px; transition: 0.3s;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+    
+    .back-btn:hover, .share-btn-top:hover, .print-btn-top:hover, .related-btn-top:hover { 
+      background: var(--primary-color); 
+      color: #ffffff; 
+      border-color: var(--primary-color); 
+    }
+
+    /* حاوية زر المتعلقات الجديد */
+    .related-btn-wrapper {
+      max-width: 900px; 
+      margin: 0 auto 15px auto; 
+      padding: 0 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .content-container { 
+      max-width: 900px; margin: 0 auto; 
+      padding: 0 20px; 
+      background: transparent;
+      box-shadow: none;
+      border: none;
+      border-radius: 0;
+    }
+
+    .item-title { 
+      font-size: 1.6rem; font-weight: 800; 
+      color: var(--text-color); 
+      margin-bottom: 5px; margin-top: 0; line-height: 1.3; 
+    }
+
+    .item-meta { 
+      font-size: 0.9rem; 
+      color: var(--text-muted); 
+      margin-bottom: 20px; 
+      display: flex; align-items: center; gap: 8px; 
+    }
+    .item-meta i { color: var(--primary-color); }
+
+    .item-description { 
+      font-size: 1rem; 
+      color: var(--text-color); 
+      line-height: 1.7; 
+      margin-bottom: 20px; 
+      white-space: pre-wrap; 
+      opacity: 0.9;
+    }
+
+    .bold-black-text { font-weight: 900; color: #000000; }
+    [data-theme="dark"] .bold-black-text { color: #ffffff; }
+
+    .image-wrapper { 
+      width: 100%; border-radius: 12px; overflow: hidden; 
+      margin-bottom: 15px; 
+      border: 1px solid var(--border-color); 
+    }
+    .image-wrapper img { 
+      width: 100%; height: auto; display: block; max-height: 450px; 
+      object-fit: contain; 
+      background: var(--bg-card); 
+    }
+
+    .pdf-container {
+      width: 100%; height: 75vh;
+      border: 1px solid var(--border-color); border-radius: 12px;
+      overflow: hidden; background: var(--bg-pdf); 
+      margin-bottom: 10px; position: relative;
+    }
+    
+    .pdf-frame { width: 100%; height: 100%; border: none; display: block; }
+
+    .exit-fullscreen-btn {
+       display: none; position: fixed; top: 20px; left: 20px; z-index: 99999;
+       background: rgba(0, 0, 0, 0.8); color: white; border: none;
+       padding: 10px 20px; border-radius: 30px; cursor: pointer;
+       font-weight: bold; backdrop-filter: blur(5px); transition: 0.3s;
+    }
+    .exit-fullscreen-btn:hover { background: #000; transform: scale(1.05); }
+
+    .sticky-footer {
+      position: fixed; bottom: 0; left: 0; width: 100%; 
+      background: var(--bg-card); padding: 15px 20px; 
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05); 
+      display: flex; justify-content: center; 
+      z-index: 1000; border-top: 1px solid var(--border-color);
+      transition: background-color 0.3s ease;
+    }
+
+    .footer-inner { max-width: 800px; width: 100%; display: flex; align-items: stretch; gap: 10px; }
+
+    .action-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px; 
+      padding: 0 15px; height: 48px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; 
+      text-decoration: none; border: none; cursor: pointer; transition: 0.2s;
+    }
+
+    .btn-primary { background-color: var(--primary-color); color: white; flex: 1; }
+    [data-theme="dark"] .btn-primary { color: #fff; }
+    
+    .hidden { display: none !important; }
+    .loading-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+
+    body.fullscreen-active { padding: 0 !important; overflow: hidden; background: #222; }
+    body.fullscreen-active .content-container { padding: 0; margin: 0; max-width: none; }
+    body.fullscreen-active .item-title, body.fullscreen-active .item-meta, body.fullscreen-active .item-description,
+    body.fullscreen-active .image-wrapper, body.fullscreen-active .nav-header, body.fullscreen-active .related-btn-wrapper, body.fullscreen-active .sticky-footer,
+    body.fullscreen-active #topbar-container { display: none !important; }
+
+    body.fullscreen-active .pdf-container {
+       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+       width: 100vw; height: 100vh; z-index: 9999; margin: 0; border-radius: 0; border: none; background: #000;
+    }
+    body.fullscreen-active .exit-fullscreen-btn { display: block; }
+
+    /* === إعدادات الطباعة === */
+    @media print {
+      /* إجبار الصفحة على اللون الفاتح لإبراز النص وتوفير الحبر */
+      :root, [data-theme="dark"] {
+        --primary-color: #000000 !important;
+        --bg-color: #ffffff !important;
+        --bg-card: #ffffff !important;
+        --text-color: #000000 !important;
+        --text-muted: #333333 !important;
+        --border-color: #000000 !important;
+      }
+      
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      /* إخفاء الأزرار وأشرطة التنقل أثناء الطباعة */
+      #topbar-container, .nav-header, .related-btn-wrapper, .sticky-footer, .exit-fullscreen-btn, .loading-state {
+        display: none !important;
+      }
+
+      /* إزالة الهوامش لتوسيع المحتوى على الورقة */
+      .content-container {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      /* تنسيق الصور للطباعة */
+      .image-wrapper {
+        border: none !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .image-wrapper img {
+        max-height: 800px !important;
+      }
+
+      /* تنسيق PDF في حال تمت الطباعة العادية */
+      .pdf-container {
+        height: 80vh !important;
+        border: 1px solid #000 !important;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <button id="exit-fullscreen" class="exit-fullscreen-btn" onclick="toggleFullScreen(false)">
+      <i class="fas fa-times"></i> خروج
+  </button>
+
+  <div id="topbar-container">
+      {% include header.html %} 
+  </div>
+
+  <div class="nav-header">
+    <a href="#" id="back-link" class="back-btn">
+      <i class="fas fa-arrow-right"></i> عودة للمقرر
+    </a>
+    <div class="action-buttons-top">
+      <button id="print-btn" onclick="printContent()" class="print-btn-top">
+        <i class="fas fa-print"></i> طباعة
+      </button>
+      <button onclick="sharePage()" class="share-btn-top">
+        <i class="fas fa-share-alt"></i> مشاركة
+      </button>
+    </div>
+  </div>
+
+  <div class="related-btn-wrapper" id="related-wrapper" style="display: none;">
+    <a href="#" id="related-btn" class="related-btn-top">
+      <i class="fas fa-link"></i> <span id="related-btn-text"></span>
+    </a>
+  </div>
+
+  <div class="content-container" id="main-content">
+    {{ content }}
+    
+    <div class="loading-state">
+        <i class="fas fa-circle-notch fa-spin fa-2x"></i><br><br>
+        جاري التحميل...
+    </div>
+  </div>
+
+  <div class="sticky-footer hidden" id="actions-footer">
+    <div class="footer-inner" id="footer-buttons"></div>
+  </div>
+
+<script>
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('rawafed-theme', newTheme);
+  }
+
+  const BASE_URL = "{{ site.baseurl }}"; 
+  const MOZILLA_VIEWER_URL = 'https://mozilla.github.io/pdf.js/web/viewer.html'; 
+
+  function getIconClass(type) {
+    if (type === 'pdf') return 'fas fa-file-pdf';
+    if (type === 'videos') return 'fab fa-youtube';
+    return 'fas fa-file-alt';
+  }
+
+  function toggleFullScreen(forceState) {
+      const body = document.body;
+      const isActive = body.classList.contains('fullscreen-active');
+      const newState = (typeof forceState !== 'undefined') ? forceState : !isActive;
+      if (newState) body.classList.add('fullscreen-active');
+      else body.classList.remove('fullscreen-active');
+  }
+
+  // === دالة الطباعة ===
+  function printContent() {
+    const pdfFrame = document.querySelector('.pdf-frame');
+    
+    // إذا كان هناك ملف PDF معروض، نحاول طباعته مباشرة من داخله
+    if (pdfFrame && pdfFrame.contentWindow) {
+      try {
+        pdfFrame.contentWindow.focus();
+        pdfFrame.contentWindow.print();
+        return; // الخروج من الدالة بعد طباعة الـ PDF
+      } catch (error) {
+        console.warn("تعذرت طباعة إطار PDF مباشرة بسبب سياسات المتصفح (CORS)، سيتم استخدام الطباعة العادية.");
+      }
+    }
+    
+    // الطباعة العادية في حال كان المحتوى صورة أو نصاً (أو إذا فشلت طباعة إطار الـ PDF)
+    window.print();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseCode = urlParams.get('i');
+    const itemId = urlParams.get('id');
+    const contentDiv = document.getElementById('main-content');
+    const footerBtns = document.getElementById('footer-buttons');
+    const footerDiv = document.getElementById('actions-footer');
+    const backLink = document.getElementById('back-link');
+    const printBtn = document.getElementById('print-btn');
+    const relatedBtn = document.getElementById('related-btn');
+    const relatedBtnText = document.getElementById('related-btn-text');
+    const relatedWrapper = document.getElementById('related-wrapper');
+
+    backLink.addEventListener('click', (e) => {
+        if (courseCode && courseCode !== 'null') {
+            backLink.href = `${BASE_URL}/course.html?i=${courseCode}`;
+        } else {
+            e.preventDefault();
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                backLink.href = `${BASE_URL}/index.html`;
+            }
+        }
+    });
+
+    if(courseCode) {
+        backLink.href = `${BASE_URL}/course.html?i=${courseCode}`;
+    }
+
+    const timestamp = new Date().getTime();
+    
+    fetch(`${BASE_URL}/assets/data/${courseCode}.json?v=${timestamp}`, { cache: "no-store" })
+      .then(res => res.json())
+      .then(data => {
+        
+        const item = data.items.find(x => x.id == itemId || x['time-ms'] == itemId);
+        
+        if (!item) {
+            contentDiv.innerHTML = `
+            <div style="text-align:center; padding:80px 20px; color:var(--text-muted);">
+                <i class="fas fa-exclamation-triangle fa-3x" style="color:var(--primary-color); margin-bottom:15px;"></i>
+                <h3 style="color:var(--text-color); margin-bottom:10px;">عذراً، المحتوى غير متوفر</h3>
+                <p>لم نتمكن من العثور على هذا العنصر، ربما تم حذفه أو أن الرابط غير صحيح.</p>
+            </div>`;
+            return;
+        }
+
+        // معالجة زر المتعلقات
+        if (item.related && item.related.course && item.related.id) {
+            relatedWrapper.style.display = 'flex'; // إظهار الحاوية
+            relatedBtn.href = `${BASE_URL}/details.html?i=${item.related.course}&id=${item.related.id}`;
+            relatedBtnText.textContent = "...";
+            
+            // جلب اسم العنصر المتعلق من ملف المقرر الخاص به
+            fetch(`${BASE_URL}/assets/data/${item.related.course}.json?v=${timestamp}`, { cache: "no-store" })
+                .then(r => r.json())
+                .then(relatedData => {
+                    const rItem = relatedData.items.find(x => x.id == item.related.id || x['time-ms'] == item.related.id);
+                    if (rItem && rItem.title) {
+                        relatedBtnText.textContent = rItem.title;
+                    } else {
+                        relatedBtnText.textContent = "عنصر مرتبط";
+                    }
+                })
+                .catch(() => {
+                    relatedBtnText.textContent = "عنصر مرتبط";
+                });
+        }
+
+        document.title = item.title;
+        let mediaHTML = '';
+        let finalViewerSrc = '';
+
+        const isPdf = (item.type === 'pdf') || (item.download_url && item.download_url.toLowerCase().endsWith('.pdf'));
+
+        // إخفاء زر الطباعة إذا كان الملف PDF
+        if (printBtn) {
+            if (isPdf) {
+                printBtn.style.display = 'none';
+            } else {
+                printBtn.style.display = 'inline-flex';
+            }
+        }
+
+        if (isPdf && item.download_url) {
+            const absolutePdfUrl = new URL(item.download_url, window.location.href).href;
+            finalViewerSrc = `${MOZILLA_VIEWER_URL}?file=${encodeURIComponent(absolutePdfUrl)}`;
+            mediaHTML = `<div class="pdf-container"><iframe src="${finalViewerSrc}" class="pdf-frame" title="PDF Viewer" allowfullscreen></iframe></div>`;
+        } 
+        else if (item.image_url) {
+            mediaHTML = `<div class="image-wrapper"><img src="${item.image_url}" alt="${item.title}"></div>`;
+        }
+
+        let formattedDescription = item.description || '';
+        formattedDescription = formattedDescription.replace(/\*\*(.*?)\*\*/g, '<span class="bold-black-text">$1</span>');
+        formattedDescription = formattedDescription.replace(/\*(.*?)\*/g, '<span class="bold-black-text">$1</span>');
+
+        contentDiv.innerHTML = `
+            <div class="item-meta"><i class="${getIconClass(item.type)}"></i> <span>${data.name}</span></div>
+            <h1 class="item-title">${item.title}</h1>
+            <div class="item-description">${formattedDescription}</div>
+            ${mediaHTML}
+            <div style="height: 10px;"></div>`;
+
+        let buttonsHTML = '';
+        if (item.download_url) {
+            buttonsHTML += `<a href="${item.download_url}" class="action-btn btn-primary" download target="_blank"><i class="fas fa-download"></i> تحميل</a>`;
+        }
+      
+        if (isPdf && item.download_url) {
+             buttonsHTML += `<button onclick="toggleFullScreen(true)" class="action-btn btn-primary"><i class="fas fa-expand"></i> ملء الشاشة</button>`;
+        } 
+        else if (item.preview_url) {
+             buttonsHTML += `<a href="${item.preview_url}" class="action-btn btn-primary" target="_blank"><i class="fas fa-external-link-alt"></i> فتح</a>`;
+        }
+      
+        if (buttonsHTML.trim() !== '') {
+            footerBtns.innerHTML = buttonsHTML;
+            footerDiv.classList.remove('hidden');
+        } else {
+            footerDiv.classList.add('hidden');
+            document.body.style.paddingBottom = '30px';
+        }
+      })
+      .catch(err => {
+         contentDiv.innerHTML = `<div style="text-align:center; padding:30px; color:red;">خطأ في التحميل: ${err.message}</div>`;
+      });
+  });
+
+  function sharePage() {
+    if (navigator.share) navigator.share({ title: document.title, url: window.location.href }).catch(()=>{});
+    else { navigator.clipboard.writeText(window.location.href); alert('تم النسخ'); }
+  }
+</script>
+</body>
+</html>

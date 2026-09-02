@@ -1,0 +1,16 @@
+[
+  {
+    "title": "الأمين على الكلمة",
+    "logo": "/images/movies/ameen-logo.PNG",
+    "bg": "images/movies/ameen-back.PNG",
+    "desc": "سيرة أحمد أمين إبراهيم.",
+    "link": "video?id=ameen"
+  },
+  {
+    "title": "الفيلم الثاني",
+    "logo": "/images/movie2-logo.png",
+    "bg": "/images/movie2-bg.jpg",
+    "desc": "رحلة في عالم غامض مليء بالمفاجآت.",
+    "link": "video.html?src=movie2.mp4"
+  }
+]

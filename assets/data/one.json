@@ -1,0 +1,39 @@
+{
+  "name": "الصفحة التجريبية",
+  "description": "",
+  "items": [
+    {
+      "title": "مقارنة بين المدرستين البصريّة والكوفيّة",
+      "description": "",
+      "type": "documents",
+      "time-ms": "1751961405215",
+      "download_url": "https://m.jassim.one/ARAB112/%D9%85%D9%82%D8%A7%D8%B1%D9%86%D8%A9%20%D8%A8%D9%8A%D9%86%20%D8%A7%D9%84%D9%85%D8%AF%D8%B1%D8%B3%D8%AA%D9%8A%D9%86%20%D8%A7%D9%84%D8%A8%D8%B5%D8%B1%D9%8A%D9%91%D8%A9%20%D9%88%D8%A7%D9%84%D9%83%D9%88%D9%81%D9%8A%D9%91%D8%A9.pdf",
+      "preview_url": "https://drive.google.com/file/d/1H0i913VHo2JGmirN0YSMt9NsYTZSTBNK/view?usp=drive_link"
+    },
+    {
+      "title": "اختبار في الوحدة الأولى",
+      "description": "",
+      "type": "quizzes",
+      "badge": "new",
+      "badgeText": "جديد",
+      "preview_url": "https://rawafid.jassim.one/exam?i=t"
+    },
+    {
+      "title": "الفرق بين البناء والإعراب",
+      "description": "",
+      "type": "videos",
+      "time-ms": "1751961405215",
+      "badge": "new",
+      "badgeText": "جديد",
+      "preview_url": "https://www.youtube.com/watch?v=bu0_j3hsW2o"
+    },
+    {
+      "title": "ملاحظة تجريبية",
+      "description": "هذا مجرد مثال لاختبار نوع الملاحظة.",
+      "type": "resources",
+      "time-ms": "1751961405215",
+      "badge": "important",
+      "badgeText": "عاجل"
+    }
+  ]
+}

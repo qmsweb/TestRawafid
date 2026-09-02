@@ -1,0 +1,353 @@
+[
+  {
+    "id": "ADM-001",
+    "name": "ADM-001",
+    "college": "مبنى الإدارة (ADM)",
+    "floor": "الأرضي",
+    "number": "001",
+    "type": "مدرج",
+    "description": "المدرج رقم 1 - يقع في الطابق الأرضي جهة اليمين."
+  },
+  {
+    "id": "ADM-002",
+    "name": "ADM-002",
+    "college": "مبنى الإدارة (ADM)",
+    "floor": "الأرضي",
+    "number": "002",
+    "type": "مدرج",
+    "description": "المدرج رقم 2 - يقع في الطابق الأرضي جهة اليسار."
+  },
+  {
+    "id": "ADM-003",
+    "name": "ADM-003",
+    "college": "مبنى الإدارة (ADM)",
+    "floor": "الأرضي",
+    "number": "003",
+    "type": "قاعة دراسية",
+    "description": "تقع في الطابق الأرضي جهة اليسار."
+  },
+  {
+    "id": "ADM-004",
+    "name": "ADM-004",
+    "college": "مبنى الإدارة (ADM)",
+    "floor": "الأرضي",
+    "number": "004",
+    "type": "قاعة دراسية",
+    "description": "تقع في الطابق الأرضي جهة اليمين."
+  },
+  {
+    "id": "COBA-01",
+    "name": "COBA 1",
+    "college": "كلية الآداب والعلوم الإنسانية",
+    "floor": "الأرضي",
+    "number": "1",
+    "type": "قاعة دراسية",
+    "description": "قاعة تابعة لكلية الآداب."
+  },
+  {
+    "id": "COBA-02",
+    "name": "COBA 2",
+    "college": "كلية الآداب والعلوم الإنسانية",
+    "floor": "الأرضي",
+    "number": "2",
+    "type": "قاعة دراسية",
+    "description": "قاعة تابعة لكلية الآداب."
+  },
+  {
+    "id": "COBA-03",
+    "name": "COBA 3",
+    "college": "كلية الآداب والعلوم الإنسانية",
+    "floor": "الأرضي",
+    "number": "3",
+    "type": "قاعة دراسية",
+    "description": "قاعة تابعة لكلية الآداب."
+  },
+  {
+    "id": "COBA-04",
+    "name": "COBA 4",
+    "college": "كلية الآداب والعلوم الإنسانية",
+    "floor": "الأرضي",
+    "number": "4",
+    "type": "قاعة دراسية",
+    "description": "قاعة تابعة لكلية الآداب."
+  },
+  {
+    "id": "COBA-05",
+    "name": "COBA 5",
+    "college": "كلية الآداب والعلوم الإنسانية",
+    "floor": "الأرضي",
+    "number": "5",
+    "type": "قاعة دراسية",
+    "description": "قاعة تابعة لكلية الآداب."
+  },
+  {
+    "id": "COBA-06",
+    "name": "COBA 6",
+    "college": "كلية الآداب والعلوم الإنسانية",
+    "floor": "الأرضي",
+    "number": "6",
+    "type": "قاعة دراسية",
+    "description": "قاعة تابعة لكلية الآداب."
+  },
+  {
+    "id": "COBA-07",
+    "name": "COBA 7",
+    "college": "كلية إدارة الأعمال",
+    "floor": "الأرضي",
+    "number": "7",
+    "type": "قاعة دراسية",
+    "description": "قاعة تابعة لكلية إدارة الأعمال."
+  },
+  {
+    "id": "COBA-08",
+    "name": "COBA 8",
+    "college": "كلية إدارة الأعمال",
+    "floor": "الأرضي",
+    "number": "8",
+    "type": "قاعة دراسية",
+    "description": "قاعة تابعة لكلية إدارة الأعمال."
+  },
+  {
+    "id": "COBA-09",
+    "name": "COBA 9",
+    "college": "كلية إدارة الأعمال",
+    "floor": "الأرضي",
+    "number": "9",
+    "type": "قاعة دراسية",
+    "description": "قاعة تابعة لكلية إدارة الأعمال."
+  },
+  {
+    "id": "COBA-10",
+    "name": "COBA 10",
+    "college": "كلية إدارة الأعمال",
+    "floor": "الأرضي",
+    "number": "10",
+    "type": "قاعة دراسية",
+    "description": "قاعة تابعة لكلية إدارة الأعمال."
+  },
+  {
+    "id": "COBA-11",
+    "name": "COBA 11",
+    "college": "كلية إدارة الأعمال",
+    "floor": "الأرضي",
+    "number": "11",
+    "type": "قاعة دراسية",
+    "description": "قاعة تابعة لكلية إدارة الأعمال."
+  },
+  {
+    "id": "COBA-12",
+    "name": "COBA 12",
+    "college": "كلية إدارة الأعمال",
+    "floor": "الأرضي",
+    "number": "12",
+    "type": "قاعة دراسية",
+    "description": "قاعة تابعة لكلية إدارة الأعمال."
+  },
+  {
+    "id": "SB-AUDITORIUM",
+    "name": "SB-AUDITORIUM",
+    "college": "مبنى الخدمات",
+    "floor": "الأول",
+    "number": "-",
+    "type": "مسرح",
+    "description": "القاعة الرئيسة (المسرح) في مبنى الخدمات."
+  },
+  {
+    "id": "COMPLAB-01",
+    "name": "COMPLAB-01",
+    "college": "مركز مصادر التعلم (المكتبة)",
+    "floor": "الأرضي",
+    "number": "01",
+    "type": "مختبر حاسوب",
+    "description": "مختبر حاسوب في مبنى الجامعة الجديدة."
+  },
+  {
+    "id": "COMPLAB-02",
+    "name": "COMPLAB-02",
+    "college": "مركز مصادر التعلم (المكتبة)",
+    "floor": "الأرضي",
+    "number": "02",
+    "type": "مختبر حاسوب",
+    "description": "مختبر حاسوب في مبنى الجامعة الجديدة."
+  },
+  {
+    "id": "LIB-MOCK-COURT",
+    "name": "LIB-Mock Court",
+    "college": "مركز مصادر التعلم (المكتبة)",
+    "floor": "الثاني",
+    "number": "-",
+    "type": "قاعة محكمة",
+    "description": "المحكمة الصورية - الطابق الثاني."
+  },
+  {
+    "id": "LIB-2039",
+    "name": "LIB-2039",
+    "college": "مركز مصادر التعلم (المكتبة)",
+    "floor": "الثاني",
+    "number": "2039",
+    "type": "قاعة دراسية",
+    "description": "تقع في الطابق الثاني - جهة اليمين."
+  },
+  {
+    "id": "LIB-2054",
+    "name": "LIB-2054",
+    "college": "مركز مصادر التعلم (المكتبة)",
+    "floor": "الثاني",
+    "number": "2054",
+    "type": "قاعة دراسية",
+    "description": "تقع في الطابق الثاني - جهة اليسار."
+  },
+  {
+    "id": "SB-MAIN-HALL",
+    "name": "SB-MAIN HALL",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "-",
+    "type": "قاعة رئيسية",
+    "description": "القاعة الرئيسة في المبنى القديم."
+  },
+  {
+    "id": "SB-COMPLAB",
+    "name": "SB-COMP LAB",
+    "college": "مركز مصادر التعلم",
+    "floor": "الثاني",
+    "number": "-",
+    "type": "مختبر حاسوب",
+    "description": "مختبر الحاسوب في مبنى المكتبة."
+  },
+  {
+    "id": "CLFS-COMMON",
+    "name": "CLFS common Lab",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "-",
+    "type": "مختبر حاسوب",
+    "description": "مختبر مشترك في المبنى القديم."
+  },
+  {
+    "id": "SB-COMMON-LAB",
+    "name": "SB-Common Lab",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "-",
+    "type": "مختبر",
+    "description": "يقع يمين استراحة الشباب."
+  },
+  {
+    "id": "SB-COMPLAB-B1",
+    "name": "SB-COMPLAB B1",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "B1",
+    "type": "مختبر حاسوب",
+    "description": "مختبر حاسوب في المبنى القديم."
+  },
+  {
+    "id": "SB-COMPLAB-B2",
+    "name": "SB-COMPLAB B2",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "B2",
+    "type": "مختبر حاسوب",
+    "description": "مختبر حاسوب في المبنى القديم."
+  },
+  {
+    "id": "SB-COMPLAB-B3",
+    "name": "SB-COMPLAB B3",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "B3",
+    "type": "مختبر حاسوب",
+    "description": "مختبر حاسوب في المبنى القديم."
+  },
+  {
+    "id": "SB-COMPLAB-B4",
+    "name": "SB-COMPLAB B4",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "B4",
+    "type": "مختبر حاسوب",
+    "description": "مختبر حاسوب في المبنى القديم."
+  },
+  {
+    "id": "SB-COMPLAB-B5",
+    "name": "SB-COMPLAB B5",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "B5",
+    "type": "مختبر حاسوب",
+    "description": "مختبر حاسوب في المبنى القديم."
+  },
+  {
+    "id": "P1-A1",
+    "name": "P1-A1",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "A1",
+    "type": "قاعة دراسية",
+    "description": "قاعات المبنى القديم."
+  },
+  {
+    "id": "P1-A2",
+    "name": "P1-A2",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "A2",
+    "type": "قاعة دراسية",
+    "description": "قاعات المبنى القديم."
+  },
+  {
+    "id": "P1-A3",
+    "name": "P1-A3",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "A3",
+    "type": "قاعة دراسية",
+    "description": "قاعات المبنى القديم."
+  },
+  {
+    "id": "P1-A4",
+    "name": "P1-A4",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "A4",
+    "type": "قاعة دراسية",
+    "description": "قاعات المبنى القديم."
+  },
+  {
+    "id": "P1-A5",
+    "name": "P1-A5",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "A5",
+    "type": "قاعة دراسية",
+    "description": "قاعات المبنى القديم."
+  },
+  {
+    "id": "P1-A6",
+    "name": "P1-A6",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "A6",
+    "type": "قاعة دراسية",
+    "description": "قاعات المبنى القديم."
+  },
+  {
+    "id": "P1-A7",
+    "name": "P1-A7",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "A7",
+    "type": "قاعة دراسية",
+    "description": "قاعات المبنى القديم."
+  },
+  {
+    "id": "P1-A8",
+    "name": "P1-A8",
+    "college": "المبنى القديم",
+    "floor": "الأرضي",
+    "number": "A8",
+    "type": "قاعة دراسية",
+    "description": "قاعات المبنى القديم."
+  }
+]

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title | default: "العجلة الدوارة" }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <meta property="og:title" content="{{ page.title | default: 'العجلة الدوارة - روافد' }}">
+  <meta property="og:description" content="أداة العجلة الدوارة لاختيار اسم عشوائي بسهولة.">
+  <meta property="og:image" content="{{ '/images/plan.png' | relative_url }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+
+  <script>
+    (function() {
+        const savedTheme = localStorage.getItem('rawafed-theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    })();
+  </script>
+
+  <style>
+    /* === المتغيرات والألوان === */
+    :root {
+      --primary-color: #1a2ac6;
+      --bg-body: #f4f6fb;
+      --bg-card: #ffffff;
+      --border-color: #ccd1e0;
+      --text-main: #2d2d2d;
+      --text-muted: #666666;
+      --bg-code: #f4f6fb;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+      --radius-md: 12px;
+      --hover-bg: #e0e7ff;
+    }
+
+    html[data-theme="dark"] {
+      --primary-color: #7986cb;
+      --bg-body: #121212;
+      --bg-card: #1e1e1e;
+      --border-color: #333333;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --bg-code: #2c2c2c;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+      --hover-bg: #2c2e3e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-top: 80px;
+      padding-bottom: 40px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+    /* === Header & Actions === */
+    .tool-header {
+      margin-bottom: 30px;
+      margin-top: 20px;
+      border-right: 4px solid var(--primary-color);
+      padding-right: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .tool-header h1 { font-size: 1.5rem; font-weight: 700; }
+    .tool-header p { color: var(--text-muted); margin-top: 5px; }
+
+    /* === تنسيقات أداة العجلة === */
+    .wheel-layout {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+
+    .input-section {
+        flex: 1;
+        min-width: 280px;
+        background: var(--bg-card);
+        padding: 20px;
+        border-radius: var(--radius-md);
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .input-section label {
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+    }
+
+    .input-section textarea {
+        flex-grow: 1;
+        min-height: 200px;
+        background: var(--bg-body);
+        color: var(--text-main);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 1rem;
+        line-height: 1.6;
+        resize: vertical;
+        outline: none;
+        margin-bottom: 15px;
+    }
+    
+    .input-section textarea:focus {
+        border-color: var(--primary-color);
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: var(--primary-color);
+    }
+
+    .checkbox-group label {
+        margin: 0;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    .spin-btn {
+        background: var(--primary-color);
+        color: #fff;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.1s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .spin-btn:hover { opacity: 0.9; }
+    .spin-btn:active { transform: scale(0.98); }
+    .spin-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .wheel-section {
+        flex: 1.5;
+        min-width: 300px;
+        background: var(--bg-card);
+        padding: 20px;
+        border-radius: var(--radius-md);
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+    }
+
+    .wheel-container {
+        position: relative;
+        width: 100%;
+        max-width: 350px;
+        aspect-ratio: 1/1;
+        margin-top: 10px;
+    }
+
+    canvas {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    .indicator {
+        position: absolute;
+        top: 50%;
+        right: -15px; 
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-top: 15px solid transparent;
+        border-bottom: 15px solid transparent;
+        border-right: 25px solid var(--text-main);
+        z-index: 10;
+    }
+
+    .result-box {
+        margin-top: 25px;
+        padding: 15px 25px;
+        background: var(--bg-code);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        text-align: center;
+        width: 100%;
+        min-height: 65px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: none;
+    }
+
+    @keyframes popIn {
+        0% { transform: scale(0.8); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* === تنسيقات شاشة الاحتفال (Full Screen Overlay) === */
+    .winner-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease;
+        overflow: hidden;
+    }
+
+    .winner-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .winner-name-display {
+        font-size: 4rem;
+        color: #ffffff;
+        font-weight: 700;
+        text-align: center;
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.5);
+        transform: scale(0.5);
+        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 10001;
+        padding: 0 20px;
+    }
+
+    .winner-overlay.active .winner-name-display {
+        transform: scale(1);
+    }
+
+    .close-overlay {
+        margin-top: 40px;
+        padding: 12px 35px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        z-index: 10001;
+        transition: transform 0.2s, background 0.2s;
+    }
+
+    .close-overlay:hover {
+        background: #15229c;
+        transform: translateY(-2px);
+    }
+
+    .confetti {
+        position: absolute;
+        top: -20px;
+        z-index: 10000;
+        animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+        100% { transform: translateY(110vh) rotate(720deg); }
+    }
+  </style>
+</head>
+<body>
+
+  {% include header.html %}
+
+  <div class="container">
+      
+    <div class="tool-header">
+      <div>
+          <h1>العجلة الدوارة</h1>
+          <p>أدخل الأسماء وقم بتدوير العجلة لاختيار فائز عشوائياً</p>
+      </div>
+    </div>
+
+    <div class="wheel-layout">
+        <!-- قسم الإدخال -->
+        <div class="input-section">
+            <label for="namesList">الأسماء (اسم واحد في كل سطر):</label>
+            <textarea id="namesList" placeholder="أحمد&#10;محمد&#10;فاطمة&#10;علي&#10;عمر">أحمد
+محمد
+فاطمة
+علي
+عمر</textarea>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="removeWinnerCB">
+                <label for="removeWinnerCB">حذف الفائز من القائمة بعد اختياره</label>
+            </div>
+
+            <button id="spinBtn" class="spin-btn" onclick="startSpin()">
+                <i class="fas fa-sync-alt"></i> تدوير العجلة
+            </button>
+        </div>
+
+        <!-- قسم العجلة -->
+        <div class="wheel-section">
+            <div class="wheel-container">
+                <div class="indicator"></div>
+                <canvas id="wheelCanvas" width="500" height="500"></canvas>
+            </div>
+            <div id="resultText" class="result-box">النتيجة ستظهر هنا</div>
+        </div>
+    </div>
+
+  </div>
+
+  {% include footer.html %}
+
+  <!-- شاشة الاحتفال بالفائز -->
+  <div id="winnerOverlay" class="winner-overlay">
+      <div id="confettiContainer"></div>
+      <div class="winner-name-display" id="winnerNameDisplay"></div>
+      <button class="close-overlay" onclick="closeOverlay()">إغلاق ومتابعة</button>
+  </div>
+
+<script>
+  function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('rawafed-theme', newTheme);
+      drawWheel(); 
+  }
+
+  const canvas = document.getElementById("wheelCanvas");
+  const ctx = canvas.getContext("2d");
+  const spinBtn = document.getElementById("spinBtn");
+  const resultText = document.getElementById("resultText");
+  const namesInput = document.getElementById("namesList");
+  const removeWinnerCB = document.getElementById("removeWinnerCB");
+
+  const colors = [
+      "#4285F4", "#EA4335", "#FBBC05", "#34A853", 
+      "#8E24AA", "#F51871", "#00ACC1", "#FF9800"
+  ];
+
+  let names = [];
+  let currentAngle = 0;
+  let spinVelocity = 0;
+  let isSpinning = false;
+  let animationFrame;
+
+  function updateNames() {
+      const text = namesInput.value;
+      names = text.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+      
+      if (names.length === 0) {
+          names = ["أضف أسماء"];
+      }
+  }
+
+  function drawWheel() {
+      updateNames();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = centerX - 10;
+      const sliceAngle = (2 * Math.PI) / names.length;
+
+      ctx.font = "bold 28px 'IBM Plex Sans Arabic', sans-serif";
+      ctx.textBaseline = "middle";
+
+      for (let i = 0; i < names.length; i++) {
+          const angle = currentAngle + i * sliceAngle;
+          
+          ctx.beginPath();
+          ctx.moveTo(centerX, centerY);
+          ctx.arc(centerX, centerY, radius, angle, angle + sliceAngle);
+          ctx.closePath();
+          ctx.fillStyle = colors[i % colors.length];
+          ctx.fill();
+          
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = "#ffffff";
+          ctx.stroke();
+
+          ctx.save();
+          ctx.translate(centerX, centerY);
+          ctx.rotate(angle + sliceAngle / 2);
+          ctx.textAlign = "right";
+          ctx.fillStyle = "#ffffff"; 
+          
+          let displayText = names[i];
+          if(displayText.length > 15) displayText = displayText.substring(0, 15) + "...";
+          
+          ctx.fillText(displayText, radius - 20, 0);
+          ctx.restore();
+      }
+      
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius * 0.15, 0, 2 * Math.PI);
+      ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-card').trim();
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--border-color').trim();
+      ctx.stroke();
+  }
+
+  function animateSpin() {
+      if (spinVelocity > 0) {
+          currentAngle += spinVelocity;
+          spinVelocity *= 0.985; 
+
+          if (spinVelocity < 0.002) {
+              spinVelocity = 0;
+              isSpinning = false;
+              spinBtn.disabled = false;
+              spinBtn.innerHTML = '<i class="fas fa-sync-alt"></i> تدوير العجلة';
+              calculateResult();
+          }
+
+          drawWheel();
+          animationFrame = requestAnimationFrame(animateSpin);
+      }
+  }
+
+  function startSpin() {
+      if (isSpinning) return;
+      
+      updateNames();
+      
+      // التعديل: التحقق من وجود اسمين على الأقل
+      if (names.length < 2 || (names.length === 1 && names[0] === "أضف أسماء")) {
+          alert("الرجاء إدخال اسمين على الأقل للتدوير.");
+          return;
+      }
+
+      isSpinning = true;
+      spinBtn.disabled = true;
+      spinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التدوير...';
+      resultText.innerText = "جاري الاختيار...";
+      resultText.style.animation = "none";
+
+      spinVelocity = Math.random() * 0.3 + 0.3; 
+      
+      cancelAnimationFrame(animationFrame);
+      animateSpin();
+  }
+
+  function calculateResult() {
+      const sliceAngle = (2 * Math.PI) / names.length;
+      const normalizedAngle = currentAngle % (2 * Math.PI);
+      const winningIndex = Math.floor(((2 * Math.PI) - normalizedAngle) / sliceAngle) % names.length;
+      const winner = names[winningIndex];
+      
+      resultText.innerText = `🎉 الفائز: ${winner} 🎉`;
+      resultText.style.animation = "popIn 0.5s ease-out forwards";
+
+      // عرض شاشة الاحتفال
+      showWinnerOverlay(winner);
+
+      // التعديل: حذف الفائز إذا كان المربع محدداً
+      if (removeWinnerCB.checked) {
+          names.splice(winningIndex, 1); // حذف الاسم من المصفوفة
+          namesInput.value = names.join('\n'); // تحديث مربع النص
+          setTimeout(drawWheel, 100); // إعادة رسم العجلة بدون اسم الفائز
+      }
+  }
+
+  // دوال شاشة الاحتفال والمؤثرات
+  function showWinnerOverlay(winnerName) {
+      const overlay = document.getElementById('winnerOverlay');
+      const display = document.getElementById('winnerNameDisplay');
+      
+      display.innerText = `🎉 مبارك لـ: ${winnerName} 🎉`;
+      overlay.classList.add('active');
+      createConfetti();
+  }
+
+  function closeOverlay() {
+      document.getElementById('winnerOverlay').classList.remove('active');
+      document.getElementById('confettiContainer').innerHTML = ''; // تنظيف المؤثرات
+  }
+
+  function createConfetti() {
+      const container = document.getElementById('confettiContainer');
+      container.innerHTML = ''; 
+      const confColors = ['#FFC700', '#FF0000', '#2E3192', '#41BBC7', '#4285F4', '#34A853', '#F51871'];
+      
+      for (let i = 0; i < 120; i++) {
+          const conf = document.createElement('div');
+          conf.classList.add('confetti');
+          conf.style.left = Math.random() * 100 + 'vw';
+          conf.style.backgroundColor = confColors[Math.floor(Math.random() * confColors.length)];
+          conf.style.width = (Math.random() * 10 + 5) + 'px';
+          conf.style.height = (Math.random() * 18 + 8) + 'px';
+          conf.style.animationDuration = (Math.random() * 3 + 2) + 's';
+          conf.style.animationDelay = (Math.random() * 0.5) + 's';
+          
+          // جعل بعض القصاصات دائرية
+          if(Math.random() > 0.5) {
+              conf.style.borderRadius = "50%";
+          }
+          
+          container.appendChild(conf);
+      }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+      drawWheel();
+  });
+
+  namesInput.addEventListener('input', () => {
+      if (!isSpinning) drawWheel();
+  });
+
+</script>
+
+</body>
+</html>

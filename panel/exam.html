@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>باني الاختبارات (ترتيب رقمي)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; }
+        .input-classic {
+            width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+            outline: none; transition: border-color 0.2s;
+        }
+        .input-classic:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        
+        /* تأثير الانتقال عند تغيير الترتيب */
+        .question-card { transition: background-color 0.3s ease; }
+        .highlight-move { animation: flash 1s; }
+        @keyframes flash {
+            0% { background-color: #dbeafe; }
+            100% { background-color: white; }
+        }
+    </style>
+</head>
+<body class="pb-32">
+
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-gray-800">منشئ الاختبارات</h1>
+            <div class="flex gap-2">
+                <button onclick="importYAML()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-300 transition">
+                    استيراد ملف
+                </button>
+                <button onclick="generateResult()" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow transition">
+                    توليد النتيجة
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto p-6 space-y-8">
+
+        <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">عنوان الاختبار</label>
+                <input type="text" id="meta-title" class="input-classic" placeholder="مثال: الاختبار النهائي">
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">اسم المقرر</label>
+                <input type="text" id="meta-subject" class="input-classic" placeholder="مثال: النحو والصرف">
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">رمز المقرر</label>
+                <input type="text" id="meta-code" class="input-classic" placeholder="ARB-202">
+            </div>
+        </div>
+
+        <div id="questions-container" class="space-y-6">
+            </div>
+
+        <div id="empty-msg" class="text-center py-10 border-2 border-dashed border-gray-300 rounded-lg text-gray-400">
+            أضف سؤالاً جديداً للبدء
+        </div>
+
+        <button onclick="addNewQuestion()" class="w-full py-4 border-2 border-dashed border-blue-300 text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition flex items-center justify-center gap-2">
+            <span class="text-2xl">+</span> إضافة سؤال جديد في النهاية
+        </button>
+
+    </div>
+
+    <div id="resultModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl flex flex-col max-h-[90vh]">
+            <div class="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-lg">
+                <h3 class="font-bold text-lg" id="modalTitle">كود YAML</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-red-500 text-2xl">&times;</button>
+            </div>
+            <div class="p-0 flex-grow relative">
+                <textarea id="resultText" class="w-full h-full p-4 font-mono text-sm bg-gray-50 text-gray-800 resize-none outline-none" dir="ltr" readonly style="min-h-[300px]"></textarea>
+            </div>
+            <div class="p-4 border-t bg-gray-50 rounded-b-lg flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-4 py-2 text-gray-600 hover:bg-gray-200 rounded">إغلاق</button>
+                <button onclick="copyCode()" class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-bold">نسخ الكود</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="importModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl p-6">
+            <h3 class="font-bold text-lg mb-4">لصق كود YAML القديم</h3>
+            <textarea id="importInput" class="w-full h-64 p-3 border rounded font-mono text-sm mb-4" dir="ltr"></textarea>
+            <div class="flex justify-end gap-3">
+                <button onclick="document.getElementById('importModal').classList.add('hidden')" class="px-4 py-2 bg-gray-100 rounded">إلغاء</button>
+                <button onclick="executeImport()" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">تحليل وبناء</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let questions = [];
+
+        // === إدارة البيانات ===
+        
+        function render() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            if (questions.length === 0) {
+                document.getElementById('empty-msg').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('empty-msg').classList.add('hidden');
+
+            questions.forEach((q, index) => {
+                const realIndex = index + 1;
+                const div = document.createElement('div');
+                div.className = `question-card bg-white rounded-lg border border-gray-300 shadow-sm overflow-hidden ${q._justMoved ? 'highlight-move' : ''}`;
+                
+                // تنظيف علامة التحرك
+                if(q._justMoved) setTimeout(() => { delete q._justMoved; }, 1000);
+
+                div.innerHTML = `
+                    <div class="bg-gray-100 p-3 border-b border-gray-200 flex flex-wrap gap-4 items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold text-gray-500">ترتيب:</span>
+                            <input type="number" 
+                                class="w-16 p-1 text-center font-bold text-blue-700 border border-gray-300 rounded focus:border-blue-500 outline-none" 
+                                value="${realIndex}" 
+                                min="1" 
+                                max="${questions.length}"
+                                onchange="reorderItem(${index}, this.value)"
+                                onkeydown="if(event.key === 'Enter') reorderItem(${index}, this.value)"
+                            >
+                        </div>
+
+                        <div class="flex-grow flex items-center gap-2">
+                             <select onchange="updateQuestionType(${index}, this.value)" class="p-1 text-sm bg-white border border-gray-300 rounded outline-none w-48">
+                                <option value="mcq" ${q.type === 'mcq' ? 'selected' : ''}>اختيار من متعدد</option>
+                                <option value="tf" ${q.type === 'tf' ? 'selected' : ''}>صواب / خطأ</option>
+                                <option value="essay" ${q.type === 'essay' ? 'selected' : ''}>سؤال مقالي</option>
+                                <option value="instructions" ${q.type === 'instructions' ? 'selected' : ''}>قطعة نصية / تعليمات</option>
+                            </select>
+                        </div>
+
+                        <button onclick="removeQuestion(${index})" class="text-gray-400 hover:text-red-600 transition px-2" title="حذف السؤال">
+                            ✕ حذف
+                        </button>
+                    </div>
+
+                    <div class="p-5 space-y-4">
+                        ${getFieldsHTML(q, index)}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function getFieldsHTML(q, index) {
+            let html = '';
+
+            // الحقول المشتركة (النص والدرجة) - لا تظهر في التعليمات
+            if (q.type !== 'instructions') {
+                html += `
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-grow">
+                        <label class="block text-xs font-bold text-gray-500 mb-1">نص السؤال</label>
+                        <input type="text" class="input-classic" value="${q.question || ''}" oninput="updateField(${index}, 'question', this.value)" placeholder="اكتب نص السؤال هنا...">
+                    </div>
+                    <div class="w-full md:w-24">
+                        <label class="block text-xs font-bold text-gray-500 mb-1">الدرجة</label>
+                        <input type="number" class="input-classic text-center" value="${q.points || 1}" oninput="updateField(${index}, 'points', parseInt(this.value))">
+                    </div>
+                </div>`;
+            }
+
+            // الحقول الخاصة
+            if (q.type === 'mcq') {
+                const choices = q.choices || ['', '', '', ''];
+                html += `<div class="mt-4 border-t pt-4 border-dashed border-gray-200">
+                    <label class="block text-xs font-bold text-gray-500 mb-2">الخيارات (حدد الإجابة الصحيحة)</label>
+                    <div class="space-y-2">`;
+                
+                choices.forEach((choice, cIndex) => {
+                    const isChecked = q.answer === choice && choice !== '';
+                    html += `
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="rad_${index}" ${isChecked ? 'checked' : ''} onchange="updateField(${index}, 'answer', '${choice}')" class="w-4 h-4 text-blue-600 cursor-pointer">
+                        <input type="text" class="input-classic text-sm" value="${choice}" oninput="updateChoice(${index}, ${cIndex}, this.value)" placeholder="الخيار ${cIndex + 1}">
+                        <button onclick="removeChoice(${index}, ${cIndex})" class="text-red-400 hover:text-red-600 px-1 font-bold">×</button>
+                    </div>`;
+                });
+                
+                html += `
+                    <button onclick="addChoice(${index})" class="text-sm text-blue-600 font-bold hover:underline mt-2">+ إضافة خيار</button>
+                    </div></div>`;
+            } 
+            else if (q.type === 'tf') {
+                html += `
+                <div class="mt-4 flex gap-6">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="tf_${index}" value="صح" ${q.answer === 'صح' ? 'checked' : ''} onchange="updateField(${index}, 'answer', 'صح')" class="w-5 h-5 text-green-600">
+                        <span class="font-bold text-gray-700">صح</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="tf_${index}" value="خطأ" ${q.answer === 'خطأ' ? 'checked' : ''} onchange="updateField(${index}, 'answer', 'خطأ')" class="w-5 h-5 text-red-600">
+                        <span class="font-bold text-gray-700">خطأ</span>
+                    </label>
+                </div>`;
+            }
+            else if (q.type === 'essay') {
+                html += `
+                <div class="mt-4">
+                    <label class="block text-xs font-bold text-gray-500 mb-1">الإجابة النموذجية</label>
+                    <textarea class="input-classic h-24" oninput="updateField(${index}, 'answer', this.value)">${q.answer || ''}</textarea>
+                </div>`;
+            }
+            else if (q.type === 'instructions') {
+                html += `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">عنوان القسم (اختياري)</label>
+                        <input type="text" class="input-classic font-bold text-blue-800" value="${q.mainTitle || ''}" oninput="updateField(${index}, 'mainTitle', this.value)" placeholder="مثال: الأسئلة المقالية">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">النص / التعليمات</label>
+                        <textarea class="input-classic bg-yellow-50" rows="3" oninput="updateField(${index}, 'description', this.value)">${q.description || ''}</textarea>
+                    </div>
+                </div>`;
+            }
+
+            return html;
+        }
+
+        // === المنطق الوظيفي ===
+
+        function addNewQuestion(data = null) {
+            const newQ = data || { type: 'mcq', question: '', points: 1, choices: ['', '', '', ''], answer: '' };
+            questions.push(newQ);
+            render();
+            // تمرير لأسفل الصفحة
+            if(!data) window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function removeQuestion(index) {
+            if (confirm("هل تريد حذف هذا السؤال؟")) {
+                questions.splice(index, 1);
+                render();
+            }
+        }
+
+        // هذه هي الدالة السحرية للنقل بالرقم
+        function reorderItem(currentIndex, newPositionStr) {
+            let newPos = parseInt(newPositionStr);
+            
+            // تحقق من صحة الرقم
+            if (isNaN(newPos) || newPos < 1) newPos = 1;
+            if (newPos > questions.length) newPos = questions.length;
+            
+            const newIndex = newPos - 1; // لأن المصفوفة تبدأ من 0
+
+            if (newIndex === currentIndex) return; // لم يتغير المكان
+
+            // عملية النقل
+            const item = questions.splice(currentIndex, 1)[0];
+            questions.splice(newIndex, 0, item);
+            
+            // إضافة علامة لتمييز العنصر المنقول بصرياً
+            item._justMoved = true;
+
+            render();
+            
+            // التركيز على العنصر المنقول (اختياري، لتحسين التجربة)
+            // const inputs = document.querySelectorAll('input[type="number"]');
+            // if(inputs[newIndex]) inputs[newIndex].focus();
+        }
+
+        function updateQuestionType(index, newType) {
+            questions[index].type = newType;
+            // تنظيف البيانات عند تغيير النوع لتجنب التداخل
+            if (newType === 'mcq') {
+                questions[index].choices = ['', ''];
+                questions[index].answer = '';
+            } else if (newType === 'tf') {
+                questions[index].answer = 'صح';
+                delete questions[index].choices;
+            } else if (newType === 'essay') {
+                questions[index].answer = '';
+                delete questions[index].choices;
+            }
+            render();
+        }
+
+        function updateField(index, field, value) {
+            questions[index][field] = value;
+        }
+
+        function updateChoice(qIndex, cIndex, value) {
+            questions[qIndex].choices[cIndex] = value;
+            // تحديث الإجابة الصحيحة إذا كان النص المختار هو الإجابة
+            // ملاحظة: هذا منطق بسيط، الأفضل الاعتماد على المؤشر (index) للإجابة الصحيحة لكن لتبسيط الـ YAML نحتفظ بالنص
+        }
+
+        function addChoice(index) {
+            if(!questions[index].choices) questions[index].choices = [];
+            questions[index].choices.push('');
+            render();
+        }
+
+        function removeChoice(qIndex, cIndex) {
+            questions[qIndex].choices.splice(cIndex, 1);
+            render();
+        }
+
+        // === استيراد وتصدير ===
+
+        function generateResult() {
+            const title = document.getElementById('meta-title').value;
+            const subject = document.getElementById('meta-subject').value;
+            const code = document.getElementById('meta-code').value;
+
+            if(!title) { alert('الرجاء كتابة عنوان الاختبار'); return; }
+
+            // تنظيف البيانات قبل التصدير (إزالة الخصائص المؤقتة)
+            const cleanQuestions = JSON.parse(JSON.stringify(questions)).map(q => {
+                delete q._justMoved;
+                return q;
+            });
+
+            const resultObj = {
+                title: title,
+                "subject-name": subject,
+                "subject-code": code,
+                questions: cleanQuestions
+            };
+
+            const yaml = jsyaml.dump(resultObj);
+            document.getElementById('resultText').value = yaml;
+            document.getElementById('resultModal').classList.remove('hidden');
+            document.getElementById('modalTitle').innerText = "تم توليد الكود بنجاح";
+        }
+
+        function importYAML() {
+            document.getElementById('importModal').classList.remove('hidden');
+        }
+
+        function executeImport() {
+            try {
+                const text = document.getElementById('importInput').value;
+                const data = jsyaml.load(text);
+                const obj = Array.isArray(data) ? data[0] : data;
+
+                document.getElementById('meta-title').value = obj.title || '';
+                document.getElementById('meta-subject').value = obj['subject-name'] || '';
+                document.getElementById('meta-code').value = obj['subject-code'] || '';
+
+                questions = obj.questions || [];
+                render();
+                document.getElementById('importModal').classList.add('hidden');
+            } catch(e) {
+                alert('خطأ في الملف: ' + e.message);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('resultModal').classList.add('hidden');
+        }
+
+        function copyCode() {
+            const txt = document.getElementById('resultText');
+            txt.select();
+            document.execCommand('copy');
+            alert('تم النسخ!');
+        }
+
+        // تحميل أولي
+        window.onload = function() {
+            // يمكن إضافة سؤال افتراضي هنا
+            // addNewQuestion();
+        }
+
+    </script>
+</body>
+</html>

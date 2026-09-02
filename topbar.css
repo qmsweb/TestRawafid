@@ -1,0 +1,98 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  direction: rtl;
+  padding-bottom: 80px;
+  padding-top: 70px; /* إضافة padding-top لتعويض النافبار الثابت */
+}
+
+.navbar {
+  background-color: #1a2ac6;
+  color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
+.logo img {
+  height: 40px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  font-size: 1rem;
+  transition: color 0.3s;
+  padding: 0.5rem 0;
+}
+
+.nav-links a:hover {
+  color: #ffcc00;
+}
+
+/* زر القائمة - مخفي افتراضيًا */
+.menu-toggle {
+  display: none !important;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+}
+
+/* تصميم الجوال */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block !important;
+}
+
+  .nav-links {
+    position: fixed;
+    top: 70px; /* ارتفاع النافبار */
+    right: -100%;
+    width: 80%;
+    max-width: 300px;
+    background-color: #1a2ac6;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    height: calc(100vh - 70px);
+    transition: right 0.3s ease-in-out;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-links.active {
+    right: 0;
+  }
+
+  .nav-links li {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+
+  .nav-links a {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}

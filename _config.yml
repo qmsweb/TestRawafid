@@ -1,0 +1,13 @@
+# أساسات الموقع
+title: "منصة روافد"
+description: "المنصة العربية للتعليم والمراجع"
+
+# روابط المقالات النظيفة: /blog/test بدلاً من blog.html?i=test
+permalink: /blog/:slug
+
+# تنسيقات التاريخ
+timezone: Asia/Muscat
+
+# استبعاد الملفات غير المطلوبة في النشر
+exclude:
+  - README.md

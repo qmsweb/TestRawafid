@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title id="page-title">عرض المقال</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="{{ '/assets/css/topbar.css' | relative_url }}" />
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('rawafed-theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+    /* === إعدادات الألوان === */
+    :root {
+      --primary-color: #1a2ac6;
+      --primary-dark: #121e9ec4;
+      --text-color: #1d1d1d;
+      --text-muted: #666666;
+      --bg-color: #f8f9fc;
+      --bg-card: #ffffff;
+      --border-color: #e0e0e0;
+      --btn-secondary-bg: #eff3ff;
+      --btn-secondary-text: #1a2ac6;
+    }
+
+    [data-theme="dark"] {
+      --primary-color: #7986cb;
+      --primary-dark: #5c6bc0;
+      --text-color: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --bg-color: #121212;
+      --bg-card: #1e1e1e;
+      --border-color: #333333;
+      --btn-secondary-bg: #2c2e3e;
+      --btn-secondary-text: #7986cb;
+    }
+
+    * { box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; }
+
+    body {
+      margin: 0; padding: 0; 
+      background-color: var(--bg-color); 
+      color: var(--text-color);
+      padding-bottom: 40px; 
+      padding-top: 60px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* === تنسيقات الهيدر والعودة === */
+    .nav-header {
+      margin-top: 30px; padding: 0 20px; margin-bottom: 15px;
+      display: flex; align-items: center; max-width: 800px; margin-left: auto; margin-right: auto;
+    }
+    .back-btn {
+      text-decoration: none; color: var(--primary-color); 
+      font-weight: 700; font-size: 0.9rem;
+      display: inline-flex; align-items: center; gap: 8px; 
+      padding: 8px 16px; background: var(--bg-card); 
+      border-radius: 50px; transition: 0.3s;
+      border: 1px solid var(--border-color); cursor: pointer;
+    }
+    .back-btn:hover { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
+
+    /* === حاوية المقال === */
+    .article-container { 
+      max-width: 800px; margin: 0 auto; padding: 0 20px; 
+    }
+
+    /* === رأس المقال (العنوان والصورة البارزة) === */
+    .article-header { margin-bottom: 30px; animation: fadeIn 0.5s ease-in; }
+    .article-meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; display: flex; gap: 15px; }
+    .article-title { font-size: 1.8rem; font-weight: 800; line-height: 1.4; margin: 10px 0 20px 0; color: var(--text-color); }
+    .cover-image { width: 100%; height: auto; border-radius: 16px; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+
+    /* === تنسيقات المحتوى (تم تحديثها لتعمل مع HTML مباشرة) === */
+    
+    /* العناوين داخل المقال */
+    .article-content h2 { 
+      font-size: 1.4rem; font-weight: 700; margin-top: 40px; margin-bottom: 15px; color: var(--primary-color); 
+    }
+    .article-content h3 { 
+      font-size: 1.2rem; font-weight: 600; margin-top: 30px; margin-bottom: 10px; 
+    }
+
+    /* الفقرات */
+    .article-content p { 
+      font-size: 1.05rem; line-height: 1.8; margin-bottom: 20px; color: var(--text-color); opacity: 0.95; 
+      padding: 0 5px; border-radius: 8px;
+    }
+
+    /* الصور داخل المقال */
+    .article-content img {
+      max-width: 100%; border-radius: 12px; border: 1px solid var(--border-color);
+      display: block; margin: 30px auto;
+    }
+    
+    /* الجداول (إضافة جديدة لدعم الجداول بتصميم جميل) */
+    .article-content table {
+      width: 100%; border-collapse: collapse; margin: 30px 0; font-size: 0.95rem;
+    }
+    .article-content th, .article-content td {
+      padding: 12px 15px; border-bottom: 1px solid var(--border-color); text-align: right;
+    }
+    .article-content th {
+      color: var(--primary-color); font-weight: 700; border-bottom: 2px solid var(--primary-color);
+    }
+
+    /* الأزرار (يمكنك استخدام الكلاس يدوياً) */
+    .article-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 12px 30px; border-radius: 12px; font-weight: 700; text-decoration: none;
+      transition: transform 0.2s ease; margin: 20px auto;
+    }
+    .article-btn.primary { background: var(--primary-color); color: #fff; box-shadow: 0 4px 15px rgba(26, 42, 198, 0.2); }
+    .article-btn.secondary { background: var(--btn-secondary-bg); color: var(--btn-secondary-text); }
+    .article-btn:hover { transform: translateY(-3px); }
+    
+    .center-wrapper { text-align: center; margin: 30px 0; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  </style>
+</head>
+<body>
+
+  <div id="topbar-container">
+    {% include header.html %} 
+  </div>
+
+  <div class="nav-header">
+    <a href="{{ site.baseurl }}/" class="back-btn">
+      <i class="fas fa-arrow-right"></i> رجوع
+    </a>
+  </div>
+
+  <div class="article-container">
+    
+    <div class="article-header">
+      <img id="post-cover" src="" class="cover-image" alt="" style="display: none;">
+      
+      <div id="post-meta" class="article-meta">
+        </div>
+
+      <h1 id="post-title" class="article-title">جاري تحميل المقال...</h1>
+      <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+    </div>
+
+    <div id="post-content" class="article-content">
+      </div>
+
+  </div>
+
+  <script>
+    // دالة تبديل الثيم
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('rawafed-theme', newTheme);
+    }
+
+    // جلب بيانات المقال ديناميكياً
+    document.addEventListener("DOMContentLoaded", function() {
+      // استخراج ID المقال من الرابط
+      const urlParams = new URLSearchParams(window.location.search);
+      const postId = urlParams.get('i');
+
+      if (postId) {
+        // إرسال الطلب للمسار المطلوب
+        fetch(`/assets/post?i=${postId}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error("حدث خطأ في جلب البيانات");
+            }
+            return response.json();
+          })
+          .then(data => {
+            // تحديث عنوان الصفحة (Title)
+            document.getElementById('page-title').textContent = data.title || "عرض المقال";
+            
+            // تحديث عنوان المقال (H1)
+            document.getElementById('post-title').textContent = data.title;
+
+            // تحديث الصورة البارزة
+            const coverImg = document.getElementById('post-cover');
+            if (data.cover_image) {
+              coverImg.src = data.cover_image;
+              coverImg.alt = data.title;
+              coverImg.style.display = 'block';
+            }
+
+            // تحديث الميتا (التاريخ والكاتب)
+            const metaContainer = document.getElementById('post-meta');
+            let metaHtml = '';
+            if (data.date) {
+              metaHtml += `<span><i class="far fa-calendar"></i> ${data.date}</span>`;
+            }
+            if (data.author) {
+              metaHtml += `<span><i class="far fa-user"></i> ${data.author}</span>`;
+            }
+            metaContainer.innerHTML = metaHtml;
+
+            // تحديث محتوى المقال
+            document.getElementById('post-content').innerHTML = data.content;
+          })
+          .catch(error => {
+            console.error('Error fetching post:', error);
+            document.getElementById('post-title').textContent = "عذراً";
+            document.getElementById('post-content').innerHTML = "<p>لم نتمكن من تحميل المقال. قد يكون المعرف غير صحيح أو تم حذفه.</p>";
+          });
+      } else {
+        // في حال عدم وجود معلمة ID في الرابط
+        document.getElementById('post-title').textContent = "لم يتم تحديد مقال";
+        document.getElementById('post-content').innerHTML = "<p>الرجاء التأكد من الرابط والمحاولة مرة أخرى.</p>";
+      }
+    });
+  </script>
+
+</body>
+</html>

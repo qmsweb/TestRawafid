@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مولد المعرفات التلقائي (JSON ID Adder)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6fb;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #1a2ac6;
+            margin-bottom: 20px;
+        }
+        .editor-area {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fafafa;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+            direction: ltr; /* لسهولة قراءة الكود */
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #1a2ac6;
+            background-color: #fff;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-process {
+            background-color: #1a2ac6;
+            color: white;
+        }
+        .btn-process:hover {
+            background-color: #121e9e;
+        }
+        .btn-copy {
+            background-color: #2e8b57;
+            color: white;
+        }
+        .btn-copy:hover {
+            background-color: #246b43;
+        }
+        @media (max-width: 768px) {
+            .editor-area {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>أداة إضافة الـ ID تلقائياً</h2>
+    
+    <div class="editor-area">
+        <div class="box">
+            <label>1. ضع كود JSON الأصلي هنا:</label>
+            <textarea id="inputJson" placeholder='الصق الكود هنا...'></textarea>
+        </div>
+        
+        <div class="box">
+            <label>2. النتيجة (بعد إضافة ID):</label>
+            <textarea id="outputJson" readonly placeholder='ستظهر النتيجة هنا...'></textarea>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-process" onclick="addIds()">معالجة الكود وإضافة IDs</button>
+        <button class="btn-copy" onclick="copyOutput()">نسخ النتيجة</button>
+    </div>
+</div>
+
+<script>
+    function addIds() {
+        const inputField = document.getElementById('inputJson');
+        const outputField = document.getElementById('outputJson');
+        
+        try {
+            // قراءة النص وتحويله لكائن
+            const rawData = inputField.value;
+            if (!rawData.trim()) {
+                alert("الرجاء لصق كود JSON أولاً.");
+                return;
+            }
+
+            const data = JSON.parse(rawData);
+
+            // التأكد من وجود items
+            if (data.items && Array.isArray(data.items)) {
+                // إعادة بناء المصفوفة مع إضافة ID في البداية
+                data.items = data.items.map((item, index) => {
+                    return {
+                        id: index + 1, // التسلسل يبدأ من 1
+                        ...item // بقية الخصائص تأتي بعد الـ id
+                    };
+                });
+            } else {
+                alert("لم يتم العثور على مصفوفة 'items' داخل الكود.");
+                return;
+            }
+
+            // تحويل الكائن لنص مرة أخرى مع تنسيق (4 مسافات)
+            outputField.value = JSON.stringify(data, null, 4);
+
+        } catch (error) {
+            alert("حدث خطأ! تأكد أن الكود المدخل هو JSON صحيح.\n\nتفاصيل الخطأ: " + error.message);
+        }
+    }
+
+    function copyOutput() {
+        const outputField = document.getElementById('outputJson');
+        if (!outputField.value) return;
+        
+        outputField.select();
+        document.execCommand('copy');
+        alert("تم نسخ الكود الجديد!");
+    }
+</script>
+
+</body>
+</html>

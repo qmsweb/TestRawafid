@@ -1,0 +1,40 @@
+{
+    "name": "مقرر علم الأصوات",
+    "description": "ملاحظة: مقر علم الأصوات هو ذاته مقرر الصوتيات لكن مع اختلاف رمز المقرر فقط.",
+    "items": [
+     
+     {
+            "id": 1,
+            "title": "منصة صوامت",
+            "description": "منصة إلكترونية في الصوامت\nتم إطلاق المنصة بالتعاون مع الدكتور علي إسماعيل عبدالله.",
+            "type": "links",
+            "image_url": "images/sawamet-cover.png",
+            "preview_url": "https://sawamet.jassim.one",
+            "time-ms": "1763453087338"
+        },
+        {
+            "id": 2,
+            "title": "ملخص دروس علم الصوتيات - عام",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB229/%D9%85%D9%84%D8%AE%D8%B5%20%D8%AF%D8%B1%D9%88%D8%B3%20%D8%B9%D9%84%D9%85%20%D8%A7%D9%84%D8%A7%D9%94%D8%B5%D9%88%D8%A7%D8%AA.pdf",
+            "time-ms": "1763416778320"
+        },
+        {
+            "id": 3,
+            "title": "ملخص الوحدات الثلاثة الأولى - علم الصوتيات",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB229/%D9%85%D9%84%D8%AE%D8%B5%20%D8%B9%D9%84%D9%85%20%D8%A7%D9%84%D8%B5%D9%88%D8%AA%D9%8A%D8%A7%D8%AA-%20%D8%A7%D9%84%D9%88%D8%AD%D8%AF%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AB%D9%84%D8%A7%D8%AB%D8%A9%20%D8%A7%D9%84%D8%A7%D9%94%D9%88%D9%84%D9%89.pdf",
+            "time-ms": "1763416778320"
+        },
+        {
+            "id": 4,
+            "title": "ملخص في علم الصوتيات",
+            "description": "إعداد: هاجر الجحافية",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB229/%D9%85%D9%84%D8%AE%D8%B5-%D8%B9%D9%84%D9%85-%D8%A7%D9%84%D8%B5%D9%88%D8%AA%D9%8A%D8%A7%D8%AA.pdf",
+            "time-ms": "1763416778320"
+        }
+    ]
+}

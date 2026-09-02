@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title | default: "روافد - تواصل معنا" }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+  <meta property="og:title" content="{{ page.title | default: 'روافد' }}">
+  <meta property="og:description" content="{{ page.description | default: 'منصة تعليمية مجانية.' }}">
+  <meta property="og:image" content="{{ '/images/cover.png' | relative_url }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('rawafed-theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+    /* === المتغيرات === */
+    :root {
+      --primary-color: #1a2ac6;
+      --primary-light-bg: #eff1ff;
+      --bg-body: #f4f6fb;
+      --bg-card: #ffffff;
+      --border-color: #ccd1e0;
+      --text-main: #2d2d2d;
+      --text-muted: #666666;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+      --hover-shadow: 0 15px 30px -5px rgba(26, 42, 198, 0.1);
+      --radius-md: 12px;
+    }
+
+    [data-theme="dark"] {
+      --primary-color: #7986cb;
+      --primary-light-bg: #282a36;
+      --bg-body: #121212;
+      --bg-card: #1e1e1e;
+      --border-color: #333333;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+      --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-top: 80px; padding-bottom: 40px; }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+
+    /* === نظام التحميل === */
+    #main-content-area {
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    #main-content-area.loaded {
+      opacity: 1;
+    }
+
+    /* === تنسيق بطاقات التواصل === */
+    .section-title { 
+        font-size: 1.5rem; 
+        font-weight: 700; 
+        color: var(--text-main); 
+        margin-bottom: 30px; 
+        text-align: center;
+    }
+
+    .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .contact-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .contact-card:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-5px);
+        box-shadow: var(--hover-shadow);
+    }
+
+    .icon-box {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--primary-light-bg);
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        transition: 0.3s ease;
+    }
+
+    .contact-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    .contact-subtitle {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    /* ألوان خاصة عند التحويم */
+    .contact-card.whatsapp:hover .icon-box {
+        background-color: #dcf8c6;
+        color: #25D366;
+    }
+    
+    .contact-card.email:hover .icon-box {
+        background-color: #ffebee;
+        color: #ea4335;
+    }
+
+    [data-theme="dark"] .contact-card.whatsapp:hover .icon-box { background-color: #075E54; color: #fff; }
+    [data-theme="dark"] .contact-card.email:hover .icon-box { background-color: #b71c1c; color: #fff; }
+
+
+    @media (max-width: 600px) {
+        .contact-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+  </style>
+</head>
+<body>
+
+  {% include header.html %}
+
+  <div class="container">
+    
+    {{ content }}
+
+    <div id="main-content-area">
+        
+        <h1 class="section-title">تواصل معنا</h1>
+
+        <div class="contact-grid">
+            <a href="mailto:jassimjumaalfarsi@gmail.com" class="contact-card email">
+                <div class="icon-box">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="contact-title">البريد الإلكتروني</div>
+                <div class="contact-subtitle">راسلنا عبر البريد الإلكتروني</div>
+            </a>
+
+            <a href="https://wa.me/96894514625" target="_blank" class="contact-card whatsapp">
+                <div class="icon-box">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+                <div class="contact-title">واتساب</div>
+                <div class="contact-subtitle">محادثة مباشرة</div>
+            </a>
+        </div>
+
+    </div> 
+    
+    {% include footer.html %}
+  </div>
+
+<script>
+  /* === 1. إعدادات الثيم === */
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('rawafed-theme', newTheme);
+  }
+
+  /* === 2. إظهار المحتوى === */
+  document.addEventListener('DOMContentLoaded', () => {
+    const mainArea = document.getElementById('main-content-area');
+    setTimeout(() => {
+        mainArea.classList.add('loaded');
+    }, 100);
+  });
+</script>
+
+</body>
+</html>

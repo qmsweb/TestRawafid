@@ -1,0 +1,38 @@
+{
+    "name": "مقرر النثر القديم",
+    "description": "",
+    "items": [
+        {
+            "id": 1,
+            "title": "النثر القديم - اختبار نهائي 2020 عن بُعد",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB125/%D8%A7%D9%84%D9%86%D8%AB%D8%B1%20%D8%A7%D9%84%D9%82%D8%AF%D9%8A%D9%85%20-%20%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%20%D9%86%D9%87%D8%A7%D8%A6%D9%8A%202020%20%D8%B9%D9%86%20%D8%A8%D9%8F%D8%B9%D8%AF.pdf",
+            "preview_url": "https://drive.google.com/file/d/1s-u0FhFe0oZuBcNZQNeG4wSK8mwfdBqN/view?usp=drive_link"
+        },
+        {
+            "id": 2,
+            "title": "النثر القديم - اختبار المنتصف 2021",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB125/%D8%A7%D9%84%D9%86%D8%AB%D8%B1%20%D8%A7%D9%84%D9%82%D8%AF%D9%8A%D9%85%20-%20%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%20%D8%A7%D9%84%D9%85%D9%86%D8%AA%D8%B5%D9%81%202021.pdf",
+            "preview_url": "https://drive.google.com/file/d/1rG0qM6F19e9pGLeUKCX1a0t-Dxvxmy1p/view?usp=drive_link"
+        },
+        {
+            "id": 3,
+            "title": "النثر القديم - اختبار المنتصف 2",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB125/%D8%A7%D9%84%D9%86%D8%AB%D8%B1%20%D8%A7%D9%84%D9%82%D8%AF%D9%8A%D9%85%20-%20%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%20%D8%A7%D9%84%D9%85%D9%86%D8%AA%D8%B5%D9%81%202.pdf",
+            "preview_url": "https://drive.google.com/file/d/1w3nmLMDozvVM-slypSvzzytY3BaPjKjt/view?usp=drive_link"
+        },
+        {
+            "id": 4,
+            "title": "النثر القديم - اختبار المنتصف 2022",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB125/%D8%A7%D9%84%D9%86%D8%AB%D8%B1%20%D8%A7%D9%84%D9%82%D8%AF%D9%8A%D9%85%20-%20%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%20%D8%A7%D9%84%D9%85%D9%86%D8%AA%D8%B5%D9%81%202022.pdf",
+            "preview_url": "https://drive.google.com/file/d/18u0af1VGSt7RB2x3B3xGvKsc0-P24b4I/view?usp=drive_link"
+        }
+    ]
+}

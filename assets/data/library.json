@@ -1,0 +1,24 @@
+{
+  "books": [
+    {
+      "id": "book_1",
+      "title": "النحو الوافي",
+      "author": "عباس حسن",
+      "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFMgkRvYoM1QRHw0V7CBF2bS-Taatz3cS3pxEB5wUAWQ&s=10",
+      "url": "رابط_التحميل_أو_القراءة"
+    },
+    {
+      "id": "book_2",
+      "title": "شرح ابن عقيل",
+      "author": "ابن عقيل",
+      "cover": "/assets/images/books/ibn_aqeel.png",
+      "url": "رابط_التحميل_أو_القراءة"
+    },
+    {
+      "id": "book_3",
+      "title": "كتاب بدون صورة (للتجربة)",
+      "author": "مؤلف مجهول",
+      "url": "رابط_التحميل_أو_القراءة"
+    }
+  ]
+}

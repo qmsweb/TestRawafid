@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title | default: "روافد" }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400..800&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="stylesheet" href="{{ '/css/topbar.css' | relative_url }}">
+
+  <meta property="og:title" content="المقررات - روافد" id="og-title">
+  <meta property="og:description" content="تصفح مستندات وفيديوهات وملاحظات المقررات الدراسية بسهولة." id="og-description">
+  <meta property="og:image" content="{{ '/images/cover2.png' | relative_url }}" id="og-image">
+  <meta property="og:type" content="website">
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('rawafed-theme');
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+    /* === 1. متغيرات الألوان (الأساس للوضع الداكن والفاتح) === */
+    :root {
+      /* الوضع الفاتح (الأصلي) */
+      --primary-color: #1a2ac6;
+      --primary-light: #eff1ff;
+      --bg-body: #f4f6fb;
+      --bg-card: #ffffff;
+      --bg-sticky: rgba(244, 246, 251, 0.95);
+      --border-color: #ccd1e0;
+      --text-main: #2d2d2d;
+      --text-header: #1e1e2f;
+      --text-muted: #666666;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+      --hover-shadow: 0 20px 40px -5px rgba(26, 42, 198, 0.15);
+      --hover-bg: #e0e7ff;
+      --radius-lg: 20px;
+      --radius-md: 12px;
+
+      /* ألوان الأيقونات (فاتح) */
+      --icon-doc-bg: #eff6ff; --icon-doc-cl: #3b82f6;
+      --icon-vid-bg: #fef2f2; --icon-vid-cl: #ef4444;
+      --icon-res-bg: #fffbeb; --icon-res-cl: #f59e0b;
+      --icon-quiz-bg: #f5f3ff; --icon-quiz-cl: #8b5cf6;
+      --icon-link-bg: #ecfdf5; --icon-link-cl: #10b981;
+      --icon-card-bg: #e0f7fa; --icon-card-cl: #00bcd4;
+      --icon-def-bg: #f3f4f6; --icon-def-cl: #6b7280;
+    }
+
+    /* الوضع الداكن (عند التفعيل) */
+    [data-theme="dark"] {
+      --primary-color: #7986cb;
+      --primary-light: #282a36;
+      --bg-body: #121212;
+      --bg-card: #1e1e1e;
+      --bg-sticky: rgba(18, 18, 18, 0.95);
+      --border-color: #333333;
+      --text-main: #e0e0e0;
+      --text-header: #ffffff;
+      --text-muted: #a0a0a0;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+      --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5);
+      --hover-bg: #2c2e3e;
+
+      /* ألوان الأيقونات (داكن) */
+      --icon-doc-bg: rgba(59, 130, 246, 0.15); --icon-doc-cl: #60a5fa;
+      --icon-vid-bg: rgba(239, 68, 68, 0.15); --icon-vid-cl: #f87171;
+      --icon-res-bg: rgba(245, 158, 11, 0.15); --icon-res-cl: #fbbf24;
+      --icon-quiz-bg: rgba(139, 92, 246, 0.15); --icon-quiz-cl: #a78bfa;
+      --icon-link-bg: rgba(16, 185, 129, 0.15); --icon-link-cl: #34d399;
+      --icon-card-bg: rgba(0, 188, 212, 0.15); --icon-card-cl: #26c6da;
+      --icon-def-bg: rgba(107, 114, 128, 0.15); --icon-def-cl: #9ca3af;
+    }
+
+    /* === 2. التنسيقات العامة === */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: "IBM Plex Sans Arabic", sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-top: 80px; padding-bottom: 40px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .container {
+      max-width: 1100px; margin: 0 auto; padding: 0 20px;
+    }
+
+    /* === Hero Card === */
+    .course-header-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 30px; margin-top: 20px; margin-bottom: 0px;
+      box-shadow: var(--card-shadow);
+      position: relative; overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+    
+    .course-header-card::before {
+      content: ''; position: absolute; top: -50px; left: -50px;
+      width: 150px; height: 150px;
+      background: var(--primary-light);
+      border-radius: 50%; opacity: 0.6; z-index: 0;
+    }
+
+    .header-content {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; gap: 15px;
+    }
+
+    .header-top-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      flex-wrap: wrap; gap: 20px;
+    }
+
+    .titles-group h1 {
+      font-size: 1.8rem; color: var(--text-header);
+      font-weight: 800; line-height: 1.3;
+    }
+    
+    .titles-group h2 {
+      font-size: 1rem; color: var(--primary-color);
+      background: var(--primary-light);
+      display: inline-block; padding: 4px 12px;
+      border-radius: 20px; margin-top: 8px; font-weight: 600;
+    }
+
+    .header-desc {
+      color: var(--text-muted); font-size: 0.95rem;
+      line-height: 1.7; max-width: 800px;
+    }
+
+    .share-button {
+      background: var(--bg-card); color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      padding: 8px 20px; border-radius: 50px;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.3s;
+    }
+    .share-button:hover {
+      background: var(--primary-color); color: #fff;
+    }
+
+    /* === Sticky Filter === */
+    .sticky-filter-container {
+      position: sticky; top: 70px; z-index: 90;
+      margin-bottom: 25px; padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+      margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    .filter-bar {
+      display: flex; gap: 10px; align-items: center;
+      overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;
+    }
+    .filter-bar::-webkit-scrollbar { display: none; }
+
+    .view-toggle {
+      display: flex; gap: 5px; background: var(--bg-card);
+      padding: 4px; border-radius: 50px;
+      border: 1px solid var(--border-color); flex-shrink: 0;
+    }
+    .view-toggle i {
+      width: 35px; height: 35px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; font-size: 1rem;
+      color: var(--text-muted); cursor: pointer; transition: 0.2s;
+    }
+    .view-toggle i.active {
+      background-color: var(--primary-light); color: var(--primary-color);
+    }
+
+    .filter-divider {
+        width: 1px; height: 25px; background-color: var(--border-color);
+        margin: 0 5px; flex-shrink: 0;
+    }
+
+    .filter-item {
+      flex: 0 0 auto; padding: 8px 20px; border-radius: 50px;
+      background: var(--bg-card); color: var(--text-muted);
+      font-weight: 600; font-size: 0.85rem;
+      border: 1px solid var(--border-color); cursor: pointer; transition: 0.2s;
+    }
+    .filter-item:hover {
+      background: var(--hover-bg); color: var(--primary-color);
+      border-color: var(--border-color);
+    }
+    .filter-item.active {
+      background: var(--primary-color); color: #fff;
+      border-color: var(--primary-color);
+    }
+
+    /* === Materials List === */
+    .materials-list {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+
+    .material-item {
+      background: var(--bg-card); border-radius: var(--radius-md);
+      padding: 16px; cursor: pointer; position: relative;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+      display: flex; flex-direction: column;
+      transition: all 0.3s;
+    }
+
+    .material-item:hover {
+      box-shadow: var(--hover-shadow); border-color: var(--primary-color);
+    }
+
+    /* ========================================= */
+    /* === تصميم البطاقات المميز (التدرج اللوني) === */
+    /* ========================================= */
+    .material-item.special-card-style {
+        background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        border: none;
+        box-shadow: 0 5px 15px rgba(15, 32, 39, 0.4);
+    }
+    
+    .material-item.special-card-style:hover {
+        box-shadow: 0 10px 25px rgba(15, 32, 39, 0.6);
+        transform: translateY(-2px);
+    }
+
+    /* تعديل لون النصوص داخل البطاقات المميزة لتكون بيضاء */
+    .material-item.special-card-style .item-title-text h3 {
+        color: #ffffff !important;
+    }
+    
+    .material-item.special-card-style .item-description-preview {
+        color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    /* تعديل الأيقونة داخل البطاقات المميزة */
+    .material-item.special-card-style .item-icon {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: #80deea !important; /* لون سماوي فاتح */
+        backdrop-filter: blur(4px);
+    }
+
+    /* ========================================= */
+
+    .item-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+    }
+
+    .item-icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+
+    .item-title-text h3 {
+      font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;
+    }
+
+    .item-description-preview {
+      font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;
+      margin-right: 54px; margin-bottom: 10px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+
+    .badges-container {
+      display: flex; gap: 8px; margin-right: 54px; 
+    }
+
+    .item-image { 
+      display: block; 
+      width: 100%; 
+      margin-top: 12px;
+      border-radius: 8px; 
+      overflow: hidden; 
+      aspect-ratio: 16/9; 
+    }
+
+    /* Grid View */
+    .materials-list.grid-view {
+      display: grid !important; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px;
+    }
+    .materials-list.grid-view .material-item {
+      height: 100%; justify-content: flex-start;
+    }
+    .materials-list.grid-view .item-header { margin-bottom: 12px; }
+    .materials-list.grid-view .item-description-preview {
+      margin-right: 0 !important; margin-bottom: 12px; flex-grow: 1; 
+    }
+    .materials-list.grid-view .badges-container {
+      margin-right: 0 !important; margin-top: auto;
+    }
+    .materials-list.grid-view .item-image {
+        display: block; width: 100%; margin-top: 12px;
+        border-radius: 8px; overflow: hidden; aspect-ratio: 16/9;
+    }
+    .item-image img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+
+    /* Badges */
+    .badge { 
+      font-size: 0.7rem; padding: 4px 12px; border-radius: 20px; 
+      font-weight: 700; letter-spacing: 0.5px;
+    }
+    .badge-important { background: #e3f2fd; color: #1a2ac6; }
+    .badge-new { background: #fffde7; color: #fbc02d; }
+    
+    /* تعديل الشارات للوضع الداكن */
+    [data-theme="dark"] .badge-important { background: rgba(26, 42, 198, 0.3); color: #9fa8da; }
+    [data-theme="dark"] .badge-new { background: rgba(251, 192, 45, 0.2); color: #fbc02d; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-top-row { flex-direction: column; gap: 15px; }
+      .share-button { width: 100%; justify-content: center; }
+      .materials-list.grid-view { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .materials-list.grid-view .material-item { padding: 12px; }
+      .materials-list.grid-view .item-icon { width: 40px; height: 40px; font-size: 1.1rem; }
+      .materials-list.grid-view .item-title-text h3 { font-size: 0.95rem; }
+      .materials-list.grid-view .item-description-preview { font-size: 0.8rem; }
+      .item-description-preview, .badges-container { margin-right: 0; }
+    }
+  </style>
+</head>
+<body>
+  
+  {% include header.html %}
+
+  <div class="container">
+    
+    <div class="course-header-card">
+      <div class="header-content">
+        <div class="header-top-row">
+          <div class="titles-group">
+            <h1 id="course-title">جاري التحميل...</h1>
+            <h2 id="course-code"></h2>
+          </div>
+          
+          <div id="share-button" class="share-button">
+            <i class="fas fa-share-nodes"></i> مشاركة رابط المقرر
+          </div>
+        </div>
+        <p class="header-desc" id="course-desc"></p>
+      </div>
+    </div>
+
+    <div class="sticky-filter-container">
+      <div class="filter-bar">
+        <div class="view-toggle">
+            <i class="fas fa-list-ul active" id="list-view" title="قائمة"></i>
+            <i class="fas fa-border-all" id="grid-view" title="شبكة"></i>
+        </div>
+        <div class="filter-divider"></div>
+        <div class="filter-item active" data-filter="all"><i class="fas fa-layer-group"></i> الكل</div>
+        <div class="filter-item" data-filter="documents"><i class="fas fa-file-lines"></i> مستندات</div>
+        <div class="filter-item" data-filter="videos"><i class="fas fa-play"></i> فيديوهات</div>
+        <div class="filter-item" data-filter="resources"><i class="fa-solid fa-pen"></i> تدوينات قصيرة</div>
+        <div class="filter-item" data-filter="quizzes"><i class="fas fa-clipboard-question"></i> اختبارات</div>
+        <div class="filter-item" data-filter="cards"><i class="fas fa-clone"></i> البطاقات</div>
+        <div class="filter-item" data-filter="links"><i class="fas fa-link"></i> روابط</div>
+      </div>
+    </div>
+
+    <div class="materials-list" id="materials-list"></div>
+    
+    {{ content }}
+
+    {% include footer.html %}
+  </div>
+
+<script>
+/* ======= 1. دالة تغيير الوضع (للربط مع الهيدر) ======= */
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('rawafed-theme', newTheme);
+}
+
+/* ======= 2. تعريف المتغيرات ======= */
+const materialsList = document.getElementById('materials-list');
+const filterItems = document.querySelectorAll('.filter-item');
+const gridBtn = document.getElementById('grid-view');
+const listBtn = document.getElementById('list-view');
+const shareButton = document.getElementById('share-button');
+
+// جلب رمز المقرر من الرابط
+const courseCode = new URLSearchParams(window.location.search).get('i');
+
+let materialsData = [];
+let userToggledView = false; 
+let courseShareURL = null; 
+
+/* ======= 3. دوال مساعدة (للأيقونات) ======= */
+function getIconClass(type) {
+  switch (type) {
+    case 'documents': return 'fas fa-file-lines';
+    case 'videos': return 'fas fa-play';
+    case 'resources': return 'fa-solid fa-pen';
+    case 'quizzes': return 'fas fa-clipboard-question';
+    case 'links': return 'fas fa-link';
+    case 'cards': return 'fas fa-clone'; 
+    default: return 'fas fa-layer-group';
+  }
+}
+// استخدام متغيرات CSS بدلاً من الألوان الثابتة
+function getIconStyles(type) {
+  switch (type) {
+    case 'documents': return 'background: var(--icon-doc-bg); color: var(--icon-doc-cl);';
+    case 'videos': return 'background: var(--icon-vid-bg); color: var(--icon-vid-cl);';
+    case 'resources': return 'background: var(--icon-res-bg); color: var(--icon-res-cl);';
+    case 'quizzes': return 'background: var(--icon-quiz-bg); color: var(--icon-quiz-cl);';
+    case 'links': return 'background: var(--icon-link-bg); color: var(--icon-link-cl);';
+    case 'cards': return 'background: var(--icon-card-bg); color: var(--icon-card-cl);'; 
+    default: return 'background: var(--icon-def-bg); color: var(--icon-def-cl);';
+  }
+}
+
+/* ======= 4. ضبط العرض (شبكة/قائمة) ======= */
+function setView(view, save = true) {
+  if (view === 'grid') {
+    materialsList.classList.add('grid-view');
+    gridBtn.classList.add('active');
+    listBtn.classList.remove('active');
+  } else {
+    materialsList.classList.remove('grid-view');
+    listBtn.classList.add('active');
+    gridBtn.classList.remove('active');
+  }
+  if (save) localStorage.setItem('viewMode', view);
+}
+
+/* ======= 5. رسم المواد ======= */
+function renderMaterials(filter = 'all') {
+  materialsList.innerHTML = '';
+  const filtered = filter === 'all' ? materialsData : materialsData.filter(item => item.type === filter);
+
+  if (filtered.length === 0) {
+      materialsList.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:20px;">لا توجد مواد في هذا القسم.</p>';
+      return;
+  }
+
+  // استخدام relative_url لضمان صحة الرابط للصفحة الداخلية
+  const detailsBaseUrl = "{{ '/details.html' | relative_url }}";
+
+  filtered.forEach(item => {
+    const itemId = item.id ? item.id : '#';
+    // بناء الرابط
+    const detailsUrl = `${detailsBaseUrl}?i=${courseCode}&id=${itemId}`;
+
+    const el = document.createElement('div');
+    el.className = 'material-item';
+    
+    // إضافة كلاس خاص للبطاقات لتطبيق التدرج اللوني
+    if (item.type === 'cards') {
+        el.classList.add('special-card-style');
+    }
+
+    // حدث النقر
+    el.onclick = function() {
+        // في حال وجود مفتاح direct بقيمة yes يتم فتح التدوينة في رابط خاص مباشرة
+        if (item.direct === 'yes' && item.url) {
+            window.location.href = item.url;
+            return;
+        }
+        const targetUrl = item.preview_url || item.url;
+        if ((item.type === 'quizzes' || item.type === 'cards') && targetUrl) {
+            window.location.href = targetUrl;
+        } else {
+            window.location.href = detailsUrl;
+        }
+    };
+
+    let imageHTML = '';
+    if (item.image_url) { 
+        imageHTML = `<div class="item-image"><img src="${item.image_url}" alt="${item.title}" loading="lazy"></div>`;
+    }
+
+    let badgeHTML = '';
+    const now = Date.now();
+    const timeMs = item['time-ms'];
+    const MS_IN_DAY = 86400000;
+    if (item.badge === 'new' && timeMs && (now - timeMs) / MS_IN_DAY <= 14) {
+      badgeHTML = `<span class="badge badge-new">${item.badgeText}</span>`;
+    } else if (item.badge) {
+      badgeHTML = `<span class="badge badge-${item.badge}">${item.badgeText}</span>`;
+    }
+
+    let descriptionHTML = '';
+    if (item.description && item.description.trim() !== "") {
+        // التحقق من عدم وجود النجمة * في الوصف
+        if (!item.description.includes('*')) {
+            descriptionHTML = `<p class="item-description-preview">${item.description}</p>`;
+        }
+    }
+
+    el.innerHTML = `
+      <div class="item-header">
+        <div class="item-icon" style="${getIconStyles(item.type)}">
+            <i class="${getIconClass(item.type)}"></i>
+        </div>
+        <div class="item-title-text">
+            <h3>${item.title}</h3>
+        </div>
+      </div>
+      ${descriptionHTML}
+      ${badgeHTML ? `<div class="badges-container">${badgeHTML}</div>` : ''}
+      ${imageHTML}
+    `;
+    materialsList.appendChild(el);
+  });
+}
+
+/* ======= 6. تشغيل الصفحة ======= */
+document.addEventListener('DOMContentLoaded', () => {
+  
+  filterItems.forEach(item => {
+    item.addEventListener('click', function () {
+      filterItems.forEach(el => el.classList.remove('active'));
+      this.classList.add('active');
+      renderMaterials(this.dataset.filter);
+    });
+  });
+
+  gridBtn.addEventListener('click', () => { userToggledView = true; setView('grid'); });
+  listBtn.addEventListener('click', () => { userToggledView = true; setView('list'); });
+
+  const mq = window.matchMedia('(min-width: 992px)');
+  function applyDefaultView() {
+    if (!userToggledView && !localStorage.getItem('viewMode')) {
+      if (mq.matches) setView('grid', false);
+      else setView('list', false);
+    } else if (localStorage.getItem('viewMode')) {
+        setView(localStorage.getItem('viewMode'), false);
+    }
+  }
+  applyDefaultView();
+
+  if (!courseCode) {
+    materialsList.innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-muted);">⚠️ يرجى اختيار مقرر لعرض محتوياته.</p>';
+    return;
+  }
+
+  // === تصحيح مسار الجلب ===
+  const dataBasePath = "{{ '/assets/data/' | relative_url }}";
+  const fetchUrl = dataBasePath + courseCode + ".json";
+
+  fetch(fetchUrl)
+    .then(res => {
+      if (!res.ok) throw new Error("لم يتم العثور على الملف");
+      return res.json();
+    })
+    .then(data => {
+      materialsData = data.items || [];
+      const titleEl = document.getElementById('course-title');
+      const codeEl = document.getElementById('course-code');
+      const descEl = document.getElementById('course-desc');
+      
+      if (titleEl) titleEl.textContent = data.name || '';
+      if (codeEl) {
+          if(data.code) { codeEl.textContent = data.code; codeEl.style.display = 'inline-block'; }
+          else { codeEl.style.display = 'none'; }
+      }
+      if (descEl) descEl.textContent = data.description || '';
+      document.title = data.name || 'روافد';
+      
+      if (data.name) {
+        const ogTitle = document.getElementById('og-title');
+        if(ogTitle) ogTitle.setAttribute('content', data.name);
+      }
+      if (data.description) {
+         const ogDesc = document.getElementById('og-description');
+         if(ogDesc) ogDesc.setAttribute('content', data.description);
+      }
+
+      courseShareURL = (data && data.url) ? data.url : window.location.href;
+      renderMaterials();
+    })
+    .catch(err => {
+      console.error(err);
+      materialsList.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="fas fa-exclamation-triangle fa-2x"></i><p style="margin-top:10px">حدث خطأ أثناء تحميل الصفحة.</p></div>`;
+    });
+});
+
+if (shareButton) {
+  shareButton.addEventListener('click', () => {
+    const shareUrl = courseShareURL || window.location.href;
+    const title = document.title || '';
+    if (navigator.share) {
+      navigator.share({ title, url: shareUrl }).catch(()=>{});
+    } else {
+      navigator.clipboard.writeText(shareUrl);
+      const originalText = shareButton.innerHTML;
+      shareButton.innerHTML = '<i class="fas fa-check"></i> تم النسخ';
+      setTimeout(() => shareButton.innerHTML = originalText, 2000);
+    }
+  });
+}
+</script>
+
+</body>
+</html>

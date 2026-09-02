@@ -1,0 +1,20 @@
+[
+  {
+    "title": "الأمين على الكلمة",
+    "logo": "/images/movies/ameen-logo.PNG",
+    "bg": "/images/movies/ameen-back.PNG",
+    "desc": "سيرة أحمد أمين، الكاتب والمفكر المصري الذي ساهم في النهضة الأدبية والفكرية في القرن العشرين.",
+    "id": "ameen",
+    "url": "https://firebasestorage.googleapis.com/v0/b/momentschat.appspot.com/o/Rawafid%2Fameen.MOV?alt=media&token=89e02c7e-815f-4b01-92da-263de05c7463",
+    "share-url": "https://rawafid.jassim.one/video/ameen"
+  },
+  {
+    "title": "ظلال الفجر",
+    "logo": "/images/movies/dawn-logo.PNG",
+    "bg": "/images/movies/dawn-back.PNG",
+    "desc": "رحلة توثّق فجر النهضة العربية.",
+    "id": "dawn",
+    "url": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    "share-url": "https://rawafid.jassim.one/video/dawn"
+  }
+]

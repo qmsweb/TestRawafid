@@ -1,0 +1,30 @@
+{
+    "name": "مقرر الحضارة الإسلامية",
+    "description": "",
+    "items": [
+        {
+            "id": 1,
+            "title": "الحضارة - ملخص شبتر 1",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ISLM101/%D8%A7%D9%84%D8%AD%D8%B6%D8%A7%D8%B1%D8%A9%20-%20%D9%85%D9%84%D8%AE%D8%B5%20%D8%B4%D8%A8%D8%AA%D8%B1%201.pdf",
+            "preview_url": "https://drive.google.com/file/d/1JO_8llxxy_XHkbUUk2yCFAeT2-8LTxca/view?usp=drive_link"
+        },
+        {
+            "id": 2,
+            "title": "الحضارة - ملخص شبتر 2",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ISLM101/%D8%A7%D9%84%D8%AD%D8%B6%D8%A7%D8%B1%D8%A9%20-%20%D9%85%D9%84%D8%AE%D8%B5%20%D8%B4%D8%A8%D8%AA%D8%B1%202.pdf",
+            "preview_url": "https://drive.google.com/file/d/1YYZOBAzOD8Ly3s8x39752vCTOBVE5J4L/view?usp=drive_link"
+        },
+        {
+            "id": 3,
+            "title": "الحضارة - ملخص الشباتر 3،4،5،6",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ISLM101/%D8%A7%D9%84%D8%AD%D8%B6%D8%A7%D8%B1%D8%A9%20-%20%D9%85%D9%84%D8%AE%D8%B5%20%D8%A7%D9%84%D8%B4%D8%A8%D8%A7%D8%AA%D8%B1%203%204%205%206.pdf",
+            "preview_url": "https://drive.google.com/file/d/16wxCERFyyzlW0NCvZJh0wUS6EjzDsnl5/view?usp=drive_link"
+        }
+    ]
+}

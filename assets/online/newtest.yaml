@@ -1,0 +1,12 @@
+-title: اختبار تجريبي
+ subject-name: اختبار
+ subject-code: TEST01
+ questions:
+   - type: mcq
+     question: "ما لون السماء؟"
+     points: 1
+     choices:
+       - "أحمر"
+       - "أزرق"
+       - "أخضر"
+     answer: "أزرق"

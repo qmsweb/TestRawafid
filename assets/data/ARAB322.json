@@ -1,0 +1,22 @@
+{
+    "name": "مقرر البلاغة العربية",
+    "description": "",
+    "items": [
+        {
+            "id": 1,
+            "title": "تدريبات على المجاز المرسل",
+            "description": "",
+            "type": "links",
+            "preview_url": "https://groups.google.com/g/loughatouna/c/HKdlUz3Y6XY",
+            "time-ms": "1760477083319"
+        },
+        {
+            "id": 2,
+            "title": "اختبار تفاعلي في الكناية",
+            "description": "",
+            "type": "quizzes",
+            "preview_url": "https://rawafid.jassim.one/exam?i=ARAB322-3-1",
+            "time-ms": "1715813948000"
+        }
+    ]
+}

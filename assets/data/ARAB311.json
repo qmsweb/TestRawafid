@@ -1,0 +1,38 @@
+{
+    "name": "مقرر اللسانيات",
+    "description": "",
+    "url": "https://rawafid.jassim.one/c/ARAB311",
+    "items": [
+        {
+            "id": 1,
+            "title": "ملخص اللسانيات",
+            "description": "إعداد: هاجر الجحافية",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB311/ملخص اللسانيات-هاجر.pdf",
+            "time-ms": "1767778896624"
+        },
+           {
+            "id": 3,
+            "title": "ملخص المدارس اللسانية",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB311/%D8%B9%D8%AC%D8%A7%D9%8A%D9%94%D8%A8%20%D8%A7%D9%84%D9%85%D8%AF%D8%A7%D8%B1%D8%B3%20%D8%A7%D9%84%D9%84%D8%B3%D8%A7%D9%86%D9%8A%D8%A9%20%D9%81%D9%8A%20%D8%A7%D9%84%D9%84%D9%8A%D8%A7%D9%84%D9%8A%20%D8%A7%D9%84%D8%A7%D9%85%D8%AA%D8%AD%D8%A7%D9%86%D9%8A%D8%A9.pdf",
+            "time-ms": "1767778896624"
+        },        {
+            "id": 4,
+            "title": "ملخص المدارس اللسانية 2",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB311/%D9%85%D9%84%D8%AE%D8%B5%20%D8%A7%D9%84%D9%85%D8%AF%D8%A7%D8%B1%D8%B3%20%D8%A7%D9%84%D9%84%D8%B3%D8%A7%D9%86%D9%8A%D8%A9.pdf",
+            "time-ms": "1767778896624"
+        },
+        {
+            "id": 2,
+            "title": "اختبار تفاعلي في المدارس اللسانية",
+            "description": "",
+            "type": "quizzes",
+            "preview_url": "https://rawafid.jassim.one/exam?i=311-10",
+            "time-ms": "1767778896624"
+        }
+    ]
+}

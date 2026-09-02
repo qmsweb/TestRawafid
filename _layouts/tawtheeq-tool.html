@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title | default: "توثيق المراجع (APA7)" }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <meta property="og:title" content="{{ page.title | default: 'روافد' }}">
+  <meta property="og:description" content="أداة لتوليد الاستشهادات المرجعية العلمية بدقة (APA7).">
+  <meta property="og:image" content="{{ '/images/tawtheeq.png' | relative_url }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('rawafed-theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+    /* === المتغيرات والألوان (نفس الموجودة في التقويم) === */
+    :root {
+      --primary-color: #1a2ac6;
+      --bg-body: #f4f6fb;
+      --bg-card: #ffffff;
+      --border-color: #ccd1e0;
+      --text-main: #2d2d2d;
+      --text-muted: #666666;
+      --bg-code: #f4f6fb;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+      --radius-md: 12px;
+      
+      --cal-red: #ff3b30; /* مبقاة لتوحيد الأنماط */
+    }
+
+    html[data-theme="dark"] {
+      --primary-color: #7986cb;
+      --bg-body: #121212;
+      --bg-card: #1e1e1e;
+      --border-color: #333333;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --bg-code: #2c2c2c;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+      
+      --cal-red: #ff453a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-top: 80px;
+      padding-bottom: 40px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+    /* === Header & Actions === */
+    .tool-header {
+      margin-bottom: 30px;
+      margin-top: 20px;
+      border-right: 4px solid var(--primary-color);
+      padding-right: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .tool-header h1 { font-size: 1.5rem; font-weight: 700; }
+    .tool-header p { color: var(--text-muted); margin-top: 5px; }
+
+    .header-actions { display: flex; gap: 10px; }
+
+    .action-btn {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+        padding: 6px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: 0.2s;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .action-btn:hover { background: var(--bg-code); color: var(--primary-color); border-color: var(--primary-color); }
+    .primary-btn { background: var(--primary-color) !important; color: white !important; border: none !important; }
+    .primary-btn:hover { opacity: 0.9; }
+
+    /* === List Styles === */
+    .ios-list-group {
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        margin-bottom: 30px;
+        border: 1px solid var(--border-color);
+    }
+
+    .list-header {
+        background: var(--bg-code);
+        padding: 10px 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    /* === Form Specific Styles (GRID) === */
+    .form-content { padding: 20px; }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .input-group { display: flex; flex-direction: column; gap: 8px; }
+    .input-group.full-width { grid-column: span 2; }
+
+    .input-field, .select-field {
+        background: var(--bg-body);
+        border: 1px solid var(--border-color);
+        color: var(--text-main);
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: 0.2s;
+        width: 100%;
+    }
+    .input-field:focus, .select-field:focus { 
+        border-color: var(--primary-color); 
+        outline: none; 
+    }
+
+    label { font-weight: 600; font-size: 0.9rem; color: var(--text-main); }
+    .helper-text { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* === Result Section === */
+    .citation-box {
+        background: var(--bg-code);
+        border: 1px dashed var(--primary-color);
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-family: "IBM Plex Sans Arabic", sans-serif;
+        line-height: 1.8;
+        font-size: 1.1rem;
+        word-wrap: break-word;
+    }
+
+    .copy-feedback {
+        color: #28a745;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: 0.3s;
+        margin-right: 10px;
+    }
+
+    #result-container { display: none; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* === Mobile Responsive === */
+    @media (max-width: 600px) {
+        .tool-header { flex-direction: column; align-items: flex-start; }
+        .header-actions { width: 100%; flex-wrap: wrap; }
+        .action-btn { flex: 1; justify-content: center; }
+        
+        .form-grid { grid-template-columns: 1fr; }
+        .input-group.full-width { grid-column: span 1; }
+        .list-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+        .select-field { width: 100% !important; }
+    }
+  </style>
+</head>
+<body>
+
+  {% include header.html %}
+
+  <div class="container">
+    
+    <div class="tool-header">
+      <div>
+          <h1>توثيق المراجع (APA7)</h1>
+          <p>الأداة لا تزال في وضع التجريب</p>
+      </div>
+      
+      <div class="header-actions">
+          <button class="action-btn" onclick="loadExample()">
+            <i class="fas fa-lightbulb"></i> تحميل مثال
+          </button>
+
+          <button class="action-btn" onclick="clearForm()">
+            <i class="fas fa-eraser"></i> مسح الحقول
+          </button>
+      </div>
+    </div>
+
+    <div class="ios-list-group">
+        <div class="list-header">
+            <span>نوع المصدر</span>
+            <select id="sourceType" class="select-field" style="padding: 6px 12px; font-size: 0.9rem; min-width: 200px; width: auto;" onchange="updateFormFields()">
+                <option value="book">كتاب</option>
+                <option value="journal">مقال في دورية (مجلة علمية)</option>
+                <option value="thesis_pub">رسالة ماجستير/دكتوراة (منشورة)</option>
+                <option value="thesis_unpub">رسالة ماجستير/دكتوراة (غير منشورة)</option>
+                <option value="conference">ورقة علمية في مؤتمر</option>
+                <option value="newspaper">مقال في صحيفة (إلكترونية)</option>
+            </select>
+        </div>
+        
+        <div class="form-content">
+            <div class="form-grid">
+                
+                <div class="input-group full-width">
+                    <label>المؤلف (المؤلفون)</label>
+                    <input type="text" id="authors" class="input-field" placeholder="الاسم العائلي، الاسم الأول">
+                    <span class="helper-text">مثال: الخاطري، ليث أو Smith, J.</span>
+                </div>
+
+                <div class="input-group">
+                    <label>سنة النشر</label>
+                    <input type="number" id="year" class="input-field" placeholder="2024">
+                </div>
+
+                <div class="input-group" id="date-group" style="display:none;">
+                    <label>تاريخ النشر (الشهر واليوم)</label>
+                    <input type="text" id="fullDate" class="input-field" placeholder="مثال: 15 مارس أو 15-17 مايو">
+                </div>
+
+                <div class="input-group full-width">
+                    <label id="titleLabel">عنوان العمل</label>
+                    <input type="text" id="title" class="input-field" placeholder="العنوان...">
+                </div>
+
+                <div class="input-group full-width" id="bracket-group" style="display:none;">
+                    <label id="bracketLabel">النوع / الدرجة العلمية</label>
+                    <input type="text" id="bracketInfo" class="input-field" placeholder="مثال: رسالة ماجستير، أطروحة دكتوراة">
+                </div>
+
+                <div class="input-group full-width" id="source-name-group" style="display:none;">
+                    <label id="sourceNameLabel">اسم المصدر</label>
+                    <input type="text" id="sourceName" class="input-field">
+                </div>
+
+                <div class="input-group" id="volume-group" style="display:none;">
+                    <label>المجلد</label>
+                    <input type="text" id="volume" class="input-field">
+                </div>
+                
+                <div class="input-group" id="issue-group" style="display:none;">
+                    <label>العدد</label>
+                    <input type="text" id="issue" class="input-field">
+                </div>
+
+                <div class="input-group" id="pages-group" style="display:none;">
+                    <label>الصفحات</label>
+                    <input type="text" id="pages" class="input-field" placeholder="مثال: 10-25">
+                </div>
+
+                <div class="input-group full-width" id="publisher-group">
+                    <label id="publisherLabel">دار النشر</label>
+                    <input type="text" id="publisher" class="input-field" placeholder="اسم الناشر">
+                </div>
+                
+                <div class="input-group" id="location-group" style="display:none;">
+                    <label>مكان الانعقاد (المدينة، الدولة)</label>
+                    <input type="text" id="location" class="input-field" placeholder="مسقط، عُمان">
+                </div>
+
+                <div class="input-group full-width" id="url-group">
+                    <label>الرابط أو المعرف الرقمي (DOI/URL)</label>
+                    <input type="text" id="url" class="input-field" placeholder="https://... أو https://doi.org/...">
+                </div>
+
+            </div>
+
+            <div style="margin-top: 25px; text-align: left;">
+                <button class="action-btn primary-btn" onclick="generateCitation()" style="width: 100%; justify-content: center; padding: 12px;">
+                    <i class="fas fa-magic"></i> إنشاء التوثيق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-container">
+        <div class="ios-list-group">
+            <div class="list-header">
+                <span>النتيجة (التوثيق)</span>
+                <span class="copy-feedback" id="copyMsg">تم النسخ!</span>
+            </div>
+            <div style="padding: 20px;">
+                <div id="citationOutput" class="citation-box"></div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button class="action-btn" onclick="copyToClipboard()">
+                        <i class="far fa-copy"></i> نسخ النص
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </div>
+
+  {% include footer.html %}
+
+<script>
+  /* === دالة تبديل الثيم كما في التقويم === */
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('rawafed-theme', newTheme);
+  }
+
+  /* === منطق صفحة التوثيق === */
+  function updateFormFields() {
+      const type = document.getElementById('sourceType').value;
+      
+      const idsToHide = [
+          'date-group', 'bracket-group', 'source-name-group', 
+          'volume-group', 'issue-group', 'pages-group', 
+          'publisher-group', 'location-group', 'url-group'
+      ];
+      idsToHide.forEach(id => document.getElementById(id).style.display = 'none');
+      
+      const titleLabel = document.getElementById('titleLabel');
+      const pubLabel = document.getElementById('publisherLabel');
+      const sourceLabel = document.getElementById('sourceNameLabel');
+      const bracketLabel = document.getElementById('bracketLabel');
+
+      if (type === 'book') {
+          titleLabel.innerText = "عنوان الكتاب";
+          pubLabel.innerText = "دار النشر";
+          document.getElementById('publisher-group').style.display = 'flex';
+          document.getElementById('url-group').style.display = 'flex';
+      }
+      else if (type === 'journal') {
+          titleLabel.innerText = "عنوان المقال";
+          sourceLabel.innerText = "اسم الدورية/المجلة";
+          document.getElementById('source-name-group').style.display = 'flex';
+          document.getElementById('volume-group').style.display = 'flex';
+          document.getElementById('issue-group').style.display = 'flex';
+          document.getElementById('pages-group').style.display = 'flex';
+          document.getElementById('url-group').style.display = 'flex';
+      }
+      else if (type === 'thesis_pub') {
+          titleLabel.innerText = "عنوان الرسالة";
+          bracketLabel.innerText = "الدرجة العلمية (مثال: رسالة ماجستير)";
+          pubLabel.innerText = "اسم الجامعة المانحة";
+          sourceLabel.innerText = "اسم قاعدة البيانات/المستودع";
+          document.getElementById('bracket-group').style.display = 'flex';
+          document.getElementById('publisher-group').style.display = 'flex'; 
+          document.getElementById('source-name-group').style.display = 'flex'; 
+          document.getElementById('url-group').style.display = 'flex';
+      }
+      else if (type === 'thesis_unpub') {
+          titleLabel.innerText = "عنوان الرسالة";
+          bracketLabel.innerText = "الدرجة العلمية (مثال: رسالة ماجستير غير منشورة)";
+          pubLabel.innerText = "اسم الجامعة المانحة";
+          document.getElementById('bracket-group').style.display = 'flex';
+          document.getElementById('publisher-group').style.display = 'flex'; 
+      }
+      else if (type === 'conference') {
+          titleLabel.innerText = "عنوان الورقة العلمية";
+          bracketLabel.innerText = "نوع المساحة (مثال: ورقة علمية)";
+          sourceLabel.innerText = "اسم المؤتمر";
+          document.getElementById('date-group').style.display = 'flex'; 
+          document.getElementById('bracket-group').style.display = 'flex';
+          document.getElementById('source-name-group').style.display = 'flex';
+          document.getElementById('location-group').style.display = 'flex';
+          document.getElementById('url-group').style.display = 'flex';
+      }
+      else if (type === 'newspaper') {
+          titleLabel.innerText = "عنوان المقال";
+          sourceLabel.innerText = "اسم الصحيفة";
+          document.getElementById('date-group').style.display = 'flex';
+          document.getElementById('source-name-group').style.display = 'flex';
+          document.getElementById('url-group').style.display = 'flex';
+      }
+  }
+
+  function loadExample() {
+      const type = document.getElementById('sourceType').value;
+      document.querySelectorAll('input').forEach(input => input.value = ''); 
+
+      if (type === 'book') {
+          document.getElementById('authors').value = "الخاطري، ليث بن حميد";
+          document.getElementById('year').value = "2026";
+          document.getElementById('title').value = "مناهج البحث العلمي وتطبيقاته التربوية";
+          document.getElementById('publisher').value = "دار بين للنشر والتوزيع";
+      }
+      else if (type === 'journal') {
+          document.getElementById('authors').value = "الصلتي، محمد";
+          document.getElementById('year').value = "2026";
+          document.getElementById('title').value = "دور الذكاء الاصطناعي في تحسين البيئة التعليمية";
+          document.getElementById('sourceName').value = "المجلة العربية للتقنيات التربوية";
+          document.getElementById('volume').value = "12";
+          document.getElementById('issue').value = "2";
+          document.getElementById('pages').value = "45-67";
+      }
+      // يمكن إضافة باقي الأمثلة هنا
+      
+      generateCitation(); 
+  }
+
+  function generateCitation() {
+      const type = document.getElementById('sourceType').value;
+      
+      const authors = document.getElementById('authors').value.trim();
+      let year = document.getElementById('year').value.trim();
+      if (!year) year = "د.ت";
+      
+      const title = document.getElementById('title').value.trim();
+      const fullDate = document.getElementById('fullDate').value.trim();
+      const url = document.getElementById('url').value.trim();
+      
+      let citation = "";
+
+      if (type === 'book') {
+          const publisher = document.getElementById('publisher').value.trim();
+          citation = `${authors}. (${year}). <i>${title}</i>. ${publisher}. ${url}`;
+      }
+      else if (type === 'journal') {
+          const journal = document.getElementById('sourceName').value.trim();
+          const vol = document.getElementById('volume').value.trim();
+          const issue = document.getElementById('issue').value.trim();
+          const pages = document.getElementById('pages').value.trim();
+          citation = `${authors}. (${year}). ${title}. <i>${journal}</i>${vol ? ", <i>" + vol + "</i>" : ""}${issue ? "(" + issue + ")" : ""}${pages ? ", " + pages : ""}. ${url}`;
+      }
+      else if (type === 'thesis_pub') {
+          const degree = document.getElementById('bracketInfo').value.trim();
+          const university = document.getElementById('publisher').value.trim(); 
+          const repo = document.getElementById('sourceName').value.trim();
+          citation = `${authors}. (${year}). <i>${title}</i> [${degree}، ${university}]. ${repo}. ${url}`;
+      }
+      else if (type === 'thesis_unpub') {
+          const degree = document.getElementById('bracketInfo').value.trim();
+          const university = document.getElementById('publisher').value.trim();
+          citation = `${authors}. (${year}). <i>${title}</i> [${degree}]. ${university}.`;
+      }
+      else if (type === 'conference') {
+          let dateStr = year;
+          if (fullDate) dateStr += `، ${fullDate}`;
+          const paperType = document.getElementById('bracketInfo').value.trim();
+          const confName = document.getElementById('sourceName').value.trim();
+          const location = document.getElementById('location').value.trim();
+          citation = `${authors}. (${dateStr}). <i>${title}</i> [${paperType}]. ${confName}${location ? "، " + location : ""}. ${url}`;
+      }
+      else if (type === 'newspaper') {
+          let dateStr = year;
+          if (fullDate) dateStr += `، ${fullDate}`;
+          const newspaper = document.getElementById('sourceName').value.trim();
+          citation = `${authors}. (${dateStr}). ${title}. <i>${newspaper}</i>. ${url}`;
+      }
+
+      // تنظيف النص
+      citation = citation.replace(/\.\./g, '.').replace(/،\./g, '.').replace(/\s+/g, ' ').trim();
+      
+      if (!citation.endsWith('.')) citation += ".";
+      if (citation.endsWith('..')) citation = citation.slice(0, -1);
+
+      const resultContainer = document.getElementById('result-container');
+      const outputBox = document.getElementById('citationOutput');
+      outputBox.innerHTML = citation;
+      resultContainer.style.display = 'block';
+      resultContainer.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function copyToClipboard() {
+      const text = document.getElementById('citationOutput').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+          const msg = document.getElementById('copyMsg');
+          msg.style.opacity = 1;
+          setTimeout(() => msg.style.opacity = 0, 2000);
+      });
+  }
+
+  function clearForm() {
+      document.querySelectorAll('input').forEach(input => input.value = '');
+      document.getElementById('result-container').style.display = 'none';
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+      updateFormFields();
+  });
+</script>
+
+</body>
+</html>

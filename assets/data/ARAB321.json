@@ -1,0 +1,14 @@
+{
+  "name": "فقه اللغة",
+  "description": "",
+  "items": [
+    {
+      "title": "اختبار تفاعلي في الدروس 1-4",
+      "description": "",
+      "id": "1",
+      "type": "quizzes",
+      "preview_url": "https://rawafid.jassim.one/exam?i=ARAB321-1234",
+      "time-ms": "1776615505482"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+    "name": "مقرر اللغة العربية ومهاراتها",
+    "description": "",
+    "items": [
+        {
+            "id": 1,
+            "title": "اختبار اللغة العربية - المنتصف 1",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB101/%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%20%D8%A7%D9%84%D9%84%D8%BA%D8%A9%20%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9%20-%20%D8%A7%D9%84%D9%85%D9%86%D8%AA%D8%B5%D9%81%201.pdf",
+            "preview_url": "https://drive.google.com/file/d/14PhbW6IsFzo6ZTfIs1mWKp_COFIPYuvD/view?usp=drive_link"
+        },
+        {
+            "id": 2,
+            "title": "اختبار اللغة العربية - المنتصف 2",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB101/%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%20%D8%A7%D9%84%D9%84%D8%BA%D8%A9%20%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9%20-%20%D8%A7%D9%84%D9%85%D9%86%D8%AA%D8%B5%D9%81%202.pdf",
+            "preview_url": "https://drive.google.com/file/d/19CCueZgkCfantj16sknDGbZGU0EhkZIx/view?usp=drive_link"
+        },
+        {
+            "id": 3,
+            "title": "اختبار تجريبي - اللغة العربية ومهاراتها",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB101/%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%20%D8%AA%D8%AC%D8%B1%D9%8A%D8%A8%D9%8A%20%D8%A7%D9%84%D9%84%D8%BA%D8%A9%20%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9.pdf",
+            "preview_url": "https://drive.google.com/file/d/1HCXAhDzWzNcBkWd3RUfw7N_whNJpJ37i/view?usp=drive_link"
+        }
+    ]
+}

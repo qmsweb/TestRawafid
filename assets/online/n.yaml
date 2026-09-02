@@ -1,0 +1,19 @@
+- title: اختبار في الوحدة الأولى
+  subject-name: الصرف
+  subject-code: ARAB112
+  questions:
+    - question: تجربة
+      type: mcq
+      points: 0.5
+      choices:
+        - نعم
+        - لا
+      answer: نعم
+    - question: ما الوزن الصرفي لكلمة "مقدام"؟
+      type: mcq
+      points: 0.5
+      choices:
+        - فِعْلٌ
+        - مِفْعَالٌ
+        - فَعِيلٌ
+      answer: مِفْعَالٌ

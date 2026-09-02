@@ -1,0 +1,38 @@
+{
+    "name": "مقرر الشعر الإسلامي والأموي",
+    "description": "",
+    "items": [
+        {
+            "id": 1,
+            "title": "ملخّص لبعض موضوعات الشعر الإسلامي والأموي",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB122/%D9%85%D9%88%D8%B6%D9%88%D8%B9%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B4%D8%B9%D8%B1%20%D8%A7%D9%84%D8%A5%D8%B3%D9%84%D8%A7%D9%85%D9%8A%20%D9%88%D8%A7%D9%84%D8%A3%D9%85%D9%88%D9%8A.pdf",
+            "preview_url": "https://drive.google.com/file/d/1xKXSHHrK0Ie2prMfd3SR5b2LGG6PxFxv/view?usp=drive_link"
+        },
+        {
+            "id": 2,
+            "title": "المحفوظات لمقرر الشعر الإسلامي 2024",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB122/%D8%A7%D9%84%D9%85%D8%AD%D9%81%D9%88%D8%B8%D8%A7%D8%AA%20%D9%84%D9%85%D9%82%D8%B1%D8%B1%20%D8%A7%D9%84%D8%B4%D8%B9%D8%B1%20%D8%A7%D9%84%D8%A7%D9%95%D8%B3%D9%84%D8%A7%D9%85%D9%8A.pdf",
+            "preview_url": "https://drive.google.com/file/d/1JQiwyBImEKGUYNdlPc5XKNYQLsrd7PYW/view?usp=drive_link"
+        },
+        {
+            "id": 3,
+            "title": "اختبار الشعر الإسلامي والأموي النهائي 2021",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB122/%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%20%D8%A7%D9%84%D8%B4%D8%B9%D8%B1%20%D8%A7%D9%84%D8%A7%D9%95%D8%B3%D9%84%D8%A7%D9%85%D9%8A%20%D9%88%D8%A7%D9%84%D8%A7%D9%94%D9%85%D9%88%D9%8A%20%D8%A7%D9%84%D9%86%D9%87%D8%A7%D8%A6%D9%8A%202021.pdf",
+            "preview_url": "https://drive.google.com/file/d/13Aj-KPAuti5mMO0Sy9vOmFM-Jel_h4BK/view?usp=drive_link"
+        },
+        {
+            "id": 4,
+            "title": "اختبار الشعر الإسلامي والأموي 2",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB122/%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%20%D8%A7%D9%84%D8%B4%D8%B9%D8%B1%20%D8%A7%D9%84%D8%A7%D9%95%D8%B3%D9%84%D8%A7%D9%85%D9%8A%20%D9%88%D8%A7%D9%84%D8%A7%D9%94%D9%85%D9%88%D9%8A%202.pdf",
+            "preview_url": "https://drive.google.com/file/d/1ffkiJAj3QnHZ2NdcVdFY4oQZLoo8-Nam/view?usp=drive_link"
+        }
+    ]
+}

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title | default: "التقويم الأكاديمي" }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400..800&display=swap" rel="stylesheet">
+   
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+   
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <meta property="og:title" content="{{ page.title | default: 'روافد' }}">
+  <meta property="og:description" content="التقويم الأكاديمي لجامعة الشرقية 2025-2026.">
+  <meta property="og:image" content="{{ '/images/calendar.png' | relative_url }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('rawafed-theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+    /* === المتغيرات والألوان === */
+    :root {
+      --primary-color: #1a2ac6;
+      --bg-body: #f4f7fa;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --bg-code: #f1f5f9;
+      --radius-md: 10px; 
+       
+      --cal-red: #ef4444;
+      --cal-separator: #f1f5f9;
+      --badge-bg: #e0e7ff;
+      --badge-text: #1a2ac6;
+      --date-bg: #f8fafc;
+       
+      --current-week-bg: #f4f5ff;
+      --current-week-border: #1a2ac6;
+    }
+
+    html[data-theme="dark"] {
+      --primary-color: #7986cb;
+      --bg-body: #0f172a;
+      --bg-card: #1e293b;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --bg-code: #0f172a;
+       
+      --cal-red: #f87171;
+      --cal-separator: #334155;
+      --badge-bg: #312e81;
+      --badge-text: #a5b4fc;
+      --date-bg: #0f172a;
+       
+      --current-week-bg: #171b30; 
+      --current-week-border: #7986cb;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-top: 60px;
+      padding-bottom: 40px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+    /* === Header & Actions === */
+    .tool-header {
+      margin-bottom: 30px;
+      margin-top: 20px;
+      border-right: 4px solid var(--primary-color);
+      padding-right: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .tool-header h1 { font-size: 1.4rem; font-weight: 700; color: var(--text-main); }
+    .tool-header p { color: var(--text-muted); margin-top: 3px; font-size: 0.9rem; }
+
+    .header-actions { display: flex; gap: 8px; }
+
+    .action-btn {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+        padding: 6px 14px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: background 0.2s, color 0.2s; 
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .action-btn:hover { background: var(--bg-code); color: var(--primary-color); border-color: var(--primary-color); }
+    .download-btn { color: var(--primary-color); border-color: var(--primary-color); }
+    .download-btn:hover { background: var(--primary-color); color: #fff; } 
+
+    /* === تصميم البطاقات === */
+    .ios-list-group {
+        background: transparent;
+        border: none;
+        margin-bottom: 30px;
+    }
+
+    .list-header {
+        background: transparent;
+        padding: 0 8px 12px 0;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .list-header::before {
+        content: '';
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        opacity: 0.8;
+    }
+
+    .event-item {
+        background: var(--bg-card);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        margin-bottom: 10px; 
+        padding: 14px 16px; 
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .event-date {
+        background: var(--date-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 8px; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-width: 60px; 
+        margin-left: 15px; 
+        text-align: center;
+    }
+    .date-month { font-size: 0.75rem; font-weight: 700; color: var(--cal-red); margin-bottom: 2px; }
+    .date-day { font-size: 1.4rem; font-weight: 600; line-height: 1; color: var(--text-main); }
+
+    .event-content { flex: 1; }
+
+    .week-badge { 
+        display: inline-block;
+        background-color: var(--badge-bg);
+        color: var(--badge-text);
+        font-size: 0.7rem; 
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 15px;
+        margin-bottom: 6px; 
+    }
+
+    .event-title { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; line-height: 1.4; }
+    .event-meta { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+    .event-meta span { display: block; }
+
+    /* تمييز الأسبوع الحالي */
+    .event-item.current-week {
+        background: var(--current-week-bg);
+        border: 1px solid var(--current-week-border);
+        border-right: 5px solid var(--current-week-border);
+    }
+    .event-item.current-week .event-date {
+        background: var(--bg-card);
+        border-color: var(--current-week-border);
+    }
+    .event-item.current-week .date-day {
+        color: var(--primary-color);
+    }
+
+    /* علامة الأسبوع الحالي */
+    .current-label-tag {
+        background-color: var(--primary-color);
+        color: #ffffff;
+        font-size: 0.7rem;
+        padding: 3px 10px;
+        border-radius: 15px;
+        margin-left: 6px;
+        vertical-align: middle;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .hidden-section { display: none; }
+
+    /* === عناصر الطباعة الخاصة === */
+    .print-only-element { display: none; }
+
+    /* === إعدادات الطباعة (Print Styles مع نظام Grid بـ 3 أعمدة) === */
+    @media print {
+        header, footer, .header-actions, .tool-header, .history-btn { display: none !important; }
+        .print-only-element { display: flex !important; }
+
+        body { 
+            background-color: white !important; 
+            color: black !important; 
+            padding: 0 !important; 
+            margin: 0 !important;
+            display: block !important;
+            font-size: 11px !important;
+        }
+
+        .container { 
+            max-width: 100% !important; 
+            padding: 0 !important; 
+            margin: 0 !important; 
+            width: 100% !important;
+            display: block !important;
+        }
+
+        /* هيدر الطباعة */
+        .print-header-wrapper {
+            justify-content: space-between !important;
+            align-items: center !important;
+            border-bottom: 2px solid #000 !important;
+            padding-bottom: 12px !important;
+            margin-bottom: 15px !important;
+            page-break-after: avoid !important;
+        }
+        .print-logo-container img { height: 45px !important; width: auto !important; }
+        
+        .print-header-text h1 { font-size: 1.4rem !important; margin: 0 !important; color: #000 !important; }
+        .print-header-text p { font-size: 0.9rem !important; margin: 4px 0 0 !important; color: #444 !important; }
+
+        #past-container { display: none !important; }
+        #past-container.has-data { display: block !important; }
+
+        .ios-list-group { 
+            border: none !important; 
+            margin-bottom: 20px !important;
+            display: block !important;
+            page-break-before: always !important; 
+            break-before: page !important;
+        }
+        
+        #semesters-container .ios-list-group:first-child,
+        #past-container .ios-list-group {
+            page-break-before: auto !important;
+            break-before: auto !important;
+        }
+        #past-container.has-data ~ #semesters-container .ios-list-group:first-child {
+            page-break-before: always !important;
+            break-before: page !important;
+        }
+
+        .list-header {
+            background-color: transparent !important;
+            color: #000 !important;
+            font-size: 1.1rem !important;
+            font-weight: bold !important;
+            border-bottom: 1.5px solid #000 !important;
+            padding-bottom: 4px !important;
+            margin-bottom: 12px !important;
+        }
+        .list-header::before { display: none !important; }
+
+        /* تفعيل الـ Grid بـ 3 أعمدة في الطباعة */
+        .events-container {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important; /* ثلاثة أعمدة متساوية */
+            gap: 8px !important; /* مسافة أصغر قليلاً لتناسب الثلاثة أعمدة */
+            align-items: stretch !important;
+        }
+         
+        .event-item {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+            border: 1px solid #aaa !important;
+            border-radius: 4px !important;
+            margin-bottom: 0 !important; 
+            background: #fff !important;
+            padding: 4px 6px !important; /* تصغير الهوامش الداخلية */
+            box-shadow: none !important;
+            height: 100% !important; 
+        }
+
+        .event-item.current-week { border: 1.5px solid #000 !important; }
+        
+        .event-date { 
+            border: 1px solid #ccc !important; 
+            background: transparent !important; 
+            padding: 2px 4px !important; 
+            min-width: 35px !important; /* تصغير المربع ليتناسب مع 3 أعمدة */
+            margin-left: 6px !important;
+            border-radius: 4px !important;
+        }
+        .date-month { font-size: 0.6rem !important; color: #333 !important; }
+        .date-day { font-size: 0.95rem !important; color: #000 !important; }
+        
+        .event-title { font-size: 0.8rem !important; margin-bottom: 2px !important; color: #000 !important; line-height: 1.2 !important;}
+        .event-meta { font-size: 0.65rem !important; color: #444 !important;}
+        
+        .week-badge, .current-label-tag {
+            font-size: 0.5rem !important;
+            padding: 1px 4px !important;
+            border: 1px solid #666 !important;
+            background: transparent !important;
+            color: #000 !important;
+            margin-bottom: 3px !important;
+        }
+
+        /* تحسين شكل QR Code */
+        .print-qr-footer {
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 15px !important;
+            margin-top: 25px !important;
+            padding-top: 15px !important;
+            border-top: 1px dashed #ccc !important;
+            page-break-inside: avoid !important;
+        }
+        .qr-text-container { text-align: right !important; }
+        .print-qr-text { font-weight: bold !important; font-size: 0.9rem !important; color: #000 !important; margin: 0 0 4px 0 !important; }
+        .print-qr-subtext { font-size: 0.75rem !important; color: #555 !important; margin: 0 !important; }
+        .print-qr-code { width: 70px !important; height: 70px !important; }
+    }
+
+    /* === Mobile Responsive === */
+    @media (max-width: 600px) {
+        .tool-header { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 20px;}
+        .header-actions { width: 100%; flex-wrap: wrap; }
+        .action-btn { flex: 1; justify-content: center; padding: 8px; }
+         
+        .event-item { padding: 12px 14px; }
+        .event-date { margin-left: 12px; min-width: 55px; padding: 8px;}
+        .date-day { font-size: 1.3rem; }
+        .event-title { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  {% include header.html %}
+
+  <div class="container">
+      
+    <!-- هيدر الطباعة -->
+    <div class="print-only-element print-header-wrapper">
+        <div class="print-header-text">
+            <h1>التقويم الأكاديمي</h1>
+            <p>العام الأكاديمي 2025-2026</p>
+        </div>
+        <div class="print-logo-container">
+            <img src="{{ '/images/rawafid-blue.png' | relative_url }}" alt="شعار روافد">
+        </div>
+    </div>
+
+    <div class="tool-header">
+      <div>
+          <h1>التقويم الأكاديمي</h1>
+          <p>العام الأكاديمي 2025-2026</p>
+      </div>
+       
+      <div class="header-actions">
+          <button class="action-btn download-btn" onclick="downloadICS()">
+            <i class="fas fa-calendar-plus"></i> إضافة للتقويم
+          </button>
+          <button class="action-btn" onclick="window.print()">
+            <i class="fas fa-print"></i> طباعة PDF
+          </button>
+          <button class="action-btn history-btn" id="toggleHistoryBtn" onclick="toggleHistory()">
+              عرض السابق
+          </button>
+      </div>
+    </div>
+
+    <div id="past-container" class="hidden-section">
+        <div class="ios-list-group">
+            <div class="list-header">الأسابيع المنتهية</div>
+            <div id="past-list-content" class="events-container"></div>
+        </div>
+    </div>
+
+    <div id="semesters-container">
+        <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+             جاري تحميل البيانات...
+        </div>
+    </div>
+
+    <!-- تذييل الطباعة (QR Code) -->
+    <div class="print-only-element print-qr-footer">
+        <div class="qr-text-container">
+            <p class="print-qr-text">للمزيد يرجى زيارة موقع منصة روافد</p>
+            <p class="print-qr-subtext">امسح الرمز للوصول السريع للنسخة الرقمية</p>
+        </div>
+        <img class="print-qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://rawafid.jassim.one" alt="QR Code">
+    </div>
+
+  </div>
+
+  {% include footer.html %}
+
+<script>
+  const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+  let globalEvents = []; 
+
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('rawafed-theme', newTheme);
+  }
+
+  function downloadICS() {
+      if (!globalEvents || globalEvents.length === 0) {
+          alert("لا توجد بيانات لتحميلها");
+          return;
+      }
+      let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Rawafid//Academic Calendar//AR\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n";
+      globalEvents.forEach(event => {
+          const dateStr = event.date.replace(/-/g, '');
+          icsContent += "BEGIN:VEVENT\n";
+          icsContent += "DTSTART;VALUE=DATE:" + dateStr + "\n";
+          icsContent += "DTEND;VALUE=DATE:" + dateStr + "\n"; 
+          icsContent += "SUMMARY:" + event.title + "\n";
+          icsContent += "DESCRIPTION:" + event.details + " - " + event.weekBadge + "\n";
+          icsContent += "STATUS:CONFIRMED\n";
+          icsContent += "END:VEVENT\n";
+      });
+      icsContent += "END:VCALENDAR";
+      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.setAttribute('download', 'Academic_Calendar.ics');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  }
+
+  async function fetchAndRenderCalendar() {
+      try {
+          const response = await fetch("{{ '/assets/calendar.json' | relative_url }}");
+          if (!response.ok) throw new Error('Failed to load data');
+          let events = await response.json();
+          
+          events.sort((a, b) => new Date(a.date) - new Date(b.date));
+          globalEvents = events; 
+
+          const today = new Date();
+          today.setHours(0,0,0,0);
+
+          const pastContainer = document.getElementById('past-container');
+          const pastContent = document.getElementById('past-list-content');
+          const semestersContainer = document.getElementById('semesters-container');
+          
+          semestersContainer.innerHTML = ''; 
+
+          let hasPast = false;
+          let upcomingSemesters = new Map();
+
+          events.forEach(event => {
+              const dateParts = event.date.split('-');
+              const eventDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+
+              const weekEnd = new Date(eventDate);
+              weekEnd.setDate(weekEnd.getDate() + 7);
+              
+              const isCurrent = (today >= eventDate && today < weekEnd);
+              const isPast = (weekEnd < today); 
+
+              const day = eventDate.getDate();
+              const month = monthNames[eventDate.getMonth()];
+              const titleStyle = event.isHoliday ? 'style="color:var(--cal-red)"' : '';
+              
+              let badgeText = event.weekBadge;
+              let itemClass = 'event-item';
+              let currentLabelHtml = '';
+
+              if (isCurrent) {
+                  itemClass += ' current-week';
+                  currentLabelHtml = `<span class="current-label-tag">الأسبوع الحالي</span>`;
+              }
+
+              const html = `
+                  <div class="${itemClass}">
+                      <div class="event-date">
+                          <span class="date-month">${month}</span>
+                          <span class="date-day">${day}</span>
+                      </div>
+                      <div class="event-content">
+                          <div style="margin-bottom: 6px;">
+                              ${currentLabelHtml}
+                              <span class="week-badge">${badgeText}</span>
+                          </div>
+                          <div class="event-title" ${titleStyle}>${event.title}</div>
+                          <div class="event-meta">
+                              <span>${event.details}</span>
+                          </div>
+                      </div>
+                  </div>
+              `;
+
+              if (isPast) {
+                  pastContent.insertAdjacentHTML('beforeend', html);
+                  hasPast = true;
+              } else {
+                  const semName = event.semester || "أخرى";
+                  if (!upcomingSemesters.has(semName)) {
+                      upcomingSemesters.set(semName, []);
+                  }
+                  upcomingSemesters.get(semName).push(html);
+              }
+          });
+
+          if (hasPast) {
+              document.getElementById('toggleHistoryBtn').style.display = 'flex';
+              pastContainer.classList.add('has-data');
+          } else {
+              pastContainer.classList.remove('has-data');
+          }
+
+          if (upcomingSemesters.size === 0) {
+               semestersContainer.innerHTML = '<div style="padding:20px; text-align:center; font-size: 0.9rem;">لا توجد أحداث قادمة حالياً.</div>';
+          } else {
+              upcomingSemesters.forEach((itemsArray, semesterName) => {
+                  const box = document.createElement('div');
+                  box.className = 'ios-list-group';
+                  
+                  const header = document.createElement('div');
+                  header.className = 'list-header';
+                  header.innerText = semesterName;
+                  
+                  // تفعيل الشبكة (Grid) هنا
+                  const listDiv = document.createElement('div');
+                  listDiv.className = 'events-container';
+                  listDiv.innerHTML = itemsArray.join('');
+                  
+                  box.appendChild(header);
+                  box.appendChild(listDiv);
+                  semestersContainer.appendChild(box);
+              });
+          }
+
+      } catch (error) {
+          console.error(error);
+          document.getElementById('semesters-container').innerHTML = '<div style="padding:20px; text-align:center; font-size: 0.9rem;">حدث خطأ في تحميل البيانات.</div>';
+      }
+  }
+
+  function toggleHistory() {
+      const section = document.getElementById('past-container');
+      const btn = document.getElementById('toggleHistoryBtn');
+      if (section.style.display === 'block') {
+          section.style.display = 'none';
+          btn.innerHTML = 'عرض السابق';
+      } else {
+          section.style.display = 'block';
+          btn.innerHTML = 'إخفاء السابق';
+      }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+      fetchAndRenderCalendar();
+  });
+</script>
+
+</body>
+</html>
