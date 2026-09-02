@@ -338,9 +338,12 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    // عنوان المقرر ومعرّف العنصر يُحقنان عبر Jekyll في الصفحات النظيفة /details/CODE/ID
+    const pageCourse = {% if page.code %}"{{ page.code }}"{% else %}""{% endif %};
+    const pageItemId = {% if page.item_id %}"{{ page.item_id }}"{% else %}""{% endif %};
     const urlParams = new URLSearchParams(window.location.search);
-    const courseCode = urlParams.get('i');
-    const itemId = urlParams.get('id');
+    let courseCode = urlParams.get('i') || pageCourse;
+    let itemId = urlParams.get('id') || pageItemId;
     const contentDiv = document.getElementById('main-content');
     const footerBtns = document.getElementById('footer-buttons');
     const footerDiv = document.getElementById('actions-footer');
@@ -388,7 +391,7 @@
         // معالجة زر المتعلقات
         if (item.related && item.related.course && item.related.id) {
             relatedWrapper.style.display = 'flex'; // إظهار الحاوية
-            relatedBtn.href = `${BASE_URL}/details.html?i=${item.related.course}&id=${item.related.id}`;
+            relatedBtn.href = `${BASE_URL}/details/${item.related.course}/${item.related.id}`;
             relatedBtnText.textContent = "...";
             
             // جلب اسم العنصر المتعلق من ملف المقرر الخاص به

@@ -467,13 +467,13 @@ function renderMaterials(filter = 'all') {
       return;
   }
 
-  // استخدام relative_url لضمان صحة الرابط للصفحة الداخلية
-  const detailsBaseUrl = "{{ '/details.html' | relative_url }}";
+  // استخدام relative_url لضمان صحة الرابط للصفحة الداخلية (رابط نظيف /details/CODE/ID)
+  const detailsBaseUrl = "{{ '/details' | relative_url }}";
 
   filtered.forEach(item => {
     const itemId = item.id ? item.id : '#';
-    // بناء الرابط
-    const detailsUrl = `${detailsBaseUrl}?i=${courseCode}&id=${itemId}`;
+    // بناء الرابط النظيف على غرار روابط المقرر /course/CODE
+    const detailsUrl = `${detailsBaseUrl}/${encodeURIComponent(courseCode)}/${encodeURIComponent(itemId)}`;
 
     const el = document.createElement('div');
     el.className = 'material-item';

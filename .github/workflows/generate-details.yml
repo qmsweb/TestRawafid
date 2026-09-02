@@ -1,0 +1,50 @@
+name: Generate details pages
+
+on:
+  push:
+    paths:
+      - "assets/data/**"
+      - "generate-details.ps1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate-details
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    # Never re-run on the commits we push ourselves (marked with [skip ci])
+    if: github.actor != 'github-actions[bot]' && !contains(github.event.head_commit.message, '[skip ci]')
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run generator
+        shell: pwsh
+        run: ./generate-details.ps1
+
+      - name: Detect changes
+        id: changes
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add details
+          $dirty = git status --porcelain
+          if ($dirty) {
+            git commit -m "chore: regenerate details pages [skip ci]"
+            Write-Output "changed=true" >> $env:GITHUB_OUTPUT
+          } else {
+            Write-Output "changed=false" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Push
+        if: steps.changes.outputs.changed == 'true'
+        shell: pwsh
+        run: git push

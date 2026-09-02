@@ -504,7 +504,7 @@
       }
 
       if (relatedCourse && relatedId) {
-        relatedBtn.href = `${BASE_URL}/details.html?i=${encodeURIComponent(relatedCourse)}&id=${encodeURIComponent(relatedId)}`;
+        relatedBtn.href = `${BASE_URL}/details/${encodeURIComponent(relatedCourse)}/${encodeURIComponent(relatedId)}`;
         relatedBtnText.textContent = "...";
 
         const timestamp = new Date().getTime();
