@@ -1,0 +1,245 @@
+/* =====================================================
+   الخطوط المحلية - Thmanyah Sans / Thmanyah Serif Text
+   يرجى وضع هذا الملف في مجلد fonts بجانب ملفات الخطوط
+   ===================================================== */
+
+/* ---------- Thmanyah Sans (أوزان مختلفة) ---------- */
+@font-face {
+  font-family: "Thmanyah Sans";
+  src: url("thmanyahsans-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Thmanyah Sans";
+  src: url("thmanyahsans-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Thmanyah Sans";
+  src: url("thmanyahsans-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Thmanyah Sans";
+  src: url("thmanyahsans-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Thmanyah Sans";
+  src: url("thmanyahsans-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Thmanyah Serif Text (Black فقط - للعناوين) ---------- */
+@font-face {
+  font-family: "Thmanyah Serif Text";
+  src: url("thmanyahseriftext-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* =====================================================
+   ربط الأسماء السابقة (IBM Plex Sans Arabic, Cairo,
+   Noto Kufi Arabic, Baloo Bhaijaan 2, Poppins) بخط
+   Thmanyah Sans المحلي بنفس الأوزان المستخدمة
+   ===================================================== */
+
+/* --- IBM Plex Sans Arabic --- */
+@font-face {
+  font-family: "IBM Plex Sans Arabic";
+  src: url("thmanyahsans-Light.otf") format("opentype");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans Arabic";
+  src: url("thmanyahsans-Light.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans Arabic";
+  src: url("thmanyahsans-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans Arabic";
+  src: url("thmanyahsans-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans Arabic";
+  src: url("thmanyahsans-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans Arabic";
+  src: url("thmanyahsans-Bold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans Arabic";
+  src: url("thmanyahsans-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Cairo --- */
+@font-face {
+  font-family: "Cairo";
+  src: url("thmanyahsans-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cairo";
+  src: url("thmanyahsans-Medium.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Cairo";
+  src: url("thmanyahsans-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Noto Kufi Arabic --- */
+@font-face {
+  font-family: "Noto Kufi Arabic";
+  src: url("thmanyahsans-Light.otf") format("opentype");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Kufi Arabic";
+  src: url("thmanyahsans-Light.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Kufi Arabic";
+  src: url("thmanyahsans-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Kufi Arabic";
+  src: url("thmanyahsans-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Kufi Arabic";
+  src: url("thmanyahsans-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Kufi Arabic";
+  src: url("thmanyahsans-Bold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Kufi Arabic";
+  src: url("thmanyahsans-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Kufi Arabic";
+  src: url("thmanyahsans-Black.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Kufi Arabic";
+  src: url("thmanyahsans-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Baloo Bhaijaan 2 --- */
+@font-face {
+  font-family: "Baloo Bhaijaan 2";
+  src: url("thmanyahsans-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Baloo Bhaijaan 2";
+  src: url("thmanyahsans-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Baloo Bhaijaan 2";
+  src: url("thmanyahsans-Bold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Baloo Bhaijaan 2";
+  src: url("thmanyahsans-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Baloo Bhaijaan 2";
+  src: url("thmanyahsans-Black.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --- Poppins --- */
+@font-face {
+  font-family: "Poppins";
+  src: url("thmanyahsans-Bold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}

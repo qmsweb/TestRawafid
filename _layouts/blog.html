@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+  <link rel="stylesheet" href="{{ '/fonts/fonts.css' | relative_url }}" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{ page.title | default: "المدونة | منصة روافد" }}</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
@@ -163,6 +161,7 @@
     .page-title {
       font-size: clamp(1.5rem, 3vw, 2rem);
       font-weight: 800;
+      font-family: "Thmanyah Serif Text", "IBM Plex Sans Arabic", sans-serif;
       line-height: 1.4;
       margin: 6px 0 18px;
       color: var(--text-main);
