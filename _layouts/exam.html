@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="{{ '/fonts/fonts.css' | relative_url }}" />
     <title>{{ page.title }} | روافد</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400..800&display=swap" rel="stylesheet">
     <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -204,6 +207,17 @@
             margin-bottom: 15px;
             font-weight: normal;
             text-align: right;
+        }
+
+        .question-long-text {
+            font-size: 15px;
+            font-weight: normal;
+            color: var(--text-main);
+            margin-top: 10px;
+            margin-bottom: 15px;
+            line-height: 1.8;
+            text-align: justify;
+            width: 100%;
         }
 
         .points-badge {
@@ -601,6 +615,29 @@
         .correct-icon-true { color: var(--correct-bg); }
         .correct-icon-false { color: var(--wrong-bg); }
 
+        /* إعدادات النافذة المنبثقة (الفقاعة) */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(2px);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal-content {
+            background: var(--bg-card); padding: 30px; border-radius: 12px;
+            text-align: center; max-width: 450px; width: 90%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15); border: 1px solid var(--border-color);
+        }
+        .modal-content h3 { color: var(--primary-color); margin-bottom: 15px; font-size: 22px; }
+        .modal-content p { color: var(--text-main); margin-bottom: 25px; line-height: 1.6; font-size: 16px; }
+        .modal-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .modal-btn {
+            padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;
+            font-weight: bold; font-family: "IBM Plex Sans Arabic", sans-serif; font-size: 15px; transition: 0.2s;
+        }
+        .modal-btn.primary-btn { background: var(--primary-color); color: white; }
+        .modal-btn.primary-btn:hover { opacity: 0.9; }
+        .modal-btn.secondary-btn { background: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); }
+        .modal-btn.secondary-btn:hover { background: var(--hover-bg); }
+
         /* === إعدادات الطباعة === */
         @media print {
             :root, [data-theme="dark"] {
@@ -614,7 +651,7 @@
                 --hover-bg: #ffffff !important;
             }
 
-            header, footer, #submit-btn, #review-btn, #result, .essay-buttons, #print-btn, .top-bar, .site-header {
+            header, footer, #submit-btn, #review-btn, #result, .essay-buttons, #print-btn, .top-bar, .site-header, .modal-overlay {
                 display: none !important;
             }
 
@@ -631,6 +668,7 @@
                 margin-bottom: 10px !important;
                 break-inside: avoid !important;
                 page-break-inside: avoid !important;
+                border-radius: 0 !important;
             }
 
             .tf-print-header { border-bottom: 1px solid #000 !important; }
@@ -640,6 +678,7 @@
                 background-color: transparent !important;
                 width: 25px !important;
                 height: 25px !important;
+                border-radius: 0 !important; 
             }
             .tf-box i { color: #000 !important; font-size: 16px !important; }
             .tf-popup { display: none !important; }
@@ -918,6 +957,18 @@
         <div id="result"></div>
     </div>
 
+    <!-- النافذة المنبثقة للتنبيه بعدم اكتمال الإجابات -->
+    <div id="incomplete-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>تنبيه</h3>
+            <p>لم تقم بالإجابة على جميع الأسئلة. هل ترغب في مواصلة الحل أم إنهاء الاختبار وعرض تصحيح الأسئلة التي قمت بحلها فقط؟</p>
+            <div class="modal-buttons">
+                <button id="modal-continue-btn" class="modal-btn primary-btn">مواصلة الحل</button>
+                <button id="modal-partial-submit-btn" class="modal-btn secondary-btn">عرض الإجابات بعد التصحيح</button>
+            </div>
+        </div>
+    </div>
+
     {% include footer.html %}
 
     <script>
@@ -937,6 +988,11 @@
         const subjectCodeElement = document.getElementById('subject-code');
         const subjectTotalScoreElement = document.getElementById('subject-total-score');
         
+        // إعدادات النافذة المنبثقة
+        const incompleteModal = document.getElementById('incomplete-modal');
+        const modalContinueBtn = document.getElementById('modal-continue-btn');
+        const modalPartialSubmitBtn = document.getElementById('modal-partial-submit-btn');
+
         const arabicLetters = ['أ', 'ب', 'ج', 'د', 'هـ', 'و', 'ز', 'ح', 'ط', 'ي'];
 
         let quizData = [];
@@ -953,10 +1009,19 @@
             }
         });
 
-        // إغلاق أي قائمة منبثقة للصح والخطأ عند النقر في أي مكان آخر
         document.addEventListener('click', () => {
             if(reviewMode) return;
             document.querySelectorAll('.tf-popup.show').forEach(p => p.classList.remove('show'));
+        });
+
+        // أحداث أزرار النافذة المنبثقة
+        modalContinueBtn.addEventListener('click', () => {
+            incompleteModal.style.display = 'none';
+        });
+
+        modalPartialSubmitBtn.addEventListener('click', () => {
+            incompleteModal.style.display = 'none';
+            processSubmission(true); // تمرير true للتأكيد على أنه تسليم جزئي
         });
 
         function printQuizPDF() {
@@ -1001,7 +1066,7 @@
                     tableOpen = true;
                 }
 
-                const cleanAnswer = q.answer ? q.answer.replace(/\n/g, '<br>') : '—';
+                const cleanAnswer = q.answer ? String(q.answer).replace(/\n/g, '<br>') : '—';
                 keyHTML += `
                     <tr>
                         <td style="text-align: center; font-weight: bold;">${qCount}</td>
@@ -1199,6 +1264,10 @@
                     text.className = 'tf-text';
                     text.innerHTML = `${questionNumber}. ${q.question.replace(/\n/g, '<br>')}`;
 
+                    if (q.text) {
+                        text.innerHTML += `<div class="question-long-text" style="margin-top: 8px;">${q.text.replace(/\n/g, '<br>')}</div>`;
+                    }
+
                     const box = document.createElement('div');
                     box.className = 'tf-box';
                     
@@ -1264,10 +1333,9 @@
                     
                     currentTfContainer.appendChild(tfRow);
                     questionNumber++;
-                    return; // الخروج من الحلقة لهذا السؤال فقط
+                    return; 
                 }
 
-                // للأسئلة الأخرى
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question-item';
                 if (q.type === 'info') questionDiv.classList.add('info-question');
@@ -1306,6 +1374,13 @@
                 }
 
                 questionDiv.appendChild(questionTextDiv);
+
+                if (q.text) {
+                    const longTextDiv = document.createElement('div');
+                    longTextDiv.className = 'question-long-text';
+                    longTextDiv.innerHTML = q.text.replace(/\n/g, '<br>');
+                    questionDiv.appendChild(longTextDiv);
+                }
 
                 if (q.image) {
                     const imageContainer = document.createElement('div');
@@ -1426,11 +1501,17 @@
                 if (userAnswers[qIndex] === undefined) allAnswered = false;
             });
 
+            // إظهار النافذة المنبثقة بدلاً من رسالة التنبيه العادية
             if (!allAnswered) {
-                alert('الرجاء الإجابة على جميع الأسئلة قبل الإرسال');
+                incompleteModal.style.display = 'flex';
                 return;
             }
 
+            processSubmission(false); // تسليم كامل
+        }
+
+        function processSubmission(isPartial) {
+            const quiz = quizData[currentQuiz];
             let earnedPoints = 0;
             let totalPoints = 0;
             wrongAnswers.length = 0;
@@ -1439,6 +1520,19 @@
                 if (q.divider || q.type === 'info' || q.type === 'instructions') return;
                 const questionPoints = q.points || 1;
                 totalPoints += questionPoints;
+
+                // في حالة التسليم الجزئي والأسئلة غير المحلولة، لا تتم إضافتها لقائمة الأخطاء
+                if (userAnswers[qIndex] === undefined) {
+                    if (!isPartial) {
+                        wrongAnswers.push({
+                            question: q.question,
+                            userAnswer: "لم تجب",
+                            correctAnswer: q.answer,
+                            points: questionPoints
+                        });
+                    }
+                    return; 
+                }
 
                 if (q.type === 'essay' || q.type === 'essay-image') {
                     if (userAnswers[qIndex] === 1) {
@@ -1517,7 +1611,7 @@
             } else if (totalPoints > 0) {
                 resultHTML += `
                     <div style="text-align:center; padding: 20px; background:var(--correct-bg); color:white; border-radius:12px; font-weight:bold; font-size:18px; margin-top: 20px;">
-                        أحسنت! جميع إجاباتك صحيحة.
+                        أحسنت! جميع إجاباتك التي قمت بحلها صحيحة.
                     </div>`;
             }
             
@@ -1543,6 +1637,9 @@
             const quiz = quizData[currentQuiz];
             quiz.questions.forEach((q, qIndex) => {
                 if (q.divider || q.type === 'info' || q.type === 'instructions') return;
+                
+                // تخطي الأسئلة التي لم يجب عليها المستخدم في وضع المراجعة
+                if (userAnswers[qIndex] === undefined) return;
 
                 if (q.type === 'tf') {
                     const tfRow = document.querySelector(`.tf-row[data-question-index="${qIndex}"]`);

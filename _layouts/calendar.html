@@ -51,20 +51,20 @@
 
     html[data-theme="dark"] {
       --primary-color: #7986cb;
-      --bg-body: #0f172a;
-      --bg-card: #1e293b;
-      --border-color: #334155;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --bg-code: #0f172a;
+      --bg-body: #121212;
+      --bg-card: #1e1e1e;
+      --border-color: #333333;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --bg-code: #2c2c2c;
        
       --cal-red: #f87171;
-      --cal-separator: #334155;
+      --cal-separator: #333333;
       --badge-bg: #312e81;
       --badge-text: #a5b4fc;
-      --date-bg: #0f172a;
+      --date-bg: #1e1e1e;
        
-      --current-week-bg: #171b30; 
+      --current-week-bg: #1e1e1e; 
       --current-week-border: #7986cb;
     }
 
@@ -113,8 +113,6 @@
         gap: 6px;
     }
     .action-btn:hover { background: var(--bg-code); color: var(--primary-color); border-color: var(--primary-color); }
-    .download-btn { color: var(--primary-color); border-color: var(--primary-color); }
-    .download-btn:hover { background: var(--primary-color); color: #fff; } 
 
     /* === تصميم البطاقات === */
     .ios-list-group {
@@ -212,6 +210,40 @@
         vertical-align: middle;
         font-weight: 600;
         display: inline-block;
+    }
+
+    /* === عرض الشبكة Grid 3 أعمدة === */
+    .events-container.grid-3-view {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .events-container.grid-3-view .event-item {
+      margin-bottom: 0;
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+      gap: 8px;
+    }
+    .events-container.grid-3-view .event-date {
+      margin-left: 0;
+    }
+    .events-container.grid-3-view .event-content {
+      width: 100%;
+    }
+    .events-container.grid-3-view .event-title {
+      font-size: 0.9rem;
+    }
+    .events-container.grid-3-view .event-meta {
+      font-size: 0.75rem;
+    }
+    .events-container.grid-3-view .week-badge {
+      font-size: 0.65rem;
+    }
+    @media (max-width: 768px) {
+      .events-container.grid-3-view {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     .hidden-section { display: none; }
@@ -386,8 +418,8 @@
       </div>
        
       <div class="header-actions">
-          <button class="action-btn download-btn" onclick="downloadICS()">
-            <i class="fas fa-calendar-plus"></i> إضافة للتقويم
+          <button class="action-btn" id="gridToggleBtn" onclick="toggleGridView()">
+            <i class="fas fa-list"></i> عرض قائمة
           </button>
           <button class="action-btn" onclick="window.print()">
             <i class="fas fa-print"></i> طباعة PDF
@@ -435,30 +467,29 @@
     localStorage.setItem('rawafed-theme', newTheme);
   }
 
-  function downloadICS() {
-      if (!globalEvents || globalEvents.length === 0) {
-          alert("لا توجد بيانات لتحميلها");
-          return;
-      }
-      let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Rawafid//Academic Calendar//AR\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n";
-      globalEvents.forEach(event => {
-          const dateStr = event.date.replace(/-/g, '');
-          icsContent += "BEGIN:VEVENT\n";
-          icsContent += "DTSTART;VALUE=DATE:" + dateStr + "\n";
-          icsContent += "DTEND;VALUE=DATE:" + dateStr + "\n"; 
-          icsContent += "SUMMARY:" + event.title + "\n";
-          icsContent += "DESCRIPTION:" + event.details + " - " + event.weekBadge + "\n";
-          icsContent += "STATUS:CONFIRMED\n";
-          icsContent += "END:VEVENT\n";
-      });
-      icsContent += "END:VCALENDAR";
-      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      link.setAttribute('download', 'Academic_Calendar.ics');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  function toggleGridView() {
+    const containers = document.querySelectorAll('.events-container');
+    const isGrid = containers[0] && containers[0].classList.contains('grid-3-view');
+    containers.forEach(c => c.classList.toggle('grid-3-view', !isGrid));
+    localStorage.setItem('calendarGrid3', !isGrid ? '1' : '0');
+    updateGridToggleBtn(!isGrid);
+  }
+
+  function updateGridToggleBtn(isGrid) {
+    const btn = document.getElementById('gridToggleBtn');
+    if (!btn) return;
+    if (isGrid) {
+      btn.innerHTML = '<i class="fas fa-list"></i> عرض قائمة';
+    } else {
+      btn.innerHTML = '<i class="fas fa-th-large"></i> عرض Grid 3';
+    }
+  }
+
+  function applySavedView() {
+    if (localStorage.getItem('calendarGrid3') === '1') {
+      document.querySelectorAll('.events-container').forEach(c => c.classList.add('grid-3-view'));
+      updateGridToggleBtn(true);
+    }
   }
 
   async function fetchAndRenderCalendar() {
@@ -584,7 +615,7 @@
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-      fetchAndRenderCalendar();
+      fetchAndRenderCalendar().then(applySavedView);
   });
 </script>
 
