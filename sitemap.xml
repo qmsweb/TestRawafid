@@ -34,22 +34,12 @@
 </url>
 <url>
   <loc>https://rawafid.jassim.one/blog</loc>
-  <lastmod>2026-08-23T00:00:00+00:00</lastmod>
+  <lastmod>2026-08-31T00:00:00+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
-  <loc>https://rawafid.jassim.one/blog/first</loc>
-  <lastmod>2026-01-20T00:00:00+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://rawafid.jassim.one/blog/testone</loc>
-  <lastmod>2026-08-23T00:00:00+00:00</lastmod>
-  <priority>0.64</priority>
-</url>
-<url>
-  <loc>https://rawafid.jassim.one/blog/myart</loc>
-  <lastmod>2026-08-23T00:00:00+00:00</lastmod>
+  <loc>https://rawafid.jassim.one/blog/test</loc>
+  <lastmod>2026-08-31T00:00:00+00:00</lastmod>
   <priority>0.64</priority>
 </url>
 

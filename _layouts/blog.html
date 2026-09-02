@@ -11,8 +11,28 @@
   <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js" defer></script>
+  {% capture first_image_url %}
+    {% if page.cover_image %}
+      {{ page.cover_image }}
+    {% else %}
+      {% assign img_parts = page.content | split: '![' %}
+      {% if img_parts.size > 1 %}
+        {% assign img_part = img_parts[1] | split: '](' %}
+        {% if img_part.size > 1 %}
+          {{ img_part[1] | split: ')' | first | strip }}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endcapture %}
+
+  <meta property="og:site_name" content="{{ site.title }}">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ page.title }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:image" content="{{ first_image_url | strip }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page.title }}">
+  <meta name="twitter:image" content="{{ first_image_url | strip }}">
 
   <script>
     (function() {
@@ -395,7 +415,7 @@
       </div>
     </div>
 
-    <div class="related-btn-wrapper" id="related-wrapper" style="display: none;">
+    <div class="related-btn-wrapper" id="related-wrapper" style="display: {% if page.related %}flex{% else %}none{% endif %};">
       <a href="#" id="related-btn" class="related-btn-top">
         <i class="fas fa-link"></i> <span id="related-btn-text"></span>
       </a>
@@ -406,7 +426,7 @@
     <img id="post-cover" class="cover-image" src="{% if page.cover_image %}{{ page.cover_image }}{% endif %}" alt="{% if page.title %}{{ page.title }}{% endif %}" style="display: none;">
 
     <div id="post-meta" class="article-meta">
-      {% if page.date %}<span><i class="far fa-calendar"></i> {{ page.date | date: "%Y، %-d %B" }}</span>{% endif %}
+      {% if page.date %}{% assign months = "يناير,فبراير,مارس,أبريل,مايو,يونيو,يوليو,أغسطس,سبتمبر,أكتوبر,نوفمبر,ديسمبر" | split: "," %}{% assign month_index = page.date | date: "%-m" | minus: 1 %}<span><i class="far fa-calendar"></i> {{ page.date | date: "%-d" }} {{ months[month_index] }} {{ page.date | date: "%Y" }}</span>{% endif %}
       {% if page.author %}<span><i class="far fa-user"></i> {{ page.author }}</span>{% endif %}
     </div>
 
@@ -441,160 +461,9 @@
       window.print();
     }
 
-    /* === 2. قراءة التدوينة بلغة مارك داون === */
+    /* === 2. رابط المرتبط === */
     const BASE_URL = "{{ site.baseurl }}";
-    const BASE_PATH = "{{ '/assets/blogs/' | relative_url }}";
-
-    function parseFrontMatter(md) {
-      const meta = {};
-      let body = md;
-      // الميتا تُقرأ من تعليق HTML في بداية الملف، لأن Jekyll يحوّل .md
-      // الذي يحتوي front matter (---) إلى .html فلا يبقى .md ليُجلب عبر fetch.
-      function parseRelatedValue(str) {
-        const cleaned = str.trim().replace(/^["']|["']$/g, '');
-        if (cleaned.startsWith('{')) {
-          try {
-            const parsed = JSON.parse(cleaned);
-            if (parsed && typeof parsed === 'object') return parsed;
-          } catch (e) { /* تجاهل واعتبره نصاً */ }
-        }
-        return cleaned;
-      }
-
-      const m = md.match(/^<!--([\s\S]*?)-->/);
-      if (m) {
-        m[1].split('\n').forEach(line => {
-          const idx = line.indexOf(':');
-          if (idx > 0) {
-            const key = line.slice(0, idx).trim();
-            const value = line.slice(idx + 1).trim().replace(/^["']|["']$/g, '');
-            if (key) meta[key] = (key === 'related' && value.includes('{')) ? parseRelatedValue(value) : value;
-          }
-        });
-        body = md.slice(m[0].length);
-      } else if (md.startsWith('---')) {
-        const end = md.indexOf('\n---', 4);
-        if (end !== -1) {
-          const raw = md.slice(3, end);
-          raw.split('\n').forEach(line => {
-            const idx = line.indexOf(':');
-            if (idx > 0) {
-              const key = line.slice(0, idx).trim();
-              const value = line.slice(idx + 1).trim().replace(/^["']|["']$/g, '');
-              if (key) meta[key] = (key === 'related' && value.includes('{')) ? parseRelatedValue(value) : value;
-            }
-          });
-          body = md.slice(end + 4);
-        }
-      }
-      return { meta, body };
-    }
-
-    function formatDate(dateStr) {
-      if (!dateStr) return '';
-      const d = new Date(dateStr);
-      if (isNaN(d)) return dateStr;
-      return d.toLocaleDateString('ar-OM', { year: 'numeric', month: 'long', day: 'numeric' });
-    }
-
-    function loadPost(slug) {
-      const postContent = document.getElementById('post-content');
-      postContent.innerHTML = '<div class="blog-status"><i class="fas fa-spinner fa-spin"></i> جارٍ تحميل التدوينة...</div>';
-
-      fetch(BASE_PATH + slug + '.md')
-        .then(response => {
-          if (!response.ok) throw new Error('not found');
-          return response.text();
-        })
-        .then(md => {
-          if (typeof marked === 'undefined' || typeof DOMPurify === 'undefined') {
-            throw new Error('منظّم المارك داون لم يُحمَّل');
-          }
-
-          const { meta, body } = parseFrontMatter(md);
-          const html = DOMPurify.sanitize(marked.parse(body));
-          postContent.innerHTML = html;
-
-          // لفّ الجداول بحاوية تسمح بالتمرير الأفقي على الشاشات الصغيرة
-          postContent.querySelectorAll('table').forEach(function(tbl) {
-            if (!tbl.parentElement.classList.contains('table-wrapper')) {
-              const wrapper = document.createElement('div');
-              wrapper.className = 'table-wrapper';
-              tbl.parentNode.insertBefore(wrapper, tbl);
-              wrapper.appendChild(tbl);
-            }
-          });
-
-          // العنوان: من الميتا إن وُجد، وإلا من أول عنوان H1 داخل التدوينة
-          const firstHeading = postContent.querySelector('h1');
-          const title = meta.title || (firstHeading ? firstHeading.textContent : slug);
-          document.title = title + ' | منصة روافد';
-          document.getElementById('post-title').textContent = title;
-          if (firstHeading && !meta.title) firstHeading.remove();
-
-          let metaHtml = '';
-          if (meta.date) metaHtml += `<span><i class="far fa-calendar"></i> ${formatDate(meta.date)}</span>`;
-          if (meta.author) metaHtml += `<span><i class="far fa-user"></i> ${meta.author}</span>`;
-          document.getElementById('post-meta').innerHTML = metaHtml;
-
-          // الصورة البارزة من الميتا (cover_image)
-          const coverImg = document.getElementById('post-cover');
-          if (meta.cover_image) {
-            coverImg.src = meta.cover_image;
-            coverImg.alt = title;
-            coverImg.style.display = 'block';
-          } else {
-            coverImg.style.display = 'none';
-          }
-
-          // الزر المرتبط من الميتا (related) — بنفس سلوك صفحة التفاصيل
-          const relatedWrapper = document.getElementById('related-wrapper');
-          const relatedBtn = document.getElementById('related-btn');
-          const relatedBtnText = document.getElementById('related-btn-text');
-          if (meta.related) {
-            let relatedCourse = null;
-            let relatedId = null;
-
-            if (typeof meta.related === 'object') {
-              relatedCourse = meta.related.course;
-              relatedId = meta.related.id;
-            } else {
-              // قد يكون على شكل string مثل "course:7" أو "؟id"
-              const m = String(meta.related).match(/^([^:]+):(.+)$/);
-              if (m) {
-                relatedCourse = m[1].trim();
-                relatedId = m[2].trim();
-              }
-            }
-
-            if (relatedCourse && relatedId) {
-              relatedWrapper.style.display = 'flex';
-              relatedBtn.href = `${BASE_URL}/details.html?i=${encodeURIComponent(relatedCourse)}&id=${encodeURIComponent(relatedId)}`;
-              relatedBtnText.textContent = "...";
-
-              const timestamp = new Date().getTime();
-              fetch(`${BASE_URL}/assets/data/${relatedCourse}.json?v=${timestamp}`, { cache: "no-store" })
-                .then(r => r.json())
-                .then(relatedData => {
-                  const rItem = relatedData.items.find(x => x.id == relatedId || x['time-ms'] == relatedId);
-                  relatedBtnText.textContent = (rItem && rItem.title) ? rItem.title : "عنصر مرتبط";
-                })
-                .catch(() => { relatedBtnText.textContent = "عنصر مرتبط"; });
-            } else {
-              // مجرد رابط لتدوينة أخرى داخل المدونة
-              relatedWrapper.style.display = 'flex';
-              relatedBtn.href = '?i=' + encodeURIComponent(meta.related);
-              relatedBtnText.textContent = 'مقال مرتبط';
-            }
-          } else {
-            relatedWrapper.style.display = 'none';
-          }
-        })
-        .catch(() => {
-          document.getElementById('post-title').textContent = "عذرًا";
-          postContent.innerHTML = '<div class="blog-status"><i class="fas fa-exclamation-circle"></i> تعذّر تحميل التدوينة. تأكد من وجود الملف في المسار الصحيح.</div>';
-        });
-    }
+    const RELATED = {% if page.related %}{{ page.related | jsonify }}{% else %}null{% endif %};
 
     document.addEventListener('DOMContentLoaded', function() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -604,12 +473,52 @@
         // الرابط القديم (blog?i=slug) — تحويله إلى الرابط النظيف (blog/slug)
         const cleanUrl = (BASE_URL || '') + '/blog/' + encodeURIComponent(slug);
         window.location.replace(cleanUrl);
+        return;
+      }
+
+      // الرابط النظيف (blog/slug) — المحتوى مُصرَّح ثابتاً عبر Jekyll
+      const coverImg = document.getElementById('post-cover');
+      if (coverImg && coverImg.getAttribute('src')) {
+        coverImg.style.display = 'block';
+      }
+
+      if (!RELATED) return;
+
+      const relatedWrapper = document.getElementById('related-wrapper');
+      const relatedBtn = document.getElementById('related-btn');
+      const relatedBtnText = document.getElementById('related-btn-text');
+
+      let relatedCourse = null;
+      let relatedId = null;
+
+      if (typeof RELATED === 'object') {
+        relatedCourse = RELATED.course;
+        relatedId = RELATED.id;
       } else {
-        // الرابط النظيف (blog/slug) — المحتوى مُصرَّح ثابتاً عبر Jekyll
-        const coverImg = document.getElementById('post-cover');
-        if (coverImg && coverImg.getAttribute('src')) {
-          coverImg.style.display = 'block';
+        // قد يكون على شكل string مثل "course:7" أو "نص تدوينة"
+        const m = String(RELATED).match(/^([^:]+):(.+)$/);
+        if (m) {
+          relatedCourse = m[1].trim();
+          relatedId = m[2].trim();
         }
+      }
+
+      if (relatedCourse && relatedId) {
+        relatedBtn.href = `${BASE_URL}/details.html?i=${encodeURIComponent(relatedCourse)}&id=${encodeURIComponent(relatedId)}`;
+        relatedBtnText.textContent = "...";
+
+        const timestamp = new Date().getTime();
+        fetch(`${BASE_URL}/assets/data/${relatedCourse}.json?v=${timestamp}`, { cache: "no-store" })
+          .then(r => r.json())
+          .then(relatedData => {
+            const rItem = relatedData.items.find(x => x.id == relatedId || x['time-ms'] == relatedId);
+            relatedBtnText.textContent = (rItem && rItem.title) ? rItem.title : "عنصر مرتبط";
+          })
+          .catch(() => { relatedBtnText.textContent = "عنصر مرتبط"; });
+      } else {
+        // مجرد رابط لتدوينة أخرى داخل المدونة
+        relatedBtn.href = (BASE_URL || '') + '/blog/' + encodeURIComponent(RELATED);
+        relatedBtnText.textContent = 'مقال مرتبط';
       }
     });
   </script>
