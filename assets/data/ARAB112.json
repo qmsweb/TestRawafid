@@ -1,8 +1,7 @@
 {
     "name": "مقرر النحو 1",
-    "cover": "/c/covers/ARAB112.PNG",
     "description": "",
-    "url": "https://rawafid.jassim.one/course/ARAB112",
+    "url": "https://rawafid.jassim.one/c/ARAB112",
     "items": [
         {
             "id": 1,
@@ -28,6 +27,42 @@
             "description": "",
             "type": "videos",
             "preview_url": "https://www.youtube.com/watch?v=bu0_j3hsW2o",
+            "time-ms": "1758589343636"
+        },
+        {
+            "id": 4,
+            "title": "الوحدة الأولى",
+            "description": "",
+            "type": "documents",
+            "preview_url": "https://m.jassim.one/ARAB112/%D8%A7%D9%84%D9%86%D8%AD%D9%88%20(1)%20%D8%A7%D9%84%D9%88%D8%AD%D8%AF%D8%A9%20%D8%A7%D9%84%D8%A7%D9%94%D9%88%D9%84%D9%89.pdf",
+            "download_url": "https://m.jassim.one/ARAB112/%D8%A7%D9%84%D9%86%D8%AD%D9%88%20(1)%20%D8%A7%D9%84%D9%88%D8%AD%D8%AF%D8%A9%20%D8%A7%D9%84%D8%A7%D9%94%D9%88%D9%84%D9%89.pdf",
+            "time-ms": "1758589343636"
+        },
+        {
+            "id": 5,
+            "title": "الوحدة الثانية",
+            "description": "",
+            "type": "documents",
+            "preview_url": "https://m.jassim.one/ARAB112/%D8%A7%D9%84%D9%86%D8%AD%D9%88%20(1)%20%D8%A7%D9%84%D9%88%D8%AD%D8%AF%D8%A9%20%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%8A%D8%A9.pdf",
+            "download_url": "https://m.jassim.one/ARAB112/%D8%A7%D9%84%D9%86%D8%AD%D9%88%20(1)%20%D8%A7%D9%84%D9%88%D8%AD%D8%AF%D8%A9%20%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%8A%D8%A9.pdf",
+            "time-ms": "1758589343636"
+        },
+        {
+            "id": 6,
+            "title": "الوحدة الثالثة",
+            "description": "",
+            "type": "documents",
+            "preview_url": "https://m.jassim.one/ARAB112/%D8%A7%D9%84%D9%86%D8%AD%D9%88%20(1)%20%D8%A7%D9%84%D9%88%D8%AD%D8%AF%D8%A9%20%D8%A7%D9%84%D8%AB%D8%A7%D9%84%D8%AB%D8%A9%20-%20%D8%B1%D9%88%D8%A7%D9%81%D8%AF.pdf",
+            "download_url": "https://m.jassim.one/ARAB112/%D8%A7%D9%84%D9%86%D8%AD%D9%88%20(1)%20%D8%A7%D9%84%D9%88%D8%AD%D8%AF%D8%A9%20%D8%A7%D9%84%D8%AB%D8%A7%D9%84%D8%AB%D8%A9%20-%20%D8%B1%D9%88%D8%A7%D9%81%D8%AF.pdf",
+            "time-ms": "1758589343636"
+        },
+        {
+            "id": 7,
+            "title": "الوحدة الرابعة",
+            "description": "",
+            "type": "documents",
+            "preview_url": "https://m.jassim.one/ARAB112/%D8%A7%D9%84%D9%86%D8%AD%D9%88%20(1)%20%D8%A7%D9%84%D9%88%D8%AD%D8%AF%D8%A9%20%D8%A7%D9%84%D8%B1%D8%A7%D8%A8%D8%B9%D8%A9-%20%D8%B1%D9%88%D8%A7%D9%81%D8%AF%20.pdf",
+            "download_url": "https://m.jassim.one/ARAB112/%D8%A7%D9%84%D9%86%D8%AD%D9%88%20(1)%20%D8%A7%D9%84%D9%88%D8%AD%D8%AF%D8%A9%20%D8%A7%D9%84%D8%B1%D8%A7%D8%A8%D8%B9%D8%A9-%20%D8%B1%D9%88%D8%A7%D9%81%D8%AF%20.pdf",
             "time-ms": "1758589343636"
         }
     ]

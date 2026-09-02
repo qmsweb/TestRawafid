@@ -20,10 +20,11 @@
         },
         {
             "id": 3,
-            "title": "تقويم العام الأكاديمي 2025/2026 لجامعة الشرقية",
+            "title": "تقويم العام الأكاديمي 2026/2027 لجامعة الشرقية",
             "description": "",
+            "image_url": "images/banners/calendar-banner.png",
             "type": "documents",
-            "download_url": "https://m.jassim.one/R1/3.pdf",
+            "download_url": "https://m.jassim.one/R1/%D8%AA%D9%82%D9%88%D9%8A%D9%85%20%D8%A7%D9%84%D8%B9%D8%A7%D9%85%20%D8%A7%D9%84%D8%A7%D9%94%D9%83%D8%A7%D8%AF%D9%8A%D9%85%D9%8A%202026%3A2027%20%D8%AC%D8%A7%D9%85%D8%B9%D8%A9%20%D8%A7%D9%84%D8%B4%D8%B1%D9%82%D9%8A%D8%A9%20-%20%D8%B1%D9%88%D8%A7%D9%81%D8%AF.pdf",
             "time-ms": "1756043599421"
         }
     ]

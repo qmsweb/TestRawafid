@@ -1,6 +1,5 @@
 {
     "name": "مقرر البلاغة العربية",
-    "cover": "/c/covers/default.png",
     "description": "",
     "items": [
         {
@@ -8,7 +7,7 @@
             "title": "تدريبات على المجاز المرسل",
             "description": "",
             "type": "links",
-            "preview_url": "https://groups.google.com/g/loughatouna/course/HKdlUz3Y6XY",
+            "preview_url": "https://groups.google.com/g/loughatouna/c/HKdlUz3Y6XY",
             "time-ms": "1760477083319"
         },
         {
@@ -18,6 +17,14 @@
             "type": "quizzes",
             "preview_url": "https://rawafid.jassim.one/exam?i=ARAB322-3-1",
             "time-ms": "1715813948000"
+        },
+        {
+            "id": 3,
+            "title": "الأغراض البلاغية للأمر والنهي",
+            "description": "",
+            "type": "documents",
+            "download_url": "https://m.jassim.one/ARAB322/%E2%80%8E%E2%81%A8%D8%A7%D9%84%D8%A7%D9%94%D8%BA%D8%B1%D8%A7%D8%B6%20%D8%A7%D9%84%D8%A8%D9%84%D8%A7%D8%BA%D9%8A%D8%A9%20%D9%84%D9%84%D8%A7%D9%94%D9%85%D8%B1%20%D9%88%D8%A7%D9%84%D9%86%D9%87%D9%8A%20-%20%D8%B1%D9%88%D8%A7%D9%81%D8%AF%E2%81%A9.pdf",
+            "time-ms": "1787033498000"
         }
     ]
 }
