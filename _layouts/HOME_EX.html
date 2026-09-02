@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="منصة روافد موجهة لطلبة اللغة العربية بجامعة الشرقية.">
+  <title>{{ page.title | default: "منصة روافد - الصفحة الرئيسة" }}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+   
+  <meta property="og:title" content="{{ page.title | default: 'روافد' }}">
+  <meta property="og:description" content="{{ page.description | default: 'منصة تعليمية مجانية خصيصًا لطلبة اللغة العربية بجامعة الشرقية.' }}">
+  <meta property="og:image" content="{{ '/images/cover.png' | relative_url }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('rawafed-theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+    /* === المتغيرات === */
+    :root {
+      --primary-color: #1a2ac6;
+      --primary-light-bg: #eff1ff;
+      --primary-dark: #14209e;
+      --hover-glow: rgba(26, 42, 198, 0.45);
+      --bg-body: #f4f6fb;
+      --bg-card: #ffffff;
+      --bg-sticky: rgba(244, 246, 251, 0.95);
+      --border-color: #ccd1e0;
+      --text-main: #2d2d2d;
+      --text-muted: #666666;
+      --bg-code: #f4f6fb;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+      --hover-shadow: 0 15px 30px -5px rgba(26, 42, 198, 0.1);
+      --hover-bg: #f9f9f9;
+      --radius-md: 12px;
+    }
+
+    [data-theme="dark"] {
+      --primary-color: #7986cb;
+      --primary-light-bg: #282a36;
+      --primary-dark: #4a558f;
+      --hover-glow: rgba(0, 0, 0, 0.65);
+      --bg-body: #121212;
+      --bg-card: #1e1e1e;
+      --bg-sticky: rgba(18, 18, 18, 0.95);
+      --border-color: #333333;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --bg-code: #2c2c2c;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+      --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5);
+      --hover-bg: #2c2e3e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-top: 80px; padding-bottom: 40px; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+    /* === نظام التحميل الموحد === */
+    #main-content-area {
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    #main-content-area.loaded {
+      opacity: 1;
+    }
+
+    /* === القسم الترحيبي (Hero) === */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      color: #ffffff;
+      padding: 36px 36px 30px;
+      margin-top: 8px;
+      box-shadow: 0 20px 50px -20px var(--hover-glow);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(560px 280px at 8% 0%, rgba(255, 255, 255, 0.14), transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(480px 260px at 95% 100%, rgba(255, 255, 255, 0.08), transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .hero-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 50px;
+      padding: 7px 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 18px;
+    }
+
+    .hero-title {
+      font-size: clamp(1.6rem, 3.6vw, 2.4rem);
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .hero-title .hero-accent {
+      color: #ffcc00;
+    }
+
+    .hero-sub {
+      font-size: 0.98rem;
+      line-height: 1.9;
+      color: rgba(255, 255, 255, 0.92);
+      max-width: 520px;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .hero-btn-primary,
+    .hero-btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      border-radius: 50px;
+      padding: 12px 24px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .hero-btn-primary {
+      background: #ffffff;
+      color: var(--primary-color);
+      box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.35);
+    }
+
+    .hero-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px -8px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-btn-ghost {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .hero-btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* === إحصائيات سريعة === */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .hero-stat {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      padding: 13px 16px;
+      backdrop-filter: blur(4px);
+    }
+
+    .hero-stat .stat-ic {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .hero-stat .stat-data {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.3;
+    }
+
+    .hero-stat b { font-size: 1.2rem; font-weight: 700; }
+    .hero-stat span { font-size: 0.72rem; color: rgba(255, 255, 255, 0.8); }
+
+    /* === بطاقة الأسبوع الحالي === */
+    .hero-week-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 22px;
+      text-decoration: none;
+      box-shadow: 0 20px 45px -18px rgba(0, 0, 0, 0.35);
+      transition: all 0.3s ease;
+    }
+
+    .hero-week-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 26px 55px -18px rgba(0, 0, 0, 0.4);
+    }
+
+    .week-card-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .week-card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: var(--primary-light-bg);
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .week-card-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    #week-badge-insert .current-label-tag {
+      background-color: var(--primary-light-bg);
+      color: var(--primary-color);
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-weight: 700;
+    }
+
+    .week-card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      min-height: 44px;
+      line-height: 1.6;
+    }
+
+    .week-card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-top: 1px dashed var(--border-color);
+      padding-top: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    /* === عناوين الأقسام === */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 18px;
+      border-right: 4px solid var(--primary-color);
+      padding-right: 12px;
+    }
+
+    .section-title-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: var(--primary-light-bg);
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    /* === قسم الأدوات === */
+    .tools-section {
+      margin-top: 34px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+    
+    .tool-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px 10px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: var(--card-shadow);
+    }
+
+    .tool-item:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary-color);
+      box-shadow: var(--hover-shadow);
+    }
+
+    .tool-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: var(--primary-light-bg);
+      border: 1px solid transparent;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      transition: 0.3s ease;
+    }
+
+    /* لون خاص لأيقونة صوامت */
+    .tool-icon.sawamet-bg {
+      background-color: #7F288F !important;
+      border-color: #7F288F !important;
+    }
+
+    .tool-icon img { width: 28px; height: 28px; object-fit: contain; transition: 0.3s ease; }
+
+    .tool-item:hover .tool-icon {
+      background: var(--primary-color);
+      color: #ffffff;
+      border-color: var(--primary-color);
+      transform: scale(1.08);
+    }
+
+    .tool-name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+
+    /* === قسم المقررات والفلاتر === */
+    .courses-section {
+      margin-top: 32px;
+      scroll-margin-top: 90px;
+    }
+
+    .sticky-filter-container {
+      position: sticky;
+      top: 70px;
+      z-index: 90;
+      margin-bottom: 25px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+      margin-left: -20px;
+      margin-right: -20px;
+      padding-left: 20px;
+      padding-right: 20px;
+      background: var(--bg-sticky);
+      backdrop-filter: blur(8px);
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      overflow-x: auto;
+      padding-bottom: 5px;
+      scrollbar-width: none;
+    }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    
+    .view-toggle {
+      display: flex;
+      gap: 5px;
+      background: var(--bg-card);
+      padding: 4px;
+      border-radius: 50px;
+      border: 1px solid var(--border-color);
+      flex-shrink: 0;
+      box-shadow: var(--card-shadow);
+    }
+
+    .view-toggle i {
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 1rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .view-toggle i.active {
+      background-color: var(--primary-light-bg);
+      color: var(--primary-color);
+    }
+
+    .filter-divider {
+      width: 1px;
+      height: 22px;
+      background: var(--border-color);
+      margin: 0 6px;
+      flex-shrink: 0;
+    }
+
+    .filter-item {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 50px;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: var(--card-shadow);
+    }
+
+    .filter-item:hover {
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .filter-item.active {
+      background: var(--primary-color);
+      color: #fff;
+      border-color: var(--primary-color);
+    }
+
+    .filter-count {
+      font-size: 0.7rem;
+      font-weight: 700;
+      min-width: 22px;
+      text-align: center;
+      padding: 2px 7px;
+      border-radius: 50px;
+      background: var(--primary-light-bg);
+      color: var(--primary-color);
+      transition: 0.2s;
+    }
+
+    .filter-item.active .filter-count {
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+
+    /* === قائمة المقررات === */
+    .materials-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .materials-loading {
+      padding: 40px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .material-item {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 18px 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--card-shadow);
+    }
+
+    .material-item:hover {
+      box-shadow: var(--hover-shadow);
+      border-color: var(--primary-color);
+      transform: translateY(-3px);
+    }
+
+    .item-icon-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    .material-item:hover .item-icon-box {
+      transform: scale(1.08) rotate(-4deg);
+    }
+
+    .item-content {
+      flex-grow: 1;
+      min-width: 0;
+    }
+
+    .item-title h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+
+    .item-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .item-code {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: var(--bg-code);
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 50px;
+      font-weight: 600;
+    }
+
+    .item-type-chip {
+      font-size: 0.72rem;
+      color: var(--primary-color);
+      background: var(--primary-light-bg);
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 50px;
+      font-weight: 600;
+    }
+
+    .item-arrow {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+
+    .material-item:hover .item-arrow {
+      background: var(--primary-light-bg);
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+      transform: translateX(-3px);
+    }
+
+    /* === وضع الشبكة (Grid View) === */
+    .materials-list.grid-view {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .materials-list.grid-view .material-item {
+      flex-direction: column;
+      align-items: flex-start;
+      height: 100%;
+      padding: 22px;
+    }
+
+    .materials-list.grid-view .item-arrow {
+      display: none;
+    }
+
+    .materials-list.grid-view .item-icon-box {
+      width: 58px;
+      height: 58px;
+      font-size: 1.5rem;
+    }
+
+    /* === الشاشات المتوسطة === */
+    @media (max-width: 992px) {
+      .tools-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid { grid-template-columns: 1fr; }
+    }
+
+    /* === شاشات الجوال === */
+    @media (max-width: 768px) {
+      .hero { padding: 26px 20px 22px; border-radius: 20px; }
+      .hero-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .hero-stat { flex-direction: column; text-align: center; padding: 12px 8px; }
+      .hero-stat b { font-size: 1.05rem; }
+
+      .tools-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .tool-item { padding: 18px 8px 14px; }
+      .tool-icon { width: 48px; height: 48px; font-size: 1.15rem; }
+      .tool-icon img { width: 24px; height: 24px; }
+      .tool-name { font-size: 0.78rem; }
+
+      .materials-list.grid-view { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .materials-list.grid-view .material-item { padding: 16px; text-align: right; }
+      .materials-list.grid-view .item-title h3 { font-size: 0.92rem; }
+      .materials-list.grid-view .item-type-chip { font-size: 0.68rem; }
+    }
+
+    @media (max-width: 420px) {
+      .hero-cta { flex-direction: column; }
+      .hero-btn-primary, .hero-btn-ghost { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  {% include header.html %}
+
+  <div class="container">
+    
+    {{ content }}
+
+    <div id="main-content-area">
+        
+        <!-- === القسم الترحيبي === -->
+        <section class="hero">
+            <div class="hero-grid">
+
+                <div class="hero-text">
+                    <span class="hero-chip">
+                        <i class="fas fa-graduation-cap"></i>
+                        جامعة الشرقية · قسم اللغة العربية
+                    </span>
+                    <h1 class="hero-title">كل ما تحتاجه دراستك في <span class="hero-accent">مكانٍ واحد</span></h1>
+                    <p class="hero-sub">منصة روافد تعليمية مجانية تضم المقررات الدراسية والأدوات الأكاديمية المصممة خصيصًا لطلبة اللغة العربية بجامعة الشرقية.</p>
+                    
+                    <div class="hero-cta">
+                        <a href="#courses" class="hero-btn-primary">
+                            تصفح المقررات <i class="fas fa-arrow-left"></i>
+                        </a>
+                        <a href="/calendar" class="hero-btn-ghost">
+                            <i class="fas fa-calendar-alt"></i> التقويم الأكاديمي
+                        </a>
+                    </div>
+
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <div class="stat-ic"><i class="fas fa-book-open"></i></div>
+                            <div class="stat-data">
+                                <b id="stat-courses">–</b>
+                                <span>مقررًا دراسيًا</span>
+                            </div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="stat-ic"><i class="fas fa-layer-group"></i></div>
+                            <div class="stat-data">
+                                <b id="stat-categories">–</b>
+                                <span>تصنيفات</span>
+                            </div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="stat-ic"><i class="fas fa-cube"></i></div>
+                            <div class="stat-data">
+                                <b id="stat-tools">–</b>
+                                <span>أدوات تفاعلية</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a class="hero-week-card" id="current-week-widget" href="/calendar">
+                    <div class="week-card-top">
+                        <div class="week-card-icon"><i class="fas fa-calendar-week"></i></div>
+                        <span class="week-card-label">الأسبوع الحالي</span>
+                    </div>
+                    <div id="week-badge-insert"></div>
+                    <div class="week-card-title" id="week-title-text">جاري التحميل...</div>
+                    <div class="week-card-foot">
+                        <span>عرض التقويم الأكاديمي الكامل</span>
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- === قسم الأدوات === -->
+        <section class="tools-section">
+            <h3 class="section-title">
+                <span class="section-title-icon"><i class="fas fa-wrench"></i></span>
+                الأدوات
+            </h3>
+            <div class="tools-grid">
+
+                <div class="tool-item" onclick="window.location.href='https://sawamet.jassim.one'">
+                    <div class="tool-icon sawamet-bg">
+                        <img src="{{ 'https://sawamet.jassim.one/images/sawamet-logo.png' | relative_url }}" alt="صوامت">
+                    </div>
+                    <div class="tool-name">صوامت</div>
+                </div>
+                
+                <div class="tool-item" onclick="window.location.href='/tawtheeq-tool'">
+                    <div class="tool-icon"><i class="fas fa-quote-right"></i></div>
+                    <div class="tool-name">توثيق المراجع</div>
+                </div>
+                <div class="tool-item" onclick="window.location.href='/calendar'">
+                    <div class="tool-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="tool-name">التقويم الأكاديمي</div>
+                </div>
+                <div class="tool-item" onclick="window.location.href='/study-plan'">
+                    <div class="tool-icon"><i class="fas fa-book-open"></i></div>
+                    <div class="tool-name">الخطة الدراسية</div>
+                </div>
+                <div class="tool-item" onclick="window.location.href='/tools'">
+                    <div class="tool-icon"><i class="fas fa-ellipsis-h"></i></div>
+                    <div class="tool-name">المزيد</div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- === قسم المقررات === -->
+        <section class="courses-section" id="courses">
+            <h3 class="section-title">
+                <span class="section-title-icon"><i class="fas fa-layer-group"></i></span>
+                المقررات الدراسية
+            </h3>
+
+            <div class="sticky-filter-container">
+                <div class="filter-bar" id="filter-bar"></div>
+            </div>
+
+            <div class="materials-list" id="materials-list">
+                <div class="materials-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>جاري تحميل المقررات...</span>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+  </div>
+
+  {% include footer.html %}
+
+<script>
+  /* === 1. إعدادات الثيم === */
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('rawafed-theme', newTheme);
+  }
+
+  /* === 2. منطق الأسبوع الحالي === */
+  async function checkCurrentWeek() {
+      try {
+          const response = await fetch("{{ '/assets/calendar.json' | relative_url }}?v=" + new Date().getTime());
+          if (!response.ok) return;
+          const events = await response.json();
+          
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          const currentEvent = events.find(event => {
+              const parts = event.date.split('-');
+              const weekStart = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+              const weekEnd = new Date(weekStart);
+              weekEnd.setDate(weekStart.getDate() + 7);
+              return (today >= weekStart && today < weekEnd);
+          });
+
+          const widget = document.getElementById('current-week-widget');
+          if (currentEvent) {
+              const badge = currentEvent.weekBadge || "أسبوع";
+              const title = currentEvent.title || "";
+              
+              document.getElementById('week-badge-insert').innerHTML = `
+                <span class="current-label-tag">${badge}</span>
+              `;
+              
+              document.getElementById('week-title-text').innerHTML = `
+                <span>${title}</span>
+              `;
+              
+              widget.style.display = 'flex'; 
+          } else {
+              widget.style.display = 'none';
+          }
+      } catch (error) {
+          console.error("Error loading calendar:", error);
+          document.getElementById('current-week-widget').style.display = 'none';
+      }
+  }
+
+  /* === 3. منطق المواد والفلاتر === */
+  const materialsList = document.getElementById('materials-list');
+  const filterBar = document.getElementById('filter-bar');
+  let allCourses = [];
+
+  function renderMaterialItems(items) {
+    materialsList.innerHTML = '';
+    if (!items || items.length === 0) {
+        materialsList.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:20px; width:100%;">لا توجد مقررات في هذا التصنيف.</p>';
+        return;
+    }
+    items.forEach((item) => {
+      const el = document.createElement('div');
+      el.className = 'material-item';
+      const iconColor = item.color || '#1a2ac6';
+      const iconClass = item.icon || 'fa-book';
+      const iconBg = iconColor + '15'; 
+
+      el.addEventListener('click', () => { window.location.href = `{{ '/course' | relative_url }}/${item.code}`; });
+
+      el.innerHTML = `
+        <div class="item-icon-box" style="color: ${iconColor}; background-color: ${iconBg};">
+          <i class="fas ${iconClass}"></i>
+        </div>
+        <div class="item-content">
+            <div class="item-title"><h3>${item.name}</h3></div>
+            <div class="item-meta">
+                ${item.type ? `<span class="item-type-chip">${item.type}</span>` : ''}
+                ${item.hideCode ? '' : `<span class="item-code">${item.code}</span>`}
+            </div>
+        </div>
+        <span class="item-arrow"><i class="fas fa-chevron-left"></i></span>
+      `;
+      materialsList.appendChild(el);
+    });
+  }
+
+  function createFilters(courses) {
+    if(!filterBar) return;
+    filterBar.innerHTML = '';
+    const viewToggle = document.createElement('div');
+    viewToggle.className = 'view-toggle';
+    viewToggle.innerHTML = `<i class="fas fa-list" id="list-view"></i><i class="fas fa-th-large" id="grid-view"></i>`;
+    filterBar.appendChild(viewToggle);
+
+    const divider = document.createElement('div');
+    divider.className = 'filter-divider';
+    filterBar.appendChild(divider);
+
+    const types = [...new Set(courses.map(c => c.type))];
+    types.unshift('all');
+    types.forEach(type => {
+      const filterBtn = document.createElement('div');
+      filterBtn.className = 'filter-item';
+      if (type === 'all') filterBtn.classList.add('active');
+
+      const label = document.createElement('span');
+      label.textContent = type === 'all' ? 'الكل' : type;
+      filterBtn.appendChild(label);
+
+      const count = document.createElement('span');
+      count.className = 'filter-count';
+      count.textContent = type === 'all' ? courses.length : courses.filter(c => c.type === type).length;
+      filterBtn.appendChild(count);
+
+      filterBtn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-item').forEach(btn => btn.classList.remove('active'));
+        filterBtn.classList.add('active');
+        const filtered = type === 'all' ? allCourses : allCourses.filter(c => c.type === type);
+        renderMaterialItems(filtered);
+      });
+      filterBar.appendChild(filterBtn);
+    });
+
+    const gridBtn = viewToggle.querySelector('#grid-view');
+    const listBtn = viewToggle.querySelector('#list-view');
+    function setView(mode, save = true) {
+      if (mode === 'grid') { materialsList.classList.add('grid-view'); gridBtn.classList.add('active'); listBtn.classList.remove('active'); } 
+      else { materialsList.classList.remove('grid-view'); listBtn.classList.add('active'); gridBtn.classList.remove('active'); }
+      if (save) localStorage.setItem('viewMode', mode);
+    }
+    gridBtn.addEventListener('click', () => setView('grid'));
+    listBtn.addEventListener('click', () => setView('list'));
+    const savedMode = localStorage.getItem('viewMode');
+    setView(savedMode || (window.innerWidth < 768 ? 'list' : 'grid'), false);
+  }
+
+  /* === 4. تحديث الإحصائيات === */
+  function updateStats(materialsData) {
+    const setNum = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
+    setNum('stat-courses', materialsData.length);
+    setNum('stat-categories', new Set(materialsData.map(c => c.type)).size);
+    setNum('stat-tools', document.querySelectorAll('.tool-item').length);
+  }
+
+  /* === 5. تنفيذ التحميل المتزامن === */
+  document.addEventListener('DOMContentLoaded', () => {
+    const mainArea = document.getElementById('main-content-area');
+
+    Promise.all([
+        checkCurrentWeek(),
+        fetch("{{ '/assets/data/materials.json' | relative_url }}").then(res => res.json())
+    ])
+    .then(([weekData, materialsData]) => {
+        allCourses = materialsData;
+        createFilters(materialsData);
+        renderMaterialItems(materialsData);
+        updateStats(materialsData);
+        
+        // إظهار كل شيء دفعة واحدة
+        mainArea.classList.add('loaded');
+    })
+    .catch(err => {
+        console.error("Critical Load Error:", err);
+        mainArea.classList.add('loaded');
+    });
+  });
+</script>
+
+</body>
+</html>
