@@ -1,7 +1,8 @@
 {
     "name": "مقرر تكنولوجيا التعليم والتعلم",
+    "cover": "/c/covers/default.png",
     "description": "",
-    "url": "https://rawafid.jassim.one/c/EDUC221",
+    "url": "https://rawafid.jassim.one/course/EDUC221",
     "items": [
         {
             "id": 1,

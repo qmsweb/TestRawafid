@@ -352,7 +352,7 @@
 
     backLink.addEventListener('click', (e) => {
         if (courseCode && courseCode !== 'null') {
-            backLink.href = `${BASE_URL}/course.html?i=${courseCode}`;
+            backLink.href = `${BASE_URL}/course/${courseCode}`;
         } else {
             e.preventDefault();
             if (window.history.length > 1) {
@@ -364,7 +364,7 @@
     });
 
     if(courseCode) {
-        backLink.href = `${BASE_URL}/course.html?i=${courseCode}`;
+        backLink.href = `${BASE_URL}/course/${courseCode}`;
     }
 
     const timestamp = new Date().getTime();

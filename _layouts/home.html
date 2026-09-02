@@ -880,7 +880,7 @@
       const iconClass = item.icon || 'fa-book';
       const iconBg = iconColor + '15'; 
 
-      el.addEventListener('click', () => { window.location.href = `{{ '/course' | relative_url }}?i=${item.code}`; });
+      el.addEventListener('click', () => { window.location.href = `{{ '/course' | relative_url }}/${item.code}`; });
 
       el.innerHTML = `
         <div class="item-icon-box" style="color: ${iconColor}; background-color: ${iconBg};">

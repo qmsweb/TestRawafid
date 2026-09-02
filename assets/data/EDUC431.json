@@ -1,7 +1,8 @@
 {
     "name": "مقرر تجريبي",
+    "cover": "/c/covers/EDUC431.PNG",
     "description": "",
-    "url": "https://qmsweb.github.io/TestRawafid/c/EDUC431",
+    "url": "https://qmsweb.github.io/TestRawafid/course/EDUC431",
     "items": [
         {
             "id": 100,

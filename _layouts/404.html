@@ -15,7 +15,7 @@ title: الصفحة غير موجودة
       const courseId = path.split("/c/")[1];
       if (courseId) {
         // توجيه المستخدم لصفحة الكورس الجديدة
-        window.location.replace(`{{ '/course' | relative_url }}?i=${courseId}`);
+        window.location.replace(`{{ '/course' | relative_url }}/${courseId}`);
       }
     }
   </script>

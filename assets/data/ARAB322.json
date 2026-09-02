@@ -1,5 +1,6 @@
 {
     "name": "مقرر البلاغة العربية",
+    "cover": "/c/covers/default.png",
     "description": "",
     "items": [
         {
@@ -7,7 +8,7 @@
             "title": "تدريبات على المجاز المرسل",
             "description": "",
             "type": "links",
-            "preview_url": "https://groups.google.com/g/loughatouna/c/HKdlUz3Y6XY",
+            "preview_url": "https://groups.google.com/g/loughatouna/course/HKdlUz3Y6XY",
             "time-ms": "1760477083319"
         },
         {

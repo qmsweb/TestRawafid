@@ -1,7 +1,8 @@
 {
   "name": "مقرر الأدب العماني",
+    "cover": "/c/covers/ARAB323.PNG",
   "description": "",
-  "url": "https://rawafid.jassim.one/c/ARAB323",
+  "url": "https://rawafid.jassim.one/course/ARAB323",
   "books": [
     "book_1",
     "book_2"
