@@ -1,6 +1,6 @@
 ---
 layout: course
-code: "EDUC315"
+code: "EDUC317"
 title: "الإدارة الصفية والمدرسية"
 og_title: "الإدارة الصفية والمدرسية - روافد"
 ---

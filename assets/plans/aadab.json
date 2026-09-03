@@ -1,0 +1,58 @@
+[
+  { "id": "ARAB101A", "name": "اللغة العربية ومهاراتها", "hours": 3, "cat": "uni", "prereq": null },
+  { "id": "ISLM101", "name": "الحضارة الإسلامية", "hours": 3, "cat": "uni", "prereq": null },
+  { "id": "ENGL101A", "name": "مهارات الاتصال 1 (إنجليزي)", "hours": 3, "cat": "uni", "prereq": null },
+  { "id": "ARAB111", "name": "الشعر الجاهلي", "hours": 3, "cat": "spec", "prereq": null },
+  { "id": "ARAB112", "name": "نحو 1", "hours": 3, "cat": "spec", "prereq": null },
+  { "id": "FPBM001A", "name": "رياضيات أساسية (Basic Math)", "hours": 0, "cat": "found", "prereq": null },
+  { "id": "FPAM003A", "name": "رياضيات تطبيقية (Applied Math)", "hours": 0, "cat": "found", "prereq": "FPBM001A" },
+  { "id": "FPIT001A", "name": "تقنية معلومات 1 (IT 1)", "hours": 0, "cat": "found", "prereq": null },
+
+  { "id": "ENGL102A", "name": "مهارات الاتصال 2", "hours": 3, "cat": "uni", "prereq": "ENGL101A" },
+  { "id": "ARAB122", "name": "الشعر الإسلامي والأموي", "hours": 3, "cat": "spec", "prereq": "ARAB111" },
+  { "id": "ARAB124", "name": "نحو 2", "hours": 3, "cat": "spec", "prereq": "ARAB112" },
+  { "id": "ARAB125", "name": "النثر القديم", "hours": 3, "cat": "spec", "prereq": null },
+  { "id": "ARAB128", "name": "مدخل إلى المصادر اللغوية والأدبية", "hours": 3, "cat": "spec", "prereq": "ARAB111" },
+  { "id": "FPIT002A", "name": "تقنية معلومات 2 (IT 2)", "hours": 0, "cat": "found", "prereq": "FPIT001A" },
+
+  { "id": "SOCIO101A", "name": "علم الاجتماع", "hours": 3, "cat": "uni", "prereq": null },
+  { "id": "ARAB212", "name": "الشعر العباسي", "hours": 3, "cat": "spec", "prereq": "ARAB122" },
+  { "id": "ARAB213", "name": "نحو 3", "hours": 3, "cat": "spec", "prereq": "ARAB124" },
+  { "id": "ARAB214", "name": "النثر الأندلسي", "hours": 3, "cat": "spec", "prereq": "ARAB125" },
+  { "id": "ARAB215", "name": "الصرف", "hours": 3, "cat": "spec", "prereq": "ARAB112" },
+
+  { "id": "PHL101A", "name": "الفلسفة", "hours": 3, "cat": "uni", "prereq": null },
+  { "id": "ARAB221", "name": "أدب العصور المتتابعة", "hours": 3, "cat": "spec", "prereq": "ARAB212" },
+  { "id": "ARAB222", "name": "النثر العباسي", "hours": 3, "cat": "spec", "prereq": "ARAB125" },
+  { "id": "ARAB223", "name": "الشعر الأندلسي", "hours": 3, "cat": "spec", "prereq": "ARAB212" },
+  { "id": "ARAB224", "name": "نحو 4", "hours": 3, "cat": "spec", "prereq": "ARAB213" },
+
+  { "id": "ARAB311", "name": "اللسانيات", "hours": 4, "cat": "spec", "prereq": "ARAB224" },
+  { "id": "ARAB312", "name": "النثر الحديث", "hours": 3, "cat": "spec", "prereq": "ARAB214" },
+  { "id": "ARAB313", "name": "الشعر الحديث", "hours": 3, "cat": "spec", "prereq": "ARAB223" },
+  { "id": "ARAB314", "name": "علم الأصوات", "hours": 4, "cat": "spec", "prereq": "ARAB215" },
+  { "id": "ARAB315", "name": "علم الدلالة", "hours": 3, "cat": "spec", "prereq": "ARAB128" },
+
+  { "id": "MNGT313A", "name": "ريادة الأعمال", "hours": 3, "cat": "uni", "prereq": null },
+  { "id": "ARAB321", "name": "فقه اللغة", "hours": 3, "cat": "spec", "prereq": "ARAB311" },
+  { "id": "ARAB323", "name": "الأدب العماني", "hours": 3, "cat": "spec", "prereq": "ARAB313" },
+  { "id": "ARAB324", "name": "تحليل الخطاب", "hours": 3, "cat": "spec", "prereq": "ARAB311" },
+  { "id": "ARAB326", "name": "بلاغة (علم المعاني)", "hours": 3, "cat": "spec", "prereq": "ARAB224" },
+
+  { "id": "ARAB411", "name": "النقد الأدبي القديم", "hours": 3, "cat": "spec", "prereq": "ARAB212" },
+  { "id": "ARAB412", "name": "أدب الطفل", "hours": 3, "cat": "spec", "prereq": "ARAB312" },
+  { "id": "ARAB413", "name": "الأدب المقارن", "hours": 3, "cat": "spec", "prereq": "ARAB323" },
+  { "id": "ARAB414", "name": "تطبيقات نحوية", "hours": 3, "cat": "spec", "prereq": "ARAB224" },
+
+  { "id": "ARAB421", "name": "بلاغة (بيان وبديع)", "hours": 3, "cat": "spec", "prereq": "ARAB326" },
+  { "id": "ARAB422", "name": "النقد الأدبي الحديث", "hours": 3, "cat": "spec", "prereq": "ARAB411" },
+  { "id": "ARAB423", "name": "علم العروض والقافية", "hours": 3, "cat": "spec", "prereq": "ARAB414" },
+  { "id": "ARAB424", "name": "تحقيق النصوص", "hours": 4, "cat": "spec", "prereq": "ARAB411" },
+
+  { "id": "ARAB328", "name": "أدب الخيال العلمي (مقرر اختياري)", "hours": 2, "cat": "elective", "prereq": "ARAB313" },
+  { "id": "ARAB329", "name": "اللهجات العربية (مقرر اختياري)", "hours": 2, "cat": "elective", "prereq": "ARAB314" },
+  { "id": "ARAB415", "name": "المعجمية والمصطلحية (مقرر اختياري)", "hours": 2, "cat": "elective", "prereq": "ARAB321" },
+  { "id": "ARAB416", "name": "المدارس النحوية (مقرر اختياري)", "hours": 2, "cat": "elective", "prereq": "ARAB224" },
+  { "id": "ARAB425", "name": "أصول البحث اللغوي والأدبي (مقرر اختياري)", "hours": 2, "cat": "elective", "prereq": "ARAB413" },
+  { "id": "ARAB426", "name": "تحليل نصوص أدبية (مقرر اختياري)", "hours": 2, "cat": "elective", "prereq": "ARAB324" }
+]

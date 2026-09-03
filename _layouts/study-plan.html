@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ page.title | default: "دليل المقررات الدراسية" }}</title>
+  <title>{{ page.title | default: "أداة الخطة الدراسية" }}</title>
 
-  <link rel="stylesheet" href="{{ '/fonts/fonts.css' | relative_url }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
     
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
   <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
   <meta property="og:title" content="{{ page.title | default: 'دليل المقررات - روافد' }}">
-  <meta property="og:description" content="دليل تفاعلي لمعرفة تفاصيل المقررات والمتطلبات السابقة.">
+  <meta property="og:description" content="دليل تفاعلي لمعرفة تفاصيل المقررات والمتطلبات السابقة واللاحقة.">
   <meta property="og:image" content="{{ '/images/plan.png' | relative_url }}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
   <meta property="og:type" content="website">
@@ -264,14 +266,14 @@
       
     <div class="tool-header">
       <div>
-          <h1>دليل المقررات الدراسية</h1>
-          <p>استعرض الخطط الدراسية والمتطلبات</p>
+          <h1>الخطة الدراسية</h1>
+          <p> </p>
       </div>
 
       <div class="plan-controls">
           <select id="planSelector" class="header-select" onchange="fetchPlanData()">
               <option value="edu" selected>تخصص التربية في اللغة العربية</option>
-              <option value="arts">تخصص آداب اللغة العربية (قريبًا)</option>
+              <option value="aadab">تخصص آداب اللغة العربية</option>
           </select>
       </div>
     </div>
@@ -444,10 +446,16 @@
       // المتطلب السابق
       const prereqEl = document.getElementById('cPrereq');
       if (course.prereq) {
-          const prereqName = currentCoursesDB.find(c => c.id === course.prereq)?.name || course.prereq;
-          prereqEl.innerHTML = `<a class="internal-link" onclick="displayCourse('${course.prereq}', true)">
-                                  <i class="fas fa-arrow-left"></i> ${course.prereq} (${prereqName})
-                                </a>`;
+          // تقسيم السلسلة النصية للتعامل مع المقررات المتعددة
+          const prereqList = course.prereq.split(',').map(p => p.trim());
+          const prereqLinks = prereqList.map(pId => {
+              const pCourse = currentCoursesDB.find(c => c.id === pId);
+              const pName = pCourse ? pCourse.name : pId;
+              return `<a class="internal-link" onclick="displayCourse('${pId}', true)">
+                        <i class="fas fa-arrow-left"></i> ${pId} (${pName})
+                      </a>`;
+          });
+          prereqEl.innerHTML = prereqLinks.join('');
       } else {
           prereqEl.innerHTML = '<span style="color:var(--text-muted)">لا يوجد متطلب سابق</span>';
       }
@@ -455,13 +463,28 @@
       // المتطلب المرافق
       const coreqEl = document.getElementById('cCoreq');
       if (course.coreq) {
-          coreqEl.innerHTML = `<strong>${course.coreq}</strong>`;
+          // التعامل مع المتطلبات المتزامنة بنفس طريقة السابقة لضمان عرض الاسم
+          const coreqList = course.coreq.split(',').map(p => p.trim());
+          const coreqLinks = coreqList.map(cId => {
+              const cCourse = currentCoursesDB.find(c => c.id === cId);
+              const cName = cCourse ? cCourse.name : cId;
+              return `<a class="internal-link" onclick="displayCourse('${cId}', true)">
+                        <i class="fas fa-exchange-alt"></i> ${cId} (${cName})
+                      </a>`;
+          });
+          coreqEl.innerHTML = coreqLinks.join('');
       } else {
-          coreqEl.innerText = "لا يوجد";
+          coreqEl.innerHTML = '<span style="color:var(--text-muted)">لا يوجد</span>';
       }
 
       // المتطلب اللاحق
-      const nextCourses = currentCoursesDB.filter(c => c.prereq === course.id);
+      // البحث في جميع المقررات عن المقررات التي تحتوي قائمة متطلباتها السابقة على معرف المقرر الحالي
+      const nextCourses = currentCoursesDB.filter(c => {
+          if (!c.prereq) return false;
+          const pList = c.prereq.split(',').map(p => p.trim());
+          return pList.includes(course.id);
+      });
+      
       const postreqContainer = document.getElementById('cPostreqContainer');
       const postreqVal = document.getElementById('cPostreq');
 

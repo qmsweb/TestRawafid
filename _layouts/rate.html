@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>تقييم المنصة | روافد</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+   
+  <link rel="stylesheet" href="{{ '/assets/css/topbar.css' | relative_url }}" />
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('rawafed-theme');
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+    /* === المتغيرات والأنماط الأساسية === */
+    :root {
+      --primary-color: #1a2ac6;
+      --primary-dark: #121e9ec4;
+      --text-color: #1d1d1d;
+      --text-muted: #444;
+      --bg-color: #f8f9fc;
+      --bg-card: #ffffff;
+      --border-color: #eee;
+      --feature-bg: #eff3ff;
+      --feature-border: #dbeafe;
+      --footer-text: #888;
+      --highlight-color: #1a2ac6;
+      --title-color: #000;
+    }
+
+    [data-theme="dark"] {
+      --primary-color: #7986cb;
+      --primary-dark: #5c6bc0;
+      --text-color: #e0e0e0;
+      --text-muted: #b0b0b0;
+      --bg-color: #121212;
+      --bg-card: #1e1e1e;
+      --border-color: #333;
+      --feature-bg: rgba(121, 134, 203, 0.1);
+      --feature-border: rgba(121, 134, 203, 0.2);
+      --footer-text: #666;
+      --highlight-color: #7986cb;
+      --title-color: #ffffff;
+    }
+
+    * { box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; }
+   
+    body {
+      margin: 0; padding: 0; 
+      background-color: var(--bg-color); 
+      color: var(--text-color);
+      padding-bottom: 50px; 
+      padding-top: 60px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* --- شريط التنقل والعودة --- */
+    .nav-header {
+      margin-top: 30px; 
+      padding: 0 20px;
+      margin-bottom: 15px;
+      display: flex; align-items: center; 
+      max-width: 900px; margin-left: auto; margin-right: auto;
+    }
+
+    .back-btn {
+      text-decoration: none; color: var(--primary-color); 
+      font-weight: 700; font-size: 0.9rem;
+      display: inline-flex; align-items: center; gap: 8px; 
+      padding: 8px 16px;
+      background: var(--bg-card); 
+      border-radius: 50px; transition: 0.3s;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+    .back-btn:hover { 
+      background: var(--primary-color); 
+      color: #ffffff; 
+      border-color: var(--primary-color); 
+    }
+
+    /* --- حاوية المحتوى --- */
+    .content-container { 
+      max-width: 800px; 
+      margin: 0 auto; 
+      padding: 0 20px; 
+    }
+
+    /* --- تنسيقات صفحة التقييم --- */
+    /* التعديل هنا: البانر بعرض كامل بدون حواف أو مسافات */
+    .banner-container {
+      width: 100%;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .banner-img {
+      width: 100%;
+      display: block;
+      /* تم إزالة border-radius */
+      border-radius: 0; 
+      object-fit: cover;
+      /* تم إزالة الظل والحدود لإعطاء مظهر "فلات" ممتد */
+      box-shadow: none;
+      border: none;
+    }
+
+    .about-header {
+      text-align: center; 
+      margin-bottom: 20px;
+    }
+   
+    .about-title {
+      font-size: 2rem; font-weight: 800; color: var(--primary-color);
+      margin-bottom: 10px;
+      margin-top: 5px;
+    }
+
+    /* حاوية التعليمات بدون صندوق */
+    .instructions-container {
+      margin-bottom: 30px;
+      padding: 0 10px;
+    }
+
+    .info-text {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text-color);
+      margin: 0;
+      text-align: justify;
+    }
+
+    .privacy-note {
+      display: inline-block;
+      margin-top: 15px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .privacy-note i {
+      margin-left: 5px;
+      color: var(--primary-color);
+    }
+
+    .highlight {
+      color: var(--highlight-color);
+      font-weight: 700;
+    }
+
+    /* زر التقييم */
+    .eval-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      margin-top: 15px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      font-family: inherit;
+    }
+    .eval-btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    .eval-btn i {
+      margin-left: 8px;
+    }
+
+    /* حاوية الإطار (النموذج) */
+    #form-container {
+      display: none;
+      width: 100%;
+      margin-top: 30px;
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    #form-container iframe {
+      width: 100%;
+      height: 800px;
+      border: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="topbar-container">
+     {% include header.html %} 
+  </div>
+
+  <div class="nav-header">
+    <a href="{{ '/index.html' | relative_url }}" class="back-btn">
+      <i class="fas fa-arrow-right"></i> العودة للرئيسة
+    </a>
+  </div>
+
+  <div class="banner-container">
+    <img src="{{ '/images/r26banner.png' | relative_url }}" alt="بانر التقييم" class="banner-img">
+  </div>
+
+  <div class="content-container">
+   
+    <div class="about-header">
+    </div>
+
+    <div class="instructions-container">
+      <p class="info-text">
+        نعمل باستمرار على تحسين وتحديث منصة <span class="highlight">"روافد"</span> لتكون عند حسن ظنكم، لذا يسعدنا أن تشاركونا تقييمكم ومقترحاتكم البناءة لنتمكن من تقديم الأفضل لكم وتلبية تطلعاتكم.
+        <br><br>
+        نرجو منكم التكرم بتعبئة هذا النموذج بهدف تحسين وتطوير الخدمات المقدمة عبر منصة روافد لطلبة كلية الآداب والعلوم الإنسانية بجامعة الشرقية. رأيكم يهمنا لتقديم تجربة أفضل.
+      </p>
+      <span class="privacy-note">
+        <i class="fas fa-shield-alt"></i> ستستعمل البيانات لأغراض تحسين وتطوير المنصة فقط.
+      </span>
+    </div>
+
+    <button class="eval-btn" id="start-eval-btn" onclick="showForm()">
+      <i class="fas fa-clipboard-list"></i> ابدأ التقييم الآن
+    </button>
+
+    <div id="form-container">
+      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSebZy8QJCSN7wPupwQd7hK7ZrY9FnyVdRdYrhTsKI9n5SJd4Q/viewform?embedded=true" title="نموذج تقييم منصة روافد">
+        جاري تحميل النموذج...
+      </iframe>
+    </div>
+
+  </div>
+
+  {% include footer.html %}
+
+<script>
+  // دالة تغيير الوضع
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('rawafed-theme', newTheme);
+  }
+
+  // دالة إظهار نموذج التقييم في نفس الصفحة
+  function showForm() {
+    const formContainer = document.getElementById('form-container');
+    const evalBtn = document.getElementById('start-eval-btn');
+    
+    // إظهار الإطار
+    formContainer.style.display = 'block';
+    
+    // إخفاء الزر بعد النقر عليه
+    evalBtn.style.display = 'none';
+
+    // التمرير السلس إلى الأسفل ليظهر النموذج بالكامل
+    setTimeout(() => {
+      formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+</script>
+
+</body>
+</html>

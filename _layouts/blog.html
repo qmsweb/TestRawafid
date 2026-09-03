@@ -158,6 +158,21 @@
       gap: 15px;
     }
 
+    .article-meta .author-avatar {
+      display: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+      vertical-align: middle;
+      margin-inline-start: 6px;
+    }
+
+    #post-author {
+      display: inline-flex;
+      align-items: center;
+    }
+
     .page-title {
       font-size: clamp(1.9rem, 3vw, 2rem);
       font-weight: 800;
@@ -426,7 +441,7 @@
 
     <div id="post-meta" class="article-meta">
       {% if page.date %}{% assign months = "يناير,فبراير,مارس,أبريل,مايو,يونيو,يوليو,أغسطس,سبتمبر,أكتوبر,نوفمبر,ديسمبر" | split: "," %}{% assign month_index = page.date | date: "%-m" | minus: 1 %}<span><i class="far fa-calendar"></i> {{ page.date | date: "%-d" }} {{ months[month_index] }} {{ page.date | date: "%Y" }}</span>{% endif %}
-      {% if page.author %}<span><i class="far fa-user"></i> {{ page.author }}</span>{% endif %}
+      {% if page.author %}<span id="post-author" data-author-uid="{{ page.author }}"><i class="far fa-user"></i> <span class="author-name"></span><img class="author-avatar" alt=""></span>{% endif %}
     </div>
 
     <div id="post-content" class="page-content">
@@ -479,6 +494,34 @@
       const coverImg = document.getElementById('post-cover');
       if (coverImg && coverImg.getAttribute('src')) {
         coverImg.style.display = 'block';
+      }
+
+      /* === جلب بيانات المؤلف من ملف authors.json عبر الـ UID === */
+      const authorEl = document.getElementById('post-author');
+      if (authorEl) {
+        const authorUid = authorEl.getAttribute('data-author-uid');
+        const timestamp = new Date().getTime();
+        fetch(`${BASE_URL}/assets/blogdata/authors.json?v=${timestamp}`, { cache: "no-store" })
+          .then(r => r.json())
+          .then(authorData => {
+            const authors = Array.isArray(authorData) ? authorData : (authorData.authors || []);
+            const author = authors.find(a => a.uid === authorUid);
+            if (author) {
+              const nameEl = authorEl.querySelector('.author-name');
+              if (nameEl) nameEl.textContent = author.name;
+              if (author.image) {
+                const imgEl = authorEl.querySelector('.author-avatar');
+                if (imgEl) {
+                  imgEl.src = author.image;
+                  imgEl.style.display = 'inline-block';
+                }
+              }
+            }
+          })
+          .catch(() => {
+            const nameEl = authorEl.querySelector('.author-name');
+            if (nameEl) nameEl.textContent = authorUid;
+          });
       }
 
       if (!RELATED) return;

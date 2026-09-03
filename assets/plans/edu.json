@@ -34,15 +34,15 @@
 
   { "id": "ARAB321", "name": "فقه اللغة", "hours": 3, "cat": "spec", "prereq": "ARAB315" },
   { "id": "ARAB323", "name": "الأدب العماني", "hours": 3, "cat": "spec", "prereq": "ARAB313" },
-  { "id": "ARAB327", "name": "نقد قديم", "hours": 3, "cat": "spec", "prereq": "ARAB212" },
+  { "id": "ARAB327", "name": "النقد قديم", "hours": 3, "cat": "spec", "prereq": "ARAB212" },
   { "id": "ARAB322", "name": "البلاغة العربية", "hours": 3, "cat": "spec", "prereq": "ARAB313" },
-  { "id": "EDUC214", "name": "القياس والتقويم", "hours": 3, "cat": "edu", "prereq": "EDUC121" },
-  { "id": "EDUC221", "name": "تكنولوجيا التعليم", "hours": 3, "cat": "edu", "prereq": "EDUC101" },
+  { "id": "EDUC214", "name": "القياس والتقويم", "hours": 3, "cat": "edu", "prereq": "EDUC431" },
+  { "id": "EDUC221", "name": "تكنولوجيا التعليم", "hours": 3, "cat": "edu", "prereq": "EDUC121" },
 
   { "id": "ARAB419", "name": "أدب الطفل", "hours": 3, "cat": "spec", "prereq": "ARAB312, ARAB313" },
-  { "id": "ARAB418", "name": "موسيقى الشعر", "hours": 3, "cat": "spec", "prereq": "ARAB323" },
-  { "id": "ARAB417", "name": "نقد حديث", "hours": 3, "cat": "spec", "prereq": "ARAB327" },
-  { "id": "EDUC432", "name": "طرق تدريس اللغة العربية", "hours": 3, "cat": "edu", "prereq": "EDUC431", "coreq": "EDUC419" },
+  { "id": "ARAB418", "name": "موسيقا الشعر", "hours": 3, "cat": "spec", "prereq": "ARAB323" },
+  { "id": "ARAB417", "name": "النقد حديث", "hours": 3, "cat": "spec", "prereq": "ARAB327" },
+  { "id": "EDUC432", "name": "طرق تدريس اللغة العربية", "hours": 3, "cat": "edu", "prereq": "EDUC431, EDUC214, EDUC221, EDUC317", "coreq": "EDUC419" },
   { "id": "EDUC419", "name": "تطبيقات عملية", "hours": 2, "cat": "edu", "prereq": null, "coreq": "EDUC432" },
   { "id": "EDUC499", "name": "التربية العملية", "hours": 9, "cat": "edu", "prereq": "EDUC419" },
 
