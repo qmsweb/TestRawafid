@@ -436,7 +436,8 @@
             mediaHTML = `<div class="pdf-container"><iframe src="${finalViewerSrc}" class="pdf-frame" title="PDF Viewer" allowfullscreen></iframe></div>`;
         } 
         else if (item.image_url) {
-            mediaHTML = `<div class="image-wrapper"><img src="${item.image_url}" alt="${item.title}"></div>`;
+            const imgSrc = item.image_url.startsWith('http') || item.image_url.startsWith('/') ? item.image_url : (BASE_URL || '/') + '/' + item.image_url;
+            mediaHTML = `<div class="image-wrapper"><img src="${imgSrc}" alt="${item.title}"></div>`;
         }
 
         let formattedDescription = item.description || '';

@@ -497,7 +497,8 @@ function renderMaterials(filter = 'all') {
 
     let imageHTML = '';
     if (item.image_url) { 
-        imageHTML = `<div class="item-image"><img src="${item.image_url}" alt="${item.title}" loading="lazy"></div>`;
+        const imgSrc = item.image_url.startsWith('http') || item.image_url.startsWith('/') ? item.image_url : siteBaseUrl + item.image_url;
+        imageHTML = `<div class="item-image"><img src="${imgSrc}" alt="${item.title}" loading="lazy"></div>`;
     }
 
     let badgeHTML = '';
