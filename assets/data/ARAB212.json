@@ -10,7 +10,7 @@
             "type": "resources",
             "direct": "yes",
             "url": "/blog/motanabi",
-            "image_url": "images/mtnbi1.png",
+            "image_url": "/images/mtnbi1.png",
             "preview_url": "https://motanabi.jassim.one",
             "time-ms": "1763453087338"
         },

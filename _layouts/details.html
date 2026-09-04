@@ -156,6 +156,7 @@
     }
     
     .pdf-frame { width: 100%; height: 100%; border: none; display: block; }
+    .pdfjs-iframe { width: 100%; height: 100%; border: none; display: block; }
 
     .pdf-fallback {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -253,6 +254,7 @@
         page-break-inside: avoid;
       }
       .pdf-fallback embed { display: none !important; }
+      .pdfjs-iframe { display: none !important; }
     }
 
     @media (max-width: 768px) {
@@ -330,20 +332,19 @@
 
   // === دالة الطباعة ===
   function printContent() {
-    const pdfFrame = document.querySelector('.pdf-frame');
+    const pdfFrame = document.querySelector('.pdfjs-iframe');
     
-    // إذا كان هناك ملف PDF معروض، نحاول طباعته مباشرة من داخله
+    // إذا كان هناك ملف PDF معروض في عارض pdfjs، نطبع من الصفحة الرئيسية
     if (pdfFrame && pdfFrame.contentWindow) {
       try {
-        pdfFrame.contentWindow.focus();
-        pdfFrame.contentWindow.print();
-        return; // الخروج من الدالة بعد طباعة الـ PDF
+        window.print();
+        return;
       } catch (error) {
-        console.warn("تعذرت طباعة إطار PDF مباشرة بسبب سياسات المتصفح (CORS)، سيتم استخدام الطباعة العادية.");
+        console.warn("تعذرت طباعة إطار PDF، سيتم استخدام الطباعة العادية.");
       }
     }
     
-    // الطباعة العادية في حال كان المحتوى صورة أو نصاً (أو إذا فشلت طباعة إطار الـ PDF)
+    // الطباعة العادية في حال كان المحتوى صورة أو نصاً
     window.print();
   }
 
@@ -442,8 +443,9 @@
 
         if (isPdf && item.download_url) {
             const absolutePdfUrl = new URL(item.download_url, window.location.href).href;
+            const pdfViewerUrl = `${BASE_URL}/pdfjs/web/viewer.html?file=${encodeURIComponent(absolutePdfUrl)}`;
             mediaHTML = `<div class="pdf-container" id="pdf-wrapper">
-                <embed id="pdf-embed" src="${absolutePdfUrl}" type="application/pdf" class="pdf-frame">
+                <iframe id="pdf-embed" src="${pdfViewerUrl}" class="pdfjs-iframe" allowfullscreen></iframe>
                 <div class="pdf-fallback" id="pdf-fallback" style="display:none;">
                     <i class="fas fa-file-pdf fa-3x" style="color:var(--primary-color); margin-bottom:15px;"></i>
                     <p style="margin-bottom:15px; color:var(--text-muted);">تعذر عرض الملف مباشرة، يمكنك تحميله أو فتحه في تبويب جديد:</p>

@@ -10,7 +10,7 @@
             "type": "resources",
             "direct": "yes",
             "url": "/blog/sawamet",
-            "image_url": "images/sawamet-cover.png",
+            "image_url": "/images/sawamet-cover.png",
             "preview_url": "https://sawamet.jassim.one",
             "time-ms": "1763453087338"
         },
