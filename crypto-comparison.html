@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مقارنة العملات الرقمية والميم | دليلك الشامل</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-card: #1a1f2e;
+      --bg-card-hover: #222940;
+      --border-color: #2a3042;
+      --text-primary: #f0f4ff;
+      --text-secondary: #8892b0;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-orange: #f59e0b;
+      --accent-pink: #ec4899;
+      --accent-cyan: #06b6d4;
+      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      --gradient-5: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.15);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bg-animation .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.08;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .bg-animation .orb:nth-child(1) {
+      width: 600px; height: 600px;
+      background: var(--accent-blue);
+      top: -200px; right: -200px;
+      animation-delay: 0s;
+    }
+
+    .bg-animation .orb:nth-child(2) {
+      width: 500px; height: 500px;
+      background: var(--accent-purple);
+      bottom: -200px; left: -200px;
+      animation-delay: -7s;
+    }
+
+    .bg-animation .orb:nth-child(3) {
+      width: 400px; height: 400px;
+      background: var(--accent-pink);
+      top: 50%; left: 50%;
+      animation-delay: -14s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(50px, -50px) scale(1.1); }
+      50% { transform: translate(-30px, 30px) scale(0.95); }
+      75% { transform: translate(40px, 20px) scale(1.05); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 80px 0 60px;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      color: var(--accent-blue);
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+
+    .hero h1 {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #f0f4ff 0%, #8892b0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero h1 span {
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto 40px;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 60px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      border-color: var(--accent-blue);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .stat-card .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .stat-card .stat-value {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--text-primary);
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Section Headers */
+    .section-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .section-header h2 {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .section-header p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    section {
+      margin-bottom: 70px;
+    }
+
+    /* Main Comparison Table */
+    .comparison-table-wrapper {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .comparison-table thead th {
+      background: var(--bg-secondary);
+      padding: 16px 18px;
+      text-align: right;
+      font-weight: 700;
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--border-color);
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .comparison-table tbody td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+
+    .comparison-table tbody tr {
+      transition: background 0.2s;
+    }
+
+    .comparison-table tbody tr:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .comparison-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .coin-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 180px;
+    }
+
+    .coin-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .coin-name {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .coin-symbol {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .price-positive { color: var(--accent-green); font-weight: 600; }
+    .price-negative { color: var(--accent-red); font-weight: 600; }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .tag-btc { background: rgba(247, 147, 26, 0.15); color: #f7931a; }
+    .tag-eth { background: rgba(98, 126, 234, 0.15); color: #627eea; }
+    .tag-meme { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
+    .tag-defi { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .tag-stable { background: rgba(107, 114, 128, 0.15); color: #9ca3af; }
+    .tag-l1 { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+    .tag-l2 { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+
+    /* Category Cards */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .category-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .category-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 3px;
+    }
+
+    .category-card:hover {
+      border-color: transparent;
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .category-card .card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .category-card .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .category-card .card-title {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .category-card .card-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .category-card .coin-list {
+      list-style: none;
+    }
+
+    .category-card .coin-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(42, 48, 66, 0.5);
+    }
+
+    .category-card .coin-list li:last-child {
+      border-bottom: none;
+    }
+
+    .coin-list .coin-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .coin-list .mini-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    /* Risk Matrix */
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .risk-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .risk-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .risk-level {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      margin: 14px 0;
+    }
+
+    .risk-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--border-color);
+    }
+
+    .risk-dot.active.low { background: var(--accent-green); }
+    .risk-dot.active.medium { background: var(--accent-orange); }
+    .risk-dot.active.high { background: var(--accent-red); }
+
+    .risk-card h3 {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .risk-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Strategy Section */
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .strategy-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: all 0.3s;
+    }
+
+    .strategy-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .strategy-card .strategy-num {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 900;
+      opacity: 0.1;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .strategy-card h3 {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .strategy-card p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* Timeline / History */
+    .timeline {
+      position: relative;
+      padding: 0 0 0 30px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      right: 10px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border-color);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 30px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      transition: all 0.3s;
+    }
+
+    .timeline-item:hover {
+      border-color: var(--accent-blue);
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      right: -26px;
+      top: 24px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      border: 3px solid var(--bg-primary);
+    }
+
+    .timeline-year {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--accent-blue);
+      margin-bottom: 6px;
+    }
+
+    .timeline-title {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+    }
+
+    .timeline-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    /* Pros/Cons */
+    .pros-cons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .pros-cons-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+
+    .pros-cons-card h3 {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pros-cons-card ul {
+      list-style: none;
+    }
+
+    .pros-cons-card ul li {
+      padding: 8px 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border-bottom: 1px solid rgba(42, 48, 66, 0.3);
+    }
+
+    .pros-cons-card ul li:last-child {
+      border-bottom: none;
+    }
+
+    .pro-icon { color: var(--accent-green); font-size: 0.8rem; margin-top: 4px; }
+    .con-icon { color: var(--accent-red); font-size: 0.8rem; margin-top: 4px; }
+
+    /* Meme Culture Section */
+    .meme-culture-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .culture-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .culture-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-pink);
+    }
+
+    .culture-card .culture-emoji {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+
+    .culture-card h4 {
+      font-family: 'Noto Kufi Arabic', sans-serif;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .culture-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      border-top: 1px solid var(--border-color);
+      margin-top: 40px;
+    }
+
+    footer p {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero { padding: 50px 0 40px; }
+      .hero h1 { font-size: 1.8rem; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .category-grid { grid-template-columns: 1fr; }
+      .risk-grid { grid-template-columns: 1fr; }
+      .strategy-grid { grid-template-columns: 1fr; }
+      .pros-cons-grid { grid-template-columns: 1fr; }
+      .comparison-table { font-size: 0.8rem; }
+      .comparison-table thead th, .comparison-table tbody td { padding: 10px 12px; }
+      .coin-icon { width: 32px; height: 32px; font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-animation">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+</div>
+
+<div class="container">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span>📊</span> دليلك الشامل لعالم العملات الرقمية
+    </div>
+    <h1>مقارنة شاملة بين<br><span>العملات الرقمية والميم كoinز</span></h1>
+    <p>تحليل مقارن لأهم العملات الرقمية في السوق: البيتكوين، الإيثريوم، العملات الميم، والمزيد — مع مقارنة المخاطر والاستراتيجيات</p>
+  </section>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon">🪙</div>
+      <div class="stat-value">+22,000</div>
+      <div class="stat-label">عملة رقمية في السوق</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-value">$3.5T+</div>
+      <div class="stat-label">القيمة السوقية الإجمالية</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🐶</div>
+      <div class="stat-value">+500</div>
+      <div class="stat-label">عملة ميم نشطة</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🌍</div>
+      <div class="stat-value">500M+</div>
+      <div class="stat-label">مستخدم حول العالم</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-value">24/7</div>
+      <div class="stat-label">تداول بدون توقف</div>
+    </div>
+  </div>
+
+  <!-- ===== قسم المقارنة الرئيسية ===== -->
+  <section>
+    <div class="section-header">
+      <h2>🔍 المقارنة الرئيسية بين العملات</h2>
+      <p>مقارنة تفصيلية لأهم العملات الرقمية والميم كoinز من حيث القيمة السوقية والأداء والخصائص</p>
+    </div>
+    <div class="comparison-table-wrapper">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>العملة</th>
+            <th>النوع</th>
+            <th>القيمة السوقية</th>
+            <th>أعلى سعر</th>
+            <th>العةلية</th>
+            <th>الإ hương</th>
+            <th>المخاطرة</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- BTC -->
+          <tr>
+            <td><span class="rank-badge" style="background:rgba(247,147,26,0.15);color:#f7931a;">1</span></td>
+            <td>
+              <div class="coin-info">
+                <div class="coin-icon" style="background:rgba(247,147,26,0.15);color:#f7931a;">₿</div>
+                <div>
+                  <div class="coin-name">البيتكوين</div>
+                  <div class="coin-symbol">BTC</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag tag-btc">أصل رقمي</span></td>
+            <td><strong>$1.3T+</strong></td>
+            <td>$109,000</td>
+            <td>21 مليون</td>
+            <td class="price-positive">+120% سنوياً</td>
+            <td>
+              <div class="risk-level">
+                <div class="risk-dot active low"></div>
+                <div class="risk-dot active low"></div>
+                <div class="risk-dot"></div>
+                <div class="risk-dot"></div>
+                <div class="risk-dot"></div>
+              </div>
+            </td>
+          </tr>
+          <!-- ETH -->
+          <tr>
+            <td><span class="rank-badge" style="background:rgba(98,126,234,0.15);color:#627eea;">2</span></td>
+            <td>
+              <div class="coin-info">
+                <div class="coin-icon" style="background:rgba(98,126,234,0.15);color:#627eea;">Ξ</div>
+                <div>
+                  <div class="coin-name">الإيثريوم</div>
+                  <div class="coin-symbol">ETH</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag tag-eth">بلوكتشين</span></td>
+            <td><strong>$400B+</strong></td>
+            <td>$4,878</td>
+            <td>120 مليون</td>
+            <td class="price-positive">+85% سنوياً</td>
+            <td>
+              <div class="risk-level">
+                <div class="risk-dot active low"></div>
+                <div class="risk-dot active low"></div>
+                <div class="risk-dot"></div>
+                <div class="risk-dot"></div>
+                <div class="risk-dot"></div>
+              </div>
+            </td>
+          </tr>
+          <!-- SOL -->
+          <tr>
+            <td><span class="rank-badge" style="background:rgba(139,92,246,0.15);color:#8b5cf6;">5</span></td>
+            <td>
+              <div class="coin-info">
+                <div class="coin-icon" style="background:rgba(139,92,246,0.15);color:#8b5cf6;">◎</div>
+                <div>
+                  <div class="coin-name">سولانا</div>
+                  <div class="coin-symbol">SOL</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag tag-l1">بلوكتشين</span></td>
+            <td><strong>$80B+</strong></td>
+            <td>$294</td>
+            <td>لا محدود*</td>
+            <td class="price-positive">+250% سنوياً</td>
+            <td>
+              <div class="risk-level">
+                <div class="risk-dot active medium"></div>
+                <div class="risk-dot active medium"></div>
+                <div class="risk-dot active medium"></div>
+                <div class="risk-dot"></div>
+                <div class="risk-dot"></div>
+              </div>
+            </td>
+          </tr>
+          <!-- DOGE -->
+          <tr>
+            <td><span class="rank-badge" style="background:rgba(245,158,11,0.15);color:#f59e0b;">8</span></td>
+            <td>
+              <div class="coin-info">
+                <div class="coin-icon" style="background:rgba(245,158,11,0.15);color:#f59e0b;">🐕</div>
+                <div>
+                  <div class="coin-name">دوجكوين</div>
+                  <div class="coin-symbol">DOGE</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag tag-meme">ميم كoin</span></td>
+            <td><strong>$25B+</strong></td>
+            <td>$0.73</td>
+            <td>144 مليار+</td>
+            <td class="price-negative">-15% سنوياً</td>
+            <td>
+              <div class="risk-level">
+                <div class="risk-dot active medium"></div>
+                <div class="risk-dot active medium"></div>
+                <div class="risk-dot active medium"></div>
+                <div class="risk-dot active medium"></div>
+                <div class="risk-dot"></div>
+              </div>
+            </td>
+          </tr>
+          <!-- SHIB -->
+          <tr>
+            <td><span class="rank-badge" style="background:rgba(236,72,153,0.15);color:#ec4899;">13</span></td>
+            <td>
+              <div class="coin-info">
+                <div class="coin-icon" style="background:rgba(236,72,153,0.15);color:#ec4899;">🦊</div>
+                <div>
+                  <div class="coin-name">شيبا إينو</div>
+                  <div class="coin-symbol">SHIB</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag tag-meme">ميم كoin</span></td>
+            <td><strong>$9B+</strong></td>
+            <td>$0.000086</td>
+            <td>589 تريليون+</td>
+            <td class="price-negative">-30% سنوياً</td>
+            <td>
+              <div class="risk-level">
+                <div class="risk-dot active high"></div>
+                <div class="risk-dot active high"></div>
+                <div class="risk-dot active high"></div>
+                <div class="risk-dot active high"></div>
+                <div class="risk-dot"></div>
+              </div>
+            </td>
+          </tr>
+          <!-- PEPE -->
+          <tr>
+            <td><span class="rank-badge" style="background:rgba(16,185,129,0.15);color:#10b981;">22</span></td>
+            <td>
+              <div class="coin-info">
+                <div class="coin-icon" style="background:rgba(16,185,129,0.15);color:#10b981;">🐸</div>
+                <div>
+                  <div class="coin-name">بيبي</div>
+                  <div class="coin-symbol">PEPE</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag tag-meme">ميم كoin</span></td>
+            <td><strong>$4B+</strong></td>
+            <td>$0.000017</td>
+            <td>420 تريليون+</td>
+            <td class="price-positive">+600% سنوياً</td>
+            <td>
+              <div class="risk-level">
+                <div class="risk-dot active high"></div>
+                <div class="risk-dot active high"></div>
+                <div class="risk-dot active high"></div>
+                <div class="risk-dot active high"></div>
+                <div class="risk-dot active high"></div>
+              </div>
+            </td>
+          </tr>
+          <!-- XRP -->
+          <tr>
+            <td><span class="rank-badge" style="background:rgba(6,182,212,0.15);color:#06b6d4;">4</span></td>
+            <td>
+              <div class="coin-info">
+                <div class="coin-icon" style="background:rgba(6,182,212,0.15);color:#06b6d4;">✕</div>
+                <div>
+                  <div class="coin-name">ريبل</div>
+                  <div class="coin-symbol">XRP</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag tag-defi">فاب</span></td>
+            <td><strong>$130B+</strong></td>
+            <td>$3.40</td>
+            <td>100 مليار</td>
+            <td class="price-positive">+300% سنوياً</td>
+            <td>
+              <div class="risk-level">
+                <div class="risk-dot active medium"></div>
+                <div class="risk-dot active medium"></div>
+                <div class="risk-dot active medium"></div>
+                <div class="risk-dot"></div>
+                <div class="risk-dot"></div>
+              </div>
+            </td>
+          </tr>
+          <!-- BNB -->
+          <tr>
+            <td><span class="rank-badge" style="background:rgba(245,158,11,0.15);color:#f59e0b;">4</span></td>
+            <td>
+              <div class="coin-info">
+                <div class="coin-icon" style="background:rgba(245,158,11,0.15);color:#f59e0b;">BNB</div>
+                <div>
+                  <div class="coin-name">بي ان بي</div>
+                  <div class="coin-symbol">BNB</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="tag tag-l1">بلوكتشين</span></td>
+            <td><strong>$90B+</strong></td>
+            <td>$793</td>
+            <td>145 مليون</td>
+            <td class="price-positive">+90% سنوياً</td>
+            <td>
+              <div class="risk-level">
+                <div class="risk-dot active low"></div>
+                <div class="risk-dot active low"></div>
+                <div class="risk-dot active medium"></div>
+                <div class="risk-dot"></div>
+                <div class="risk-dot"></div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== فئات العملات ===== -->
+  <section>
+    <div class="section-header">
+      <h2>🗂️ تصنيف العملات حسب الفئة</h2>
+      <p>تصنيف شامل يساعدك على فهم الفروقات بين كل فئة من العملات الرقمية</p>
+    </div>
+    <div class="category-grid">
+      <!-- أصول رقمية -->
+      <div class="category-card" style="border-top: 3px solid #f7931a;">
+        <div class="card-header">
+          <div class="card-icon" style="background:rgba(247,147,26,0.12);color:#f7931a;">🏆</div>
+          <div>
+            <div class="card-title">الأصول الرقمية الأولية</div>
+            <div class="card-subtitle">العملات الرائدة والسابقة للسوق</div>
+          </div>
+        </div>
+        <ul class="coin-list">
+          <li>
+            <div class="coin-left">
+              <div class="mini-icon" style="background:rgba(247,147,26,0.12);color:#f7931a;">₿</div>
+              <div>
+                <div style="font-weight:700;">البيتكوين</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);">أول وأشهر عملة رقمية — "الذهب الرقمي"</div>
+              </div>
+            </div>
+            <span class="price-positive">+120%</span>
+          </li>
+          <li>
+            <div class="coin-left">
+              <div class="mini-icon" style="background:rgba(98,126,234,0.12);color:#627eea;">Ξ</div>
+              <div>
+                <div style="font-weight:700;">الإيثريوم</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);">منصة الذكاء الاصطناعي والعقود الذكية</div>
+              </div>
+            </div>
+            <span class="price-positive">+85%</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- ميم كoinز -->
+      <div class="category-card" style="border-top: 3px solid #ec4899;">
+        <div class="card-header">
+          <div class="card-icon" style="background:rgba(236,72,153,0.12);color:#ec4899;">🐶</div>
+          <div>
+            <div class="card-title">الميم كoinز (Meme Coins)</div>
+            <div class="card-subtitle">عملات مستوحاة من ثقافة الإنترنت</div>
+          </div>
+        </div>
+        <ul class="coin-list">
+          <li>
+            <div class="coin-left">
+              <div class="mini-icon" style="background:rgba(245,158,11,0.12);color:#f59e0b;">🐕</div>
+              <div>
+                <div style="font-weight:700;">دوجكوين</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);">أول ميم كoin — دعم من إيلون ماسك</div>
+              </div>
+            </div>
+            <span class="price-negative">-15%</span>
+          </li>
+          <li>
+            <div class="coin-left">
+              <div class="mini-icon" style="background:rgba(236,72,153,0.12);color:#ec4899;">🦊</div>
+              <div>
+                <div style="font-weight:700;">شيبا إينو</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);">"قاتل الدوجكوين" — نظام DeFi متكامل</div>
+              </div>
+            </div>
+            <span class="price-negative">-30%</span>
+          </li>
+          <li>
+            <div class="coin-left">
+              <div class="mini-icon" style="background:rgba(16,185,129,0.12);color:#10b981;">🐸</div>
+              <div>
+                <div style="font-weight:700;">بيبي (PEPE)</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);">ميم كoin على إيثريوم — نمو متفجر</div>
+              </div>
+            </div>
+            <span class="price-positive">+600%</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- DeFi -->
+      <div class="category-card" style="border-top: 3px solid #10b981;">
+        <div class="card-header">
+          <div class="card-icon" style="background:rgba(16,185,129,0.12);color:#10b981;">🏦</div>
+          <div>
+            <div class="card-title">التمويل اللامركزي (DeFi)</div>
+            <div class="card-subtitle">أنظمة مالية بديلة بدون وسيط</div>
+          </div>
+        </div>
+        <ul class="coin-list">
+          <li>
+            <div class="coin-left">
+              <div class="mini-icon" style="background:rgba(6,182,212,0.12);color:#06b6d4;">✕</div>
+              <div>
+                <div style="font-weight:700;">ريبل (XRP)</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);">تحويلات عابرة للحدود بسرعة فائقة</div>
+              </div>
+            </div>
+            <span class="price-positive">+300%</span>
+          </li>
+          <li>
+            <div class="coin-left">
+              <div class="mini-icon" style="background:rgba(139,92,246,0.12);color:#8b5cf6;">◎</div>
+              <div>
+                <div style="font-weight:700;">سولانا (SOL)</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);">بلوكتشين فائق السرعة لـ DeFi</div>
+              </div>
+            </div>
+            <span class="price-positive">+250%</span>
+          </li>
+          <li>
+            <div class="coin-left">
+              <div class="mini-icon" style="background:rgba(245,158,11,0.12);color:#f59e0b;">BNB</div>
+              <div>
+                <div style="font-weight:700;">بي ان بي (BNB)</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);">عملة أكبر منصة تداول في العالم</div>
+              </div>
+            </div>
+            <span class="price-positive">+90%</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Stablecoins -->
+      <div class="category-card" style="border-top: 3px solid #6b7280;">
+        <div class="card-header">
+          <div class="card-icon" style="background:rgba(107,114,128,0.12);color:#9ca3af;">💲</div>
+          <div>
+            <div class="card-title">العملات المستقرة (Stablecoins)</div>
+            <div class="card-subtitle">مرتبطة بأسعار العملات الفيسبية</div>
+          </div>
+        </div>
+        <ul class="coin-list">
+          <li>
+            <div class="coin-left">
+              <div class="mini-icon" style="background:rgba(107,114,128,0.12);color:#9ca3af;">$</div>
+              <div>
+                <div style="font-weight:700;">تيثير (USDT)</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);">أكبر عملة مستقرة في العالم</div>
+              </div>
+            </div>
+            <span class="price-positive">$1.00</span>
+          </li>
+          <li>
+            <div class="coin-left">
+              <div class="mini-icon" style="background:rgba(59,130,246,0.12);color:#3b82f6;">$</div>
+              <div>
+                <div style="font-weight:700;">يو إس دي كوين (USDC)</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);">مستقرة معتمدة ومحكومة</div>
+              </div>
+            </div>
+            <span class="price-positive">$1.00</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== تاريخ الميم كoinز ===== -->
+  <section>
+    <div class="section-header">
+      <h2>📜 تاريخ الميم كoinز</h2>
+      <p>كيف بدأت الميم كoinز وكيف أصبحت ظاهرة عالمية</p>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-year">2013</div>
+        <div class="timeline-title">ظهور دوجكوين 🐕</div>
+        <div class="timeline-desc">تم إنشاء دوجكوين كمزحة من مهندسي البرمجيات بيلي ماركوس وجاكسون بالمر. صُمم كـ "عملة ممتعة" مستوحاة من صورة كلب الشيبا إينو الياباني.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2020</div>
+        <div class="timeline-title">ثورة الميم كoinز</div>
+        <div class="timeline-desc">اندلاع ثورة DeFi وظهور موجة جديدة من العملات الميم على بلوكتشين الإيثريوم. شيبا إينو ظهرت كـ "قاتل الدوجكوين".</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2021</div>
+        <div class="timeline-title">الموسم الكبير 🚀</div>
+        <div class="timeline-desc">دوجكوين يحقق ارتفاعاً هائلاً (+15,000%) بدعم إيلون ماسك. بيبي (PEPE) يظهر ويصبح ظاهرة. سوق الميم كoinز يتجاوز $100 مليار.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2023-2024</div>
+        <div class="timeline-title">الموجة الثانية 🌊</div>
+        <div class="timeline-desc">ظهور موجة من الميم كoinز الجديدة على سولانا وبلوكتشينات أخرى. Bonk و WIF يحققون نجاحاً كبيراً.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2025</div>
+        <div class="timeline-title">نضوج السوق 📊</div>
+        <div class="timeline-desc">airena الميم كoinز تتبعأ نمواً هائلاً. بيبي يتجاوز $4 مليار في القيمة السوقية. ثقافة الميم أصبحت جزءاً أساسياً من عالم العملات الرقمية.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== تحليل المخاطر ===== -->
+  <section>
+    <div class="section-header">
+      <h2>⚠️ تحليل المخاطر المقارن</h2>
+      <p>مقارنة شاملة لمخاطر كل فئة من العملات الرقمية</p>
+    </div>
+    <div class="risk-grid">
+      <div class="risk-card">
+        <div style="font-size:2rem;margin-bottom:8px;">₿</div>
+        <h3>البيتكوين</h3>
+        <div class="risk-level">
+          <div class="risk-dot active low"></div>
+          <div class="risk-dot active low"></div>
+          <div class="risk-dot"></div>
+          <div class="risk-dot"></div>
+          <div class="risk-dot"></div>
+        </div>
+        <p>أقل المخاطر في عالم العملات الرقمية. احتفاظ طويل الأمد. تقلبات متوسطة. مدعوم ببنية تحتية قوية ومؤسسات كبرى.</p>
+      </div>
+      <div class="risk-card">
+        <div style="font-size:2rem;margin-bottom:8px;">Ξ</div>
+        <h3>الإيثريوم</h3>
+        <div class="risk-level">
+          <div class="risk-dot active low"></div>
+          <div class="risk-dot active low"></div>
+          <div class="risk-dot"></div>
+          <div class="risk-dot"></div>
+          <div class="risk-dot"></div>
+        </div>
+        <p>مخاطر متوسطة. منافسة شديدة من سولانا والبلوكتشينات الأخرى. لكن له أساسيات قوية وطموحات مستقبلية واعدة.</p>
+      </div>
+      <div class="risk-card">
+        <div style="font-size:2rem;margin-bottom:8px;">🪙</div>
+        <h3>العملات البديلة الكبرى</h3>
+        <div class="risk-level">
+          <div class="risk-dot active medium"></div>
+          <div class="risk-dot active medium"></div>
+          <div class="risk-dot active medium"></div>
+          <div class="risk-dot"></div>
+          <div class="risk-dot"></div>
+        </div>
+        <p>مخاطر متوسطة إلى عالية. تقلبات أكبر من البيتكوين. قد تتأثر بأخبار الت-regulation أو المنافسة.</p>
+      </div>
+      <div class="risk-card">
+        <div style="font-size:2rem;margin-bottom:8px;">🐶</div>
+        <h3>الميم كoinز الكبرى</h3>
+        <div class="risk-level">
+          <div class="risk-dot active medium"></div>
+          <div class="risk-dot active medium"></div>
+          <div class="risk-dot active medium"></div>
+          <div class="risk-dot active medium"></div>
+          <div class="risk-dot"></div>
+        </div>
+        <p>مخاطر عالية جداً. تعتمد على مجتمعات الإنترنت والتrennds. تقلبات هائلة قد تصل إلى -80% في أيام قليلة.</p>
+      </div>
+      <div class="risk-card">
+        <div style="font-size:2rem;margin-bottom:8px;">🐸</div>
+        <h3>الميم كoinز الصغيرة</h3>
+        <div class="risk-level">
+          <div class="risk-dot active high"></div>
+          <div class="risk-dot active high"></div>
+          <div class="risk-dot active high"></div>
+          <div class="risk-dot active high"></div>
+          <div class="risk-dot active high"></div>
+        </div>
+        <p>مخاطر قصوى. احتمال فقدان كامل للمبلغ المستثمر.许多 منها تكون عملية احتيال (Rug Pull). لا تستثمر فيها أكثر مما تتحمل خسارته.</p>
+      </div>
+      <div class="risk-card">
+        <div style="font-size:2rem;margin-bottom:8px;">💲</div>
+        <h3>العملات المستقرة</h3>
+        <div class="risk-level">
+          <div class="risk-dot active low"></div>
+          <div class="risk-dot"></div>
+          <div class="risk-dot"></div>
+          <div class="risk-dot"></div>
+          <div class="risk-dot"></div>
+        </div>
+        <p>مخاطر منخفضة جداً. مرتبطة بأسعار العملات الفيسبية. المستويات الأساسية منها أكثر أماناً. مناسبة للادخار.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== المميزات والعيوب ===== -->
+  <section>
+    <div class="section-header">
+      <h2>⚖️ المميزات والعيوب المقارنة</h2>
+      <p>مقارنة شاملة بين العملات الرقمية التقليدية والميم كoinز</p>
+    </div>
+    <div class="pros-cons-grid">
+      <!-- العملات الرقمية التقليدية -->
+      <div class="pros-cons-card">
+        <h3>💰 العملات الرقمية التقليدية (BTC, ETH, SOL)</h3>
+        <ul>
+          <li><span class="pro-icon">✅</span> أساسيات قوية ومشاريع حقيقية وراءها</li>
+          <li><span class="pro-icon">✅</span> احتفاظ طويل الأمد ونمو مستدام</li>
+          <li><span class="pro-icon">✅</span> دعم مؤسسي وelli استثمارية كبرى</li>
+          <li><span class="pro-icon">✅</span> بنية تحتية تقنية متقدمة</li>
+          <li><span class="pro-icon">✅</span> ذ厢ة سوقية كبيرة وأمان نسبي</li>
+          <li><span class="con-icon">❌</span> عائد أقل نسبياً مقارنة بالميم كoinز</li>
+          <li><span class="con-icon">❌</span> تحتاج مبالغ أكبر للبدء</li>
+          <li><span class="con-icon">❌</span> قد تكون بطيئة في الأوقات العادية</li>
+        </ul>
+      </div>
+      <!-- الميم كoinز -->
+      <div class="pros-cons-card">
+        <h3>🐶 الميم كoinز (DOGE, SHIB, PEPE)</h3>
+        <ul>
+          <li><span class="pro-icon">✅</span> ارتفاعات هائلة في أوقات قصيرة</li>
+          <li><span class="pro-icon">✅</span> مجتمعات قوية ونشيطة</li>
+          <li><span class="pro-icon">✅</span> سهولة الوصول — أسعار منخفضة</li>
+          <li><span class="pro-icon">✅</span> ثقافة ممتعة ومبتكرة</li>
+          <li><span class="pro-icon">✅</span> تrennds سريعة و续性强</li>
+          <li><span class="con-icon">❌</span> مخاطر عالية جداً وفقدان كامل ممكن</li>
+          <li><span class="con-icon">❌</span> لا أساسيات تقنية قوية في الغالب</li>
+          <li><span class="con-icon">❌</span> تعتمد على الشائعات والتrennds فقط</li>
+          <li><span class="con-icon">❌</span>许多 منها عملية احتيال (Rug Pull)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== استراتيجيات الاستثمار ===== -->
+  <section>
+    <div class="section-header">
+      <h2>🧠 استراتيجيات الاستثمار المقارنة</h2>
+      <p>استراتيجيات مختلفة تناسب أنماط المستثمرين المختلفة</p>
+    </div>
+    <div class="strategy-grid">
+      <div class="strategy-card">
+        <div class="strategy-num" style="color:var(--accent-blue);">01</div>
+        <h3>💎 استراتيجية الاحتفاظ طويل الأمد (HODL)</h3>
+        <p>شراء البيتكوين والإيثريوم والاحتفاظ بها لسنوات. هذه الاستراتيجية الأنسب للمبتدئين والمستثمرين المحافظين. تاريخياً، حقق البيتكوين عوائد ممتازة على مدى 4+ سنوات.</p>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-num" style="color:var(--accent-green);">02</div>
+        <h3>⚖️ استراتيجية التنويع (Diversification)</h3>
+        <p>توزيع الاستثمار: 60% عملات كبرى، 20% عملات متوسطة، 15% ميم كoinز، 5% عملات مستقرة. هذه الاستراتيجية توازن بين العائد والمخاطرة.</p>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-num" style="color:var(--accent-purple);">03</div>
+        <h3>🎯 استراتيجية الدollar-Cost Averaging (DCA)</h3>
+        <p>استثمار مبلغ ثابت بانتظام (شهرياً) بغض النظر عن سعر السوق. تقلل تأثير التقلبات وتوفر متوسط سعر شراء أفضل على المدى الطويل.</p>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-num" style="color:var(--accent-orange);">04</div>
+        <h3>🎰 استراتيجية الميم كoinز المحدودة</h3>
+        <p>allocate ما لا يزيد عن 5-10% من المحفظة للميم كoinز. اختر عملات مجتمعية قوية مثل DOGE أو PEPE. لا تستثمر أكثر مما تتحمل خسارته أبداً.</p>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-num" style="color:var(--accent-pink);">05</div>
+        <h3>🔄 استراتيجية التداول النشط</h3>
+        <p>شراء وبيع بناءً على التحليل الفني. تحتاج خبرة ووقتاً كافياً. المخاطر عالية جداً. لا تنصح للمبتدئين. استخدم وقف الخسارة دائماً.</p>
+      </div>
+      <div class="strategy-card">
+        <div class="strategy-num" style="color:var(--accent-cyan);">06</div>
+        <h3>🛡️ استراتيجية الأمان (Safety First)</h3>
+        <p>100% في العملات المستقرة أو البيتكوين فقط. أقل المخاطر. مناسب للمستثمرين الذين يفضلون الحفاظ على رأس المال أكثر من المخاطرة بالعائد.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ثقافة الميم ===== -->
+  <section>
+    <div class="section-header">
+      <h2>🎭 ثقافة الميم كoinز</h2>
+      <p>فهم ثقافة الميم يساعدك على فهم سوق هذه العملات</p>
+    </div>
+    <div class="meme-culture-grid">
+      <div class="culture-card">
+        <div class="culture-emoji">🐕</div>
+        <h4>الفتى دوج (Doge)</h4>
+        <p>كلب شيبا إينو الياباني الذي أصبح رمزاً لثقافة الإنترنت. يرمز للمتعة والßer للget-rich-quick.</p>
+      </div>
+      <div class="culture-card">
+        <div class="culture-emoji">🐸</div>
+        <h4>Pepe the Frog</h4>
+        <p>ضفدع من مسلسل كرتوني أصبح أيقونة الإنترنت. يرمز للتحدي والمفاجآت.</p>
+      </div>
+      <div class="culture-card">
+        <div class="culture-emoji">🌙</div>
+        <h4>To the Moon 🚀</h4>
+        <p>"إلى القمر" — شعار مجتمع العملات الرقمية الذي يعبر عن الطموح لتحقيق أرباح خيالية.</p>
+      </div>
+      <div class="culture-card">
+        <div class="culture-emoji">💎</div>
+        <h4>Diamond Hands 💎🙌</h4>
+        <p>"الأيدي الماسية" — من يحتفظ بالعملات حتى في أوقات الهبوط الحاد ولا يبيع.</p>
+      </div>
+      <div class="culture-card">
+        <div class="culture-emoji">📉</div>
+        <h4>Paper Hands 📄</h4>
+        <p>"الأيدي الورقية" — من يبيع بسرعة عند أول هبوط في السعر بسبب الخوف.</p>
+      </div>
+      <div class="culture-card">
+        <div class="culture-emoji">🔥</div>
+        <h4>Whale (حوت)</h4>
+        <p>"الحوت" — المستثمر الكبير الذي يملك كمية ضخمة من العملة ويمكن أن يتحرك بالسوق.</p>
+      </div>
+      <div class="culture-card">
+        <div class="culture-emoji">⏰</div>
+        <h4>FOMO</h4>
+        <p>"Fear of Missing Out" — الخوف من الفرصة الضائعة الذي يدفع الناس للشراء عند الذروة.</p>
+      </div>
+      <div class="culture-card">
+        <div class="culture-emoji">🫠</div>
+        <h4>HODL</h4>
+        <p>"Hold On for Dear Life" — الاحتفاظ بالعملات بغض النظر عن أي شيء. أصبح شعار المستثمرين الطويلي الأمد.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== جدول المقارنة السريع ===== -->
+  <section>
+    <div class="section-header">
+      <h2>⚡ مقارنة سريعة — أيهما تختار؟</h2>
+      <p>دليل سريع يساعدك على اختيار ما يناسبك</p>
+    </div>
+    <div class="comparison-table-wrapper">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>المعيار</th>
+            <th>البيتكوين</th>
+            <th>الإيثريوم</th>
+            <th>سولانا</th>
+            <th>دوجكوين</th>
+            <th>شيبا إينو</th>
+            <th>بيبي</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>لمن يناسب؟</strong></td>
+            <td>المستثمر المحافظ</td>
+            <td>المطور والمستثمر</td>
+            <td>محبي الابتكار</td>
+            <td>محبي المتعة</td>
+            <td>المخاطرون</td>
+            <td>المجاملون</td>
+          </tr>
+          <tr>
+            <td><strong>العائد المتوقع</strong></td>
+            <td class="price-positive">متوسط-عالي</td>
+            <td class="price-positive">عالي</td>
+            <td class="price-positive">عالي جداً</td>
+            <td>متوسط-عالي</td>
+            <td>عالي-خيالي</td>
+            <td class="price-positive">خيالي</td>
+          </tr>
+          <tr>
+            <td><strong>المخاطرة</strong></td>
+            <td class="price-positive">منخفضة</td>
+            <td class="price-positive">منخفضة-متوسطة</td>
+            <td class="price-positive">متوسطة</td>
+            <td class="price-negative">عالية</td>
+            <td class="price-negative">عالية جداً</td>
+            <td class="price-negative">قصوى</td>
+          </tr>
+          <tr>
+            <td><strong>الأجل المثالي</strong></td>
+            <td>4+ سنوات</td>
+            <td>2-5 سنوات</td>
+            <td>1-3 سنوات</td>
+            <td>6 أشهر - 2 سنة</td>
+            <td>قصير جداً</td>
+            <td>يوم واحد - أسبوع</td>
+          </tr>
+          <tr>
+            <td><strong>المبلغ المطلوب</strong></td>
+            <td>أي مبلغ</td>
+            <td>أي مبلغ</td>
+            <td>أي مبلغ</td>
+            <td>منخفض</td>
+            <td>منخفض جداً</td>
+            <td>منخفض جداً</td>
+          </tr>
+          <tr>
+            <td><strong>التضخم</strong></td>
+            <td>⚠️ محدود</td>
+            <td>⚠️ متوسط</td>
+            <td>⚠️ متوسط</td>
+            <td>🔴 مرتفع</td>
+            <td>🔴 مرتفع جداً</td>
+            <td>🔴 مرتفع جداً</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== نصائح ذهبية ===== -->
+  <section>
+    <div class="section-header">
+      <h2>💡 نصائح ذهبية للمستثمر</h2>
+      <p>قواعد يجب أن تتبعها بغض النظر عن نوع العملة التي تختارها</p>
+    </div>
+    <div class="category-grid">
+      <div class="category-card" style="border-top: 3px solid var(--accent-green);">
+        <div class="card-header">
+          <div class="card-icon" style="background:rgba(16,185,129,0.12);color:var(--accent-green);">✅</div>
+          <div>
+            <div class="card-title">افعل</div>
+            <div class="card-subtitle">قواعد ذهبية يجب اتباعها</div>
+          </div>
+        </div>
+        <ul class="coin-list">
+          <li>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <span style="color:var(--accent-green);">1.</span>
+              <span style="color:var(--text-secondary);">استثمر فقط المال الذي تتحمل خسارته بالكامل</span>
+            </div>
+          </li>
+          <li>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <span style="color:var(--accent-green);">2.</span>
+              <span style="color:var(--text-secondary);">نوّع استثماراتك بين فئات مختلفة</span>
+            </div>
+          </li>
+          <li>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <span style="color:var(--accent-green);">3.</span>
+              <span style="color:var(--text-secondary);">استخدم استراتيجية DCA للدخول تدريجياً</span>
+            </div>
+          </li>
+          <li>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <span style="color:var(--accent-green);">4.</span>
+              <span style="color:var(--text-secondary);">احفظ عملاتك في محفظة آمنة (Hardware Wallet)</span>
+            </div>
+          </li>
+          <li>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <span style="color:var(--accent-green);">5.</span>
+              <span style="color:var(--text-secondary);">افهم المشروع قبل أن تستثمر فيه</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="category-card" style="border-top: 3px solid var(--accent-red);">
+        <div class="card-header">
+          <div class="card-icon" style="background:rgba(239,68,68,0.12);color:var(--accent-red);">🚫</div>
+          <div>
+            <div class="card-title">لا تفعل</div>
+            <div class="card-subtitle">أخطاء شائعة يجب تجنبها</div>
+          </div>
+        </div>
+        <ul class="coin-list">
+          <li>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <span style="color:var(--accent-red);">1.</span>
+              <span style="color:var(--text-secondary);">لا تقترض أموالاً للاستثمار في العملات الرقمية</span>
+            </div>
+          </li>
+          <li>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <span style="color:var(--accent-red);">2.</span>
+              <span style="color:var(--text-secondary);">لا تستثمر كل أموالك في عملة واحدة</span>
+            </div>
+          </li>
+          <li>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <span style="color:var(--accent-red);">3.</span>
+              <span style="color:var(--text-secondary);">لا تتبع FOMO وتشتري عند الذروة</span>
+            </div>
+          </li>
+          <li>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <span style="color:var(--accent-red);">4.</span>
+              <span style="color:var(--text-secondary);">لا تبيع بخاطر في أوقات الهبوط</span>
+            </div>
+          </li>
+          <li>
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <span style="color:var(--accent-red);">5.</span>
+              <span style="color:var(--text-secondary);">لا تثق بأي شخص يضمن لك أرباحاً مؤكدة</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>⚠️ تنبيه: هذا المحتوى تعليمي فقط وليس نصيحة مالية. استثمار العملات الرقمية ينطوي على مخاطر عالية. قم دائماً بالبحث الخاص بك (DYOR).</p>
+    <p style="margin-top:10px;opacity:0.5;">تم إعداد هذا الدليل بتاريخ سبتمبر 2025 — البيانات تقريبية وقد تتغير</p>
+  </footer>
+
+</div>
+
+</body>
+</html>

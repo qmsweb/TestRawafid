@@ -131,7 +131,9 @@
 
     .titles-group h1 {
       font-size: 1.8rem; color: var(--text-header);
+      font-family: "Thmanyah Serif Text", "IBM Plex Sans Arabic", sans-serif;
       font-weight: 800; line-height: 1.3;
+      letter-spacing: 1px;
     }
     
     .titles-group h2 {
@@ -293,10 +295,13 @@
 
     /* Grid View */
     .materials-list.grid-view {
-      column-width: 280px; column-count: auto; column-gap: 18px;
+      display: grid !important; grid-template-columns: repeat(var(--grid-cols, 3), 1fr); gap: 18px; align-items: start;
+    }
+    .materials-list.grid-view .grid-column {
+      display: flex; flex-direction: column; gap: 18px;
     }
     .materials-list.grid-view .material-item {
-      break-inside: avoid; justify-content: flex-start;
+      justify-content: flex-start;
     }
     .materials-list.grid-view .item-header { margin-bottom: 12px; }
     .materials-list.grid-view .item-description-preview {
@@ -329,7 +334,8 @@
     @media (max-width: 768px) {
       .header-top-row { flex-direction: column; gap: 15px; }
       .share-button { width: 100%; justify-content: center; }
-      .materials-list.grid-view { column-count: 2; column-gap: 12px; }
+      .materials-list.grid-view { gap: 12px; --grid-cols: 2; }
+      .materials-list.grid-view .grid-column { gap: 12px; }
       .materials-list.grid-view .material-item { padding: 12px; }
       .materials-list.grid-view .item-icon { width: 40px; height: 40px; font-size: 1.1rem; }
       .materials-list.grid-view .item-title-text h3 { font-size: 0.95rem; }
@@ -370,7 +376,7 @@
         <div class="filter-item active" data-filter="all"><i class="fas fa-layer-group"></i> الكل</div>
         <div class="filter-item" data-filter="documents"><i class="fas fa-file-lines"></i> مستندات</div>
         <div class="filter-item" data-filter="videos"><i class="fas fa-play"></i> فيديوهات</div>
-        <div class="filter-item" data-filter="resources"><i class="fa-solid fa-pen"></i> تدوينات قصيرة</div>
+        <div class="filter-item" data-filter="resources"><i class="fa-solid fa-pen"></i> مقالات</div>
         <div class="filter-item" data-filter="quizzes"><i class="fas fa-clipboard-question"></i> اختبارات</div>
         <div class="filter-item" data-filter="cards"><i class="fas fa-clone"></i> البطاقات</div>
         <div class="filter-item" data-filter="links"><i class="fas fa-link"></i> روابط</div>
@@ -446,12 +452,68 @@ function setView(view, save = true) {
     materialsList.classList.add('grid-view');
     gridBtn.classList.add('active');
     listBtn.classList.remove('active');
+    reflowGrid();
   } else {
     materialsList.classList.remove('grid-view');
     listBtn.classList.add('active');
     gridBtn.classList.remove('active');
+    // تفكيك الأعمدة وإظهار العناصر كقائمة عمودية عادية
+    const items = Array.prototype.slice.call(materialsList.querySelectorAll('.material-item'));
+    materialsList.innerHTML = '';
+    items.forEach(el => materialsList.appendChild(el));
   }
   if (save) localStorage.setItem('viewMode', view);
+}
+
+/* إعادة ترتيب أعمدة الشبكة (masonry) حسب عدد الأعمدة الحالي */
+function reflowGrid() {
+  if (!materialsList.classList.contains('grid-view')) return;
+
+  // تجميع كل عناصر المواد (سواء كانت داخل أعمدة أو أطفالاً مباشرة)
+  const items = Array.prototype.slice.call(materialsList.querySelectorAll('.material-item'));
+  if (items.length === 0) return;
+
+  const numColumns = window.innerWidth <= 768 ? 2 : Math.min(5, Math.max(2, Math.floor(materialsList.clientWidth / 280)));
+  materialsList.style.setProperty('--grid-cols', numColumns);
+
+  // وضع كل عنصر مؤقتاً داخل القائمة (داخل الموادList) لقياس ارتفاعه بدقة مع سريان أنماط الشبكة
+  const colWidth = materialsList.clientWidth / numColumns;
+  const colGap = window.innerWidth <= 768 ? 12 : 18;
+  const measured = items.map(el => {
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.visibility = 'hidden';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.style.width = colWidth + 'px';
+    container.appendChild(el);
+    materialsList.innerHTML = '';
+    materialsList.appendChild(container);
+    const height = el.offsetHeight;
+    materialsList.removeChild(container);
+    return { el, height };
+  });
+
+  // إعادة بناء القائمة بالأعمدة المتوازنة
+  materialsList.innerHTML = '';
+  const columns = [];
+  for (let i = 0; i < numColumns; i++) {
+    const col = document.createElement('div');
+    col.className = 'grid-column';
+    columns.push(col);
+  }
+
+  const columnHeights = new Array(numColumns).fill(0);
+  measured.forEach(({ el, height }) => {
+    let target = 0;
+    for (let c = 1; c < numColumns; c++) {
+      if (columnHeights[c] < columnHeights[target]) target = c;
+    }
+    columns[target].appendChild(el);
+    columnHeights[target] += height + colGap;
+  });
+
+  columns.forEach(col => materialsList.appendChild(col));
 }
 
 /* ======= 5. رسم المواد ======= */
@@ -467,7 +529,10 @@ function renderMaterials(filter = 'all') {
   // استخدام relative_url لضمان صحة الرابط للصفحة الداخلية (رابط نظيف /details/CODE/ID)
   const detailsBaseUrl = "{{ '/details' | relative_url }}";
 
-  filtered.forEach(item => {
+  const isGrid = materialsList.classList.contains('grid-view');
+
+  // بناء العناصر الفردية
+  const elements = filtered.map(item => {
     const itemId = item.id ? item.id : '#';
     // بناء الرابط النظيف على غرار روابط المقرر /course/CODE
     const detailsUrl = `${detailsBaseUrl}/${encodeURIComponent(courseCode)}/${encodeURIComponent(itemId)}`;
@@ -532,8 +597,17 @@ function renderMaterials(filter = 'all') {
       ${badgeHTML ? `<div class="badges-container">${badgeHTML}</div>` : ''}
       ${imageHTML}
     `;
-    materialsList.appendChild(el);
+    return el;
   });
+
+  if (!isGrid) {
+    elements.forEach(el => materialsList.appendChild(el));
+    return;
+  }
+
+  // وضع الشبكة (masonry): إضافة العناصر ثم توزيعها على أعمدة متوازنة عبر reflowGrid
+  elements.forEach(el => materialsList.appendChild(el));
+  reflowGrid();
 }
 
 /* ======= 6. تشغيل الصفحة ======= */
@@ -560,6 +634,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   applyDefaultView();
+
+  // إعادة توزيع الأعمدة عند تغيير حجم النافذة في وضع الشبكة
+  window.addEventListener('resize', () => {
+    if (materialsList.classList.contains('grid-view')) {
+      reflowGrid();
+    }
+  });
 
   if (!courseCode) {
     materialsList.innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-muted);">⚠️ يرجى اختيار مقرر لعرض محتوياته.</p>';
