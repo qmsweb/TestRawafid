@@ -170,24 +170,46 @@
       flex-shrink: 0;
     }
 
-    /* === الأدوات والفلاتر === */
-    .section-title { font-size: 1.3rem; font-weight: 700; color: var(--text-main); margin-bottom: 15px; border-right: 4px solid var(--primary-color); padding-right: 12px; }
+    /* === الوصول السريع === */
+    .quick-access-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px; }
 
-    .tools-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 25px; }
-    
-    .tool-item { background: transparent; border: none; padding: 5px 0; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-align: center; transition: all 0.3s ease; }
-    .tool-item:hover { transform: translateY(-4px); }
-    .tool-icon { width: 55px; height: 55px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-    .tool-item:hover .tool-icon { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); box-shadow: var(--hover-shadow); }
-    
-    /* لون خاص لأيقونة صوامت */
-    .tool-icon.sawamet-bg {
-      background-color: #7F288F !important;
-      border-color: #7F288F !important;
+    .quick-access-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text-main);
     }
-    .tool-icon img { width: 28px; height: 28px; object-fit: contain; transition: 0.3s ease; }
-    
-    .tool-name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+    .quick-access-card:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 6px 20px rgba(26, 42, 198, 0.08);
+    }
+    .quick-access-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--primary-light-bg);
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .quick-access-text {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .quick-access-arrow {
+      margin-right: auto;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
 
     .sticky-filter-container { position: sticky; top: 70px; z-index: 90; margin-bottom: 25px; padding: 10px 0; border-bottom: 1px solid var(--border-color); margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; backdrop-filter: blur(5px); }
     .filter-bar { display: flex; gap: 10px; align-items: center; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
@@ -225,23 +247,24 @@
         margin-top: 15px;
       }
       .calendar-section { width: 35%; }
-      .tools-section { width: 65%; }
+      .quick-access-section { width: 65%; }
       
       .calendar-section .week-widget {
-        margin-top: 0; /* التخلص من الهامش العلوي لمحاذاته مع الأدوات */
+        margin-top: 0; /* التخلص من الهامش العلوي لمحاذاته مع البطاقات */
         padding: 12px 20px; 
       }
-      .tools-section .section-title {
-        margin-top: 0; /* محاذاة العنوان بدقة مع مربع التقويم */
+      .quick-access-section .quick-access-grid {
+        margin-top: 10px; /* محاذاة البطاقات مع مربع التقويم */
       }
     }
 
     /* === شاشات الجوال === */
     @media (max-width: 768px) {
-      .tools-grid { gap: 5px; }
-      .tool-icon { width: 45px; height: 45px; font-size: 1.1rem; }
-      .tool-icon img { width: 22px; height: 22px; }
-      .tool-name { font-size: 0.75rem; }
+      .quick-access-grid { gap: 8px; }
+      .quick-access-card { padding: 12px 14px; gap: 10px; }
+      .quick-access-icon { width: 38px; height: 38px; font-size: 1rem; }
+      .quick-access-text { font-size: 0.85rem; }
+      .quick-access-arrow { display: none; }
       
       .materials-list.grid-view { grid-template-columns: repeat(2, 1fr); gap: 12px; }
       .materials-list.grid-view .material-item { padding: 15px; text-align: center; flex-direction: column; }
@@ -276,32 +299,18 @@
                 </div>
             </div>
 
-            <div class="tools-section">
-                <h3 class="section-title">الأدوات</h3>
-                <div class="tools-grid">
-                    <div class="tool-item" onclick="window.location.href='https://sawamet.jassim.one'">
-                        <div class="tool-icon sawamet-bg">
-                            <img src="{{ 'https://sawamet.jassim.one/images/sawamet-logo.png' | relative_url }}" alt="صوامت">
-                        </div>
-                        <div class="tool-name">صوامت</div>
-                    </div>
-                    
-                    <div class="tool-item" onclick="window.location.href='/tawtheeq-tool'">
-                        <div class="tool-icon"><i class="fas fa-quote-right"></i></div>
-                        <div class="tool-name">توثيق المراجع</div>
-                    </div>
-                    <div class="tool-item" onclick="window.location.href='/calendar'">
-                        <div class="tool-icon"><i class="fas fa-calendar-alt"></i></div>
-                        <div class="tool-name">التقويم الأكاديمي</div>
-                    </div>
-                    <div class="tool-item" onclick="window.location.href='/study-plan'">
-                        <div class="tool-icon"><i class="fas fa-book-open"></i></div>
-                        <div class="tool-name">الخطة الدراسية</div>
-                    </div>
-                    <div class="tool-item" onclick="window.location.href='/tools'">
-                        <div class="tool-icon"><i class="fas fa-ellipsis-h"></i></div>
-                        <div class="tool-name">المزيد</div>
-                    </div>
+            <div class="quick-access-section">
+                <div class="quick-access-grid">
+                    <a class="quick-access-card" href="/blog">
+                        <div class="quick-access-icon"><i class="fas fa-pen-nib"></i></div>
+                        <span class="quick-access-text">المدونة</span>
+                        <i class="fas fa-chevron-left quick-access-arrow"></i>
+                    </a>
+                    <a class="quick-access-card" href="/tools">
+                        <div class="quick-access-icon"><i class="fas fa-tools"></i></div>
+                        <span class="quick-access-text">الأدوات</span>
+                        <i class="fas fa-chevron-left quick-access-arrow"></i>
+                    </a>
                 </div>
             </div>
 

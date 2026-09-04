@@ -327,11 +327,10 @@
             {% endif %}
           {% endcapture %}
 
+          {% if feat_cover != "" and feat_cover != blank %}
           <a class="featured-card" href="{{ featured_post.url | relative_url }}">
             <span class="featured-badge"><i class="fas fa-star"></i> مقال مميز</span>
-            {% if feat_cover != "" and feat_cover != blank %}
-              <img class="featured-cover" src="{{ feat_cover | strip }}" alt="{{ featured_post.title }}" loading="lazy">
-            {% endif %}
+            <img class="featured-cover" src="{{ feat_cover | strip }}" alt="{{ featured_post.title }}" loading="lazy">
             <div class="featured-body">
               <h3 class="featured-title">{{ featured_post.title }}</h3>
               {% if featured_post.excerpt and featured_post.excerpt != "" and featured_post.excerpt != featured_post.content %}
@@ -356,6 +355,7 @@
               {% endif %}
             </div>
           </a>
+          {% endif %}
         {% endif %}
 
         {% for post in visible_posts %}

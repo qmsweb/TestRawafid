@@ -387,6 +387,12 @@
             return;
         }
 
+        // تحويل العناصر المرتبطة بتدوينة (مفتاح direct) إلى رابط التدوينة مباشرة
+        if (item.direct === 'yes' && item.url) {
+            window.location.replace(item.url);
+            return;
+        }
+
         // معالجة زر المتعلقات
         if (item.related && item.related.course && item.related.id) {
             relatedWrapper.style.display = 'flex'; // إظهار الحاوية

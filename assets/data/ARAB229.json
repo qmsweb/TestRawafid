@@ -7,7 +7,9 @@
             "id": 1,
             "title": "منصة صوامت",
             "description": "منصة إلكترونية في الصوامت\nتم إطلاق المنصة بالتعاون مع الدكتور علي إسماعيل عبدالله.",
-            "type": "links",
+            "type": "resources",
+            "direct": "yes",
+            "url": "/blog/sawamet",
             "image_url": "images/sawamet-cover.png",
             "preview_url": "https://sawamet.jassim.one",
             "time-ms": "1763453087338"
