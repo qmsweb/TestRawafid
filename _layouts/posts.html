@@ -68,7 +68,7 @@
 
     .posts-page {
       width: 100%;
-      max-width: 900px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 30px 24px 20px;
     }
@@ -118,6 +118,17 @@
       gap: 16px;
     }
 
+    @media (min-width: 900px) {
+      .posts-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+      }
+      .featured-card {
+        grid-column: 1 / -1;
+      }
+    }
+
     /* === البطاقة العادية === */
     .post-card {
       background: var(--bg-card);
@@ -138,9 +149,9 @@
     }
 
     .post-cover {
-      width: 170px;
-      min-width: 170px;
-      height: 120px;
+      width: 200px;
+      min-width: 200px;
+      aspect-ratio: 16/9;
       object-fit: cover;
       border-radius: 10px;
       border: 1px solid var(--border-color);
@@ -221,9 +232,9 @@
     }
 
     .featured-cover {
-      width: 220px;
-      min-width: 220px;
-      height: 160px;
+      width: 280px;
+      min-width: 280px;
+      aspect-ratio: 16/9;
       object-fit: cover;
       border-radius: 10px;
       border: 1px solid var(--border-color);
@@ -276,19 +287,21 @@
 
     /* === شاشات الجوال === */
     @media (max-width: 768px) {
+      .posts-page { max-width: 100%; }
       .featured-card { flex-direction: column; padding: 20px; }
-      .featured-cover { width: 100%; height: 180px; min-width: unset; }
+      .featured-cover { width: 100%; min-width: unset; aspect-ratio: 16/9; }
       .featured-badge { right: 16px; }
     }
 
     @media (max-width: 600px) {
       .posts-page { padding: 22px 16px 20px; }
+      .posts-list { grid-template-columns: 1fr; }
       .post-card { flex-direction: column; padding: 16px; gap: 12px; }
-      .post-cover { width: 100%; height: 160px; min-width: unset; }
+      .post-cover { width: 100%; min-width: unset; aspect-ratio: 16/9; }
       .post-title { font-size: 1.05rem; }
       .post-meta { gap: 10px; }
       .featured-card { padding: 16px; }
-      .featured-cover { height: 150px; }
+      .featured-cover { min-width: unset; aspect-ratio: 16/9; }
       .featured-title { font-size: 1.15rem; }
       .featured-excerpt { font-size: 0.88rem; -webkit-line-clamp: 2; }
     }
