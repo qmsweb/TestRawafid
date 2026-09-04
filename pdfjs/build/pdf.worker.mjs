@@ -19292,20 +19292,20 @@ const getFontNameToFileMap = getLookupTableFactory(function (t) {
   t["Courier-Bold"] = "FoxitFixedBold.pfb";
   t["Courier-BoldOblique"] = "FoxitFixedBoldItalic.pfb";
   t["Courier-Oblique"] = "FoxitFixedItalic.pfb";
-  t.Helvetica = "LiberationSans-Regular.ttf";
-  t["Helvetica-Bold"] = "LiberationSans-Bold.ttf";
-  t["Helvetica-BoldOblique"] = "LiberationSans-BoldItalic.ttf";
-  t["Helvetica-Oblique"] = "LiberationSans-Italic.ttf";
+  t.Helvetica = "thmanyahsans-Regular.otf";
+  t["Helvetica-Bold"] = "thmanyahsans-Bold.otf";
+  t["Helvetica-BoldOblique"] = "thmanyahsans-Bold.otf";
+  t["Helvetica-Oblique"] = "thmanyahsans-Regular.otf";
   t["Times-Roman"] = "FoxitSerif.pfb";
   t["Times-Bold"] = "FoxitSerifBold.pfb";
   t["Times-BoldItalic"] = "FoxitSerifBoldItalic.pfb";
   t["Times-Italic"] = "FoxitSerifItalic.pfb";
   t.Symbol = "FoxitSymbol.pfb";
   t.ZapfDingbats = "FoxitDingbats.pfb";
-  t["LiberationSans-Regular"] = "LiberationSans-Regular.ttf";
-  t["LiberationSans-Bold"] = "LiberationSans-Bold.ttf";
-  t["LiberationSans-Italic"] = "LiberationSans-Italic.ttf";
-  t["LiberationSans-BoldItalic"] = "LiberationSans-BoldItalic.ttf";
+  t["LiberationSans-Regular"] = "thmanyahsans-Regular.otf";
+  t["LiberationSans-Bold"] = "thmanyahsans-Bold.otf";
+  t["LiberationSans-Italic"] = "thmanyahsans-Medium.otf";
+  t["LiberationSans-BoldItalic"] = "thmanyahsans-Bold.otf";
 });
 const getNonStdFontMap = getLookupTableFactory(function (t) {
   t.Calibri = "Helvetica";
@@ -32800,22 +32800,22 @@ const substitutionMap = new Map([["Times-Roman", {
   ultimate: "serif"
 }], ["Helvetica", {
   local: ["Helvetica", "Helvetica Neue", "Arial", "Arial Nova", "Liberation Sans", "Arimo", "Nimbus Sans", "Nimbus Sans L", "A030", "TeX Gyre Heros", "FreeSans", "DejaVu Sans", "Albany", "Bitstream Vera Sans", "Arial Unicode MS", "Microsoft Sans Serif", "Apple Symbols", "Cantarell"],
-  path: "LiberationSans-Regular.ttf",
+  path: "thmanyahsans-Regular.otf",
   style: NORMAL,
   ultimate: "sans-serif"
 }], ["Helvetica-Bold", {
   alias: "Helvetica",
-  path: "LiberationSans-Bold.ttf",
+  path: "thmanyahsans-Bold.otf",
   style: BOLD,
   ultimate: "sans-serif"
 }], ["Helvetica-Oblique", {
   alias: "Helvetica",
-  path: "LiberationSans-Italic.ttf",
+  path: "thmanyahsans-Medium.otf",
   style: ITALIC,
   ultimate: "sans-serif"
 }], ["Helvetica-BoldOblique", {
   alias: "Helvetica",
-  path: "LiberationSans-BoldItalic.ttf",
+  path: "thmanyahsans-Bold.otf",
   style: BOLDITALIC,
   ultimate: "sans-serif"
 }], ["Courier", {
