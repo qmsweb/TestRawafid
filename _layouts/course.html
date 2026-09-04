@@ -293,17 +293,17 @@
 
     /* Grid View */
     .materials-list.grid-view {
-      display: grid !important; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px;
+      column-width: 280px; column-count: auto; column-gap: 18px;
     }
     .materials-list.grid-view .material-item {
-      height: 100%; justify-content: flex-start;
+      break-inside: avoid; justify-content: flex-start;
     }
     .materials-list.grid-view .item-header { margin-bottom: 12px; }
     .materials-list.grid-view .item-description-preview {
-      margin-right: 0 !important; margin-bottom: 12px; flex-grow: 1; 
+      margin-right: 0 !important; margin-bottom: 12px;
     }
     .materials-list.grid-view .badges-container {
-      margin-right: 0 !important; margin-top: auto;
+      margin-right: 0 !important;
     }
     .materials-list.grid-view .item-image {
         display: block; width: 100%; margin-top: 12px;
@@ -329,7 +329,7 @@
     @media (max-width: 768px) {
       .header-top-row { flex-direction: column; gap: 15px; }
       .share-button { width: 100%; justify-content: center; }
-      .materials-list.grid-view { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .materials-list.grid-view { column-count: 2; column-gap: 12px; }
       .materials-list.grid-view .material-item { padding: 12px; }
       .materials-list.grid-view .item-icon { width: 40px; height: 40px; font-size: 1.1rem; }
       .materials-list.grid-view .item-title-text h3 { font-size: 0.95rem; }
