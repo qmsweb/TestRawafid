@@ -419,6 +419,7 @@
       <a href="{{ site.baseurl }}/" class="back-btn">
         <i class="fas fa-arrow-right"></i> رجوع
       </a>
+      {% if page.hide-buttons != "yes" %}
       <div class="action-buttons-top">
         <button id="print-btn" onclick="printContent()" class="print-btn-top">
           <i class="fas fa-print"></i> طباعة
@@ -427,6 +428,7 @@
           <i class="fas fa-share-alt"></i> مشاركة
         </button>
       </div>
+      {% endif %}
     </div>
 
     <div class="related-btn-wrapper" id="related-wrapper" style="display: {% if page.related %}flex{% else %}none{% endif %};">
