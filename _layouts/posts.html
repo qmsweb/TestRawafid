@@ -82,22 +82,26 @@
       margin-bottom: 22px;
     }
 
-    .back-btn {
+    /* === التاقات === */
+    .post-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .post-tag {
       text-decoration: none;
       color: var(--primary-color);
       font-weight: 700;
-      font-size: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background: var(--bg-card);
+      font-size: 0.78rem;
+      padding: 4px 14px;
+      background: var(--primary-light-bg);
       border-radius: 50px;
       transition: 0.3s;
       border: 1px solid var(--border-color);
-      cursor: pointer;
+      cursor: default;
     }
-    .back-btn:hover { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+    .post-tag:hover { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
 
     .page-title {
       font-size: clamp(1.7rem, 3vw, 2rem);
@@ -158,6 +162,7 @@
       font-weight: 800;
       line-height: 1.5;
       color: var(--text-main);
+      font-family: "Thmanyah Serif Text", "IBM Plex Sans Arabic", sans-serif;
     }
     .post-card:hover .post-title { color: var(--primary-color); }
 
@@ -241,6 +246,7 @@
       font-weight: 800;
       line-height: 1.5;
       color: var(--text-main);
+      font-family: "Thmanyah Serif Text", "IBM Plex Sans Arabic", sans-serif;
     }
     .featured-card:hover .featured-title { color: var(--primary-color); }
 
@@ -301,12 +307,6 @@
   {% include header.html %}
 
   <main class="posts-page">
-    <div class="page-header">
-      <a href="{{ site.baseurl }}/" class="back-btn">
-        <i class="fas fa-arrow-right"></i> رجوع
-      </a>
-    </div>
-
     <h1 class="page-title">{{ page.title | default: "التدوينات" }}</h1>
 
     {% if visible_posts.size > 0 %}
@@ -347,6 +347,13 @@
                   <span data-author-uid="{{ featured_post.author }}"><i class="far fa-user"></i> <span class="author-name">{{ featured_post.author }}</span></span>
                 {% endif %}
               </div>
+              {% if featured_post.tags %}
+                <div class="post-tags">
+                  {% for tag in featured_post.tags %}
+                    <span class="post-tag">{{ tag }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
             </div>
           </a>
         {% endif %}
@@ -390,6 +397,13 @@
                   <span data-author-uid="{{ post.author }}"><i class="far fa-user"></i> <span class="author-name">{{ post.author }}</span></span>
                 {% endif %}
               </div>
+              {% if post.tags %}
+                <div class="post-tags">
+                  {% for tag in post.tags %}
+                    <span class="post-tag">{{ tag }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
             </div>
           </a>
         {% endfor %}
@@ -406,6 +420,14 @@
   {% include footer.html %}
 
   <script>
+    function toggleTheme() {
+      var html = document.documentElement;
+      var current = html.getAttribute('data-theme');
+      var next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('rawafed-theme', next);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       var BASE_URL = '{{ site.baseurl }}';
       var authorSpans = document.querySelectorAll('[data-author-uid]');
