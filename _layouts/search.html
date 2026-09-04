@@ -246,6 +246,72 @@
       overflow: hidden;
     }
 
+    .result-group {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--bg-card);
+      transition: all 0.3s ease;
+    }
+
+    .result-group:hover {
+      box-shadow: var(--hover-shadow);
+      border-color: var(--primary-color);
+    }
+
+    .result-group-header {
+      text-decoration: none;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      cursor: pointer;
+    }
+
+    .result-group-header:hover .result-title { color: var(--primary-color); }
+
+    .result-group-items {
+      border-top: 1px solid var(--border-color);
+    }
+
+    .result-subitem {
+      text-decoration: none;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px 12px 40px;
+      transition: all 0.2s ease;
+      border-bottom: 1px solid rgba(0,0,0,0.03);
+      cursor: pointer;
+    }
+
+    .result-subitem:last-child { border-bottom: none; }
+    .result-subitem:hover { background: var(--hover-bg); }
+    .result-subitem:hover .result-title { color: var(--primary-color); }
+
+    .result-subitem .result-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+    }
+
+    .result-subitem .result-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .result-more {
+      text-align: center;
+      padding: 10px;
+      font-size: 0.8rem;
+      color: var(--primary-color);
+      font-weight: 600;
+      background: var(--primary-light-bg);
+    }
+
     /* === حالات خاصة === */
     .empty-state {
       text-align: center;
@@ -303,6 +369,10 @@
       .result-card { padding: 14px 16px; gap: 12px; }
       .result-icon { width: 42px; height: 42px; font-size: 1.1rem; }
       .result-title { font-size: 0.95rem; }
+      .result-group-header { padding: 14px 16px; gap: 12px; }
+      .result-subitem { padding: 10px 16px 10px 32px; gap: 10px; }
+      .result-subitem .result-icon { width: 32px; height: 32px; font-size: 0.8rem; }
+      .result-subitem .result-title { font-size: 0.85rem; }
     }
 
     @media (max-width: 400px) {
@@ -428,6 +498,7 @@
         .replace(/ئ/g, 'ي')
         .replace(/ة/g, 'ه')
         .replace(/ى/g, 'ي')
+        .replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, ' ')
         .trim();
     }
 
@@ -447,15 +518,26 @@
       if (!text || !query) return 0;
       var normText = normalizeArabic(text).toLowerCase();
       var normQuery = normalizeArabic(query).toLowerCase();
-      var words = normQuery.split(/\s+/).filter(function(w) { return w.length > 1; });
+      var words = normQuery.split(/\s+/).filter(function(w) { return w.length > 0; });
       var score = 0;
 
       if (normText === normQuery) return 100;
-      if (normText.indexOf(normQuery) === 0) score += 50;
-      if (normText.indexOf(normQuery) !== -1) score += 30;
+      if (normText.indexOf(normQuery) === 0) score += 60;
+      else if (normText.indexOf(normQuery) !== -1) score += 35;
+
+      var textWords = normText.split(/\s+/);
 
       words.forEach(function(word) {
-        if (normText.indexOf(word) !== -1) score += 15;
+        if (word.length < 1) return;
+
+        textWords.forEach(function(tw) {
+          if (tw === word) score += 20;
+          else if (tw.indexOf(word) === 0) score += 15;
+          else if (tw.indexOf(word) !== -1) score += 10;
+        });
+
+        if (normText.indexOf(word) !== -1) score += 8;
+
         var wordVariants = [word];
         if (word.endsWith('ه')) wordVariants.push(word.slice(0, -1) + 'ة');
         if (word.endsWith('ة')) wordVariants.push(word.slice(0, -1) + 'ه');
@@ -463,6 +545,8 @@
         if (word.endsWith('ى')) wordVariants.push(word.slice(0, -1) + 'ي');
         if (word.endsWith('ا')) wordVariants.push(word.slice(0, -1) + 'أ');
         if (word.endsWith('ا')) wordVariants.push(word.slice(0, -1) + 'إ');
+        if (word.endsWith('و')) wordVariants.push(word.slice(0, -1) + 'ؤ');
+        if (word.endsWith('ي')) wordVariants.push(word.slice(0, -1) + 'ئ');
 
         wordVariants.forEach(function(v) {
           if (v !== word && normText.indexOf(v) !== -1) score += 12;
@@ -579,7 +663,7 @@
         return;
       }
 
-      resultsInfo.textContent = 'تم العثور على ' + totalResults + ' نتيجة';
+      resultsInfo.textContent = 'تم العثور على ' + totalResults + ' نتيجة لـ «' + currentQuery + '»';
       var html = '<div class="results-list">';
 
       if (showCourses) {
@@ -587,39 +671,51 @@
           var iconBg = course.color + '15';
           var iconClass = course.icon || 'fa-book';
 
-          html += '<a class="result-card" href="' + course.url + '">' +
-            '<div class="result-icon" style="color:' + course.color + '; background:' + iconBg + ';">' +
-              '<i class="fas ' + iconClass + '"></i>' +
-            '</div>' +
-            '<div class="result-content">' +
-              '<div class="result-title">' + highlightText(course.name, currentQuery) + '</div>' +
-              '<div class="result-meta">' +
-                '<span class="result-badge">' + course.category + '</span>' +
-                '<span><i class="fas fa-book-open"></i> مقرر</span>' +
-                (course.code ? '<span><i class="fas fa-hashtag"></i> ' + course.code + '</span>' : '') +
-              '</div>' +
-            '</div>' +
-          '</a>';
-
           if (course.items && course.items.length > 0) {
+            html += '<div class="result-group">';
+            html += '<a class="result-group-header" href="' + course.url + '">' +
+              '<div class="result-icon" style="color:' + course.color + '; background:' + iconBg + ';">' +
+                '<i class="fas ' + iconClass + '"></i>' +
+              '</div>' +
+              '<div class="result-content">' +
+                '<div class="result-title">' + highlightText(course.name, currentQuery) + '</div>' +
+                '<div class="result-meta">' +
+                  '<span class="result-badge">' + course.category + '</span>' +
+                  '<span><i class="fas fa-book-open"></i> مقرر</span>' +
+                  (course.code ? '<span><i class="fas fa-hashtag"></i> ' + course.code + '</span>' : '') +
+                '</div>' +
+              '</div>' +
+            '</a>';
+
+            html += '<div class="result-group-items">';
             course.items.slice(0, 5).forEach(function(item) {
-              html += '<a class="result-card" href="' + item.url + '" style="padding-right:40px;">' +
-                '<div class="result-icon" style="color:' + course.color + '; background:' + iconBg + '; width:40px; height:40px; font-size:1rem;">' +
+              html += '<a class="result-subitem" href="' + item.url + '">' +
+                '<div class="result-icon" style="color:' + course.color + '; background:' + iconBg + ';">' +
                   '<i class="fas fa-file-alt"></i>' +
                 '</div>' +
                 '<div class="result-content">' +
-                  '<div class="result-title" style="font-size:0.93rem;">' + highlightText(item.title, currentQuery) + '</div>' +
-                  '<div class="result-meta">' +
-                    '<span class="result-badge">' + course.name + '</span>' +
-                  '</div>' +
+                  '<div class="result-title">' + highlightText(item.title, currentQuery) + '</div>' +
                 '</div>' +
               '</a>';
             });
             if (course.items.length > 5) {
-              html += '<div style="text-align:center; padding:4px 0; font-size:0.82rem; color:var(--text-muted);">' +
-                '...' + (course.items.length - 5) + ' نتائج أخرى في هذا المقرر' +
-              '</div>';
+              html += '<div class="result-more">+' + (course.items.length - 5) + ' نتيجة أخرى</div>';
             }
+            html += '</div></div>';
+          } else {
+            html += '<a class="result-card" href="' + course.url + '">' +
+              '<div class="result-icon" style="color:' + course.color + '; background:' + iconBg + ';">' +
+                '<i class="fas ' + iconClass + '"></i>' +
+              '</div>' +
+              '<div class="result-content">' +
+                '<div class="result-title">' + highlightText(course.name, currentQuery) + '</div>' +
+                '<div class="result-meta">' +
+                  '<span class="result-badge">' + course.category + '</span>' +
+                  '<span><i class="fas fa-book-open"></i> مقرر</span>' +
+                  (course.code ? '<span><i class="fas fa-hashtag"></i> ' + course.code + '</span>' : '') +
+                '</div>' +
+              '</div>' +
+            '</a>';
           }
         });
       }
@@ -665,10 +761,19 @@
 
     searchInput.addEventListener('input', function() {
       clearTimeout(searchTimeout);
-      var query = this.value;
+      var query = this.value.trim();
+      if (query.length < 2 && query.length > 0) {
+        resultsInfo.textContent = '';
+        resultsContainer.innerHTML =
+          '<div class="initial-state">' +
+            '<i class="fas fa-keyboard"></i>' +
+            '<p>أكمل الكتابة للبحث...</p>' +
+          '</div>';
+        return;
+      }
       searchTimeout = setTimeout(function() {
         performSearch(query);
-      }, 250);
+      }, 200);
     });
 
     searchInput.addEventListener('keydown', function(e) {

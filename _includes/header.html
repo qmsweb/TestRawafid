@@ -102,9 +102,52 @@
     width: 100%;
   }
 
-  .nav-links a:hover { color: #ffcc00; }
+    .nav-links a:hover { color: #ffcc00; }
 
-  /* === أزرار التحكم والأيقونات === */
+    /* === زر تغيير الوضع في القائمة الجانبية === */
+    .sidebar-theme-toggle {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 0.9rem 0;
+      font-size: 1rem;
+      font-family: "IBM Plex Sans Arabic", sans-serif;
+      color: white;
+      border: none;
+      background: none;
+      cursor: pointer;
+      text-align: right;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      transition: color 0.3s ease;
+    }
+
+    .sidebar-theme-toggle:hover { color: #ffcc00; }
+
+    .sidebar-theme-toggle .sidebar-theme-icon {
+      width: var(--icon-size);
+      height: var(--icon-size);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-theme-toggle .sidebar-theme-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .sidebar-theme-toggle .sun-icon { display: none; }
+    .sidebar-theme-toggle .moon-icon { display: block; }
+    [data-theme="dark"] .sidebar-theme-toggle .sun-icon { display: block; }
+    [data-theme="dark"] .sidebar-theme-toggle .moon-icon { display: none; }
+
+    /* === أزرار التحكم والأيقونات === */
   .nav-icons {
     display: flex;
     align-items: center;
@@ -176,6 +219,8 @@
   /* === تصميم الجوال === */
   @media (max-width: 768px) {
     .menu-toggle-btn { display: flex; }
+    .theme-toggle-btn { display: none; }
+    .sidebar-theme-toggle { display: flex; }
 
     .nav-links {
       position: fixed;
@@ -211,6 +256,7 @@
     .nav-links.active li:nth-child(3) { transition-delay: 0.25s; }
     .nav-links.active li:nth-child(4) { transition-delay: 0.3s; }
     .nav-links.active li:nth-child(5) { transition-delay: 0.35s; }
+    .nav-links.active li:nth-child(6) { transition-delay: 0.4s; }
 
     .nav-links a {
       display: block;
@@ -260,6 +306,27 @@
       <li><a href="/tools">الأدوات</a></li>
       <li><a href="/contact">تواصل معنا</a></li>
       <li><a href="/about">عن روافد</a></li>
+      <li>
+        <button class="sidebar-theme-toggle" id="sidebar-theme-toggle" aria-label="تغيير الوضع">
+          <span class="sidebar-theme-icon">
+            <svg class="moon-icon" viewBox="0 0 24 24">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg class="sun-icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </span>
+          <span id="sidebar-theme-label">الوضع الليلي</span>
+        </button>
+      </li>
     </ul>
 
     <div class="nav-icons">
@@ -352,20 +419,38 @@
     }
 
     /* === 3. منطق زر تغيير الوضع === */
-    const themeBtn = document.getElementById('theme-toggle-btn');
-    
-    themeBtn.addEventListener('click', function() {
+    var themeBtn = document.getElementById('theme-toggle-btn');
+    var sidebarThemeBtn = document.getElementById('sidebar-theme-toggle');
+    var sidebarThemeLabel = document.getElementById('sidebar-theme-label');
+
+    function doToggleTheme() {
       if (typeof toggleTheme === 'function') {
         toggleTheme();
       } else {
-        // Fallback: تبديل يدوي للكلاس للتجربة
-        const html = document.documentElement;
+        var html = document.documentElement;
         if (html.getAttribute('data-theme') === 'dark') {
             html.removeAttribute('data-theme');
         } else {
             html.setAttribute('data-theme', 'dark');
         }
       }
-    });
+      updateThemeLabel();
+    }
+
+    function updateThemeLabel() {
+      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (sidebarThemeLabel) {
+        sidebarThemeLabel.textContent = isDark ? 'الوضع الفاتح' : 'الوضع الليلي';
+      }
+    }
+
+    if (themeBtn) {
+      themeBtn.addEventListener('click', doToggleTheme);
+    }
+    if (sidebarThemeBtn) {
+      sidebarThemeBtn.addEventListener('click', doToggleTheme);
+    }
+
+    updateThemeLabel();
   });
 </script>
