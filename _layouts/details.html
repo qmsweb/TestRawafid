@@ -150,7 +150,7 @@
 
     .pdf-container {
       width: calc(100% + 40px); margin-left: -20px; margin-right: -20px;
-      height: 75vh;
+      height: 90vh;
       border: none; border-radius: 0;
       overflow: hidden; background: var(--bg-pdf); 
       margin-bottom: 10px; position: relative;
@@ -173,8 +173,10 @@
     .exit-fullscreen-btn:hover { background: #000; transform: scale(1.05); }
 
     .floating-btns {
-      position: fixed; bottom: 25px; left: 20px; z-index: 1000;
+      position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+      z-index: 1000;
       display: flex; flex-direction: column; gap: 8px;
+      align-items: center;
       transition: opacity 0.3s ease;
     }
 
@@ -269,7 +271,7 @@
     }
 
     @media (max-width: 768px) {
-      .pdf-container { height: 65vh; }
+      .pdf-container { height: 82vh; }
       body.fullscreen-active .pdf-container { height: 100vh; }
     }
   </style>
