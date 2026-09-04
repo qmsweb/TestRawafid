@@ -25,7 +25,7 @@
     })();
   </script>
 
-  {% assign visible_posts = site.posts | where_exp: "post", "post.hidden != true" %}
+  {% assign visible_posts = site.posts | where: "visible", true %}
   {% assign featured_post = visible_posts | where: "featured", true | first %}
 
   <style>
