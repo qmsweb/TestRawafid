@@ -1,0 +1,30 @@
+---
+layout: null
+---
+[
+{%- assign visible_posts = site.posts | where: "visible", true -%}
+{%- for post in visible_posts -%}
+  {%- assign content_preview = post.content | strip_html | truncate: 500 -%}
+  {%- assign excerpt_text = "" -%}
+  {%- if post.excerpt and post.excerpt != "" and post.excerpt != post.content -%}
+    {%- assign excerpt_text = post.excerpt | strip_html | truncate: 200 -%}
+  {%- endif -%}
+  {%- assign tags_str = "" -%}
+  {%- if post.tags -%}
+    {%- for tag in post.tags -%}
+      {%- assign tags_str = tags_str | append: tag -%}
+      {%- unless forloop.last -%}{%- assign tags_str = tags_str | append: "," -%}{%- endunless -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- unless forloop.first -%},{%- endunless -%}
+  {
+    "title": {{ post.title | jsonify }},
+    "slug": {{ post.url | replace: "/blog/", "" | jsonify }},
+    "url": {{ post.url | relative_url | jsonify }},
+    "date": "{{ post.date | date: "%Y-%m-%d" }}",
+    "tags": [{% if tags_str != "" %}{{ tags_str | jsonify }}{% endif %}],
+    "excerpt": {{ excerpt_text | jsonify }},
+    "content_preview": {{ content_preview | jsonify }}
+  }
+{%- endfor -%}
+]

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ابحث في مقررات ومقالات منصة روافد">
+  <title>{{ page.title | default: "بحث | منصة روافد" }}</title>
+
+  <link rel="stylesheet" href="{{ '/fonts/fonts.css' | relative_url }}" />
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <meta property="og:title" content="بحث | منصة روافد">
+  <meta property="og:description" content="ابحث في مقررات ومقالات منصة روافد">
+  <meta property="og:image" content="{{ '/images/cover.png' | relative_url }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+
+  <script>
+    (function() {
+      var savedTheme = localStorage.getItem('rawafed-theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+    :root {
+      --primary-color: #1a2ac6;
+      --primary-light-bg: #eff1ff;
+      --bg-body: #f4f6fb;
+      --bg-card: #ffffff;
+      --bg-sticky: rgba(244, 246, 251, 0.95);
+      --border-color: #ccd1e0;
+      --text-main: #2d2d2d;
+      --text-muted: #666666;
+      --bg-code: #f4f6fb;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+      --hover-shadow: 0 15px 30px -5px rgba(26, 42, 198, 0.1);
+      --hover-bg: #f9f9f9;
+      --radius-md: 12px;
+    }
+
+    [data-theme="dark"] {
+      --primary-color: #7986cb;
+      --primary-light-bg: #282a36;
+      --bg-body: #121212;
+      --bg-card: #1e1e1e;
+      --bg-sticky: rgba(18, 18, 18, 0.95);
+      --border-color: #333333;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --bg-code: #2c2c2c;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+      --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5);
+      --hover-bg: #2c2e3e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-top: 80px; padding-bottom: 40px; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+    /* === صندوق البحث === */
+    .search-hero {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-top: 10px;
+    }
+
+    .search-hero h1 {
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      font-family: "Thmanyah Serif Text", "IBM Plex Sans Arabic", sans-serif;
+    }
+
+    .search-hero p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .search-box {
+      position: relative;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 16px 55px 16px 24px;
+      font-size: 1.05rem;
+      font-family: "IBM Plex Sans Arabic", sans-serif;
+      border: 2px solid var(--border-color);
+      border-radius: 50px;
+      background: var(--bg-card);
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(26, 42, 198, 0.08);
+    }
+
+    .search-icon-btn {
+      position: absolute;
+      left: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .search-icon-btn:hover { background: #14209e; transform: translateY(-50%) scale(1.05); }
+    .search-icon-btn:active { transform: translateY(-50%) scale(0.95); }
+
+    /* === فلاتر التصنيف === */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 8px 22px;
+      border-radius: 50px;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .filter-tab:hover { border-color: var(--primary-color); color: var(--primary-color); }
+    .filter-tab.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+
+    /* === النتائج === */
+    .results-info {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* === بطاقة النتيجة === */
+    .result-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      text-decoration: none;
+      color: var(--text-main);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .result-card:hover {
+      box-shadow: var(--hover-shadow);
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+    }
+
+    .result-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .result-content { flex: 1; min-width: 0; }
+
+    .result-title {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.5;
+      margin-bottom: 4px;
+    }
+
+    .result-card:hover .result-title { color: var(--primary-color); }
+
+    .result-meta {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .result-meta i { color: var(--primary-color); margin-inline-end: 3px; }
+
+    .result-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: var(--primary-light-bg);
+      color: var(--primary-color);
+    }
+
+    .result-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-top: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* === حالات خاصة === */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state i { font-size: 3rem; color: var(--border-color); display: block; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+    .empty-state p { font-size: 0.9rem; }
+
+    .initial-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .initial-state i { font-size: 2.5rem; color: var(--primary-color); display: block; margin-bottom: 14px; opacity: 0.5; }
+    .initial-state p { font-size: 0.92rem; }
+
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      padding: 30px;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* === تأثير النص الم.highlight === */
+    mark {
+      background: rgba(26, 42, 198, 0.12);
+      color: var(--text-main);
+      padding: 0 2px;
+      border-radius: 3px;
+    }
+
+    [data-theme="dark"] mark {
+      background: rgba(121, 134, 203, 0.25);
+    }
+
+    /* === الشاشات الصغيرة === */
+    @media (max-width: 768px) {
+      .search-input { padding: 14px 50px 14px 18px; font-size: 0.95rem; }
+      .search-icon-btn { width: 40px; height: 40px; font-size: 1rem; left: 4px; }
+      .filter-tab { padding: 7px 16px; font-size: 0.82rem; }
+      .result-card { padding: 14px 16px; gap: 12px; }
+      .result-icon { width: 42px; height: 42px; font-size: 1.1rem; }
+      .result-title { font-size: 0.95rem; }
+    }
+
+    @media (max-width: 400px) {
+      .search-hero h1 { font-size: 1.4rem; }
+      .filter-tabs { gap: 6px; }
+      .filter-tab { padding: 6px 14px; font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+
+  {% include header.html %}
+
+  <div class="container">
+    <div class="search-hero">
+      <h1>ابحث في روافد</h1>
+      <p>ابحث في المقررات والمقالات والمحتوى التعليمي</p>
+
+      <div class="search-box">
+        <input
+          type="text"
+          class="search-input"
+          id="search-input"
+          placeholder="اكتب كلمة للبحث..."
+          autocomplete="off"
+          autofocus
+        />
+        <button class="search-icon-btn" id="search-btn" aria-label="بحث">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-tabs" id="filter-tabs">
+      <div class="filter-tab active" data-filter="all">الكل</div>
+      <div class="filter-tab" data-filter="courses">المقررات</div>
+      <div class="filter-tab" data-filter="articles">المقالات</div>
+    </div>
+
+    <div class="results-info" id="results-info"></div>
+
+    <div id="results-container">
+      <div class="initial-state">
+        <i class="fas fa-search"></i>
+        <p>ابدأ بالكتابة للبحث في محتوى المنصة</p>
+      </div>
+    </div>
+  </div>
+
+  {% include footer.html %}
+
+  <script>
+  function toggleTheme() {
+    var html = document.documentElement;
+    var current = html.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('rawafed-theme', next);
+  }
+
+  (function() {
+    var BASE = '{{ site.baseurl }}';
+    var searchInput = document.getElementById('search-input');
+    var searchBtn = document.getElementById('search-btn');
+    var resultsContainer = document.getElementById('results-container');
+    var resultsInfo = document.getElementById('results-info');
+    var filterTabs = document.querySelectorAll('.filter-tab');
+
+    var materialsData = [];
+    var courseDetailsCache = {};
+    var blogData = [];
+    var currentFilter = 'all';
+    var currentQuery = '';
+    var searchTimeout = null;
+    var dataLoaded = false;
+
+    function loadData() {
+      var timestamp = new Date().getTime();
+      Promise.all([
+        fetch(BASE + '/assets/data/materials.json?v=' + timestamp).then(function(r) { return r.json(); }),
+        fetch(BASE + '/blog-index.json?v=' + timestamp).then(function(r) { return r.json(); })
+      ]).then(function(results) {
+        materialsData = results[0];
+        blogData = results[1];
+        dataLoaded = true;
+
+        var coursePromises = materialsData.map(function(course) {
+          return fetch(BASE + '/assets/data/' + course.code + '.json?v=' + timestamp)
+            .then(function(r) { return r.json(); })
+            .then(function(data) { courseDetailsCache[course.code] = data; })
+            .catch(function() {});
+        });
+
+        Promise.all(coursePromises).then(function() {
+          var q = getQueryParam('q');
+          if (q) {
+            searchInput.value = q;
+            performSearch(q);
+          }
+        });
+      }).catch(function(err) {
+        console.error('خطأ في تحميل البيانات:', err);
+        resultsContainer.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>خطأ في تحميل البيانات</h3><p>تأكد من اتصالك بالإنترنت وحاول مرة أخرى</p></div>';
+      });
+    }
+
+    function getQueryParam(name) {
+      var urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    function normalizeArabic(str) {
+      if (!str) return '';
+      return str
+        .replace(/[\u0610-\u061A]/g, '')
+        .replace(/[\u064B-\u065F]/g, '')
+        .replace(/[\u0670]/g, '')
+        .replace(/[\u0640]/g, '')
+        .replace(/إ/g, 'ا')
+        .replace(/آ/g, 'ا')
+        .replace(/أ/g, 'ا')
+        .replace(/ؤ/g, 'و')
+        .replace(/ئ/g, 'ي')
+        .replace(/ة/g, 'ه')
+        .replace(/ى/g, 'ي')
+        .trim();
+    }
+
+    function highlightText(text, query) {
+      if (!text || !query) return text || '';
+      var normalizedQuery = normalizeArabic(query);
+      var words = normalizedQuery.split(/\s+/).filter(function(w) { return w.length > 1; });
+      if (words.length === 0) return text;
+
+      var pattern = words.map(function(w) { return w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|');
+      var regex = new RegExp('(' + pattern + ')', 'gi');
+      var result = text.replace(regex, '<mark>$1</mark>');
+      return result;
+    }
+
+    function matchScore(text, query) {
+      if (!text || !query) return 0;
+      var normText = normalizeArabic(text).toLowerCase();
+      var normQuery = normalizeArabic(query).toLowerCase();
+      var words = normQuery.split(/\s+/).filter(function(w) { return w.length > 1; });
+      var score = 0;
+
+      if (normText === normQuery) return 100;
+      if (normText.indexOf(normQuery) === 0) score += 50;
+      if (normText.indexOf(normQuery) !== -1) score += 30;
+
+      words.forEach(function(word) {
+        if (normText.indexOf(word) !== -1) score += 15;
+        var wordVariants = [word];
+        if (word.endsWith('ه')) wordVariants.push(word.slice(0, -1) + 'ة');
+        if (word.endsWith('ة')) wordVariants.push(word.slice(0, -1) + 'ه');
+        if (word.endsWith('ي')) wordVariants.push(word.slice(0, -1) + 'ى');
+        if (word.endsWith('ى')) wordVariants.push(word.slice(0, -1) + 'ي');
+        if (word.endsWith('ا')) wordVariants.push(word.slice(0, -1) + 'أ');
+        if (word.endsWith('ا')) wordVariants.push(word.slice(0, -1) + 'إ');
+
+        wordVariants.forEach(function(v) {
+          if (v !== word && normText.indexOf(v) !== -1) score += 12;
+        });
+      });
+
+      return score;
+    }
+
+    function searchCourses(query) {
+      var results = [];
+
+      materialsData.forEach(function(course) {
+        var nameScore = matchScore(course.name, query);
+        var codeScore = course.code.toLowerCase().indexOf(query.toLowerCase()) !== -1 ? 40 : 0;
+        var totalScore = Math.max(nameScore, codeScore);
+
+        if (totalScore > 0) {
+          var items = [];
+          var detail = courseDetailsCache[course.code];
+          if (detail && detail.items) {
+            detail.items.forEach(function(item) {
+              var itemScore = matchScore(item.title, query);
+              var descScore = matchScore(item.description, query);
+              var itemTotal = Math.max(itemScore, descScore);
+              if (itemTotal > 0) {
+                items.push({
+                  id: item.id,
+                  title: item.title,
+                  description: item.description || '',
+                  score: itemTotal,
+                  url: BASE + '/details/' + course.code + '/' + item.id
+                });
+              }
+            });
+            items.sort(function(a, b) { return b.score - a.score; });
+          }
+
+          results.push({
+            type: 'course',
+            name: course.name,
+            code: course.code,
+            color: course.color || '#1a2ac6',
+            icon: course.icon || 'fa-book',
+            category: course.type || '',
+            score: totalScore,
+            url: BASE + '/course/' + course.code,
+            items: items
+          });
+        }
+      });
+
+      results.sort(function(a, b) { return b.score - a.score; });
+      return results;
+    }
+
+    function searchArticles(query) {
+      var results = [];
+
+      blogData.forEach(function(post) {
+        var titleScore = matchScore(post.title, query);
+        var tagsScore = 0;
+        if (post.tags && post.tags.length > 0) {
+          post.tags.forEach(function(tag) {
+            tagsScore = Math.max(tagsScore, matchScore(tag, query));
+          });
+        }
+        var excerptScore = matchScore(post.excerpt, query);
+        var contentScore = matchScore(post.content_preview, query);
+        var totalScore = Math.max(titleScore, tagsScore, excerptScore, contentScore * 0.5);
+
+        if (totalScore > 0) {
+          results.push({
+            type: 'article',
+            title: post.title,
+            url: post.url,
+            date: post.date,
+            tags: post.tags || [],
+            excerpt: post.excerpt || '',
+            score: totalScore
+          });
+        }
+      });
+
+      results.sort(function(a, b) { return b.score - a.score; });
+      return results;
+    }
+
+    function performSearch(query) {
+      currentQuery = query.trim();
+      if (!currentQuery) {
+        showInitialState();
+        return;
+      }
+
+      var courseResults = searchCourses(currentQuery);
+      var articleResults = searchArticles(currentQuery);
+
+      var showCourses = currentFilter === 'all' || currentFilter === 'courses';
+      var showArticles = currentFilter === 'all' || currentFilter === 'articles';
+
+      var totalResults = 0;
+      if (showCourses) totalResults += courseResults.length;
+      if (showArticles) totalResults += articleResults.length;
+
+      if (totalResults === 0) {
+        resultsInfo.textContent = '';
+        resultsContainer.innerHTML =
+          '<div class="empty-state">' +
+            '<i class="fas fa-search"></i>' +
+            '<h3>لا توجد نتائج</h3>' +
+            '<p>جرب كلمات بحث مختلفة أو تحقق من التهجئة</p>' +
+          '</div>';
+        return;
+      }
+
+      resultsInfo.textContent = 'تم العثور على ' + totalResults + ' نتيجة';
+      var html = '<div class="results-list">';
+
+      if (showCourses) {
+        courseResults.forEach(function(course) {
+          var iconBg = course.color + '15';
+          var iconClass = course.icon || 'fa-book';
+
+          html += '<a class="result-card" href="' + course.url + '">' +
+            '<div class="result-icon" style="color:' + course.color + '; background:' + iconBg + ';">' +
+              '<i class="fas ' + iconClass + '"></i>' +
+            '</div>' +
+            '<div class="result-content">' +
+              '<div class="result-title">' + highlightText(course.name, currentQuery) + '</div>' +
+              '<div class="result-meta">' +
+                '<span class="result-badge">' + course.category + '</span>' +
+                '<span><i class="fas fa-book-open"></i> مقرر</span>' +
+                (course.code ? '<span><i class="fas fa-hashtag"></i> ' + course.code + '</span>' : '') +
+              '</div>' +
+            '</div>' +
+          '</a>';
+
+          if (course.items && course.items.length > 0) {
+            course.items.slice(0, 5).forEach(function(item) {
+              html += '<a class="result-card" href="' + item.url + '" style="padding-right:40px;">' +
+                '<div class="result-icon" style="color:' + course.color + '; background:' + iconBg + '; width:40px; height:40px; font-size:1rem;">' +
+                  '<i class="fas fa-file-alt"></i>' +
+                '</div>' +
+                '<div class="result-content">' +
+                  '<div class="result-title" style="font-size:0.93rem;">' + highlightText(item.title, currentQuery) + '</div>' +
+                  '<div class="result-meta">' +
+                    '<span class="result-badge">' + course.name + '</span>' +
+                  '</div>' +
+                '</div>' +
+              '</a>';
+            });
+            if (course.items.length > 5) {
+              html += '<div style="text-align:center; padding:4px 0; font-size:0.82rem; color:var(--text-muted);">' +
+                '...' + (course.items.length - 5) + ' نتائج أخرى في هذا المقرر' +
+              '</div>';
+            }
+          }
+        });
+      }
+
+      if (showArticles) {
+        articleResults.forEach(function(article) {
+          var tagsHtml = '';
+          if (article.tags && article.tags.length > 0) {
+            article.tags.forEach(function(tag) {
+              tagsHtml += '<span class="result-badge">' + tag + '</span>';
+            });
+          }
+
+          html += '<a class="result-card" href="' + article.url + '">' +
+            '<div class="result-icon" style="color:#09c983; background:rgba(9,201,131,0.09);">' +
+              '<i class="fas fa-newspaper"></i>' +
+            '</div>' +
+            '<div class="result-content">' +
+              '<div class="result-title">' + highlightText(article.title, currentQuery) + '</div>' +
+              '<div class="result-meta">' +
+                '<span class="result-badge" style="background:rgba(9,201,131,0.1); color:#09c983;">مقال</span>' +
+                (article.date ? '<span><i class="far fa-calendar"></i> ' + article.date + '</span>' : '') +
+                tagsHtml +
+              '</div>' +
+              (article.excerpt ? '<div class="result-desc">' + highlightText(article.excerpt, currentQuery) + '</div>' : '') +
+            '</div>' +
+          '</a>';
+        });
+      }
+
+      html += '</div>';
+      resultsContainer.innerHTML = html;
+    }
+
+    function showInitialState() {
+      resultsInfo.textContent = '';
+      resultsContainer.innerHTML =
+        '<div class="initial-state">' +
+          '<i class="fas fa-search"></i>' +
+          '<p>ابدأ بالكتابة للبحث في محتوى المنصة</p>' +
+        '</div>';
+    }
+
+    searchInput.addEventListener('input', function() {
+      clearTimeout(searchTimeout);
+      var query = this.value;
+      searchTimeout = setTimeout(function() {
+        performSearch(query);
+      }, 250);
+    });
+
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        clearTimeout(searchTimeout);
+        performSearch(this.value);
+      }
+    });
+
+    searchBtn.addEventListener('click', function() {
+      clearTimeout(searchTimeout);
+      performSearch(searchInput.value);
+    });
+
+    filterTabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        filterTabs.forEach(function(t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        currentFilter = tab.getAttribute('data-filter');
+        if (currentQuery) {
+          performSearch(currentQuery);
+        }
+      });
+    });
+
+    loadData();
+  })();
+  </script>
+
+</body>
+</html>

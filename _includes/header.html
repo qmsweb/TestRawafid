@@ -147,6 +147,8 @@
     transition: all 0.3s ease;
   }
 
+  .search-nav-btn { text-decoration: none; }
+
   /* --- منطق تبديل أيقونة الثيم --- */
   .theme-toggle-btn .sun-icon { display: none; }
   .theme-toggle-btn .moon-icon { display: block; }
@@ -261,6 +263,9 @@
     </ul>
 
     <div class="nav-icons">
+      <a href="/search" class="icon-btn search-nav-btn" aria-label="بحث" title="بحث">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </a>
       <button class="icon-btn theme-toggle-btn" id="theme-toggle-btn" aria-label="تغيير الوضع">
         <svg class="moon-icon" viewBox="0 0 24 24">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
