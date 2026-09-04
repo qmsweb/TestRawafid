@@ -369,7 +369,7 @@
       select.disabled = true;
 
       try {
-          const response = await fetch(`assets/plans/${planName}.json`);
+          const response = await fetch(`{{ '/assets/plans/' | relative_url }}${planName}.json`);
           if (!response.ok) throw new Error("لم يتم العثور على ملف الخطة");
           const data = await response.json();
           currentCoursesDB = data;
