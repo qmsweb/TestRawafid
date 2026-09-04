@@ -20462,19 +20462,6 @@ PDFPrintServiceFactory.initGlobals(PDFViewerApplication);
     if (!file) {
       return;
     }
-    const viewerOrigin = URL.parse(window.location)?.origin || "null";
-    if (HOSTED_VIEWER_ORIGINS.has(viewerOrigin)) {
-      return;
-    }
-    const fileOrigin = URL.parse(file, window.location)?.origin;
-    if (fileOrigin === viewerOrigin) {
-      return;
-    }
-    const ex = new Error("file origin does not match viewer's");
-    PDFViewerApplication._documentError("pdfjs-loading-error", {
-      message: ex.message
-    });
-    throw ex;
   };
   var onFileInputChange = function (evt) {
     if (this.pdfViewer?.isInPresentationMode) {
