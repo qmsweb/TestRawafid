@@ -391,8 +391,9 @@
           {% endcapture %}
 
           <a class="post-card" href="{{ post.url | relative_url }}">
-            {% if card_cover_url != "" and card_cover_url != blank %}
-              <img class="post-cover" src="{{ card_cover_url | strip }}" alt="{{ post.title }}" loading="lazy">
+            {% assign clean_cover_url = card_cover_url | strip %}
+            {% if clean_cover_url != "" and clean_cover_url != blank %}
+              <img class="post-cover" src="{{ clean_cover_url }}" alt="{{ post.title }}" loading="lazy">
             {% endif %}
 
             <div class="post-body">
