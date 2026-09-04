@@ -157,6 +157,11 @@
     
     .pdf-frame { width: 100%; height: 100%; border: none; display: block; }
 
+    .pdf-fallback {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 30px 20px; text-align: center; min-height: 300px;
+    }
+
     .exit-fullscreen-btn {
        display: none; position: fixed; top: 20px; left: 20px; z-index: 99999;
        background: rgba(0, 0, 0, 0.8); color: white; border: none;
@@ -247,6 +252,12 @@
         border: 1px solid #000 !important;
         page-break-inside: avoid;
       }
+      .pdf-fallback embed { display: none !important; }
+    }
+
+    @media (max-width: 768px) {
+      .pdf-container { height: 60vh; }
+      body.fullscreen-active .pdf-container { height: 100vh; }
     }
   </style>
 </head>
@@ -301,8 +312,8 @@
     localStorage.setItem('rawafed-theme', newTheme);
   }
 
-  const BASE_URL = "{{ site.baseurl }}"; 
-  const MOZILLA_VIEWER_URL = 'https://mozilla.github.io/pdf.js/web/viewer.html'; 
+  const BASE_URL = "{{ site.baseurl }}";
+  const LOCAL_VIEWER_URL = '{{ "/js/pdfjs/web/viewer.html" | relative_url }}';
 
   function getIconClass(type) {
     if (type === 'pdf') return 'fas fa-file-pdf';
@@ -433,11 +444,22 @@
 
         if (isPdf && item.download_url) {
             const absolutePdfUrl = new URL(item.download_url, window.location.href).href;
-            finalViewerSrc = `${MOZILLA_VIEWER_URL}?file=${encodeURIComponent(absolutePdfUrl)}`;
-            mediaHTML = `<div class="pdf-container"><iframe src="${finalViewerSrc}" class="pdf-frame" title="PDF Viewer" allowfullscreen></iframe></div>`;
-        } 
+            finalViewerSrc = `${LOCAL_VIEWER_URL}?file=${encodeURIComponent(absolutePdfUrl)}`;
+            mediaHTML = `<div class="pdf-container" id="pdf-wrapper">
+                <iframe src="${finalViewerSrc}" class="pdf-frame" id="pdf-iframe" title="PDF Viewer" allowfullscreen></iframe>
+                <div class="pdf-fallback" id="pdf-fallback" style="display:none;">
+                    <i class="fas fa-file-pdf fa-3x" style="color:var(--primary-color); margin-bottom:15px;"></i>
+                    <p style="margin-bottom:15px; color:var(--text-muted);">تعذر تحميل العارض المدمج، يمكنك استخدام الطريقة البديلة:</p>
+                    <a href="${absolutePdfUrl}" target="_blank" class="action-btn btn-primary" style="display:inline-flex; text-decoration:none; margin-bottom:10px;"><i class="fas fa-external-link-alt"></i> فتح الملف في تبويب جديد</a>
+                    <br>
+                    <embed src="${absolutePdfUrl}" type="application/pdf" class="pdf-frame" style="width:100%; height:70vh; border:none; border-radius:8px; margin-top:10px;">
+                </div>
+            </div>`;
+        }
         else if (item.image_url) {
-            const imgSrc = item.image_url.startsWith('http') || item.image_url.startsWith('/') ? item.image_url : (BASE_URL || '/') + '/' + item.image_url;
+            const imgSrc = item.image_url.startsWith('http') || item.image_url.startsWith('/')
+                ? item.image_url
+                : new URL(item.image_url, window.location.href).href;
             mediaHTML = `<div class="image-wrapper"><img src="${imgSrc}" alt="${item.title}"></div>`;
         }
 
@@ -470,6 +492,31 @@
         } else {
             footerDiv.classList.add('hidden');
             document.body.style.paddingBottom = '30px';
+        }
+
+        if (isPdf && item.download_url) {
+            const pdfIframe = document.getElementById('pdf-iframe');
+            const pdfFallback = document.getElementById('pdf-fallback');
+            if (pdfIframe && pdfFallback) {
+                let loadTimeout = setTimeout(() => {
+                    pdfIframe.style.display = 'none';
+                    pdfFallback.style.display = 'block';
+                }, 12000);
+                pdfIframe.addEventListener('load', () => {
+                    clearTimeout(loadTimeout);
+                    try {
+                        if (pdfIframe.contentDocument && pdfIframe.contentDocument.body && pdfIframe.contentDocument.body.childElementCount === 0) {
+                            pdfIframe.style.display = 'none';
+                            pdfFallback.style.display = 'block';
+                        }
+                    } catch(e) {}
+                });
+                pdfIframe.addEventListener('error', () => {
+                    clearTimeout(loadTimeout);
+                    pdfIframe.style.display = 'none';
+                    pdfFallback.style.display = 'block';
+                });
+            }
         }
       })
       .catch(err => {
