@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title | default: "التدوينات | منصة روافد" }}</title>
+
+  <link rel="stylesheet" href="{{ '/fonts/fonts.css' | relative_url }}" />
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <meta property="og:title" content="{{ page.title | default: 'التدوينات' }}">
+  <meta property="og:description" content="جميع تدوينات منصة روافد">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('rawafed-theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  {% assign visible_posts = site.posts | where_exp: "post", "post.hidden != true" %}
+
+  <style>
+    /* === المتغيرات (نفس هوية روافد) === */
+    :root {
+      --primary-color: #1a2ac6;
+      --primary-dark: #14209e;
+      --primary-light-bg: #eff1ff;
+      --bg-body: #f4f6fb;
+      --bg-card: #ffffff;
+      --bg-code: #f4f6fb;
+      --border-color: #ccd1e0;
+      --text-main: #2d2d2d;
+      --text-muted: #666666;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+      --hover-shadow: 0 15px 30px -5px rgba(26, 42, 198, 0.1);
+      --radius-md: 14px;
+    }
+
+    [data-theme="dark"] {
+      --primary-color: #7986cb;
+      --primary-dark: #5c6bc0;
+      --primary-light-bg: #282a36;
+      --bg-body: #121212;
+      --bg-card: #1e1e1e;
+      --bg-code: #2c2c2c;
+      --border-color: #333333;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+      --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-bottom: 40px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* === الحاوية === */
+    .posts-page {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 24px 20px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      color: var(--primary-color);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-card);
+      border-radius: 50px;
+      transition: 0.3s;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+    .back-btn:hover { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
+
+    .page-title {
+      font-size: clamp(1.7rem, 3vw, 2rem);
+      font-weight: 800;
+      font-family: "Thmanyah Serif Text", "IBM Plex Sans Arabic", sans-serif;
+      line-height: 1.4;
+      margin: 6px 0 22px;
+      color: var(--text-main);
+    }
+
+    /* === قائمة التدوينات === */
+    .posts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .post-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      gap: 18px;
+      align-items: stretch;
+      text-decoration: none;
+      color: var(--text-main);
+      transition: all 0.3s ease;
+      box-shadow: var(--card-shadow);
+    }
+    .post-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--hover-shadow);
+      border-color: var(--primary-color);
+    }
+
+    .post-cover {
+      width: 170px;
+      min-width: 170px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-code);
+      flex-shrink: 0;
+    }
+
+    .post-cover-placeholder {
+      width: 170px;
+      min-width: 170px;
+      height: 120px;
+      border-radius: 10px;
+      background: var(--primary-light-bg);
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .post-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .post-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+    .post-card:hover .post-title { color: var(--primary-color); }
+
+    .post-excerpt {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .post-meta {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+    .post-meta i { color: var(--primary-color); margin-inline-end: 4px; }
+
+    /* === حالة عدم وجود تدوينات === */
+    .posts-empty {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      padding: 40px 10px;
+    }
+
+    /* === شاشات الجوال === */
+    @media (max-width: 600px) {
+      .posts-page { padding: 22px 16px 20px; }
+      .post-card { flex-direction: column; }
+      .post-cover, .post-cover-placeholder { width: 100%; height: 160px; }
+      .post-title { font-size: 1.05rem; }
+    }
+  </style>
+</head>
+<body>
+
+  {% include header.html %}
+
+  <main class="posts-page">
+    <div class="page-header">
+      <a href="{{ site.baseurl }}/" class="back-btn">
+        <i class="fas fa-arrow-right"></i> رجوع
+      </a>
+    </div>
+
+    <h1 class="page-title">{{ page.title | default: "التدوينات" }}</h1>
+
+    {% if visible_posts.size > 0 %}
+      <div class="posts-list">
+        {% for post in visible_posts %}
+          <a class="post-card" href="{{ post.url | relative_url }}">
+            {% capture card_cover_url %}
+              {% if post.cover_image %}
+                {{ post.cover_image }}
+              {% else %}
+                {% assign img_parts = post.content | split: '![' %}
+                {% if img_parts.size > 1 %}
+                  {% assign img_part = img_parts[1] | split: '](' %}
+                  {% if img_part.size > 1 %}
+                    {{ img_part[1] | split: ')' | first | strip }}
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            {% endcapture %}
+
+            {% if card_cover_url %}
+              <img class="post-cover" src="{{ card_cover_url | strip }}" alt="{{ post.title }}" loading="lazy">
+            {% else %}
+              <div class="post-cover-placeholder"><i class="fas fa-newspaper"></i></div>
+            {% endif %}
+
+            <div class="post-body">
+              <h3 class="post-title">{{ post.title }}</h3>
+              {% if post.excerpt and post.excerpt != "" and post.excerpt != post.content %}
+                <p class="post-excerpt">{{ post.excerpt | strip_html | truncate: 120 }}</p>
+              {% endif %}
+              <div class="post-meta">
+                {% if post.date %}
+                  {% assign months = "يناير,فبراير,مارس,أبريل,مايو,يونيو,يوليو,أغسطس,سبتمبر,أكتوبر,نوفمبر,ديسمبر" | split: "," %}
+                  {% assign month_index = post.date | date: "%-m" | minus: 1 %}
+                  <span><i class="far fa-calendar"></i> {{ post.date | date: "%-d" }} {{ months[month_index] }} {{ post.date | date: "%Y" }}</span>
+                {% endif %}
+                {% if post.author %}
+                  <span><i class="far fa-user"></i> {{ post.author }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="posts-empty">
+        <i class="fas fa-inbox" style="font-size: 2rem; display: block; margin-bottom: 10px; color: var(--border-color);"></i>
+        لا توجد تدوينات حالياً.
+      </div>
+    {% endif %}
+  </main>
+
+  {% include footer.html %}
+
+</body>
+</html>
