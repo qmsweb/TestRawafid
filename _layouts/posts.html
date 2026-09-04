@@ -26,9 +26,9 @@
   </script>
 
   {% assign visible_posts = site.posts | where_exp: "post", "post.hidden != true" %}
+  {% assign featured_post = visible_posts | where: "featured", true | first %}
 
   <style>
-    /* === المتغيرات (نفس هوية روافد) === */
     :root {
       --primary-color: #1a2ac6;
       --primary-dark: #14209e;
@@ -39,8 +39,7 @@
       --border-color: #ccd1e0;
       --text-main: #2d2d2d;
       --text-muted: #666666;
-      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
-      --hover-shadow: 0 15px 30px -5px rgba(26, 42, 198, 0.1);
+      --card-shadow: 0 2px 12px rgba(0,0,0,0.06);
       --radius-md: 14px;
     }
 
@@ -54,8 +53,7 @@
       --border-color: #333333;
       --text-main: #e0e0e0;
       --text-muted: #a0a0a0;
-      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
-      --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5);
+      --card-shadow: 0 2px 12px rgba(0,0,0,0.25);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -68,7 +66,6 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* === الحاوية === */
     .posts-page {
       width: 100%;
       max-width: 900px;
@@ -100,7 +97,7 @@
       border: 1px solid var(--border-color);
       cursor: pointer;
     }
-    .back-btn:hover { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
+    .back-btn:hover { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
 
     .page-title {
       font-size: clamp(1.7rem, 3vw, 2rem);
@@ -111,13 +108,13 @@
       color: var(--text-main);
     }
 
-    /* === قائمة التدوينات === */
     .posts-list {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
 
+    /* === البطاقة العادية === */
     .post-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -128,12 +125,11 @@
       align-items: stretch;
       text-decoration: none;
       color: var(--text-main);
-      transition: all 0.3s ease;
+      transition: box-shadow 0.25s ease, border-color 0.25s ease;
       box-shadow: var(--card-shadow);
     }
     .post-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--hover-shadow);
+      box-shadow: 0 4px 20px rgba(26,42,198,0.08);
       border-color: var(--primary-color);
     }
 
@@ -148,26 +144,13 @@
       flex-shrink: 0;
     }
 
-    .post-cover-placeholder {
-      width: 170px;
-      min-width: 170px;
-      height: 120px;
-      border-radius: 10px;
-      background: var(--primary-light-bg);
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      flex-shrink: 0;
-    }
-
     .post-body {
       display: flex;
       flex-direction: column;
       justify-content: center;
       gap: 8px;
       min-width: 0;
+      flex: 1;
     }
 
     .post-title {
@@ -198,6 +181,85 @@
     }
     .post-meta i { color: var(--primary-color); margin-inline-end: 4px; }
 
+    /* === بطاقة المقال المميز === */
+    .featured-card {
+      background: var(--bg-card);
+      border: 2px solid var(--primary-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      display: flex;
+      gap: 20px;
+      align-items: stretch;
+      text-decoration: none;
+      color: var(--text-main);
+      transition: box-shadow 0.25s ease;
+      box-shadow: 0 4px 20px rgba(26,42,198,0.1);
+      position: relative;
+    }
+    .featured-card:hover {
+      box-shadow: 0 6px 28px rgba(26,42,198,0.15);
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: -1px;
+      right: 20px;
+      background: var(--primary-color);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 0 0 8px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .featured-cover {
+      width: 220px;
+      min-width: 220px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-code);
+      flex-shrink: 0;
+    }
+
+    .featured-body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+      padding-top: 8px;
+    }
+
+    .featured-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+    .featured-card:hover .featured-title { color: var(--primary-color); }
+
+    .featured-excerpt {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .featured-divider {
+      border: 0;
+      border-top: 1px dashed var(--border-color);
+      margin: 8px 0;
+    }
+
     /* === حالة عدم وجود تدوينات === */
     .posts-empty {
       text-align: center;
@@ -207,11 +269,30 @@
     }
 
     /* === شاشات الجوال === */
+    @media (max-width: 768px) {
+      .featured-card { flex-direction: column; padding: 20px; }
+      .featured-cover { width: 100%; height: 180px; min-width: unset; }
+      .featured-badge { right: 16px; }
+    }
+
     @media (max-width: 600px) {
       .posts-page { padding: 22px 16px 20px; }
-      .post-card { flex-direction: column; }
-      .post-cover, .post-cover-placeholder { width: 100%; height: 160px; }
+      .post-card { flex-direction: column; padding: 16px; gap: 12px; }
+      .post-cover { width: 100%; height: 160px; min-width: unset; }
       .post-title { font-size: 1.05rem; }
+      .post-meta { gap: 10px; }
+      .featured-card { padding: 16px; }
+      .featured-cover { height: 150px; }
+      .featured-title { font-size: 1.15rem; }
+      .featured-excerpt { font-size: 0.88rem; -webkit-line-clamp: 2; }
+    }
+
+    @media (max-width: 400px) {
+      .posts-page { padding: 18px 12px 16px; }
+      .post-card { padding: 14px; }
+      .post-title { font-size: 1rem; }
+      .page-title { font-size: 1.5rem; }
+      .featured-title { font-size: 1.05rem; }
     }
   </style>
 </head>
@@ -230,26 +311,68 @@
 
     {% if visible_posts.size > 0 %}
       <div class="posts-list">
-        {% for post in visible_posts %}
-          <a class="post-card" href="{{ post.url | relative_url }}">
-            {% capture card_cover_url %}
-              {% if post.cover_image %}
-                {{ post.cover_image }}
-              {% else %}
-                {% assign img_parts = post.content | split: '![' %}
-                {% if img_parts.size > 1 %}
-                  {% assign img_part = img_parts[1] | split: '](' %}
-                  {% if img_part.size > 1 %}
-                    {{ img_part[1] | split: ')' | first | strip }}
-                  {% endif %}
+
+        {% if featured_post %}
+          {% capture feat_cover %}
+            {% if featured_post.cover_image %}
+              {{ featured_post.cover_image }}
+            {% else %}
+              {% assign img_parts = featured_post.content | split: '![' %}
+              {% if img_parts.size > 1 %}
+                {% assign img_part = img_parts[1] | split: '](' %}
+                {% if img_part.size > 1 %}
+                  {{ img_part[1] | split: ')' | first | strip }}
                 {% endif %}
               {% endif %}
-            {% endcapture %}
+            {% endif %}
+          {% endcapture %}
 
-            {% if card_cover_url %}
-              <img class="post-cover" src="{{ card_cover_url | strip }}" alt="{{ post.title }}" loading="lazy">
+          <a class="featured-card" href="{{ featured_post.url | relative_url }}">
+            <span class="featured-badge"><i class="fas fa-star"></i> مقال مميز</span>
+            {% if feat_cover != "" and feat_cover != blank %}
+              <img class="featured-cover" src="{{ feat_cover | strip }}" alt="{{ featured_post.title }}" loading="lazy">
+            {% endif %}
+            <div class="featured-body">
+              <h3 class="featured-title">{{ featured_post.title }}</h3>
+              {% if featured_post.excerpt and featured_post.excerpt != "" and featured_post.excerpt != featured_post.content %}
+                <p class="featured-excerpt">{{ featured_post.excerpt | strip_html | truncate: 200 }}</p>
+              {% endif %}
+              <div class="post-meta">
+                {% if featured_post.date %}
+                  {% assign months = "يناير,فبراير,مارس,أبريل,مايو,يونيو,يوليو,أغسطس,سبتمبر,أكتوبر,نوفمبر,ديسمبر" | split: "," %}
+                  {% assign month_index = featured_post.date | date: "%-m" | minus: 1 %}
+                  <span><i class="far fa-calendar"></i> {{ featured_post.date | date: "%-d" }} {{ months[month_index] }} {{ featured_post.date | date: "%Y" }}</span>
+                {% endif %}
+                {% if featured_post.author %}
+                  <span data-author-uid="{{ featured_post.author }}"><i class="far fa-user"></i> <span class="author-name">{{ featured_post.author }}</span></span>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        {% endif %}
+
+        {% for post in visible_posts %}
+          {% if featured_post and post.url == featured_post.url %}
+            {% continue %}
+          {% endif %}
+
+          {% capture card_cover_url %}
+            {% if post.cover_image %}
+              {{ post.cover_image }}
             {% else %}
-              <div class="post-cover-placeholder"><i class="fas fa-newspaper"></i></div>
+              {% assign img_parts = post.content | split: '![' %}
+              {% if img_parts.size > 1 %}
+                {% assign img_part = img_parts[1] | split: '](' %}
+                {% if img_part.size > 1 %}
+                  {{ img_part[1] | split: ')' | first | strip }}
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          {% endcapture %}
+
+          <a class="post-card" href="{{ post.url | relative_url }}">
+            {% if card_cover_url != "" and card_cover_url != blank %}
+              <img class="post-cover" src="{{ card_cover_url | strip }}" alt="{{ post.title }}" loading="lazy">
             {% endif %}
 
             <div class="post-body">
@@ -264,12 +387,13 @@
                   <span><i class="far fa-calendar"></i> {{ post.date | date: "%-d" }} {{ months[month_index] }} {{ post.date | date: "%Y" }}</span>
                 {% endif %}
                 {% if post.author %}
-                  <span><i class="far fa-user"></i> {{ post.author }}</span>
+                  <span data-author-uid="{{ post.author }}"><i class="far fa-user"></i> <span class="author-name">{{ post.author }}</span></span>
                 {% endif %}
               </div>
             </div>
           </a>
         {% endfor %}
+
       </div>
     {% else %}
       <div class="posts-empty">
@@ -280,6 +404,30 @@
   </main>
 
   {% include footer.html %}
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var BASE_URL = '{{ site.baseurl }}';
+      var authorSpans = document.querySelectorAll('[data-author-uid]');
+      if (authorSpans.length === 0) return;
+
+      var timestamp = new Date().getTime();
+      fetch(BASE_URL + '/assets/blogdata/authors.json?v=' + timestamp, { cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(authorData) {
+          var authors = Array.isArray(authorData) ? authorData : (authorData.authors || []);
+          authorSpans.forEach(function(span) {
+            var uid = span.getAttribute('data-author-uid');
+            var author = authors.find(function(a) { return a.uid === uid; });
+            if (author) {
+              var nameEl = span.querySelector('.author-name');
+              if (nameEl) nameEl.textContent = author.name;
+            }
+          });
+        })
+        .catch(function() {});
+    });
+  </script>
 
 </body>
 </html>
