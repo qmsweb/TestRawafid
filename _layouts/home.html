@@ -236,6 +236,21 @@
       }
     }
 
+    /* === عند غياب الأسبوع الحالي (اختفاء ودجيت التقويم) === */
+    .top-section-wrapper.no-week .calendar-section {
+      display: none;
+    }
+    .top-section-wrapper.no-week .tools-section {
+      width: 100%;
+      margin-top: 25px; /* تعويض هامش الودجيت حتى لا تلتصق الأدوات بالهيدر على الجوال */
+    }
+
+    @media (min-width: 992px) {
+      .top-section-wrapper.no-week .tools-section {
+        margin-top: 15px;
+      }
+    }
+
     /* === شاشات الجوال === */
     @media (max-width: 768px) {
       .tools-grid { gap: 5px; }
@@ -344,6 +359,7 @@
           });
 
           const widget = document.getElementById('current-week-widget');
+          const wrapper = document.querySelector('.top-section-wrapper');
           if (currentEvent) {
               const badge = currentEvent.weekBadge || "أسبوع";
               const title = currentEvent.title || "";
@@ -357,12 +373,16 @@
               `;
               
               widget.style.display = 'flex'; 
+              if (wrapper) wrapper.classList.remove('no-week');
           } else {
               widget.style.display = 'none';
+              if (wrapper) wrapper.classList.add('no-week');
           }
       } catch (error) {
           console.error("Error loading calendar:", error);
           document.getElementById('current-week-widget').style.display = 'none';
+          const wrapper = document.querySelector('.top-section-wrapper');
+          if (wrapper) wrapper.classList.add('no-week');
       }
   }
 
