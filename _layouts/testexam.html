@@ -838,6 +838,7 @@
 <body>
     
     {% include header.html %}
+    {% include loading.html %}
 
     <div class="container">
         
@@ -1080,6 +1081,7 @@
         async function loadQuizData() {
             const examCode = getExamCode();
             if (!examCode) {
+                rawafidHideLoader();
                 questionsContainer.innerHTML = '<p>⚠️ لم يتم تحديد رمز الاختبار.</p>';
                 submitButton.style.display = 'none';
                 return;
@@ -1109,8 +1111,10 @@
                     });
                     subjectTotalScoreElement.textContent = totalPoints;
                 }
+                rawafidHideLoader();
                 renderAllQuestions();
             } catch (err) {
+                rawafidHideLoader();
                 questionsContainer.innerHTML = `<p>❌ ${err.message}</p>`;
                 submitButton.style.display = 'none';
             }

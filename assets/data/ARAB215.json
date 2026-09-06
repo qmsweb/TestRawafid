@@ -1,7 +1,7 @@
-{
+﻿{
     "name": "مقرر الصرف",
     "description": "",
-    "url": "https://rawafid.jassim.one/c/ARAB215",
+    "url": "/c/ARAB215",
     "items": [
         {
             "id": 1,
@@ -29,3 +29,4 @@
         }
     ]
 }
+

@@ -1,14 +1,14 @@
-{
+﻿{
     "name": "مقرر علم الدلالة",
     "description": "",
-    "url": "https://rawafid.jassim.one/c/ARAB315",
+    "url": "/c/ARAB315",
     "items": [
         {
             "id": 1,
             "title": "اختبار تفاعلي شامل لكل وحدات علم الدلالة",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=315-genral1",
+            "preview_url": "/exam?i=315-genral1",
             "time-ms": "1767897509750"
         },
         {
@@ -29,3 +29,4 @@
         }
     ]
 }
+

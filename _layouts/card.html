@@ -245,9 +245,64 @@
             letter-spacing: 2px;
             transition: color 0.4s ease;
         }
+
+        #rawafid-loading-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 99999; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 20px;
+            background: var(--bg-color); transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        #rawafid-loading-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .rawafid-loader-spinner {
+            width: 44px; height: 44px;
+            border: 3.5px solid var(--btn-border);
+            border-top-color: var(--logo-color);
+            border-radius: 50%; animation: rawafid-spin 0.75s linear infinite;
+        }
+        .rawafid-loader-text {
+            font-family: "IBM Plex Sans Arabic", sans-serif;
+            font-size: 0.9rem; font-weight: 600; color: var(--hint-color);
+        }
+        .rawafid-loader-dots { display: inline-flex; gap: 4px; direction: ltr; margin-inline-start: 4px; }
+        .rawafid-loader-dots span {
+            width: 5px; height: 5px;
+            background: var(--logo-color);
+            border-radius: 50%;
+            animation: rawafid-dot-pulse 1.2s ease-in-out infinite;
+        }
+        .rawafid-loader-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .rawafid-loader-dots span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes rawafid-spin { to { transform: rotate(360deg); } }
+        @keyframes rawafid-dot-pulse {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        .rawafid-loader-dots span {
+            width: 5px; height: 5px;
+            background: var(--logo-color);
+            border-radius: 50%;
+            animation: rawafid-dot-pulse 1.2s ease-in-out infinite;
+        }
+        .rawafid-loader-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .rawafid-loader-dots span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes rawafid-spin { to { transform: rotate(360deg); } }
+        @keyframes rawafid-dot-pulse {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
+
+    <div id="rawafid-loading-overlay">
+      <div class="rawafid-loader-spinner"></div>
+      <div class="rawafid-loader-text">
+        جاري التحميل
+        <span class="rawafid-loader-dots">
+          <span></span><span></span><span></span>
+        </span>
+      </div>
+    </div>
 
     <div class="app-logo" aria-label="شعار روافد"></div>
 
@@ -382,6 +437,8 @@
             questionText.textContent = "تنبيه";
             answerText.textContent = "لم يتم تحديد ملف البطاقات.";
             counterElement.textContent = "- / -";
+            var ov = document.getElementById('rawafid-loading-overlay');
+            if (ov) ov.classList.add('hidden');
             return;
         }
 
@@ -398,6 +455,9 @@
             .then(data => {
                 questions = data.cards || []; 
 
+                var ov = document.getElementById('rawafid-loading-overlay');
+                if (ov) ov.classList.add('hidden');
+
                 // إذا لم يتم تحديد عنوان في Front Matter، استخدم العنوان من JSON
                 if (!document.title || document.title === "بطاقات الأسئلة") {
                      if (data.title) document.title = data.title;
@@ -412,6 +472,8 @@
             })
             .catch(err => {
                 console.error(err);
+                var ov = document.getElementById('rawafid-loading-overlay');
+                if (ov) ov.classList.add('hidden');
                 questionText.textContent = "خطأ";
                 answerText.textContent = "تعذر تحميل البيانات. تأكد من اسم الملف.";
             });

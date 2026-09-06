@@ -238,6 +238,7 @@
 <body>
 
   {% include header.html %}
+  {% include loading.html %}
 
   <div class="container">
       
@@ -317,10 +318,12 @@
           }
           const data = await response.json();
           hallsDB = data;
+          rawafidHideLoader();
           // تم تحميل بيانات القاعات بنجاح
 
       } catch (error) {
           console.error("خطأ في تحميل ملف rooms.json:", error);
+          rawafidHideLoader();
       }
   }
 

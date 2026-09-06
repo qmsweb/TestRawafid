@@ -1,7 +1,7 @@
-{
+﻿{
     "name": "مقرر الفلسفة",
     "description": "",
-    "url": "https://rawafid.jassim.one/c/PHIL101A",
+    "url": "/c/PHIL101A",
     "items": [
         {
             "id": 1,
@@ -68,3 +68,4 @@
         }
     ]
 }
+

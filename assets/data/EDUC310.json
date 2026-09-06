@@ -1,7 +1,7 @@
-{
+﻿{
     "name": "نظام التعليم في عمان ودول الخليج العربي",
     "description": "",
-    "url": "https://rawafid.jassim.one/c/EDUC310",
+    "url": "/c/EDUC310",
     "items": [
         {
             "id": 5,
@@ -21,56 +21,57 @@
             "title": "اختبار تفاعلي في الوحدتين الأولى والثانية",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=EDUC310-Q1"
+            "preview_url": "/exam?i=EDUC310-Q1"
         },
         {
             "id": 2,
             "title": "اختبار تفاعلي في الوحدة الثالثة",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=EDUC310-ch3"
+            "preview_url": "/exam?i=EDUC310-ch3"
         },
         {
             "id": 3,
             "title": "اختبار تفاعلي في الوحدة الرابعة",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=EDUC310-ch4"
+            "preview_url": "/exam?i=EDUC310-ch4"
         },
         {
             "id": 7,
             "title": "اختبار تفاعلي في الوحدة الخامسة",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=EDUC310-ch5"
+            "preview_url": "/exam?i=EDUC310-ch5"
         },
         {
             "id": 8,
             "title": "اختبار تفاعلي في الوحدة السادسة",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=EDUC310-ch6"
+            "preview_url": "/exam?i=EDUC310-ch6"
         },
         {
             "id": 9,
             "title": "اختبار تفاعلي في الوحدة السابعة",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=EDUC310-ch7"
+            "preview_url": "/exam?i=EDUC310-ch7"
         },
         {
             "id": 10,
             "title": "اختبار تفاعلي في الوحدة الثامنة",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=EDUC310-ch8"
+            "preview_url": "/exam?i=EDUC310-ch8"
         },
         {
             "id": 6,
             "title": "اختبار تفاعلي في الوحدة التاسعة",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=EDUC310-ch9"
+            "preview_url": "/exam?i=EDUC310-ch9"
         }
     ]
 }
+

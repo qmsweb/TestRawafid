@@ -385,6 +385,7 @@
 <body>
 
   {% include header.html %}
+  {% include loading.html %}
 
   <div class="container">
     <div class="search-hero">
@@ -458,6 +459,7 @@
         materialsData = results[0];
         blogData = results[1];
         dataLoaded = true;
+        rawafidHideLoader();
 
         var coursePromises = materialsData.map(function(course) {
           return fetch(BASE + '/assets/data/' + course.code + '.json?v=' + timestamp)
@@ -475,6 +477,7 @@
         });
       }).catch(function(err) {
         console.error('خطأ في تحميل البيانات:', err);
+        rawafidHideLoader();
         resultsContainer.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>خطأ في تحميل البيانات</h3><p>تأكد من اتصالك بالإنترنت وحاول مرة أخرى</p></div>';
       });
     }

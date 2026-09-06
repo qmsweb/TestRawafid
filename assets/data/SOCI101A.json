@@ -1,15 +1,16 @@
-{
+﻿{
     "name": "مقرر علم الاجتماع",
     "description": "",
-    "url": "https://rawafid.jassim.one/c/SOCI101A",
+    "url": "/c/SOCI101A",
     "items": [
         {
             "id": 1,
             "title": "اختبار تفاعلي عام في علم الاجتماع",
             "description": "تم إعداده عن طريق ملف الأسئلة الذي أعدته الطالبة شهد الحجرية",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=soci101a-genral1",
+            "preview_url": "/exam?i=soci101a-genral1",
             "time-ms": "1767385694555"
         }
     ]
 }
+

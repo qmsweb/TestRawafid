@@ -261,6 +261,7 @@
 <body>
 
   {% include header.html %}
+  {% include loading.html %}
 
   <div class="container">
       
@@ -377,6 +378,7 @@
           // تفعيل القائمة وتعبئتها
           select.disabled = false;
           populateSelectMenu();
+          rawafidHideLoader();
           
           // التحقق من الرابط في حال وجود ID لمقرر معين
           const urlParams = new URLSearchParams(window.location.search);
@@ -394,6 +396,7 @@
 
       } catch (error) {
           console.error(error);
+          rawafidHideLoader();
           select.innerHTML = '<option value="" disabled selected>حدثت مشكلة</option>';
           select.disabled = true;
           alert("حدث خطأ أثناء تحميل الخطة الدراسية.");

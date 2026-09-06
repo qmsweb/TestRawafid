@@ -1,7 +1,7 @@
-{
+﻿{
     "name": "مقرر النحو 1",
     "description": "",
-    "url": "https://rawafid.jassim.one/c/ARAB112",
+    "url": "/c/ARAB112",
     "items": [
         {
             "id": 1,
@@ -67,3 +67,4 @@
         }
     ]
 }
+

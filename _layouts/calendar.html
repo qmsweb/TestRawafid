@@ -397,6 +397,7 @@
 <body>
 
   {% include header.html %}
+  {% include loading.html %}
 
   <div class="container">
       
@@ -615,7 +616,7 @@
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-      fetchAndRenderCalendar().then(applySavedView);
+      fetchAndRenderCalendar().then(applySavedView).then(rawafidHideLoader).catch(rawafidHideLoader);
   });
 </script>
 

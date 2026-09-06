@@ -1,14 +1,14 @@
-{
+﻿{
     "name": "مقرر مناهج اللغة العربية",
     "description": "",
-    "url": "https://rawafid.jassim.one/c/EDUC431",
+    "url": "/c/EDUC431",
     "items": [
         {
             "id": 100,
             "title": "بطاقات في أنشطة التعلم والتقويم (الفصل الخامس)",
             "description": "بطاقات تفاعلية لاستذكار أهم معلومات الفصل الخامس",
             "type": "cards",
-            "preview_url": "https://rawafid.jassim.one/card?i=EDUC431-5",
+            "preview_url": "/card?i=EDUC431-5",
             "time-ms": "1767124209999"
         },
         {
@@ -32,7 +32,7 @@
             "title": "اختبار تفاعلي في أنشطة التعلم والتقويم (الفصل الخامس)",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=educ431-ch5",
+            "preview_url": "/exam?i=educ431-ch5",
             "time-ms": "1767124208972"
         },
         {
@@ -40,7 +40,7 @@
             "title": "اختبار تفاعلي في الأساس المعرفي (الفصل السابع)",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=educ431-ch7n",
+            "preview_url": "/exam?i=educ431-ch7n",
             "time-ms": "1767124208972"
         },
         {
@@ -48,7 +48,7 @@
             "title": "اختبار تفاعلي في الأسس النفسية والاجتماعية (الفصل الثامن)",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=educ431-ch8",
+            "preview_url": "/exam?i=educ431-ch8",
             "time-ms": "1767124208972"
         },
         {
@@ -56,7 +56,7 @@
             "title": "اختبار تفاعلي في تصميم المنهج ونماذج بنائه (الفصل التاسع)",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=educ431-ch9",
+            "preview_url": "/exam?i=educ431-ch9",
             "time-ms": "1767124208972"
         },
         {
@@ -64,7 +64,7 @@
             "title": "اختبار تفاعلي في تطوير المنهج (الفصل العاشر)",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=educ431-ch10",
+            "preview_url": "/exam?i=educ431-ch10",
             "time-ms": "1767124208972"
         },
         {
@@ -72,7 +72,7 @@
             "title": "اختبار تفاعلي في تقويم المنهج (الفصل الحادي عشر)",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=educ431-ch11",
+            "preview_url": "/exam?i=educ431-ch11",
             "time-ms": "1767124208972"
         },
         {
@@ -80,7 +80,7 @@
             "title": "اختبار تفاعلي في مواصفات الكتاب المدرسي (الفصل الثاني عشر)",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=educ431-ch12",
+            "preview_url": "/exam?i=educ431-ch12",
             "time-ms": "1767124208972"
         },
         {
@@ -88,7 +88,7 @@
             "title": "اختبار تفاعلي (الاختبار الأول)",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=educ431-genral1",
+            "preview_url": "/exam?i=educ431-genral1",
             "time-ms": "1767124208972"
         },
         {
@@ -96,8 +96,9 @@
             "title": "اختبار تفاعلي (الاختبار الثاني)",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=educ431-genral2",
+            "preview_url": "/exam?i=educ431-genral2",
             "time-ms": "1767124208972"
         }
     ]
 }
+

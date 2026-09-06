@@ -1,4 +1,4 @@
-{
+﻿{
     "name": "مقرر البلاغة العربية",
     "description": "",
     "items": [
@@ -15,7 +15,7 @@
             "title": "اختبار تفاعلي في الكناية",
             "description": "",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=ARAB322-3-1",
+            "preview_url": "/exam?i=ARAB322-3-1",
             "time-ms": "1715813948000"
         },
         {
@@ -28,3 +28,4 @@
         }
     ]
 }
+

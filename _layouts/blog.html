@@ -414,6 +414,7 @@
 <body>
 
   {% include header.html %}
+  {% include loading.html %}
 
   <main class="blog-page">
     <div class="blog-actions">
@@ -483,6 +484,7 @@
     const RELATED = {% if page.related %}{{ page.related | jsonify }}{% else %}null{% endif %};
 
     document.addEventListener('DOMContentLoaded', function() {
+      rawafidHideLoader();
       const urlParams = new URLSearchParams(window.location.search);
       const slug = urlParams.get('i');
 

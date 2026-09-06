@@ -284,6 +284,7 @@
 <body>
 
   {% include header.html %}
+  {% include loading.html %}
 
   <div class="container">
     
@@ -488,12 +489,13 @@
         createFilters(materialsData);
         renderMaterialItems(materialsData);
         
-        // إظهار كل شيء دفعة واحدة
         mainArea.classList.add('loaded');
+        rawafidHideLoader();
     })
     .catch(err => {
         console.error("Critical Load Error:", err);
         mainArea.classList.add('loaded');
+        rawafidHideLoader();
     });
   });
 </script>

@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "الصفحة التجريبية",
   "description": "",
   "items": [
@@ -16,7 +16,7 @@
       "type": "quizzes",
       "badge": "new",
       "badgeText": "جديد",
-      "preview_url": "https://rawafid.jassim.one/exam?i=t"
+      "preview_url": "/exam?i=t"
     },
     {
       "title": "الفرق بين البناء والإعراب",
@@ -37,3 +37,4 @@
     }
   ]
 }
+

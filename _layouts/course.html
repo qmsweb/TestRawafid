@@ -358,6 +358,7 @@
 <body{% if page.code %} data-course-code="{{ page.code }}"{% endif %}>
   
   {% include header.html %}
+  {% include loading.html %}
 
   <div class="container">
     
@@ -668,6 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return res.json();
     })
     .then(data => {
+      rawafidHideLoader();
       materialsData = data.items || [];
       const titleEl = document.getElementById('course-title');
       const codeEl = document.getElementById('course-code');
@@ -695,6 +697,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(err => {
       console.error(err);
+      rawafidHideLoader();
       materialsList.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);"><i class="fas fa-exclamation-triangle fa-2x"></i><p style="margin-top:10px">حدث خطأ أثناء تحميل الصفحة.</p></div>`;
     });
 });

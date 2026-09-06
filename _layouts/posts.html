@@ -318,6 +318,7 @@
 <body>
 
   {% include header.html %}
+  {% include loading.html %}
 
   <main class="posts-page">
     <h1 class="page-title">{{ page.title | default: "المقالات والأخبار" }}</h1>
@@ -443,6 +444,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+      rawafidHideLoader();
       var BASE_URL = '{{ site.baseurl }}';
       var authorSpans = document.querySelectorAll('[data-author-uid]');
       if (authorSpans.length === 0) return;

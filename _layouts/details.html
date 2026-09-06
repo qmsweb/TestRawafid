@@ -282,6 +282,8 @@
       <i class="fas fa-times"></i> خروج
   </button>
 
+  {% include loading.html %}
+
   <div id="topbar-container">
       {% include header.html %} 
   </div>
@@ -396,6 +398,7 @@
     fetch(`${BASE_URL}/assets/data/${courseCode}.json?v=${timestamp}`, { cache: "no-store" })
       .then(res => res.json())
       .then(data => {
+        rawafidHideLoader();
         
         const item = data.items.find(x => x.id == itemId || x['time-ms'] == itemId);
         
@@ -520,6 +523,7 @@
         }
       })
       .catch(err => {
+        rawafidHideLoader();
          contentDiv.innerHTML = `<div style="text-align:center; padding:30px; color:red;">خطأ في التحميل: ${err.message}</div>`;
       });
   });

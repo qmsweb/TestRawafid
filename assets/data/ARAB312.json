@@ -1,4 +1,4 @@
-{
+﻿{
     "name": "مقرر النثر الحديث",
     "description": "‎",
     "items": [
@@ -7,7 +7,7 @@
             "title": "اختبار تفاعلي عام في النثر الحديث",
             "description": "تم إعداده باستعمال الذكاء الاصطناعي",
             "type": "quizzes",
-            "preview_url": "https://rawafid.jassim.one/exam?i=ARAB312-genral1",
+            "preview_url": "/exam?i=ARAB312-genral1",
             "time-ms": "1767286788656"
         },
         {
@@ -23,7 +23,7 @@
             "title": "الفيلم الوثائقي أحمد أمين - الأمينُ على الكلمة",
             "description": "إعداد: جاسم الفارسي",
             "type": "videos",
-            "preview_url": "https://rawafid.jassim.one/video/ameen",
+            "preview_url": "/video/ameen",
             "time-ms": "1767286788656"
         },
         {
@@ -132,3 +132,4 @@
         }
     ]
 }
+
