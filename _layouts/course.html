@@ -343,6 +343,7 @@
       .item-description-preview, .badges-container { margin-right: 0; }
     }
   </style>
+  {% include pwa.html %}
 </head>
 <body{% if page.code %} data-course-code="{{ page.code }}"{% endif %}>
   
@@ -704,5 +705,6 @@ if (shareButton) {
 }
 </script>
 
+  {% include pwa-body.html %}
 </body>
 </html>
