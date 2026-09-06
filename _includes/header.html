@@ -400,6 +400,14 @@
             .catch(err => console.error(err));
     }
 
+    /* === خدمة تخزين الخطوط (Service Worker) === */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register("{{ '/sw.js' | relative_url }}")
+          .catch(err => console.error('Service Worker registration failed:', err));
+      });
+    }
+
     /* === 2. منطق القائمة المنسدلة === */
     const menuToggle = document.getElementById('menu-toggle');
     const navLinks = document.getElementById('nav-links');

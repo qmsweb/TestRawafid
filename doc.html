@@ -284,5 +284,11 @@ fetch("/assets/doc/movies.json")
         document.getElementById("footer-placeholder").innerHTML = data;
       });
   </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(err => console.error(err));
+    }
+  </script>
 </body>
 </html>
