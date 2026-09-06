@@ -13,7 +13,7 @@ New-Item -ItemType Directory -Path $dest -Force | Out-Null
 
 $count = 0
 Get-ChildItem "$dataDir\*.json" |
-    Where-Object { $_.Name -notin @('materials.json', 'library.json', 'one.json', 'test.json') } |
+    Where-Object { $_.Name -notin @('materials.json', 'one.json', 'test.json') } |
     ForEach-Object {
         $code = $_.BaseName
         $j = Get-Content $_.FullName -Raw -Encoding UTF8 | ConvertFrom-Json

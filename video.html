@@ -183,7 +183,7 @@
                   title: movie.title,
                   text: movie.desc,
                   url: movie["share-url"]
-                }).catch(err => console.log("إلغاء المشاركة:", err));
+                }).catch(() => {});
               } else {
                 window.open(movie["share-url"], "_blank");
               }
