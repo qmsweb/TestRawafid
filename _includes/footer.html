@@ -14,7 +14,6 @@
     <nav class="footer-links">
       <a href="/">الرئيسية</a>
       <a href="/about">عن روافد</a>
-      <a href="/#tools">الأدوات</a>
     </nav>
 
     <div class="footer-social">
@@ -135,40 +134,63 @@
   /* === شاشات الجوال === */
   @media (max-width: 768px) {
     .site-footer {
-      padding: 0.75rem 0.75rem;
+      padding: 0.5rem 0.6rem;
+      margin-top: 1rem;
     }
 
     .footer-container {
-      flex-direction: column;
+      flex-direction: row;
       text-align: center;
       gap: 0.5rem;
       width: 100%;
+      justify-content: space-between;
     }
 
     .footer-brand {
-      width: 100%;
-      justify-content: center;
+      width: auto;
+      justify-content: flex-start;
+      gap: 0.4rem;
+      min-width: 0;
+    }
+
+    .footer-logo {
+      height: 22px;
+    }
+
+    .copy-text {
+      font-size: 0.65rem;
+      white-space: nowrap;
     }
 
     .footer-links {
-      width: 100%;
+      width: auto;
       justify-content: center;
-      gap: 2px;
+      gap: 0;
     }
 
     .footer-links a {
-      font-size: 0.75rem;
-      padding: 5px 10px;
+      font-size: 0.7rem;
+      padding: 3px 8px;
     }
 
     .footer-social {
-      width: 100%;
+      width: auto;
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
     }
 
     .whatsapp-btn-compact {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
+      padding: 5px 9px;
+      gap: 5px;
     }
+  }
+
+  /* شاشات ضيقة جداً: إخفاء نص الواتساب وإبقاء الأيقونة */
+  @media (max-width: 380px) {
+    .whatsapp-btn-compact span { display: none; }
+    .whatsapp-btn-compact { padding: 5px; }
+    .copy-text { font-size: 0.6rem; }
+    .footer-links a { font-size: 0.65rem; padding: 3px 6px; }
   }
 </style>
