@@ -180,13 +180,11 @@
     .tool-icon { width: 55px; height: 55px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
     .tool-item:hover .tool-icon { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); box-shadow: var(--hover-shadow); }
     
-    /* لون خاص لأيقونة صوامت */
-    .tool-icon.sawamet-bg {
-      background-color: #7F288F !important;
-      border-color: #7F288F !important;
-    }
     .tool-icon img { width: 28px; height: 28px; object-fit: contain; transition: 0.3s ease; }
-    
+
+    /* الفاصل قبل مجموعة المدونة */
+    .tool-divider { width: 1px; height: 55px; background: var(--border-color); align-self: center; margin: 0 8px; flex-shrink: 0; }
+
     .tool-name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
 
     .sticky-filter-container { position: sticky; top: 70px; z-index: 90; margin-bottom: 25px; padding: 10px 0; border-bottom: 1px solid var(--border-color); margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; backdrop-filter: blur(5px); }
@@ -294,13 +292,6 @@
             <div class="tools-section">
                 <h3 class="section-title">الأدوات</h3>
                 <div class="tools-grid">
-                    <div class="tool-item" onclick="window.location.href='https://sawamet.jassim.one'">
-                        <div class="tool-icon sawamet-bg">
-                            <img src="{{ 'https://sawamet.jassim.one/images/sawamet-logo.png' | relative_url }}" alt="صوامت">
-                        </div>
-                        <div class="tool-name">صوامت</div>
-                    </div>
-                    
                     <div class="tool-item" onclick="window.location.href='/tools/tawtheeq-tool'">
                         <div class="tool-icon"><i class="fas fa-quote-right"></i></div>
                         <div class="tool-name">توثيق المراجع</div>
@@ -316,6 +307,13 @@
                     <div class="tool-item" onclick="window.location.href='/tools'">
                         <div class="tool-icon"><i class="fas fa-ellipsis-h"></i></div>
                         <div class="tool-name">المزيد</div>
+                    </div>
+
+                    <div class="tool-divider"></div>
+
+                    <div class="tool-item" onclick="window.location.href='/blog'">
+                        <div class="tool-icon"><i class="fas fa-blog"></i></div>
+                        <div class="tool-name">المدونة</div>
                     </div>
                 </div>
             </div>
