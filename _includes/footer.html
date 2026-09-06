@@ -1,28 +1,28 @@
 <footer class="site-footer">
   <div class="footer-container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="{{ '/images/jassim-logo.png' | relative_url }}" 
+             alt="روافد" 
+             class="footer-logo" 
+             loading="lazy" 
+             width="45" 
+             height="45">
+        <span class="copy-text">&copy; {{ site.time | date: '%Y' }} جاسم الفارسي · جميع الحقوق محفوظة</span>
+      </div>
 
-    <div class="footer-brand">
-      <img src="{{ '/images/jassim-logo.png' | relative_url }}" 
-           alt="روافد" 
-           class="footer-logo" 
-           loading="lazy" 
-           width="45" 
-           height="45">
-      <span class="copy-text">&copy; {{ site.time | date: '%Y' }} جاسم الفارسي</span>
+      <div class="footer-actions">
+        <nav class="footer-links">
+          <a href="/">الرئيسية</a>
+          <a href="/about">عن روافد</a>
+        </nav>
+
+        <a href="https://whatsapp.com/channel/0029VbBp4c9FMqrbKcP1Fq2m" class="whatsapp-btn-compact" target="_blank" rel="noopener" aria-label="انضم لقناتنا">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.463 1.065 2.876 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          <span>قناتنا</span>
+        </a>
+      </div>
     </div>
-
-    <nav class="footer-links">
-      <a href="/">الرئيسية</a>
-      <a href="/about">عن روافد</a>
-    </nav>
-
-    <div class="footer-social">
-      <a href="https://whatsapp.com/channel/0029VbBp4c9FMqrbKcP1Fq2m" class="whatsapp-btn-compact" target="_blank" rel="noopener" aria-label="انضم لقناتنا">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.463 1.065 2.876 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-        <span>قناتنا</span>
-      </a>
-    </div>
-
   </div>
 </footer>
 
@@ -30,18 +30,13 @@
   :root {
     --footer-text: #000000;
     --footer-copy-text: #666666;
-    --btn-blue: #1a2ac6;
-    --btn-hover: #1522a0;
     --whatsapp-green: #25D366;
-    --btn-radius: 50px;
     --logo-filter: brightness(0);
   }
 
   [data-theme="dark"] {
     --footer-text: #e0e0e0;
     --footer-copy-text: #a0a0a0;
-    --btn-blue: #2c2e3e;
-    --btn-hover: #3e4155;
     --logo-filter: brightness(0) invert(1);
   }
 
@@ -49,7 +44,7 @@
 
   .site-footer {
     width: 100%;
-    padding: 0.75rem 1.25rem;
+    padding: 0.85rem 1.25rem;
     margin-top: 1.5rem;
     color: var(--footer-text);
     direction: rtl;
@@ -60,17 +55,20 @@
   .footer-container {
     max-width: 1100px;
     margin: 0 auto;
+  }
+
+  .footer-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.6rem 1rem;
   }
 
   .footer-brand {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    flex-shrink: 0;
   }
 
   .footer-logo {
@@ -82,15 +80,21 @@
   }
 
   .copy-text {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     color: var(--footer-copy-text);
     font-weight: 500;
     white-space: nowrap;
   }
 
+  .footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
   .footer-links {
     display: flex;
-    gap: 4px;
+    gap: 2px;
     align-items: center;
   }
 
@@ -99,8 +103,8 @@
     text-decoration: none;
     font-size: 0.78rem;
     font-weight: 600;
-    padding: 5px 12px;
-    border-radius: var(--btn-radius);
+    padding: 5px 10px;
+    border-radius: 50px;
     transition: all 0.2s ease;
     opacity: 0.85;
     white-space: nowrap;
@@ -119,7 +123,7 @@
     background-color: var(--whatsapp-green);
     color: #fff;
     padding: 6px 12px;
-    border-radius: var(--btn-radius);
+    border-radius: 50px;
     text-decoration: none;
     font-weight: bold;
     font-size: 0.75rem;
@@ -131,66 +135,60 @@
     box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
   }
 
-  /* === شاشات الجوال === */
+  /* === شاشة الجوال: سطر حقوق واحد مضغوط === */
   @media (max-width: 768px) {
     .site-footer {
       padding: 0.5rem 0.6rem;
       margin-top: 1rem;
+      border-top: none;
     }
 
-    .footer-container {
+    .footer-inner {
       flex-direction: row;
+      gap: 0;
       text-align: center;
-      gap: 0.5rem;
-      width: 100%;
+      align-items: center;
       justify-content: space-between;
     }
 
+    .footer-actions {
+      gap: 0;
+      flex-wrap: nowrap;
+      align-items: center;
+    }
+
     .footer-brand {
-      width: auto;
-      justify-content: flex-start;
-      gap: 0.4rem;
+      flex: 1;
+      justify-content: center;
+      gap: 0.35rem;
       min-width: 0;
     }
 
     .footer-logo {
-      height: 22px;
+      height: 18px;
     }
 
     .copy-text {
-      font-size: 0.65rem;
+      font-size: 0.68rem;
       white-space: nowrap;
     }
 
     .footer-links {
-      width: auto;
-      justify-content: center;
-      gap: 0;
-    }
-
-    .footer-links a {
-      font-size: 0.7rem;
-      padding: 3px 8px;
-    }
-
-    .footer-social {
-      width: auto;
-      display: flex;
-      justify-content: flex-end;
+      display: none;
     }
 
     .whatsapp-btn-compact {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       padding: 5px 9px;
       gap: 5px;
+      flex-shrink: 0;
     }
   }
 
-  /* شاشات ضيقة جداً: إخفاء نص الواتساب وإبقاء الأيقونة */
+  /* شاشات ضيقة جداً: تقليص إضافي */
   @media (max-width: 380px) {
-    .whatsapp-btn-compact span { display: none; }
-    .whatsapp-btn-compact { padding: 5px; }
     .copy-text { font-size: 0.6rem; }
-    .footer-links a { font-size: 0.65rem; padding: 3px 6px; }
+    .whatsapp-btn-compact { padding: 4px 8px; }
+    .whatsapp-btn-compact span { display: none; }
   }
 </style>
