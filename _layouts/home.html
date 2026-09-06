@@ -173,22 +173,31 @@
     /* === الأدوات والفلاتر === */
     .section-title { font-size: 1.3rem; font-weight: 700; color: var(--text-main); margin-bottom: 15px; border-right: 4px solid var(--primary-color); padding-right: 12px; }
 
-    .tools-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 25px; }
+    .tools-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
     
-    .tool-item { background: transparent; border: none; padding: 5px 0; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-align: center; transition: all 0.3s ease; }
-    .tool-item:hover { transform: translateY(-4px); }
-    .tool-icon { width: 55px; height: 55px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-    .tool-item:hover .tool-icon { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); box-shadow: var(--hover-shadow); }
+    .tool-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; text-align: center; transition: all 0.3s ease; }
+    .tool-item:hover { transform: translateY(-3px); box-shadow: var(--hover-shadow); border-color: var(--primary-color); }
+    .tool-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.3s ease; }
     
-    .tool-icon img { width: 28px; height: 28px; object-fit: contain; transition: 0.3s ease; }
+    .tool-icon img { width: 24px; height: 24px; object-fit: contain; transition: 0.3s ease; }
 
-    /* الفاصل قبل مجموعة المدونة */
-    .tool-divider { width: 1px; height: 55px; background: var(--border-color); align-self: center; margin: 0 8px; flex-shrink: 0; }
+    .tool-name { font-size: 0.8rem; font-weight: 700; color: var(--text-main); line-height: 1.3; }
 
-    .tool-name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+    /* ألوان الأدوات */
+    .tool-item[data-tool="tawtheeq"] .tool-icon { background: #eff6ff; color: #3b82f6; }
+    .tool-item[data-tool="calendar"] .tool-icon { background: #fef3c7; color: #d97706; }
+    .tool-item[data-tool="study"] .tool-icon { background: #f0fdf4; color: #16a34a; }
+    .tool-item[data-tool="more"] .tool-icon { background: #f3f4f6; color: #6b7280; }
+    .tool-item[data-tool="blog"] .tool-icon { background: #fce7f3; color: #db2777; }
+
+    [data-theme="dark"] .tool-item[data-tool="tawtheeq"] .tool-icon { background: rgba(59, 130, 246, 0.15); }
+    [data-theme="dark"] .tool-item[data-tool="calendar"] .tool-icon { background: rgba(217, 119, 6, 0.15); }
+    [data-theme="dark"] .tool-item[data-tool="study"] .tool-icon { background: rgba(22, 163, 74, 0.15); }
+    [data-theme="dark"] .tool-item[data-tool="more"] .tool-icon { background: rgba(107, 114, 128, 0.15); }
+    [data-theme="dark"] .tool-item[data-tool="blog"] .tool-icon { background: rgba(219, 39, 119, 0.15); }
 
     .sticky-filter-container { position: sticky; top: 70px; z-index: 90; margin-bottom: 25px; padding: 10px 0; border-bottom: 1px solid var(--border-color); margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; backdrop-filter: blur(5px); }
-    .filter-bar { display: flex; gap: 10px; align-items: center; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+    .filter-bar { display: flex; gap: 10px; align-items: center; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; padding-left: 5px; padding-right: 5px; }
     
     .view-toggle { display: flex; gap: 5px; background: var(--bg-card); padding: 4px; border-radius: 50px; border: 1px solid var(--border-color); flex-shrink: 0; }
     .view-toggle i { width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1rem; color: var(--text-muted); cursor: pointer; }
@@ -224,6 +233,7 @@
       }
       .calendar-section { width: 35%; }
       .tools-section { width: 65%; }
+      .tools-section .tools-grid { grid-template-columns: repeat(5, 1fr); }
       
       .calendar-section .week-widget {
         margin-top: 0; /* التخلص من الهامش العلوي لمحاذاته مع الأدوات */
@@ -251,13 +261,19 @@
 
     /* === شاشات الجوال === */
     @media (max-width: 768px) {
-      .tools-grid { gap: 5px; }
-      .tool-icon { width: 45px; height: 45px; font-size: 1.1rem; }
+      .tools-grid { gap: 8px; grid-template-columns: repeat(3, 1fr); }
+      .tool-item { padding: 12px 8px; }
+      .tool-icon { width: 42px; height: 42px; font-size: 1.1rem; border-radius: 12px; }
       .tool-icon img { width: 22px; height: 22px; }
-      .tool-name { font-size: 0.75rem; }
+      .tool-name { font-size: 0.72rem; }
       
       .materials-list.grid-view { grid-template-columns: repeat(2, 1fr); gap: 12px; }
       .materials-list.grid-view .material-item { padding: 15px; text-align: center; flex-direction: column; }
+
+      .sticky-filter-container { padding-left: 15px; padding-right: 15px; margin-left: -15px; margin-right: -15px; }
+      .filter-bar { gap: 8px; padding-left: 10px; padding-right: 10px; }
+      .filter-item { padding: 8px 16px; font-size: 0.8rem; }
+      .view-toggle i { width: 32px; height: 32px; font-size: 0.9rem; }
     }
   </style>
 </head>
@@ -289,30 +305,27 @@
                 </div>
             </div>
 
-            <div class="tools-section">
+            <div class="tools-section" id="tools">
                 <h3 class="section-title">الأدوات</h3>
                 <div class="tools-grid">
-                    <div class="tool-item" onclick="window.location.href='/tools/tawtheeq-tool'">
+                    <div class="tool-item" data-tool="tawtheeq" onclick="window.location.href='/tools/tawtheeq-tool'">
                         <div class="tool-icon"><i class="fas fa-quote-right"></i></div>
                         <div class="tool-name">توثيق المراجع</div>
                     </div>
-                    <div class="tool-item" onclick="window.location.href='/tools/calendar'">
+                    <div class="tool-item" data-tool="calendar" onclick="window.location.href='/tools/calendar'">
                         <div class="tool-icon"><i class="fas fa-calendar-alt"></i></div>
                         <div class="tool-name">التقويم الأكاديمي</div>
                     </div>
-                    <div class="tool-item" onclick="window.location.href='/tools/study-plan'">
+                    <div class="tool-item" data-tool="study" onclick="window.location.href='/tools/study-plan'">
                         <div class="tool-icon"><i class="fas fa-book-open"></i></div>
                         <div class="tool-name">الخطة الدراسية</div>
                     </div>
-                    <div class="tool-item" onclick="window.location.href='/tools'">
+                    <div class="tool-item" data-tool="more" onclick="window.location.href='/tools'">
                         <div class="tool-icon"><i class="fas fa-ellipsis-h"></i></div>
                         <div class="tool-name">المزيد</div>
                     </div>
-
-                    <div class="tool-divider"></div>
-
-                    <div class="tool-item" onclick="window.location.href='/blog'">
-                        <div class="tool-icon"><i class="fas fa-blog"></i></div>
+                    <div class="tool-item" data-tool="blog" onclick="window.location.href='/blog'">
+                        <div class="tool-icon"><i class="fas fa-newspaper"></i></div>
                         <div class="tool-name">المدونة</div>
                     </div>
                 </div>
