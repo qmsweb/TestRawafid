@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "فقه اللغة",
   "description": "",
   "items": [
@@ -7,7 +7,7 @@
       "description": "",
       "id": "1",
       "type": "quizzes",
-      "preview_url": "/exam?i=ARAB321-1234",
+      "preview_url": "/exam/ARAB321-1234",
       "time-ms": "1776615505482"
     }
   ]

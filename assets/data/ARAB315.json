@@ -1,4 +1,4 @@
-﻿{
+{
     "name": "مقرر علم الدلالة",
     "description": "",
     "url": "/c/ARAB315",
@@ -8,7 +8,7 @@
             "title": "اختبار تفاعلي شامل لكل وحدات علم الدلالة",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=315-genral1",
+            "preview_url": "/exam/315-genral1",
             "time-ms": "1767897509750"
         },
         {

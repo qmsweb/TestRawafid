@@ -1,4 +1,4 @@
-﻿{
+{
     "name": "مقرر النثر الحديث",
     "description": "‎",
     "items": [
@@ -7,7 +7,7 @@
             "title": "اختبار تفاعلي عام في النثر الحديث",
             "description": "تم إعداده باستعمال الذكاء الاصطناعي",
             "type": "quizzes",
-            "preview_url": "/exam?i=ARAB312-genral1",
+            "preview_url": "/exam/ARAB312-genral1",
             "time-ms": "1767286788656"
         },
         {

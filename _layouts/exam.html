@@ -1132,8 +1132,17 @@
         }
 
         function getExamCode() {
+            // رمز الاختبار يُحقن عبر Jekyll في الصفحات النظيفة /exam/CODE
+            const pageExamCode = {% if page.exam_code %}"{{ page.exam_code }}"{% else %}""{% endif %};
             const params = new URLSearchParams(window.location.search);
-            return params.get('i');
+            // دعم الروابط القديمة: exam?i=CODE — تحويلها إلى الرابط النظيف /exam/CODE
+            const oldCode = params.get('i');
+            if (oldCode) {
+                const cleanUrl = ("{{ '/' | relative_url }}" || '') + 'exam/' + encodeURIComponent(oldCode);
+                window.location.replace(cleanUrl);
+                return oldCode;
+            }
+            return pageExamCode;
         }
 
         function formatPoints(p) {

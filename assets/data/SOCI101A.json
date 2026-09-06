@@ -1,4 +1,4 @@
-﻿{
+{
     "name": "مقرر علم الاجتماع",
     "description": "",
     "url": "/c/SOCI101A",
@@ -8,7 +8,7 @@
             "title": "اختبار تفاعلي عام في علم الاجتماع",
             "description": "تم إعداده عن طريق ملف الأسئلة الذي أعدته الطالبة شهد الحجرية",
             "type": "quizzes",
-            "preview_url": "/exam?i=soci101a-genral1",
+            "preview_url": "/exam/soci101a-genral1",
             "time-ms": "1767385694555"
         }
     ]

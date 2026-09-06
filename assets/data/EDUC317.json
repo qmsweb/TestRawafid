@@ -1,4 +1,4 @@
-﻿{
+{
     "name": "الإدارة الصفية والمدرسية",
     "description": "",
     "url": "/c/EDUC317",
@@ -8,35 +8,35 @@
             "title": "اختبار تفاعلي في الوحدة الأولى",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=EDUC317-ch1"
+            "preview_url": "/exam/EDUC317-ch1"
         },
         {
             "id": 2,
             "title": "اختبار تفاعلي في الوحدة الثانية",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=EDUC317-ch2"
+            "preview_url": "/exam/EDUC317-ch2"
         },
         {
             "id": 3,
             "title": "اختبار تفاعلي في الوحدة الثالثة",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=EDUC317-ch3"
+            "preview_url": "/exam/EDUC317-ch3"
         },
         {
             "id": 4,
             "title": "اختبار تفاعلي في الوحدة الرابعة",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=EDUC317-ch4n"
+            "preview_url": "/exam/EDUC317-ch4n"
         },
         {
             "id": 5,
             "title": "اختبار تفاعلي في الوحدة السابعة",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=EDUC317-ch7"
+            "preview_url": "/exam/EDUC317-ch7"
         }
     ]
 }

@@ -1,4 +1,4 @@
-﻿{
+{
     "name": "مقرر اللسانيات",
     "description": "",
     "url": "/c/ARAB311",
@@ -31,7 +31,7 @@
             "title": "اختبار تفاعلي في المدارس اللسانية",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=311-10",
+            "preview_url": "/exam/311-10",
             "time-ms": "1767778896624"
         }
     ]

@@ -1,4 +1,4 @@
-﻿{
+{
     "name": "مقرر الصرف",
     "description": "",
     "url": "/c/ARAB215",
@@ -8,7 +8,7 @@
             "title": "اختبار في الميزان الصرفي",
             "description": "اختبار تفاعلي في الدرس الأول",
             "type": "quizzes",
-            "preview_url": "exam?i=215-1",
+            "preview_url": "/exam/215-1",
             "time-ms": "1762891702768"
         },
         {

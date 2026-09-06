@@ -31,7 +31,7 @@
       "description": "",
       "id": "1",
       "type": "quizzes",
-      "preview_url": "/exam?i=ARAB323-1",
+      "preview_url": "/exam/ARAB323-1",
       "time-ms": "1775365086471"
     },
     {
@@ -39,7 +39,7 @@
       "description": "",
       "id": "2",
       "type": "quizzes",
-      "preview_url": "/exam?i=ARAB323-2",
+      "preview_url": "/exam/ARAB323-2",
       "time-ms": "1775365086471"
     },
     {
@@ -47,7 +47,7 @@
       "description": "",
       "id": "6",
       "type": "quizzes",
-      "preview_url": "/exam?i=ARAB323-MID",
+      "preview_url": "/exam/ARAB323-MID",
       "time-ms": "1775365086471"
     },
     {
@@ -55,7 +55,7 @@
       "description": "",
       "id": "3",
       "type": "quizzes",
-      "preview_url": "/exam?i=ARAB323-3",
+      "preview_url": "/exam/ARAB323-3",
       "time-ms": "1775365086471"
     },
     {

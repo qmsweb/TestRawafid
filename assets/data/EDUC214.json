@@ -1,4 +1,4 @@
-﻿{
+{
     "name": "مقرر القياس والتقويم",
     "description": "",
     "url": "/c/EDUC214",
@@ -8,42 +8,42 @@
             "title": "اختبار تفاعلي في الفصل الأول",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=EDUC214-ch1"
+            "preview_url": "/exam/EDUC214-ch1"
         },
         {
             "id": 2,
             "title": "اختبار تفاعلي في الفصل الثاني",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=EDUC214-ch2"
+            "preview_url": "/exam/EDUC214-ch2"
         },
         {
             "id": 3,
             "title": "اختبار في الفصل الثالث",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=EDUC214-ch3"
+            "preview_url": "/exam/EDUC214-ch3"
         },
         {
             "id": 4,
             "title": "اختبار تفاعلي في الفصل الرابع",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=EDUC214-ch4"
+            "preview_url": "/exam/EDUC214-ch4"
         },
         {
             "id": 5,
             "title": "اختبار تفاعلي في الفصل الخامس",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=EDUC214-ch5"
+            "preview_url": "/exam/EDUC214-ch5"
         },
         {
             "id": 6,
             "title": "اختبار تفاعلي في الفصل السادس",
             "description": "",
             "type": "quizzes",
-            "preview_url": "/exam?i=EDUC214-ch6"
+            "preview_url": "/exam/EDUC214-ch6"
         }
     ]
 }

@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "الصفحة التجريبية",
   "description": "",
   "items": [
@@ -16,7 +16,7 @@
       "type": "quizzes",
       "badge": "new",
       "badgeText": "جديد",
-      "preview_url": "/exam?i=t"
+      "preview_url": "/exam/t"
     },
     {
       "title": "الفرق بين البناء والإعراب",
