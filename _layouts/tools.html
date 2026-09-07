@@ -97,13 +97,27 @@
     .tool-card-name { font-size: 0.9rem; font-weight: 700; color: var(--text-main); }
 
     /* === مشاريع أخرى === */
-    .tool-card.purple .tool-card-icon {
-      background: rgba(127, 40, 143, 0.12);
-      color: #7F288F;
-    }
-    .tool-card.purple:hover .tool-card-icon {
+    .tool-card.purple {
       background: #7F288F;
+      border-color: #7F288F;
+    }
+    .tool-card.purple .tool-card-icon {
+      background: rgba(255, 255, 255, 0.18);
       color: #fff;
+    }
+    .tool-card.purple .tool-card-name {
+      color: #fff;
+    }
+    .tool-card.purple:hover {
+      box-shadow: 0 15px 30px -5px rgba(127, 40, 143, 0.35);
+    }
+    .tool-card.purple .tool-card-icon img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #fff;
+      padding: 4px;
     }
 
     /* === الاستجابة === */
@@ -128,7 +142,7 @@
 
     <div id="main-content-area">
         
-        <section class="home-section" style="margin-top: 0;">
+        <section class="home-section" style="margin-top: 20px;">
             <h3 class="section-title"><i class="fas fa-wrench"></i> الأدوات</h3>
             <div class="tools-grid">
                 <a class="tool-card" href="/tools/gpa">
@@ -158,7 +172,7 @@
             <h3 class="section-title"><i class="fas fa-layer-group"></i> مشاريع أخرى</h3>
             <div class="tools-grid">
                 <a class="tool-card purple" href="https://sawamet.jassim.one/" target="_blank" rel="noopener">
-                    <div class="tool-card-icon"><i class="fas fa-volume-up"></i></div>
+                    <div class="tool-card-icon sawamet-icon"><img src="{{ '/images/sawamet-cover.png' | relative_url }}" alt="شعار منصة صوامت"></div>
                     <div class="tool-card-name">منصة صوامت</div>
                 </a>
             </div>
