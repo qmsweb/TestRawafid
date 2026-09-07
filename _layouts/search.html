@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="ابحث في مقررات ومقالات منصة روافد">
+  <meta name="description" content="">
   <title>{{ page.title | default: "بحث | منصة روافد" }}</title>
 
   <link rel="stylesheet" href="{{ '/fonts/fonts.css' | relative_url }}" />
@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <meta property="og:title" content="بحث | منصة روافد">
-  <meta property="og:description" content="ابحث في مقررات ومقالات منصة روافد">
+  <meta property="og:description" content="">
   <meta property="og:image" content="{{ '/images/cover.png' | relative_url }}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
   <meta property="og:type" content="website">
@@ -389,15 +389,14 @@
 
   <div class="container">
     <div class="search-hero">
-      <h1>ابحث في روافد</h1>
-      <p>ابحث في المقررات والمقالات والمحتوى التعليمي</p>
+      <h1>البحث في روافد</h1>
 
       <div class="search-box">
         <input
           type="text"
           class="search-input"
           id="search-input"
-          placeholder="اكتب كلمة للبحث..."
+          placeholder="أكتب كلمة للبحث..."
           autocomplete="off"
           autofocus
         />
@@ -449,6 +448,7 @@
     var currentQuery = '';
     var searchTimeout = null;
     var dataLoaded = false;
+    var MIN_SCORE = 20;
 
     function loadData() {
       var timestamp = new Date().getTime();
@@ -501,93 +501,167 @@
         .replace(/ئ/g, 'ي')
         .replace(/ة/g, 'ه')
         .replace(/ى/g, 'ي')
+        .replace(/[٠-٩]/g, function(d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); })
+        .replace(/[۰-۹]/g, function(d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); })
         .replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, ' ')
         .trim();
     }
 
+    function tokenizeText(text) {
+      return normalizeArabic(text).toLowerCase().split(/\s+/).filter(function(w) { return w.length > 0; });
+    }
+
+    function stripArticleWord(w) {
+      var s = w;
+      while (s.length > 3 && s.indexOf('ال') === 0) {
+        s = s.slice(2);
+      }
+      return s;
+    }
+
+    function arabicCharClass(ch) {
+      if (/[اأإآ]/.test(ch)) return '[اأإآ]';
+      if (/[وؤ]/.test(ch)) return '[وؤ]';
+      if (/[يىئ]/.test(ch)) return '[يىئ]';
+      if (/[هة]/.test(ch)) return '[هة]';
+      return ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function levenshteinDist(a, b) {
+      if (a === b) return 0;
+      if (a.length === 0) return b.length;
+      if (b.length === 0) return a.length;
+      var prev = [];
+      for (var j = 0; j <= b.length; j++) prev[j] = j;
+      for (var i = 1; i <= a.length; i++) {
+        var cur = [i];
+        for (var j = 1; j <= b.length; j++) {
+          var cost = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1;
+          cur[j] = Math.min(cur[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
+        }
+        prev = cur;
+      }
+      return prev[b.length];
+    }
+
     function highlightText(text, query) {
       if (!text || !query) return text || '';
-      var normalizedQuery = normalizeArabic(query);
-      var words = normalizedQuery.split(/\s+/).filter(function(w) { return w.length > 1; });
+      var words = tokenizeText(query).filter(function(w) { return w.length > 1; });
       if (words.length === 0) return text;
 
-      var pattern = words.map(function(w) { return w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|');
-      var regex = new RegExp('(' + pattern + ')', 'gi');
-      var result = text.replace(regex, '<mark>$1</mark>');
-      return result;
+      var pattern = words.map(function(w) {
+        var clean = stripArticleWord(w);
+        return '(?:[اأإآ]ل)?' + clean.split('').map(function(ch) {
+          return arabicCharClass(ch) + '[\u064B-\u065F\u0670]*';
+        }).join('');
+      }).join('|');
+
+      var regex = new RegExp('(' + pattern + ')', 'giu');
+      try {
+        return text.replace(regex, '<mark>$1</mark>');
+      } catch (e) {
+        return text;
+      }
     }
 
     function matchScore(text, query) {
       if (!text || !query) return 0;
       var normText = normalizeArabic(text).toLowerCase();
       var normQuery = normalizeArabic(query).toLowerCase();
-      var words = normQuery.split(/\s+/).filter(function(w) { return w.length > 0; });
+      var tWords = tokenizeText(text);
+      var qWords = tokenizeText(query);
+      if (qWords.length === 0) return 0;
+
+      var tStripped = tWords.map(stripArticleWord);
+      var qStripped = qWords.map(stripArticleWord);
+      var strippedText = tStripped.join(' ');
+      var signedQuery = qStripped.join(' ');
+
       var score = 0;
+      var matchedCount = 0;
 
-      if (normText === normQuery) return 100;
-      if (normText.indexOf(normQuery) === 0) score += 60;
-      else if (normText.indexOf(normQuery) !== -1) score += 35;
+      if (normText === normQuery || strippedText === signedQuery) return 100;
 
-      var textWords = normText.split(/\s+/);
+      if (normText.indexOf(normQuery) === 0) score += 50;
+      else if (normText.indexOf(normQuery) !== -1) score += 28;
 
-      words.forEach(function(word) {
-        if (word.length < 1) return;
+      if (signedQuery !== normQuery && strippedText.indexOf(signedQuery) !== -1) score += 15;
 
-        textWords.forEach(function(tw) {
-          if (tw === word) score += 20;
-          else if (tw.indexOf(word) === 0) score += 15;
-          else if (tw.indexOf(word) !== -1) score += 10;
+      qWords.forEach(function(qw, qi) {
+        var best = 0;
+        var qs = qStripped[qi];
+        tWords.forEach(function(tw, ti) {
+          var s = 0;
+          if (tw === qw) s = 28;
+          else if (tw.indexOf(qw) === 0) s = 20;
+          else if (tw.indexOf(qw) !== -1) s = 13;
+          else {
+            var ts = tStripped[ti];
+            if (ts === qs) s = 28;
+            else if (ts.indexOf(qs) === 0) s = 20;
+            else if (ts.indexOf(qs) !== -1) s = 13;
+            else if (qs.length >= 3) {
+              var ratio = 1 - levenshteinDist(ts, qs) / Math.max(ts.length, qs.length);
+              if (ratio >= 0.75) s = Math.round(9 * ratio);
+            }
+          }
+          if (s > best) best = s;
         });
-
-        if (normText.indexOf(word) !== -1) score += 8;
-
-        var wordVariants = [word];
-        if (word.endsWith('ه')) wordVariants.push(word.slice(0, -1) + 'ة');
-        if (word.endsWith('ة')) wordVariants.push(word.slice(0, -1) + 'ه');
-        if (word.endsWith('ي')) wordVariants.push(word.slice(0, -1) + 'ى');
-        if (word.endsWith('ى')) wordVariants.push(word.slice(0, -1) + 'ي');
-        if (word.endsWith('ا')) wordVariants.push(word.slice(0, -1) + 'أ');
-        if (word.endsWith('ا')) wordVariants.push(word.slice(0, -1) + 'إ');
-        if (word.endsWith('و')) wordVariants.push(word.slice(0, -1) + 'ؤ');
-        if (word.endsWith('ي')) wordVariants.push(word.slice(0, -1) + 'ئ');
-
-        wordVariants.forEach(function(v) {
-          if (v !== word && normText.indexOf(v) !== -1) score += 12;
-        });
+        if (best > 0) {
+          score += best;
+          matchedCount++;
+        }
       });
 
-      return score;
+      var matchRatio = matchedCount / qWords.length;
+      score += Math.round(matchRatio * 30);
+
+      if (matchRatio === 1 && strippedText.indexOf(signedQuery) !== -1) score += 12;
+
+      return Math.round(score);
     }
 
     function searchCourses(query) {
       var results = [];
+      var q = normalizeArabic(query).toLowerCase().replace(/[\s\-_]+/g, '');
 
       materialsData.forEach(function(course) {
         var nameScore = matchScore(course.name, query);
-        var codeScore = course.code.toLowerCase().indexOf(query.toLowerCase()) !== -1 ? 40 : 0;
-        var totalScore = Math.max(nameScore, codeScore);
+        var typeScore = matchScore(course.type || '', query);
+        var codeScore = 0;
+        if (course.code) {
+          var c = course.code.toLowerCase().replace(/[\s\-_]+/g, '');
+          if (q && c === q) codeScore = 90;
+          else if (q && c.indexOf(q) === 0) codeScore = 65;
+          else if (q && c.indexOf(q) !== -1) codeScore = 40;
+        }
+
+        var items = [];
+        var detail = courseDetailsCache[course.code];
+        var bestItemScore = 0;
+        if (detail && detail.items) {
+          detail.items.forEach(function(item) {
+            var itemScore = Math.max(
+              matchScore(item.title, query),
+              Math.round(matchScore(item.description, query) * 0.4)
+            );
+            if (itemScore > bestItemScore) bestItemScore = itemScore;
+            if (itemScore >= MIN_SCORE) {
+              items.push({
+                id: item.id,
+                title: item.title,
+                description: item.description || '',
+                score: itemScore,
+                url: BASE + '/details/' + course.code + '/' + item.id
+              });
+            }
+          });
+          items.sort(function(a, b) { return b.score - a.score; });
+        }
+
+        var totalScore = Math.max(nameScore, typeScore, codeScore, bestItemScore);
 
         if (totalScore > 0) {
-          var items = [];
-          var detail = courseDetailsCache[course.code];
-          if (detail && detail.items) {
-            detail.items.forEach(function(item) {
-              var itemScore = matchScore(item.title, query);
-              var descScore = matchScore(item.description, query);
-              var itemTotal = Math.max(itemScore, descScore);
-              if (itemTotal > 0) {
-                items.push({
-                  id: item.id,
-                  title: item.title,
-                  description: item.description || '',
-                  score: itemTotal,
-                  url: BASE + '/details/' + course.code + '/' + item.id
-                });
-              }
-            });
-            items.sort(function(a, b) { return b.score - a.score; });
-          }
-
           results.push({
             type: 'course',
             name: course.name,
@@ -611,15 +685,16 @@
 
       blogData.forEach(function(post) {
         var titleScore = matchScore(post.title, query);
+        var slugScore = Math.round(matchScore(post.slug || '', query) * 0.8);
         var tagsScore = 0;
         if (post.tags && post.tags.length > 0) {
           post.tags.forEach(function(tag) {
             tagsScore = Math.max(tagsScore, matchScore(tag, query));
           });
         }
-        var excerptScore = matchScore(post.excerpt, query);
-        var contentScore = matchScore(post.content_preview, query);
-        var totalScore = Math.max(titleScore, tagsScore, excerptScore, contentScore * 0.5);
+        var excerptScore = Math.round(matchScore(post.excerpt, query) * 0.6);
+        var contentScore = Math.round(matchScore(post.content_preview, query) * 0.3);
+        var totalScore = Math.max(titleScore, slugScore, tagsScore, excerptScore, contentScore);
 
         if (totalScore > 0) {
           results.push({
@@ -642,6 +717,22 @@
       currentQuery = query.trim();
       if (!currentQuery) {
         showInitialState();
+        return;
+      }
+
+      var qTokens = tokenizeText(currentQuery);
+      var hasMeaningfulWord = false;
+      for (var i = 0; i < qTokens.length; i++) {
+        if (qTokens[i].length >= 2) { hasMeaningfulWord = true; break; }
+      }
+      if (!hasMeaningfulWord) {
+        resultsInfo.textContent = '';
+        resultsContainer.innerHTML =
+          '<div class="empty-state">' +
+            '<i class="fas fa-search-minus"></i>' +
+            '<h3>الاستعلام قصير جدًا</h3>' +
+            '<p>أدخل كلمة من حرفين على الأقل للبحث</p>' +
+          '</div>';
         return;
       }
 

@@ -92,13 +92,15 @@
     .anniversary-card::after { width: 140px; height: 140px; bottom: -50px; right: 15%; }
 
     .anniversary-icon {
-      width: 64px; height: 64px;
       flex-shrink: 0;
-      background: rgba(255, 255, 255, 0.18);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 18px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem;
+    }
+    .anniversary-icon img {
+      width: 180px;
+      height: auto;
+      max-width: 100%;
+      object-fit: contain;
+      border-radius: 12px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
 
@@ -114,7 +116,12 @@
       border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    .anniversary-title { font-size: 1.45rem; font-weight: 800; margin-bottom: 8px; line-height: 1.5; }
+    .anniversary-title {
+      font-family: "Thmanyah Serif Text", "IBM Plex Sans Arabic", sans-serif;
+      font-weight: 900;
+      font-feature-settings: "ss03";
+      font-size: 1.45rem; margin-bottom: 8px; line-height: 1.5;
+    }
 
     .anniversary-text { font-size: 0.95rem; line-height: 1.9; opacity: 0.95; max-width: 620px; }
 
@@ -215,7 +222,8 @@
     }
     @media (max-width: 600px) {
       .anniversary-card { flex-direction: column; text-align: center; gap: 16px; padding: 26px 18px; }
-      .anniversary-icon { width: 56px; height: 56px; font-size: 1.3rem; }
+      .anniversary-icon { font-size: 1.3rem; }
+      .anniversary-icon img { width: 150px; }
       .anniversary-title { font-size: 1.2rem; }
       .anniversary-text { font-size: 0.9rem; }
       .anniversary-num { position: absolute; bottom: 8px; left: 14px; font-size: 4rem; }
@@ -255,7 +263,7 @@
       <section class="anniversary-hero">
         <div class="anniversary-card">
           <div class="anniversary-icon">
-            <i class="fas fa-cake-candles"></i>
+            <img src="{{ 'images/rawafid-one.png' | relative_url }}" alt="شعار الذكرى السنوية الأولى">
           </div>
           <div class="anniversary-content">
             <span class="anniversary-badge"><i class="fas fa-trophy"></i> عامنا الأول</span>
