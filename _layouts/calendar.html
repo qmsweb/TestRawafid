@@ -7,6 +7,7 @@
   <title>{{ page.title | default: "التقويم الأكاديمي" }}</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 
   <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
   <meta property="og:title" content="{{ page.title | default: 'روافد' }}">
@@ -489,9 +490,7 @@
       display: flex;
       align-items: center;
       gap: 14px;
-      transition: all 0.3s ease;
     }
-    .timeline-card:hover { border-color: var(--primary-color); box-shadow: var(--hover-shadow); }
     .timeline-item.is-current .timeline-card {
       border-color: var(--primary-color);
       background: var(--primary-light-bg);
@@ -569,11 +568,9 @@
       padding: 16px;
       display: flex;
       gap: 14px;
-      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
     }
-    .card-event:hover { border-color: var(--primary-color); box-shadow: var(--hover-shadow); transform: translateY(-3px); }
     .card-event.is-current {
       border-color: var(--primary-color);
       background: var(--primary-light-bg);
@@ -759,12 +756,26 @@
 
         #semesters-container .ios-list-group:first-child,
         #past-container .ios-list-group {
-            page-break-before: auto !important;
-            break-before: auto !important;
-        }
-        #past-container.has-data ~ #semesters-container .ios-list-group:first-child {
             page-break-before: always !important;
             break-before: page !important;
+        }
+
+        /* === باركود الفصل الصيفي === */
+        .barcode-section {
+            text-align: center !important;
+            margin-top: 20px !important;
+            padding-top: 15px !important;
+            border-top: 1px dashed #ccc !important;
+            page-break-inside: avoid !important;
+        }
+        .barcode-section svg {
+            max-width: 300px !important;
+            height: auto !important;
+        }
+        .barcode-label {
+            font-size: 0.7rem !important;
+            color: #555 !important;
+            margin-top: 4px !important;
         }
 
         .list-header {
@@ -1469,7 +1480,34 @@
           listDiv.innerHTML = itemsArray.join('');
           box.appendChild(listDiv);
 
+          if (semesterName.includes('صيفي')) {
+            const barcodeSection = document.createElement('div');
+            barcodeSection.className = 'barcode-section';
+            const barcodeSvg = document.createElement('svg');
+            barcodeSvg.className = 'print-semester-barcode';
+            barcodeSection.appendChild(barcodeSvg);
+            const barcodeLabel = document.createElement('div');
+            barcodeLabel.className = 'barcode-label';
+            barcodeLabel.textContent = semesterName;
+            barcodeSection.appendChild(barcodeLabel);
+            box.appendChild(barcodeSection);
+          }
+
           semestersContainer.appendChild(box);
+        });
+      }
+
+      if (typeof JsBarcode !== 'undefined') {
+        const barcodeElements = document.querySelectorAll('.print-semester-barcode');
+        barcodeElements.forEach(el => {
+          JsBarcode(el, 'UP-2027-SUMMER', {
+            format: 'CODE128',
+            width: 1.5,
+            height: 40,
+            displayValue: true,
+            fontSize: 12,
+            margin: 5
+          });
         });
       }
     }
