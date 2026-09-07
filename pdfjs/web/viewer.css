@@ -8204,3 +8204,72 @@ dialog :link{
     display:none;
   }
 }
+
+/* ============================================================
+   خط واجهة عارض PDF - خط ثمانية المحلي (نفس خط الموقع)
+   الأيقونات هنا عبارة عن SVG (mask-image) ولا تتأثر بالخط
+   ============================================================ */
+@font-face {
+  font-family: "Thmanyah";
+  src: url("../../fonts/thmanyahsans-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Thmanyah";
+  src: url("../../fonts/thmanyahsans-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Thmanyah";
+  src: url("../../fonts/thmanyahsans-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Thmanyah";
+  src: url("../../fonts/thmanyahsans-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Thmanyah";
+  src: url("../../fonts/thmanyahsans-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+body{
+  font-family:"Thmanyah", "IBM Plex Sans Arabic", sans-serif;
+}
+#outerContainer button,
+#outerContainer input,
+#outerContainer select,
+#outerContainer textarea,
+#outerContainer label,
+#outerContainer a,
+#outerContainer h1,
+#outerContainer h2,
+#outerContainer h3,
+#outerContainer p,
+#outerContainer li,
+#outerContainer span,
+#outerContainer .toolbarButton,
+#outerContainer .toolbarLabel,
+#outerContainer .toolbarField,
+#outerContainer .primaryButton,
+#outerContainer .secondaryButton,
+#outerContainer .menuContainer,
+#outerContainer .doorHanger,
+#outerContainer .dialog,
+#outerContainer .viewsManagerLabel,
+#outerContainer .dropdownToolbarButton,
+#outerContainer .editorParamsLabel{
+  font-family:"Thmanyah", "IBM Plex Sans Arabic", sans-serif !important;
+}
