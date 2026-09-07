@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="{{ '/fonts/fonts.css' | relative_url }}" />
+  <link rel="stylesheet" href="{{ '/fonts/fonts.css' | relative_url }}" />
   <title>{{ page.title | default: "التقويم الأكاديمي" }}</title>
 
-   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-   
+
   <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
   <meta property="og:title" content="{{ page.title | default: 'روافد' }}">
-  <meta property="og:description" content="التقويم الأكاديمي لجامعة الشرقية 2025-2026.">
+  <meta property="og:description" content="التقويم الأكاديمي لجامعة الشرقية 2026-2027.">
   <meta property="og:image" content="{{ '/images/calendar.png' | relative_url }}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
   <meta property="og:type" content="website">
@@ -31,366 +30,641 @@
     /* === المتغيرات والألوان === */
     :root {
       --primary-color: #1a2ac6;
-      --bg-body: #f4f7fa;
+      --primary-dark: #14209e;
+      --primary-light-bg: #eff1ff;
+      --bg-body: #f4f6fb;
       --bg-card: #ffffff;
       --border-color: #e2e8f0;
       --text-main: #1e293b;
       --text-muted: #64748b;
       --bg-code: #f1f5f9;
-      --radius-md: 10px; 
-       
+      --radius-md: 16px;
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+      --hover-shadow: 0 15px 30px -5px rgba(26, 42, 198, 0.12);
+
       --cal-red: #ef4444;
-      --cal-separator: #f1f5f9;
+      --cal-green: #22c55e;
+      --cal-amber: #f59e0b;
       --badge-bg: #e0e7ff;
       --badge-text: #1a2ac6;
-      --date-bg: #f8fafc;
-       
-      --current-week-bg: #f4f5ff;
-      --current-week-border: #1a2ac6;
+      --holiday-bg: #fef2f2;
+      --holiday-border: #fecaca;
+      --exam-bg: #fffbeb;
+      --exam-border: #fde68a;
+      --countdown-bg: linear-gradient(135deg, #1a2ac6 0%, #4f46e5 100%);
     }
 
-    html[data-theme="dark"] {
+    [data-theme="dark"] {
       --primary-color: #7986cb;
+      --primary-dark: #5c6bc0;
+      --primary-light-bg: #282a36;
       --bg-body: #121212;
       --bg-card: #1e1e1e;
       --border-color: #333333;
       --text-main: #e0e0e0;
       --text-muted: #a0a0a0;
       --bg-code: #2c2c2c;
-       
+      --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+      --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5);
+
       --cal-red: #f87171;
-      --cal-separator: #333333;
+      --cal-green: #4ade80;
+      --cal-amber: #fbbf24;
       --badge-bg: #312e81;
       --badge-text: #a5b4fc;
-      --date-bg: #1e1e1e;
-       
-      --current-week-bg: #1e1e1e; 
-      --current-week-border: #7986cb;
+      --holiday-bg: #2d1b1b;
+      --holiday-border: #7f1d1d;
+      --exam-bg: #2d2612;
+      --exam-border: #78350f;
+      --countdown-bg: linear-gradient(135deg, #312e81 0%, #4338ca 100%);
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; -webkit-tap-highlight-color: transparent; }
 
     body {
       background-color: var(--bg-body);
       color: var(--text-main);
       min-height: 100vh;
-      padding-top: 60px;
+      padding-top: 70px;
       padding-bottom: 40px;
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 
-    /* === Header & Actions === */
-    .tool-header {
-      margin-bottom: 30px;
+    /* === نظام التحميل === */
+    #main-content-area { opacity: 0; transition: opacity 0.5s ease-in-out; }
+    #main-content-area.loaded { opacity: 1; }
+
+    /* === الهيدر === */
+    .cal-header {
       margin-top: 20px;
-      border-right: 4px solid var(--primary-color);
-      padding-right: 12px;
+      margin-bottom: 24px;
       display: flex;
       justify-content: space-between;
-      align-items: end;
+      align-items: flex-end;
       flex-wrap: wrap;
       gap: 12px;
     }
-    .tool-header h1 { font-size: 1.4rem; font-weight: 700; color: var(--text-main); }
-    .tool-header p { color: var(--text-muted); margin-top: 3px; font-size: 0.9rem; }
+    .cal-header-info {
+      border-right: 4px solid var(--primary-color);
+      padding-right: 14px;
+    }
+    .cal-header-info h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+    .cal-header-info p { color: var(--text-muted); font-size: 0.88rem; }
 
-    .header-actions { display: flex; gap: 8px; }
+    .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
     .action-btn {
-        background: transparent;
-        border: 1px solid var(--border-color);
-        color: var(--text-muted);
-        padding: 6px 14px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 0.8rem;
-        transition: background 0.2s, color 0.2s; 
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .action-btn:hover { background: var(--bg-code); color: var(--primary-color); border-color: var(--primary-color); }
+    .action-btn:hover { background: var(--primary-light-bg); color: var(--primary-color); border-color: var(--primary-color); }
+    .action-btn.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
 
-    /* === تصميم البطاقات === */
-    .ios-list-group {
-        background: transparent;
-        border: none;
-        margin-bottom: 30px;
+    /* === بنر الأحداث الحالية === */
+    .current-event-banner {
+      background: var(--countdown-bg);
+      border-radius: var(--radius-md);
+      padding: 22px 26px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+      color: #fff;
     }
-
-    .list-header {
-        background: transparent;
-        padding: 0 8px 12px 0;
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: var(--text-main);
-        display: flex;
-        align-items: center;
-        gap: 8px;
+    .current-event-banner::before {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+      top: -80px;
+      left: -40px;
     }
-    .list-header::before {
-        content: '';
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        background: var(--primary-color);
-        border-radius: 50%;
-        opacity: 0.8;
+    .current-event-banner::after {
+      content: '';
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 50%;
+      bottom: -40px;
+      right: 15%;
     }
+    .current-event-banner.hidden { display: none; }
 
-    .event-item {
-        background: var(--bg-card);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border-color);
-        margin-bottom: 10px; 
-        padding: 14px 16px; 
-        display: flex;
-        align-items: center;
-        position: relative;
-    }
-
-    .event-date {
-        background: var(--date-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 8px; 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-width: 60px; 
-        margin-left: 15px; 
-        text-align: center;
-    }
-    .date-month { font-size: 0.75rem; font-weight: 700; color: var(--cal-red); margin-bottom: 2px; }
-    .date-day { font-size: 1.4rem; font-weight: 600; line-height: 1; color: var(--text-main); }
-
-    .event-content { flex: 1; }
-
-    .week-badge { 
-        display: inline-block;
-        background-color: var(--badge-bg);
-        color: var(--badge-text);
-        font-size: 0.7rem; 
-        font-weight: 700;
-        padding: 3px 10px;
-        border-radius: 15px;
-        margin-bottom: 6px; 
+    .current-event-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.2);
     }
 
-    .event-title { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; line-height: 1.4; }
-    .event-meta { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
-    .event-meta span { display: block; }
-
-    /* تمييز الأسبوع الحالي */
-    .event-item.current-week {
-        background: var(--current-week-bg);
-        border: 1px solid var(--current-week-border);
-        border-right: 5px solid var(--current-week-border);
+    .current-event-info { flex: 1; min-width: 0; position: relative; z-index: 1; }
+    .current-event-info h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 4px;
     }
-    .event-item.current-week .event-date {
-        background: var(--bg-card);
-        border-color: var(--current-week-border);
+    .current-event-info p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      line-height: 1.6;
     }
-    .event-item.current-week .date-day {
-        color: var(--primary-color);
+    .current-event-meta {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+      flex-wrap: wrap;
     }
-
-    /* علامة الأسبوع الحالي */
-    .current-label-tag {
-        background-color: var(--primary-color);
-        color: #ffffff;
-        font-size: 0.7rem;
-        padding: 3px 10px;
-        border-radius: 15px;
-        margin-left: 6px;
-        vertical-align: middle;
-        font-weight: 600;
-        display: inline-block;
+    .current-event-meta span {
+      font-size: 0.78rem;
+      opacity: 0.85;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    /* === عرض الشبكة Grid 3 أعمدة === */
-    .events-container.grid-3-view {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+    .countdown-box {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
     }
-    .events-container.grid-3-view .event-item {
-      margin-bottom: 0;
-      flex-direction: column;
+    .countdown-unit {
+      background: rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 10px 12px;
       text-align: center;
+      min-width: 56px;
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(4px);
+    }
+    .countdown-num {
+      font-size: 1.45rem;
+      font-weight: 800;
+      line-height: 1;
+      display: block;
+    }
+    .countdown-label {
+      font-size: 0.62rem;
+      opacity: 0.85;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* === شريط الفلاتر === */
+    .filter-strip {
+      display: flex;
       align-items: center;
       gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
     }
-    .events-container.grid-3-view .event-date {
-      margin-left: 0;
+    .filter-chip {
+      padding: 7px 18px;
+      border-radius: 50px;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.82rem;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .events-container.grid-3-view .event-content {
+    .filter-chip:hover { border-color: var(--primary-color); color: var(--primary-color); }
+    .filter-chip.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+    .filter-chip .chip-count {
+      background: rgba(0,0,0,0.1);
+      padding: 1px 7px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+    }
+    .filter-chip.active .chip-count { background: rgba(255,255,255,0.25); }
+
+    .filter-divider {
+      width: 1px;
+      height: 22px;
+      background: var(--border-color);
+      margin: 0 4px;
+      flex-shrink: 0;
+    }
+
+    /* === عرض التقويم الشهري (Grid) === */
+    .cal-grid-view { display: none; }
+    .cal-grid-view.active { display: block; }
+
+    .cal-month-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .cal-month-nav h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .month-nav-btns { display: flex; gap: 6px; }
+    .month-nav-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.85rem;
+    }
+    .month-nav-btn:hover { background: var(--primary-light-bg); color: var(--primary-color); border-color: var(--primary-color); }
+
+    .cal-grid-table {
       width: 100%;
+      border-collapse: separate;
+      border-spacing: 3px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
     }
-    .events-container.grid-3-view .event-title {
+    .cal-grid-table th {
+      padding: 10px 4px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-align: center;
+      background: var(--bg-code);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .cal-grid-table td {
+      padding: 3px;
+      min-height: 70px;
+      vertical-align: top;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      height: 70px;
+      width: 14.28%;
+      transition: background 0.2s ease;
+    }
+    .cal-grid-table td:hover { background: var(--bg-code); }
+    .cal-grid-table td.empty { background: var(--bg-code); opacity: 0.45; border-color: transparent; }
+    .cal-grid-table td.today { background: var(--primary-light-bg); border-color: var(--primary-color); }
+
+    .cal-day-num {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 3px;
+      display: block;
+    }
+    .cal-grid-table td.today .cal-day-num {
+      background: var(--primary-color);
+      color: #fff;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.76rem;
+    }
+    .cal-grid-table td.past-day .cal-day-num { color: var(--text-muted); opacity: 0.6; }
+
+    .cal-event-dot {
+      display: block;
+      width: 100%;
+      font-size: 0.62rem;
+      padding: 2px 3px;
+      border-radius: 4px;
+      margin-top: 2px;
+      font-weight: 600;
+      line-height: 1.3;
+      text-align: center;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cal-event-dot:hover { opacity: 0.8; }
+    .cal-event-dot.type-holiday { background: var(--holiday-bg); color: var(--cal-red); border: 1px solid var(--holiday-border); }
+    .cal-event-dot.type-exam { background: var(--exam-bg); color: var(--cal-amber); border: 1px solid var(--exam-border); }
+    .cal-event-dot.type-regular { background: var(--primary-light-bg); color: var(--primary-color); }
+    .cal-event-dot.type-current { border: 2px solid var(--primary-color); }
+
+    /* === عرض الخط الزمني (Timeline) === */
+    .cal-timeline-view { display: none; }
+    .cal-timeline-view.active { display: block; }
+
+    .timeline-wrapper {
+      position: relative;
+      padding-right: 40px;
+    }
+    .timeline-wrapper::before {
+      content: '';
+      position: absolute;
+      right: 15px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+
+    .timeline-semester-group { margin-bottom: 32px; }
+    .timeline-semester-label {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      padding: 6px 16px;
+      background: var(--primary-light-bg);
+      border-radius: 50px;
+      display: inline-block;
+      margin-bottom: 16px;
+      margin-right: -40px;
+      position: relative;
+      z-index: 1;
+      border: 2px solid var(--bg-body);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 12px;
+      padding-right: 30px;
+    }
+    .timeline-dot {
+      position: absolute;
+      right: -32px;
+      top: 16px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 3px solid var(--primary-color);
+      z-index: 1;
+    }
+    .timeline-item.type-holiday .timeline-dot { border-color: var(--cal-red); }
+    .timeline-item.type-exam .timeline-dot { border-color: var(--cal-amber); }
+    .timeline-item.is-current .timeline-dot {
+      background: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(26, 42, 198, 0.2);
+    }
+
+    .timeline-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.3s ease;
+    }
+    .timeline-card:hover { border-color: var(--primary-color); box-shadow: var(--hover-shadow); }
+    .timeline-item.is-current .timeline-card {
+      border-color: var(--primary-color);
+      background: var(--primary-light-bg);
+    }
+
+    .tl-date-box {
+      min-width: 56px;
+      text-align: center;
+      padding: 8px;
+      border-radius: 10px;
+      background: var(--bg-code);
+      border: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+    .tl-date-box .tl-month { font-size: 0.7rem; font-weight: 700; color: var(--cal-red); display: block; }
+    .tl-date-box .tl-day { font-size: 1.3rem; font-weight: 700; line-height: 1.1; color: var(--text-main); }
+
+    .tl-content { flex: 1; min-width: 0; }
+    .tl-content h4 { font-size: 0.98rem; font-weight: 700; color: var(--text-main); margin-bottom: 3px; }
+    .tl-content p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+    .tl-badge {
+      display: inline-block;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 15px;
+      margin-bottom: 4px;
+    }
+    .tl-badge.holiday { background: var(--holiday-bg); color: var(--cal-red); }
+    .tl-badge.exam { background: var(--exam-bg); color: var(--cal-amber); }
+
+    .tl-arrow { color: var(--text-muted); font-size: 0.85rem; opacity: 0.5; flex-shrink: 0; }
+
+    /* === عرض البطاقات (Cards) === */
+    .cal-cards-view { display: none; }
+    .cal-cards-view.active { display: block; }
+
+    .cards-semester-group { margin-bottom: 28px; }
+    .cards-semester-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      border-right: 4px solid var(--primary-color);
+      padding-right: 12px;
+      margin-bottom: 14px;
+    }
+    .cards-semester-label i { color: var(--primary-color); font-size: 0.9rem; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .card-event {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-event:hover { border-color: var(--primary-color); box-shadow: var(--hover-shadow); transform: translateY(-3px); }
+    .card-event.is-current {
+      border-color: var(--primary-color);
+      background: var(--primary-light-bg);
+    }
+    .card-event.is-current::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 3px;
+      background: var(--primary-color);
+    }
+
+    .ce-date-box {
+      flex-shrink: 0;
+      width: 60px;
+      text-align: center;
+      padding: 10px 6px;
+      background: var(--bg-code);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+    }
+    .ce-date-box .ce-month { font-size: 0.72rem; font-weight: 700; color: var(--cal-red); }
+    .ce-date-box .ce-day { font-size: 1.5rem; font-weight: 800; line-height: 1.1; color: var(--text-main); }
+
+    .ce-content { flex: 1; min-width: 0; }
+    .ce-top-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+    .ce-week-badge {
+      display: inline-block;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 15px;
+    }
+    .ce-week-badge.holiday { background: var(--holiday-bg); color: var(--cal-red); }
+    .ce-week-badge.exam { background: var(--exam-bg); color: var(--cal-amber); }
+    .ce-title { font-size: 0.98rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; line-height: 1.4; }
+    .ce-title.holiday { color: var(--cal-red); }
+    .ce-details { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* === الحالة === */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
       font-size: 0.9rem;
     }
-    .events-container.grid-3-view .event-meta {
-      font-size: 0.75rem;
-    }
-    .events-container.grid-3-view .week-badge {
-      font-size: 0.65rem;
-    }
-    @media (max-width: 768px) {
-      .events-container.grid-3-view {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
 
-    .hidden-section { display: none; }
-
-    /* === عناصر الطباعة الخاصة === */
+    /* === الطباعة === */
     .print-only-element { display: none; }
 
-    /* === إعدادات الطباعة (Print Styles مع نظام Grid بـ 3 أعمدة) === */
     @media print {
-        header, footer, .header-actions, .tool-header, .history-btn { display: none !important; }
-        .print-only-element { display: flex !important; }
+      header, footer, .header-actions, .current-event-banner, .filter-strip, .cal-header, .view-switcher { display: none !important; }
+      .print-only-element { display: flex !important; }
 
-        body { 
-            background-color: white !important; 
-            color: black !important; 
-            padding: 0 !important; 
-            margin: 0 !important;
-            display: block !important;
-            font-size: 11px !important;
-        }
+      body {
+        background-color: white !important;
+        color: black !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 11px !important;
+      }
+      .container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; width: 100% !important; }
 
-        .container { 
-            max-width: 100% !important; 
-            padding: 0 !important; 
-            margin: 0 !important; 
-            width: 100% !important;
-            display: block !important;
-        }
+      .print-header-wrapper {
+        justify-content: space-between !important;
+        align-items: center !important;
+        border-bottom: 2px solid #000 !important;
+        padding-bottom: 12px !important;
+        margin-bottom: 15px !important;
+      }
+      .print-header-text h1 { font-size: 1.4rem !important; margin: 0 !important; color: #000 !important; }
+      .print-header-text p { font-size: 0.9rem !important; margin: 4px 0 0 !important; color: #444 !important; }
+      .print-logo-container img { height: 45px !important; width: auto !important; }
 
-        /* هيدر الطباعة */
-        .print-header-wrapper {
-            justify-content: space-between !important;
-            align-items: center !important;
-            border-bottom: 2px solid #000 !important;
-            padding-bottom: 12px !important;
-            margin-bottom: 15px !important;
-            page-break-after: avoid !important;
-        }
-        .print-logo-container img { height: 45px !important; width: auto !important; }
-        
-        .print-header-text h1 { font-size: 1.4rem !important; margin: 0 !important; color: #000 !important; }
-        .print-header-text p { font-size: 0.9rem !important; margin: 4px 0 0 !important; color: #444 !important; }
+      .cal-cards-view { display: block !important; }
+      .cal-grid-view, .cal-timeline-view { display: none !important; }
 
-        #past-container { display: none !important; }
-        #past-container.has-data { display: block !important; }
+      .cards-semester-group { page-break-inside: avoid !important; }
+      .cards-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; }
+      .card-event { break-inside: avoid !important; border: 1px solid #aaa !important; border-radius: 4px !important; background: #fff !important; box-shadow: none !important; }
+      .card-event.is-current { border: 1.5px solid #000 !important; background: #fff !important; }
+      .card-event.is-current::before { display: none !important; }
+      .ce-week-badge, .tl-badge { border: 1px solid #666 !important; background: transparent !important; color: #000 !important; }
+      .ce-week-badge.holiday, .tl-badge.holiday, .ce-title.holiday { color: #000 !important; }
+      .ce-date-box, .tl-date-box { border: 1px solid #ccc !important; background: transparent !important; }
+      .ce-title, .ce-details, .tl-content h4, .tl-content p, .ce-day, .tl-day { color: #000 !important; }
 
-        .ios-list-group { 
-            border: none !important; 
-            margin-bottom: 20px !important;
-            display: block !important;
-            page-break-before: always !important; 
-            break-before: page !important;
-        }
-        
-        #semesters-container .ios-list-group:first-child,
-        #past-container .ios-list-group {
-            page-break-before: auto !important;
-            break-before: auto !important;
-        }
-        #past-container.has-data ~ #semesters-container .ios-list-group:first-child {
-            page-break-before: always !important;
-            break-before: page !important;
-        }
-
-        .list-header {
-            background-color: transparent !important;
-            color: #000 !important;
-            font-size: 1.1rem !important;
-            font-weight: bold !important;
-            border-bottom: 1.5px solid #000 !important;
-            padding-bottom: 4px !important;
-            margin-bottom: 12px !important;
-        }
-        .list-header::before { display: none !important; }
-
-        /* تفعيل الـ Grid بـ 3 أعمدة في الطباعة */
-        .events-container {
-            display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important; /* ثلاثة أعمدة متساوية */
-            gap: 8px !important; /* مسافة أصغر قليلاً لتناسب الثلاثة أعمدة */
-            align-items: stretch !important;
-        }
-         
-        .event-item {
-            break-inside: avoid !important;
-            page-break-inside: avoid !important;
-            border: 1px solid #aaa !important;
-            border-radius: 4px !important;
-            margin-bottom: 0 !important; 
-            background: #fff !important;
-            padding: 4px 6px !important; /* تصغير الهوامش الداخلية */
-            box-shadow: none !important;
-            height: 100% !important; 
-        }
-
-        .event-item.current-week { border: 1.5px solid #000 !important; }
-        
-        .event-date { 
-            border: 1px solid #ccc !important; 
-            background: transparent !important; 
-            padding: 2px 4px !important; 
-            min-width: 35px !important; /* تصغير المربع ليتناسب مع 3 أعمدة */
-            margin-left: 6px !important;
-            border-radius: 4px !important;
-        }
-        .date-month { font-size: 0.6rem !important; color: #333 !important; }
-        .date-day { font-size: 0.95rem !important; color: #000 !important; }
-        
-        .event-title { font-size: 0.8rem !important; margin-bottom: 2px !important; color: #000 !important; line-height: 1.2 !important;}
-        .event-meta { font-size: 0.65rem !important; color: #444 !important;}
-        
-        .week-badge, .current-label-tag {
-            font-size: 0.5rem !important;
-            padding: 1px 4px !important;
-            border: 1px solid #666 !important;
-            background: transparent !important;
-            color: #000 !important;
-            margin-bottom: 3px !important;
-        }
-
-        /* تحسين شكل QR Code */
-        .print-qr-footer {
-            flex-direction: row !important;
-            justify-content: center !important;
-            align-items: center !important;
-            gap: 15px !important;
-            margin-top: 25px !important;
-            padding-top: 15px !important;
-            border-top: 1px dashed #ccc !important;
-            page-break-inside: avoid !important;
-        }
-        .qr-text-container { text-align: right !important; }
-        .print-qr-text { font-weight: bold !important; font-size: 0.9rem !important; color: #000 !important; margin: 0 0 4px 0 !important; }
-        .print-qr-subtext { font-size: 0.75rem !important; color: #555 !important; margin: 0 !important; }
-        .print-qr-code { width: 70px !important; height: 70px !important; }
+      .print-qr-footer {
+        flex-direction: row !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 15px !important;
+        margin-top: 25px !important;
+        padding-top: 15px !important;
+        border-top: 1px dashed #ccc !important;
+      }
+      .print-qr-code { width: 70px !important; height: 70px !important; }
     }
 
-    /* === Mobile Responsive === */
-    @media (max-width: 600px) {
-        .tool-header { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 20px;}
-        .header-actions { width: 100%; flex-wrap: wrap; }
-        .action-btn { flex: 1; justify-content: center; padding: 8px; }
-         
-        .event-item { padding: 12px 14px; }
-        .event-date { margin-left: 12px; min-width: 55px; padding: 8px;}
-        .date-day { font-size: 1.3rem; }
-        .event-title { font-size: 1rem; }
+    /* === الاستجابة للشاشات === */
+    @media (max-width: 900px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .current-event-banner { flex-wrap: wrap; }
+      .countdown-box { width: 100%; justify-content: flex-start; }
+    }
+
+    @media (max-width: 768px) {
+      .cal-header { flex-direction: column; align-items: flex-start; gap: 14px; }
+      .header-actions { width: 100%; }
+      .action-btn { flex: 1; justify-content: center; }
+      .cal-grid-table td { height: 56px; }
+      .cal-event-dot { font-size: 0.55rem; padding: 1px 2px; }
+      .cal-grid-table th { font-size: 0.7rem; padding: 8px 2px; }
+    }
+
+    @media (max-width: 520px) {
+      .current-event-banner { flex-direction: column; text-align: center; padding: 20px; gap: 14px; }
+      .current-event-icon { width: 48px; height: 48px; font-size: 1.2rem; }
+      .current-event-meta { justify-content: center; }
+      .countdown-box { justify-content: center; }
+      .countdown-unit { min-width: 48px; padding: 8px 9px; }
+      .countdown-num { font-size: 1.2rem; }
+      .filter-strip { gap: 6px; }
+      .filter-chip { padding: 6px 12px; font-size: 0.76rem; }
+      .filter-divider { display: none; }
+      .timeline-wrapper { padding-right: 30px; }
+      .timeline-wrapper::before { right: 10px; }
+      .timeline-dot { right: -33px; width: 12px; height: 12px; }
+      .timeline-item { padding-right: 24px; }
+      .timeline-semester-label { margin-right: -30px; font-size: 0.9rem; }
+      .ce-date-box { width: 48px; }
+      .ce-day { font-size: 1.2rem; }
+      .cards-grid { gap: 10px; }
     }
   </style>
 </head>
@@ -400,225 +674,523 @@
   {% include loading.html %}
 
   <div class="container">
-      
+
     <!-- هيدر الطباعة -->
     <div class="print-only-element print-header-wrapper">
-        <div class="print-header-text">
-            <h1>التقويم الأكاديمي</h1>
-            <p>العام الأكاديمي 2025-2026</p>
-        </div>
-        <div class="print-logo-container">
-            <img src="{{ '/images/rawafid-blue.png' | relative_url }}" alt="شعار روافد">
-        </div>
+      <div class="print-header-text">
+        <h1>التقويم الأكاديمي</h1>
+        <p>العام الأكاديمي 2026-2027</p>
+      </div>
+      <div class="print-logo-container">
+        <img src="{{ '/images/rawafid-blue.png' | relative_url }}" alt="شعار روافد">
+      </div>
     </div>
 
-    <div class="tool-header">
-      <div>
-          <h1>التقويم الأكاديمي</h1>
-          <p>العام الأكاديمي 2025-2026</p>
-      </div>
-       
-      <div class="header-actions">
-          <button class="action-btn" id="gridToggleBtn" onclick="toggleGridView()">
-            <i class="fas fa-list"></i> عرض قائمة
+    <div id="main-content-area">
+
+      <!-- الهيدر -->
+      <div class="cal-header">
+        <div class="cal-header-info">
+          <h1><i class="fas fa-calendar-alt" style="color: var(--primary-color); margin-left: 6px;"></i> التقويم الأكاديمي</h1>
+          <p>العام الأكاديمي 2026-2027</p>
+        </div>
+
+        <div class="header-actions view-switcher" id="viewSwitcher">
+          <button class="action-btn active" data-view="cards" onclick="switchView('cards')">
+            <i class="fas fa-th-large"></i> بطاقات
+          </button>
+          <button class="action-btn" data-view="timeline" onclick="switchView('timeline')">
+            <i class="fas fa-stream"></i> خط زمني
+          </button>
+          <button class="action-btn" data-view="grid" onclick="switchView('grid')">
+            <i class="fas fa-table"></i> تقويم
           </button>
           <button class="action-btn" onclick="window.print()">
-            <i class="fas fa-print"></i> طباعة PDF
+            <i class="fas fa-print"></i> طباعة
           </button>
-          <button class="action-btn history-btn" id="toggleHistoryBtn" onclick="toggleHistory()">
-              عرض السابق
-          </button>
+        </div>
       </div>
-    </div>
 
-    <div id="past-container" class="hidden-section">
-        <div class="ios-list-group">
-            <div class="list-header">الأسابيع المنتهية</div>
-            <div id="past-list-content" class="events-container"></div>
+      <!-- بنر الأحداث الحالية -->
+      <div class="current-event-banner hidden" id="currentEventBanner">
+        <div class="current-event-icon" id="currentEventIcon">
+          <i class="fas fa-bullseye"></i>
         </div>
-    </div>
-
-    <div id="semesters-container">
-        <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
-             جاري تحميل البيانات...
+        <div class="current-event-info">
+          <h3 id="currentEventTitle">الأسبوع الحالي</h3>
+          <p id="currentEventDetails"></p>
+          <div class="current-event-meta" id="currentEventMeta"></div>
         </div>
-    </div>
+        <div class="countdown-box" id="nextCountdown"></div>
+      </div>
 
-    <!-- تذييل الطباعة (QR Code) -->
-    <div class="print-only-element print-qr-footer">
-        <div class="qr-text-container">
-            <p class="print-qr-text">للمزيد يرجى زيارة موقع منصة روافد</p>
-            <p class="print-qr-subtext">امسح الرمز للوصول السريع للنسخة الرقمية</p>
+      <!-- شريط الفلاتر -->
+      <div class="filter-strip">
+        <button class="filter-chip active" data-filter="all" onclick="applyFilter('all')">
+          <i class="fas fa-border-all"></i> الكل <span class="chip-count" id="count-all">0</span>
+        </button>
+        <button class="filter-chip" data-filter="holiday" onclick="applyFilter('holiday')">
+          <i class="fas fa-umbrella-beach"></i> إجازات <span class="chip-count" id="count-holiday">0</span>
+        </button>
+        <button class="filter-chip" data-filter="exam" onclick="applyFilter('exam')">
+          <i class="fas fa-clipboard-check"></i> اختبارات <span class="chip-count" id="count-exam">0</span>
+        </button>
+        <button class="filter-chip" data-filter="regular" onclick="applyFilter('regular')">
+          <i class="fas fa-book-open"></i> دراسي <span class="chip-count" id="count-regular">0</span>
+        </button>
+        <div class="filter-divider"></div>
+        <button class="filter-chip" data-filter="current" onclick="applyFilter('current')">
+          <i class="fas fa-hourglass-half"></i> الحالي/القادم <span class="chip-count" id="count-current">0</span>
+        </button>
+      </div>
+
+      <div id="loadingState" style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+        جاري تحميل البيانات...
+      </div>
+
+      <!-- عرض البطاقات -->
+      <div class="cal-cards-view active" id="cardsView"></div>
+
+      <!-- عرض الخط الزمني -->
+      <div class="cal-timeline-view" id="timelineView"></div>
+
+      <!-- عرض التقويم الشهري -->
+      <div class="cal-grid-view" id="gridView">
+        <div class="cal-month-nav">
+          <h3 id="gridMonthLabel"></h3>
+          <div class="month-nav-btns">
+            <button class="month-nav-btn" onclick="changeMonth(-1)" title="السابق"><i class="fas fa-chevron-right"></i></button>
+            <button class="month-nav-btn" onclick="changeMonth(1)" title="التالي"><i class="fas fa-chevron-left"></i></button>
+            <button class="month-nav-btn" onclick="goToday()" title="اليوم"><i class="fas fa-home"></i></button>
+          </div>
+        </div>
+        <table class="cal-grid-table">
+          <thead>
+            <tr>
+              <th>السبت</th>
+              <th>الأحد</th>
+              <th>الاثنين</th>
+              <th>الثلاثاء</th>
+              <th>الأربعاء</th>
+              <th>الخميس</th>
+              <th>الجمعة</th>
+            </tr>
+          </thead>
+          <tbody id="gridBody"></tbody>
+        </table>
+      </div>
+
+      <!-- تذييل الطباعة -->
+      <div class="print-only-element print-qr-footer">
+        <div>
+          <p class="print-qr-text" style="font-weight: bold; font-size: 0.9rem; margin-bottom: 4px;">للمزيد يرجى زيارة موقع منصة روافد</p>
+          <p style="font-size: 0.75rem; color: #555; margin: 0;">امسح الرمز للوصول السريع للنسخة الرقمية</p>
         </div>
         <img class="print-qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://rawafid.jassim.one" alt="QR Code">
+      </div>
+
     </div>
 
   </div>
 
   {% include footer.html %}
 
-<script>
-  const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
-  let globalEvents = []; 
+  <script>
+    const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+    const monthShort = ["ينا", "فبر", "مار", "أبر", "ماي", "يون", "يول", "أغس", "سبت", "أكت", "نوف", "ديس"];
 
-  function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('rawafed-theme', newTheme);
-  }
+    let allEvents = [];
+    let currentFilter = 'all';
+    let currentGridView = 'cards';
+    let gridMonthOffset = 0;
+    let countdownTimer = null;
 
-  function toggleGridView() {
-    const containers = document.querySelectorAll('.events-container');
-    const isGrid = containers[0] && containers[0].classList.contains('grid-3-view');
-    containers.forEach(c => c.classList.toggle('grid-3-view', !isGrid));
-    localStorage.setItem('calendarGrid3', !isGrid ? '1' : '0');
-    updateGridToggleBtn(!isGrid);
-  }
-
-  function updateGridToggleBtn(isGrid) {
-    const btn = document.getElementById('gridToggleBtn');
-    if (!btn) return;
-    if (isGrid) {
-      btn.innerHTML = '<i class="fas fa-list"></i> عرض قائمة';
-    } else {
-      btn.innerHTML = '<i class="fas fa-th-large"></i> عرض Grid 3';
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('rawafed-theme', newTheme);
     }
-  }
 
-  function applySavedView() {
-    if (localStorage.getItem('calendarGrid3') === '1') {
-      document.querySelectorAll('.events-container').forEach(c => c.classList.add('grid-3-view'));
-      updateGridToggleBtn(true);
+    function parseDate(dateStr) {
+      const parts = dateStr.split('-');
+      return new Date(parts[0], parts[1] - 1, parts[2]);
     }
-  }
 
-  async function fetchAndRenderCalendar() {
-      try {
-          const response = await fetch("{{ '/assets/calendar.json' | relative_url }}");
-          if (!response.ok) throw new Error('Failed to load data');
-          let events = await response.json();
-          
-          events.sort((a, b) => new Date(a.date) - new Date(b.date));
-          globalEvents = events; 
+    function getEventType(event) {
+      if (event.isHoliday) return 'holiday';
+      const title = (event.title || '').toLowerCase();
+      if (title.includes('اختبار') || title.includes('امتحان')) return 'exam';
+      return 'regular';
+    }
 
-          const today = new Date();
-          today.setHours(0,0,0,0);
+    function getEventIcon(type) {
+      if (type === 'holiday') return 'fa-umbrella-beach';
+      if (type === 'exam') return 'fa-clipboard-check';
+      return 'fa-book-open';
+    }
 
-          const pastContainer = document.getElementById('past-container');
-          const pastContent = document.getElementById('past-list-content');
-          const semestersContainer = document.getElementById('semesters-container');
-          
-          semestersContainer.innerHTML = ''; 
+    function passed(event) {
+      const end = new Date(parseDate(event.date));
+      end.setDate(end.getDate() + 7);
+      return end < new Date();
+    }
 
-          let hasPast = false;
-          let upcomingSemesters = new Map();
+    function isCurrent(event) {
+      const today = new Date();
+      const eventDate = parseDate(event.date);
+      const weekEnd = new Date(eventDate);
+      weekEnd.setDate(weekEnd.getDate() + 7);
+      return (today >= eventDate && today < weekEnd);
+    }
 
-          events.forEach(event => {
-              const dateParts = event.date.split('-');
-              const eventDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+    function filteredEvents() {
+      if (currentFilter === 'all') return allEvents;
+      if (currentFilter === 'current') return allEvents.filter(e => !passed(e));
+      return allEvents.filter(e => getEventType(e) === currentFilter);
+    }
 
-              const weekEnd = new Date(eventDate);
-              weekEnd.setDate(weekEnd.getDate() + 7);
-              
-              const isCurrent = (today >= eventDate && today < weekEnd);
-              const isPast = (weekEnd < today); 
+    function applyFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.getAttribute('data-filter') === filter);
+      });
+      renderAll();
+    }
 
-              const day = eventDate.getDate();
-              const month = monthNames[eventDate.getMonth()];
-              const titleStyle = event.isHoliday ? 'style="color:var(--cal-red)"' : '';
-              
-              let badgeText = event.weekBadge;
-              let itemClass = 'event-item';
-              let currentLabelHtml = '';
+    function switchView(view) {
+      currentGridView = view;
+      document.querySelectorAll('#viewSwitcher .action-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-view') === view);
+      });
+      ['cardsView', 'timelineView', 'gridView'].forEach(id => {
+        document.getElementById(id).classList.toggle('active', id === (view === 'cards' ? 'cardsView' : view === 'timeline' ? 'timelineView' : 'gridView'));
+      });
+      localStorage.setItem('calendarView', view);
+      if (view === 'grid') renderGrid();
+    }
 
-              if (isCurrent) {
-                  itemClass += ' current-week';
-                  currentLabelHtml = `<span class="current-label-tag">الأسبوع الحالي</span>`;
-              }
+    /* === البنر الحالي والعد التنازلي === */
+    function renderCurrentBanner() {
+      const banner = document.getElementById('currentEventBanner');
+      const now = new Date();
 
-              const html = `
-                  <div class="${itemClass}">
-                      <div class="event-date">
-                          <span class="date-month">${month}</span>
-                          <span class="date-day">${day}</span>
-                      </div>
-                      <div class="event-content">
-                          <div style="margin-bottom: 6px;">
-                              ${currentLabelHtml}
-                              <span class="week-badge">${badgeText}</span>
-                          </div>
-                          <div class="event-title" ${titleStyle}>${event.title}</div>
-                          <div class="event-meta">
-                              <span>${event.details}</span>
-                          </div>
-                      </div>
-                  </div>
-              `;
+      const current = allEvents.filter(isCurrent);
 
-              if (isPast) {
-                  pastContent.insertAdjacentHTML('beforeend', html);
-                  hasPast = true;
-              } else {
-                  const semName = event.semester || "أخرى";
-                  if (!upcomingSemesters.has(semName)) {
-                      upcomingSemesters.set(semName, []);
-                  }
-                  upcomingSemesters.get(semName).push(html);
-              }
-          });
-
-          if (hasPast) {
-              document.getElementById('toggleHistoryBtn').style.display = 'flex';
-              pastContainer.classList.add('has-data');
-          } else {
-              pastContainer.classList.remove('has-data');
-          }
-
-          if (upcomingSemesters.size === 0) {
-               semestersContainer.innerHTML = '<div style="padding:20px; text-align:center; font-size: 0.9rem;">لا توجد أحداث قادمة حالياً.</div>';
-          } else {
-              upcomingSemesters.forEach((itemsArray, semesterName) => {
-                  const box = document.createElement('div');
-                  box.className = 'ios-list-group';
-                  
-                  const header = document.createElement('div');
-                  header.className = 'list-header';
-                  header.innerText = semesterName;
-                  
-                  // تفعيل الشبكة (Grid) هنا
-                  const listDiv = document.createElement('div');
-                  listDiv.className = 'events-container';
-                  listDiv.innerHTML = itemsArray.join('');
-                  
-                  box.appendChild(header);
-                  box.appendChild(listDiv);
-                  semestersContainer.appendChild(box);
-              });
-          }
-
-      } catch (error) {
-          console.error(error);
-          document.getElementById('semesters-container').innerHTML = '<div style="padding:20px; text-align:center; font-size: 0.9rem;">حدث خطأ في تحميل البيانات.</div>';
-      }
-  }
-
-  function toggleHistory() {
-      const section = document.getElementById('past-container');
-      const btn = document.getElementById('toggleHistoryBtn');
-      if (section.style.display === 'block') {
-          section.style.display = 'none';
-          btn.innerHTML = 'عرض السابق';
+      if (current.length > 0) {
+        const ev = current[0];
+        banner.classList.remove('hidden');
+        const type = getEventType(ev);
+        document.getElementById('currentEventIcon').innerHTML = `<i class="fas ${getEventIcon(type)}"></i>`;
+        document.getElementById('currentEventTitle').innerHTML = `<i class="fas fa-bullseye"></i> <span style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 12px; font-size: 0.7rem;">نحن هنا الآن</span> ${ev.title}`;
+        document.getElementById('currentEventDetails').textContent = ev.details;
+        const meta = document.getElementById('currentEventMeta');
+        const d = parseDate(ev.date);
+        meta.innerHTML = `
+          <span><i class="far fa-calendar-alt"></i> ${d.getDate()} ${monthNames[d.getMonth()]}</span>
+          <span><i class="fas fa-tag"></i> ${ev.weekBadge || ''}</span>
+          <span><i class="fas fa-graduation-cap"></i> ${ev.semester || ''}</span>
+        `;
       } else {
-          section.style.display = 'block';
-          btn.innerHTML = 'إخفاء السابق';
+        const upcoming = allEvents.filter(e => !passed(e)).sort((a, b) => new Date(a.date) - new Date(b.date));
+        if (upcoming.length > 0) {
+          const next = upcoming[0];
+          banner.classList.remove('hidden');
+          const type = getEventType(next);
+          document.getElementById('currentEventIcon').innerHTML = `<i class="fas ${getEventIcon(type)}"></i>`;
+          document.getElementById('currentEventTitle').innerHTML = `<i class="fas fa-hourglass-half"></i> <span style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 12px; font-size: 0.7rem;">القادم</span> ${next.title}`;
+          document.getElementById('currentEventDetails').textContent = next.details;
+          const meta = document.getElementById('currentEventMeta');
+          const d = parseDate(next.date);
+          meta.innerHTML = `
+            <span><i class="far fa-calendar-alt"></i> ${d.getDate()} ${monthNames[d.getMonth()]}</span>
+            <span><i class="fas fa-tag"></i> ${next.weekBadge || ''}</span>
+          `;
+        } else {
+          banner.classList.add('hidden');
+        }
       }
-  }
+      renderCountdown();
+    }
 
-  window.addEventListener('DOMContentLoaded', () => {
-      fetchAndRenderCalendar().then(applySavedView).then(rawafidHideLoader).catch(rawafidHideLoader);
-  });
-</script>
+    function renderCountdown() {
+      clearInterval(countdownTimer);
+      const upcoming = allEvents.filter(e => !isCurrent(e) && !passed(e)).sort((a, b) => new Date(a.date) - new Date(b.date));
+      const box = document.getElementById('nextCountdown');
+      if (upcoming.length === 0) { box.innerHTML = ''; return; }
+
+      const target = parseDate(upcoming[0].date);
+
+      function tick() {
+        const now = new Date();
+        let diff = target - now;
+        if (diff < 0) { diff = 0; }
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        box.innerHTML = `
+          <div class="countdown-unit"><span class="countdown-num">${days}</span><span class="countdown-label">يوم</span></div>
+          <div class="countdown-unit"><span class="countdown-num">${hours}</span><span class="countdown-label">ساعة</span></div>
+          <div class="countdown-unit"><span class="countdown-num">${minutes}</span><span class="countdown-label">دقيقة</span></div>
+          <div class="countdown-unit"><span class="countdown-num">${seconds}</span><span class="countdown-label">ثانية</span></div>
+        `;
+      }
+      tick();
+      countdownTimer = setInterval(tick, 1000);
+    }
+
+    /* === عرض البطاقات === */
+    function renderCards() {
+      const container = document.getElementById('cardsView');
+      const events = filteredEvents();
+      if (events.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 12px; display: block; opacity: 0.4;"></i>لا توجد أحداث مطابقة.</div>';
+        return;
+      }
+
+      const semesterGroups = {};
+      events.forEach(ev => {
+        const sem = ev.semester || 'أخرى';
+        if (!semesterGroups[sem]) semesterGroups[sem] = { events: [], past: 0, future: 0, current: 0 };
+        semesterGroups[sem].events.push(ev);
+        if (isCurrent(ev)) semesterGroups[sem].current++;
+        else if (passed(ev)) semesterGroups[sem].past++;
+        else semesterGroups[sem].future++;
+      });
+
+      container.innerHTML = '';
+      Object.entries(semesterGroups).forEach(([semName, group]) => {
+        const box = document.createElement('div');
+        box.className = 'cards-semester-group';
+
+        const header = document.createElement('div');
+        header.className = 'cards-semester-label';
+        header.innerHTML = `<i class="fas fa-graduation-cap"></i> ${semName}`;
+        box.appendChild(header);
+
+        const grid = document.createElement('div');
+        grid.className = 'cards-grid';
+
+        group.events.forEach(ev => {
+          const type = getEventType(ev);
+          const cur = isCurrent(ev);
+          const d = parseDate(ev.date);
+
+          const card = document.createElement('div');
+          card.className = 'card-event' + (cur ? ' is-current' : '');
+          card.setAttribute('data-type', type);
+          card.setAttribute('data-filter', currentFilter);
+
+          card.innerHTML = `
+            <div class="ce-date-box">
+              <span class="ce-month">${monthShort[d.getMonth()]}</span>
+              <span class="ce-day">${d.getDate()}</span>
+            </div>
+            <div class="ce-content">
+              <div class="ce-top-row">
+                <span class="ce-week-badge ${type === 'holiday' ? 'holiday' : type === 'exam' ? 'exam' : ''}">${ev.weekBadge || ''}</span>
+                ${cur ? '<span class="ce-week-badge" style="background: var(--primary-color); color: #fff;">الأسبوع الحالي</span>' : ''}
+              </div>
+              <div class="ce-title ${type === 'holiday' ? 'holiday' : ''}">${ev.title}</div>
+              <div class="ce-details">${ev.details}</div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        box.appendChild(grid);
+        container.appendChild(box);
+      });
+    }
+
+    /* === عرض الخط الزمني === */
+    function renderTimeline() {
+      const container = document.getElementById('timelineView');
+      const events = filteredEvents();
+      if (events.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 12px; display: block; opacity: 0.4;"></i>لا توجد أحداث مطابقة.</div>';
+        return;
+      }
+
+      const semesterGroups = {};
+      events.forEach(ev => {
+        const sem = ev.semester || 'أخرى';
+        if (!semesterGroups[sem]) semesterGroups[sem] = [];
+        semesterGroups[sem].push(ev);
+      });
+
+      container.innerHTML = '<div class="timeline-wrapper"></div>';
+      const wrapper = container.querySelector('.timeline-wrapper');
+
+      Object.entries(semesterGroups).forEach(([semName, semEvents]) => {
+        const group = document.createElement('div');
+        group.className = 'timeline-semester-group';
+
+        const label = document.createElement('div');
+        label.className = 'timeline-semester-label';
+        label.textContent = semName;
+        group.appendChild(label);
+
+        semEvents.forEach(ev => {
+          const type = getEventType(ev);
+          const cur = isCurrent(ev);
+          const d = parseDate(ev.date);
+
+          const item = document.createElement('div');
+          item.className = 'timeline-item ' + type + (cur ? ' is-current' : '');
+          item.setAttribute('data-filter', 'x');
+
+          item.innerHTML = `
+            <span class="timeline-dot"></span>
+            <div class="timeline-card">
+              <div class="tl-date-box">
+                <span class="tl-month">${monthNames[d.getMonth()]}</span>
+                <span class="tl-day">${d.getDate()}</span>
+              </div>
+              <div class="tl-content">
+                <span class="tl-badge ${type === 'holiday' ? 'holiday' : type === 'exam' ? 'exam' : ''}">${ev.weekBadge || ''} ${cur ? ' • الآن' : ''}</span>
+                <h4>${ev.title}</h4>
+                <p>${ev.details}</p>
+              </div>
+              <i class="fas fa-chevron-left tl-arrow"></i>
+            </div>
+          `;
+          group.appendChild(item);
+        });
+
+        wrapper.appendChild(group);
+      });
+    }
+
+    /* === عرض التقويم الشهري === */
+    function renderGrid() {
+      if (currentGridView !== 'grid') return;
+      const tbody = document.getElementById('gridBody');
+      const monthLabel = document.getElementById('gridMonthLabel');
+
+      const baseDate = new Date();
+      baseDate.setMonth(baseDate.getMonth() + gridMonthOffset);
+
+      monthLabel.textContent = `${monthNames[baseDate.getMonth()]} ${baseDate.getFullYear()}`;
+
+      const year = baseDate.getFullYear();
+      const month = baseDate.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const saturdayIndex = 6;
+      let startOffset = (firstDay.getDay() - saturdayIndex + 7) % 7;
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const events = filteredEvents();
+
+      tbody.innerHTML = '';
+      let row = document.createElement('tr');
+      for (let i = 0; i < startOffset; i++) {
+        const empty = document.createElement('td');
+        empty.className = 'empty';
+        row.appendChild(empty);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateObj = new Date(year, month, day);
+        dateObj.setHours(0, 0, 0, 0);
+
+        const dayEvents = events.filter(ev => {
+          const d = parseDate(ev.date);
+          return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
+        });
+
+        const td = document.createElement('td');
+        td.className = '';
+
+        if (dateObj.getTime() === today.getTime()) td.classList.add('today');
+        if (dateObj < today) td.classList.add('past-day');
+
+        const dayNum = document.createElement('span');
+        dayNum.className = 'cal-day-num';
+        dayNum.textContent = day;
+        td.appendChild(dayNum);
+
+        dayEvents.forEach(ev => {
+          const type = getEventType(ev);
+          const cur = isCurrent(ev);
+          const dot = document.createElement('div');
+          dot.className = 'cal-event-dot type-' + type + (cur ? ' type-current' : '');
+          dot.textContent = ev.title.length > 16 ? ev.title.slice(0, 15) + '…' : ev.title;
+          dot.title = ev.title + ' - ' + ev.details;
+          td.appendChild(dot);
+        });
+
+        row.appendChild(td);
+        if (row.children.length === 7) {
+          tbody.appendChild(row);
+          row = document.createElement('tr');
+        }
+      }
+
+      while (row.children.length > 0 && row.children.length < 7) {
+        const empty = document.createElement('td');
+        empty.className = 'empty';
+        row.appendChild(empty);
+      }
+      if (row.children.length > 0) tbody.appendChild(row);
+    }
+
+    function changeMonth(dir) {
+      gridMonthOffset += dir;
+      renderGrid();
+    }
+
+    function goToday() {
+      gridMonthOffset = 0;
+      renderGrid();
+    }
+
+    /* === الإعداد والإحصاءات === */
+    function updateCounts() {
+      document.getElementById('count-all').textContent = allEvents.length;
+      document.getElementById('count-holiday').textContent = allEvents.filter(e => getEventType(e) === 'holiday').length;
+      document.getElementById('count-exam').textContent = allEvents.filter(e => getEventType(e) === 'exam').length;
+      document.getElementById('count-regular').textContent = allEvents.filter(e => getEventType(e) === 'regular').length;
+      document.getElementById('count-current').textContent = allEvents.filter(e => !passed(e)).length;
+    }
+
+    function renderAll() {
+      renderCards();
+      renderTimeline();
+      renderGrid();
+    }
+
+    async function initCalendar() {
+      try {
+        const response = await fetch("{{ '/assets/calendar.json' | relative_url }}");
+        if (!response.ok) throw new Error('Failed to load data');
+        allEvents = await response.json();
+        allEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        updateCounts();
+        renderCurrentBanner();
+        renderAll();
+
+        const savedView = localStorage.getItem('calendarView');
+        if (savedView) switchView(savedView);
+
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('main-content-area').classList.add('loaded');
+        rawafidHideLoader();
+      } catch (error) {
+        console.error(error);
+        document.getElementById('loadingState').innerHTML = '<div style="padding:20px; text-align:center; font-size: 0.9rem;">حدث خطأ في تحميل البيانات.</div>';
+        document.getElementById('main-content-area').classList.add('loaded');
+        rawafidHideLoader();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', initCalendar);
+  </script>
 
 </body>
 </html>
