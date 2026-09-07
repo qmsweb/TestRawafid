@@ -208,11 +208,10 @@
     .course-card-name { font-size: 0.92rem; font-weight: 700; line-height: 1.4; }
     .course-card-code { font-size: 0.78rem; color: var(--text-muted); background: var(--bg-code); display: inline-block; padding: 2px 8px; border-radius: 6px; margin-top: 5px; border: 1px solid var(--border-color); }
 
-    .courses-actions { margin-top: 16px; display: flex; justify-content: center; }
-
     /* === الاستجابة === */
     @media (max-width: 820px) {
-      .tools-grid, .blog-grid, .courses-grid { grid-template-columns: repeat(2, 1fr); }
+      .tools-grid, .blog-grid { grid-template-columns: repeat(2, 1fr); }
+      .courses-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 600px) {
       .anniversary-card { flex-direction: column; text-align: center; gap: 16px; padding: 26px 18px; }
@@ -220,8 +219,24 @@
       .anniversary-title { font-size: 1.2rem; }
       .anniversary-text { font-size: 0.9rem; }
       .anniversary-num { position: absolute; bottom: 8px; left: 14px; font-size: 4rem; }
-      .tools-grid, .blog-grid, .courses-grid { grid-template-columns: 1fr; }
       .section-head { margin-bottom: 14px; }
+
+      /* الأدوات: شبكة مصغّرة من 3 أعمدة */
+      .tools-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .tool-card { padding: 12px 6px; gap: 8px; }
+      .tool-card .tool-card-icon { width: 42px; height: 42px; font-size: 1rem; }
+      .tool-card-name { font-size: 0.72rem; }
+
+      /* المدونة: بطاقات شبكية صغيرة بدون غلاف */
+      .blog-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .blog-card-cover { display: none; }
+      .blog-card-body { padding: 10px 12px; gap: 6px; }
+      .blog-card-title { font-size: 0.86rem; }
+      .blog-card-meta { font-size: 0.7rem; gap: 8px; }
+
+      /* المقررات: عمود واحد لإفساح أوسع مساحة */
+      .courses-grid { grid-template-columns: 1fr; gap: 10px; }
+      .course-card { padding: 14px 12px; }
     }
   </style>
 </head>
@@ -327,7 +342,6 @@
       <section class="home-section" id="courses">
         <div class="section-head">
           <h3 class="section-title"><i class="fas fa-book-open"></i> المقررات</h3>
-          <button class="view-more-btn" id="courses-view-more" onclick="toggleCourses()">عرض المزيد <i class="fas fa-chevron-down"></i></button>
         </div>
         <div class="courses-grid" id="courses-grid">
           <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 20px;">جاري تحميل المقررات...</div>
@@ -348,21 +362,15 @@
       localStorage.setItem('rawafed-theme', newTheme);
     }
 
-    /* === 2. المقررات: عرض 3 + زر عرض المزيد/الأقل === */
-    const PREVIEW_COUNT = 3;
+    /* === 2. المقررات: تحميل جميع المقررات === */
     let allCourses = [];
-    let previewCourses = [];
-    let coursesExpanded = false;
 
     function renderCourses() {
       const grid = document.getElementById('courses-grid');
-      const button = document.getElementById('courses-view-more');
       if (!grid) return;
 
-      const list = coursesExpanded ? allCourses : previewCourses.slice(0, PREVIEW_COUNT);
-
       grid.innerHTML = '';
-      list.forEach(item => {
+      allCourses.forEach(item => {
         const card = document.createElement('a');
         card.className = 'course-card';
         card.href = "{{ '/course' | relative_url }}/" + encodeURIComponent(item.code);
@@ -380,19 +388,6 @@
         `;
         grid.appendChild(card);
       });
-
-      if (button) {
-        const total = allCourses.length;
-        const shown = grid.childElementCount;
-        button.innerHTML = (shown >= total)
-          ? `عرض أقل <i class="fas fa-chevron-up"></i>`
-          : `عرض المزيد <i class="fas fa-chevron-down"></i>`;
-      }
-    }
-
-    function toggleCourses() {
-      coursesExpanded = !coursesExpanded;
-      renderCourses();
     }
 
     /* === 3. أسماء المؤلفين في بطاقات المدونة === */
@@ -417,7 +412,6 @@
       ])
       .then(([materialsData, authorData]) => {
         allCourses = materialsData || [];
-        previewCourses = allCourses.filter(c => c.type !== 'المثبتة');
         renderCourses();
         resolveAuthors(authorData);
         mainArea.classList.add('loaded');
