@@ -709,6 +709,7 @@
         header, footer, .header-actions, .current-event-banner, .filter-strip, .cal-header, .view-switcher,
         .cal-cards-view, .cal-grid-view, .cal-timeline-view, .empty-state, .view-toolbar, #loadingState { display: none !important; }
         .print-only-element { display: flex !important; }
+        #past-container, #semesters-container { display: block !important; }
 
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
@@ -746,18 +747,19 @@
         #past-container { display: none !important; }
         #past-container.has-data { display: block !important; }
 
+        /* كل فصل في صفحة مستقلة */
         .ios-list-group {
             border: none !important;
-            margin-bottom: 20px !important;
+            margin-bottom: 0 !important;
             display: block !important;
             page-break-before: always !important;
             break-before: page !important;
         }
 
-        #semesters-container .ios-list-group:first-child,
-        #past-container .ios-list-group {
-            page-break-before: always !important;
-            break-before: page !important;
+        /* المجموعة الأولى لا تبدأ بصفحة جديدة */
+        .ios-list-group.first-print-group {
+            page-break-before: auto !important;
+            break-before: auto !important;
         }
 
         /* === باركود الفصل الصيفي === */
@@ -843,6 +845,7 @@
             margin-top: 25px !important;
             padding-top: 15px !important;
             border-top: 1px dashed #ccc !important;
+            page-break-before: always !important;
             page-break-inside: avoid !important;
         }
         .qr-text-container { text-align: right !important; }
@@ -1463,8 +1466,16 @@
       const pastContainer = document.getElementById('past-container');
       if (pastContainer) pastContainer.classList.toggle('has-data', hasPast);
 
+      let firstGroup = null;
+
+      if (hasPast) {
+        const pastGroup = document.querySelector('#past-container .ios-list-group');
+        if (pastGroup) firstGroup = pastGroup;
+      }
+
       if (upcomingSemesters.size === 0) {
         semestersContainer.innerHTML = '<div class="ios-list-group"><div class="list-header">التقويم</div><div class="events-container"><div class="event-item"><div class="event-content"><div class="event-title">لا توجد أحداث قادمة حالياً.</div></div></div></div></div>';
+        if (!firstGroup) firstGroup = semestersContainer.querySelector('.ios-list-group');
       } else {
         upcomingSemesters.forEach((itemsArray, semesterName) => {
           const box = document.createElement('div');
@@ -1493,9 +1504,12 @@
             box.appendChild(barcodeSection);
           }
 
+          if (!firstGroup) firstGroup = box;
           semestersContainer.appendChild(box);
         });
       }
+
+      if (firstGroup) firstGroup.classList.add('first-print-group');
 
       if (typeof JsBarcode !== 'undefined') {
         const barcodeElements = document.querySelectorAll('.print-semester-barcode');
