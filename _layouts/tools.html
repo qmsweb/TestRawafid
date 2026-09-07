@@ -67,152 +67,54 @@
       opacity: 1;
     }
 
-    /* === تنسيقات البانر / الإعلان === */
-    .app-banner {
+    /* === الأقسام === */
+    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .section-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); border-right: 4px solid var(--primary-color); padding-right: 12px; display: flex; align-items: center; gap: 8px; }
+    .section-title i { color: var(--primary-color); }
+    .home-section { margin-top: 32px; }
+
+    /* === الأدوات === */
+    .tools-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .tool-card {
       background: var(--bg-card);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      margin-top: 20px;
-      margin-bottom: 30px;
-      box-shadow: var(--card-shadow);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
       border: 1px solid var(--border-color);
-    }
-    .banner-content {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    .banner-img {
-      width: 80px;
-      height: 80px;
-      border-radius: 12px;
-      object-fit: contain; /* لضمان ظهور الشعار بالكامل */
-      background-color: #7F288F; /* لون خلفية الأيقونة المطلوب */
-      padding: 10px; /* مسافة داخلية لترتيب الشعار */
-      box-shadow: var(--card-shadow);
-    }
-    .banner-info {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    .banner-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-    .banner-icon {
-      color: #7F288F; /* لون متناسق مع الشعار */
-      font-size: 1.2rem;
-    }
-    .banner-desc {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-    .banner-btn {
-      background: #7F288F; /* لون الزر ليتماشى مع المنصة */
-      color: #fff;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 30px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
+      border-radius: var(--radius-md);
+      padding: 22px 14px;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      text-decoration: none; text-align: center;
       transition: all 0.3s ease;
-      white-space: nowrap;
+      cursor: pointer;
     }
-    .banner-btn:hover {
-      opacity: 0.9;
-      transform: translateY(-2px);
-      box-shadow: var(--hover-shadow);
+    .tool-card:hover { transform: translateY(-4px); border-color: var(--primary-color); box-shadow: var(--hover-shadow); }
+    .tool-card .tool-card-icon {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--primary-light-bg); color: var(--primary-color);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      transition: 0.3s ease;
+    }
+    .tool-card:hover .tool-card-icon { background: var(--primary-color); color: #fff; }
+    .tool-card-name { font-size: 0.9rem; font-weight: 700; color: var(--text-main); }
+
+    /* === مشاريع أخرى === */
+    .tool-card.purple .tool-card-icon {
+      background: rgba(127, 40, 143, 0.12);
+      color: #7F288F;
+    }
+    .tool-card.purple:hover .tool-card-icon {
+      background: #7F288F;
+      color: #fff;
     }
 
-    /* === تنسيقات الأدوات (شكل سوق التطبيقات) === */
-    .section-title { 
-        font-size: 1.3rem; 
-        font-weight: 700; 
-        color: var(--text-main); 
-        margin-bottom: 20px; 
-        border-right: 4px solid var(--primary-color); 
-        padding-right: 12px; 
-    }
-
-    .tools-grid { 
-        display: grid; 
-        grid-template-columns: repeat(4, 1fr); 
-        gap: 20px; 
-        margin-bottom: 25px; 
-    }
-    
-    .tool-item { 
-        background: transparent; 
-        border: none; 
-        padding: 10px; 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        gap: 12px; 
-        cursor: pointer; 
-        text-align: center; 
-        transition: all 0.3s ease; 
-    }
-    
-    .tool-item:hover { 
-        transform: translateY(-4px); 
-    }
-    
-    .tool-icon { 
-        width: 70px; 
-        height: 70px; 
-        border-radius: 50%; 
-        background: var(--bg-card); 
-        color: var(--primary-color); 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        font-size: 1.6rem; 
-        box-shadow: var(--card-shadow);
-        border: 1px solid var(--border-color);
-        transition: 0.3s ease; 
-    }
-    
-    .tool-item:hover .tool-icon {
-        background: var(--primary-color);
-        color: #ffffff;
-        border-color: var(--primary-color);
-        box-shadow: var(--hover-shadow);
-    }
-
-    .tool-name { 
-        font-size: 0.95rem; 
-        font-weight: 600; 
-        color: var(--text-main); 
-    }
-
-    /* === التجاوب مع الشاشات === */
-    @media (max-width: 992px) {
-      .tools-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-    
-    @media (max-width: 768px) {
+    /* === الاستجابة === */
+    @media (max-width: 820px) {
       .tools-grid { grid-template-columns: repeat(2, 1fr); }
-      .app-banner {
-          flex-direction: column;
-          align-items: flex-start;
-          text-align: right;
-      }
-      .banner-btn {
-          width: 100%;
-          text-align: center;
-      }
+    }
+    @media (max-width: 600px) {
+      .tools-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .tool-card { padding: 12px 6px; gap: 8px; }
+      .tool-card .tool-card-icon { width: 42px; height: 42px; font-size: 1rem; }
+      .tool-card-name { font-size: 0.72rem; }
     }
   </style>
 </head>
@@ -226,39 +128,41 @@
 
     <div id="main-content-area">
         
-        <div class="app-banner">
-            <div class="banner-content">
-                <img src="https://sawamet.jassim.one/images/sawamet-logo.png" alt="شعار منصة صوامت" class="banner-img">
-                <div class="banner-info">
-                    <div class="banner-title">
-                        <i class="fas fa-external-link-alt banner-icon"></i>
-                        <span>منصة صوامت</span>
-                    </div>
-                    <p class="banner-desc">منصة مجانية تضم عدة أدوات تساعد الطلبة والباحثين والمهتمين بفرع علم الأصوات على فهم الصوامت العربية.</p>
-                </div>
+        <section class="home-section" style="margin-top: 0;">
+            <h3 class="section-title"><i class="fas fa-wrench"></i> الأدوات</h3>
+            <div class="tools-grid">
+                <a class="tool-card" href="/tools/gpa">
+                    <div class="tool-card-icon"><i class="fas fa-calculator"></i></div>
+                    <div class="tool-card-name">حاسبة المعدل</div>
+                </a>
+                <a class="tool-card" href="/tools/tawtheeq-tool">
+                    <div class="tool-card-icon"><i class="fas fa-quote-right"></i></div>
+                    <div class="tool-card-name">توثيق المراجع</div>
+                </a>
+                <a class="tool-card" href="/tools/calendar">
+                    <div class="tool-card-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="tool-card-name">التقويم الأكاديمي</div>
+                </a>
+                <a class="tool-card" href="/tools/study-plan">
+                    <div class="tool-card-icon"><i class="fas fa-book-open"></i></div>
+                    <div class="tool-card-name">الخطة الدراسية</div>
+                </a>
+                <a class="tool-card" href="/wheel">
+                    <div class="tool-card-icon"><i class="fas fa-dharmachakra"></i></div>
+                    <div class="tool-card-name">العجلة الدوارة</div>
+                </a>
             </div>
-            <button class="banner-btn" onclick="window.open('https://sawamet.jassim.one/', '_blank')">فتح الرابط</button>
-        </div>
+        </section>
 
-        <h3 class="section-title">الأدوات</h3>
-        <div class="tools-grid">
-            <div class="tool-item" onclick="window.location.href='/tools/gpa'">
-                <div class="tool-icon"><i class="fas fa-calculator"></i></div>
-                <div class="tool-name">حاسبة المعدل</div>
+        <section class="home-section">
+            <h3 class="section-title"><i class="fas fa-layer-group"></i> مشاريع أخرى</h3>
+            <div class="tools-grid">
+                <a class="tool-card purple" href="https://sawamet.jassim.one/" target="_blank" rel="noopener">
+                    <div class="tool-card-icon"><i class="fas fa-volume-up"></i></div>
+                    <div class="tool-card-name">منصة صوامت</div>
+                </a>
             </div>
-            <div class="tool-item" onclick="window.location.href='/tools/tawtheeq-tool'">
-                <div class="tool-icon"><i class="fas fa-quote-right"></i></div>
-                <div class="tool-name">توثيق المراجع</div>
-            </div>
-            <div class="tool-item" onclick="window.location.href='/tools/calendar'">
-                <div class="tool-icon"><i class="fas fa-calendar-alt"></i></div>
-                <div class="tool-name">التقويم الأكاديمي</div>
-            </div>
-            <div class="tool-item" onclick="window.location.href='/tools/study-plan'">
-                <div class="tool-icon"><i class="fas fa-book-open"></i></div>
-                <div class="tool-name">الخطة الدراسية</div>
-            </div>
-        </div>
+        </section>
 
     </div> 
     
