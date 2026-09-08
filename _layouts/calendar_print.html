@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ '/fonts/fonts.css' | relative_url }}" />
+  <title>{{ page.title | default: "التقويم الأكاديمي - نسخة الطباعة" }}</title>
+
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+
+  <style>
+    /* =====================================================
+       صفحة الطباعة المستقلة - منفصلة تماماً عن الصفحة العادية
+       ===================================================== */
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    body {
+      font-family: "IBM Plex Sans Arabic", sans-serif;
+      background: #e8e8e8;
+      color: #000;
+      font-size: 11px;
+    }
+
+    .sheet {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 30px 36px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.15);
+    }
+
+    /* === الهيدر === */
+    .print-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #000;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+    .print-header-text h1 { font-size: 1.5rem; font-weight: 900; color: #000; }
+    .print-header-text p { font-size: 0.9rem; color: #444; margin-top: 4px; }
+    .print-logo-container img { height: 50px; width: auto; }
+
+    /* === صفحة الفصل الدراسي === */
+    .semester-page { background: #fff; padding-bottom: 10px; }
+
+    .semester-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #000;
+      border-bottom: 1.5px solid #000;
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+    }
+    .semester-header i { color: #1a2ac6; font-size: 1rem; }
+    .semester-header .semester-page-num {
+      margin-right: auto;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #666;
+      border: 1px solid #999;
+      border-radius: 30px;
+      padding: 2px 12px;
+    }
+
+    /* === شبكة الأحداث === */
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .event-item {
+      display: flex;
+      gap: 8px;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+      padding: 8px 10px;
+      break-inside: avoid;
+      page-break-inside: avoid;
+      background: #fff;
+    }
+
+    .event-date {
+      flex-shrink: 0;
+      min-width: 42px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 4px 3px;
+      align-self: flex-start;
+    }
+    .event-date .date-month { font-size: 0.62rem; font-weight: 700; color: #7f1d1d; display: block; }
+    .event-date .date-day { font-size: 1rem; font-weight: 700; color: #000; display: block; line-height: 1.2; }
+
+    .event-content { flex: 1; min-width: 0; }
+
+    .event-top { margin-bottom: 3px; }
+    .week-badge {
+      display: inline-block;
+      font-size: 0.58rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border: 1px solid #000;
+      border-radius: 12px;
+      color: #000;
+      background: transparent;
+    }
+    .week-badge.holiday { border-color: #b91c1c; color: #b91c1c; }
+    .week-badge.exam { border-color: #d97706; color: #b45309; }
+
+    .event-title { font-size: 0.82rem; font-weight: 700; color: #000; line-height: 1.35; margin-bottom: 2px; }
+    .event-title.holiday { color: #b91c1c; }
+    .event-meta { font-size: 0.66rem; color: #444; line-height: 1.5; }
+
+    /* === قسم الباركود (الفصل الصيفي فقط) === */
+    .barcode-section {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 14px;
+      border-top: 1px dashed #999;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .barcode-section svg { max-width: 320px; max-height: 70px; }
+    .barcode-label { font-size: 0.72rem; font-weight: 700; color: #333; margin-top: 6px; }
+
+    /* === تذييل QR === */
+    .qr-footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-top: 30px;
+      padding-top: 14px;
+      border-top: 1px dashed #999;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .qr-text { text-align: right; }
+    .qr-text .qr-title { font-weight: 800; font-size: 0.85rem; color: #000; margin-bottom: 3px; }
+    .qr-text .qr-sub { font-size: 0.7rem; color: #555; }
+    .qr-code { width: 72px; height: 72px; }
+
+    .loading-msg { text-align: center; padding: 50px 20px; color: #444; font-size: 0.9rem; }
+
+    /* === فصل كل فصل دراسي في صفحة مستقلة === */
+    @media print {
+      body { background: #fff !important; font-size: 11px !important; }
+      .sheet { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 24px !important; box-shadow: none !important; }
+      .loading-msg { display: none !important; }
+
+      .semester-page { break-before: page !important; page-break-before: always !important; }
+      .semester-page.first-page { break-before: auto !important; page-break-before: auto !important; }
+
+      .print-header { page-break-after: avoid !important; }
+
+      .event-item { break-inside: avoid !important; page-break-inside: avoid !important; }
+      .barcode-section, .qr-footer { break-inside: avoid !important; page-break-inside: avoid !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="print-header">
+      <div class="print-header-text">
+        <h1>التقويم الأكاديمي</h1>
+        <p>لجامعة الشرقية 2026-2027</p>
+      </div>
+      <div class="print-logo-container">
+        <img src="{{ '/images/rawafid-blue.png' | relative_url }}" alt="شعار روافد">
+      </div>
+    </header>
+
+    <div id="semesters" class="loading-msg">جاري تجهيز محتوى الطباعة...</div>
+
+    <footer class="qr-footer">
+      <div class="qr-text">
+        <p class="qr-title">للمزيد يرجى زيارة موقع منصة روافد</p>
+        <p class="qr-sub">امسح الرمز للوصول السريع للنسخة الرقمية</p>
+      </div>
+      <img class="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://rawafid.jassim.one" alt="QR Code">
+    </footer>
+  </div>
+
+  <script>
+    const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+
+    function parseDate(dateStr) {
+      const parts = dateStr.split('-');
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getEventType(event) {
+      if (event.isHoliday) return 'holiday';
+      const title = (event.title || '').toLowerCase();
+      if (title.includes('اختبار') || title.includes('امتحان')) return 'exam';
+      return 'regular';
+    }
+
+    function buildPrintContent(events) {
+      const semesters = new Map();
+      events.forEach(ev => {
+        const sem = ev.semester || 'أخرى';
+        if (!semesters.has(sem)) semesters.set(sem, []);
+        semesters.get(sem).push(ev);
+      });
+
+      const ordered = [...semesters.entries()].sort((a, b) => {
+        return new Date(a[1][0].date) - new Date(b[1][0].date);
+      });
+
+      const total = ordered.length;
+      let html = '';
+
+      ordered.forEach(([semName, semEvents], idx) => {
+        const firstPage = idx === 0 ? ' first-page' : '';
+        const pageNum = idx + 1;
+
+        const items = semEvents.map(ev => {
+          const d = parseDate(ev.date);
+          const type = getEventType(ev);
+          const holidayClass = ev.isHoliday ? ' holiday' : '';
+          const badgeClass = type === 'holiday' ? ' holiday' : type === 'exam' ? ' exam' : '';
+
+          return `
+            <div class="event-item">
+              <div class="event-date">
+                <span class="date-month">${escapeHtml(monthNames[d.getMonth()])}</span>
+                <span class="date-day">${d.getDate()}</span>
+              </div>
+              <div class="event-content">
+                <div class="event-top">
+                  <span class="week-badge${badgeClass}">${escapeHtml(ev.weekBadge || '')}</span>
+                </div>
+                <div class="event-title${holidayClass}">${escapeHtml(ev.title)}</div>
+                <div class="event-meta">${escapeHtml(ev.details)}</div>
+              </div>
+            </div>`;
+        }).join('');
+
+        const isSummer = semName.includes('صيفي');
+        const barcodeSection = isSummer ? `
+          <div class="barcode-section">
+            <svg class="summer-barcode"></svg>
+            <div class="barcode-label">${escapeHtml(semName)}</div>
+          </div>` : '';
+
+        html += `
+          <section class="semester-page${firstPage}">
+            <div class="semester-header">
+              <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+              <span>${escapeHtml(semName)}</span>
+              <span class="semester-page-num">صفحة ${pageNum} من ${total}</span>
+            </div>
+            <div class="events-grid">
+              ${items}
+            </div>
+            ${barcodeSection}
+          </section>`;
+      });
+
+      return html;
+    }
+
+    async function initPrint() {
+      const container = document.getElementById('semesters');
+      try {
+        const response = await fetch("{{ '/assets/calendar.json' | relative_url }}");
+        if (!response.ok) throw new Error('Failed to load data');
+        const allEvents = await response.json();
+        allEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        container.className = '';
+        container.innerHTML = buildPrintContent(allEvents);
+
+        const barcodeEls = document.querySelectorAll('.summer-barcode');
+        if (typeof JsBarcode !== 'undefined') {
+          barcodeEls.forEach(el => {
+            JsBarcode(el, 'UP-2027-SUMMER', {
+              format: 'CODE128',
+              width: 1.6,
+              height: 44,
+              displayValue: true,
+              fontSize: 13,
+              margin: 4
+            });
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        container.className = 'loading-msg';
+        container.textContent = 'حدث خطأ في تحميل بيانات التقويم.';
+        return;
+      }
+
+      const doPrint = () => {
+        try { window.focus(); window.print(); } catch (e) { console.error(e); }
+      };
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => setTimeout(doPrint, 250));
+      } else {
+        setTimeout(doPrint, 250);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initPrint);
+  </script>
+</body>
+</html>
