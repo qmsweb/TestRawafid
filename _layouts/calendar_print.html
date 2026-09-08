@@ -40,7 +40,7 @@
       padding-bottom: 12px;
       margin-bottom: 20px;
     }
-    .print-header-text h1 { font-size: 1.5rem; font-weight: 900; color: #000; }
+    .print-header-text h1 { font-size: 1.5rem; font-weight: 900; color: #000; font-feature-settings: "ss01"; }
     .print-header-text p { font-size: 0.9rem; color: #444; margin-top: 4px; }
     .print-logo-container img { height: 50px; width: auto; }
 
@@ -54,6 +54,7 @@
       font-size: 1.15rem;
       font-weight: 800;
       color: #000;
+      font-feature-settings: "ss01";
       border-bottom: 1.5px solid #000;
       padding-bottom: 6px;
       margin-bottom: 14px;
@@ -120,18 +121,6 @@
     .event-title.holiday { color: #b91c1c; }
     .event-meta { font-size: 0.66rem; color: #444; line-height: 1.5; }
 
-    /* === قسم الباركود (الفصل الصيفي فقط) === */
-    .barcode-section {
-      text-align: center;
-      margin-top: 24px;
-      padding-top: 14px;
-      border-top: 1px dashed #999;
-      break-inside: avoid;
-      page-break-inside: avoid;
-    }
-    .barcode-section svg { max-width: 320px; max-height: 70px; }
-    .barcode-label { font-size: 0.72rem; font-weight: 700; color: #333; margin-top: 6px; }
-
     /* === تذييل QR === */
     .qr-footer {
       display: flex;
@@ -163,7 +152,7 @@
       .print-header { page-break-after: avoid !important; }
 
       .event-item { break-inside: avoid !important; page-break-inside: avoid !important; }
-      .barcode-section, .qr-footer { break-inside: avoid !important; page-break-inside: avoid !important; }
+      .qr-footer { break-inside: avoid !important; page-break-inside: avoid !important; }
     }
   </style>
 </head>
@@ -251,11 +240,6 @@
         }).join('');
 
         const isSummer = semName.includes('صيفي');
-        const barcodeSection = isSummer ? `
-          <div class="barcode-section">
-            <svg class="summer-barcode"></svg>
-            <div class="barcode-label">${escapeHtml(semName)}</div>
-          </div>` : '';
 
         html += `
           <section class="semester-page${firstPage}">
@@ -267,7 +251,6 @@
             <div class="events-grid">
               ${items}
             </div>
-            ${barcodeSection}
           </section>`;
       });
 
@@ -284,20 +267,6 @@
 
         container.className = '';
         container.innerHTML = buildPrintContent(allEvents);
-
-        const barcodeEls = document.querySelectorAll('.summer-barcode');
-        if (typeof JsBarcode !== 'undefined') {
-          barcodeEls.forEach(el => {
-            JsBarcode(el, 'UP-2027-SUMMER', {
-              format: 'CODE128',
-              width: 1.6,
-              height: 44,
-              displayValue: true,
-              fontSize: 13,
-              margin: 4
-            });
-          });
-        }
       } catch (error) {
         console.error(error);
         container.className = 'loading-msg';
