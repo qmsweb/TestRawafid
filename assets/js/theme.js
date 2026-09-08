@@ -10,11 +10,7 @@
 
   var THEMES = [
     { id: 'light',  label: 'النهاري',   color: '#1a2ac6' },
-    { id: 'dark',   label: 'الليلي',    color: '#7986cb' },
-    { id: 'pink',   label: 'الوردي',    color: '#d81b60' },
-    { id: 'green',  label: 'الأخضر',    color: '#16a34a' },
-    { id: 'purple', label: 'البنفسجي',  color: '#7c3aed' },
-    { id: 'orange', label: 'البرتقالي', color: '#ea580c' }
+    { id: 'dark',   label: 'الليلي',    color: '#7986cb' }
   ];
 
   var VALID = {};
