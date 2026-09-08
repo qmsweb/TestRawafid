@@ -19,12 +19,7 @@
   <script>
     (function() {
         const savedTheme = localStorage.getItem('rawafed-theme');
-        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        } else {
-            document.documentElement.setAttribute('data-theme', 'light');
-        }
+        document.documentElement.setAttribute('data-theme', ['light','dark','pink','green','purple','orange'].indexOf(savedTheme) !== -1 ? savedTheme : 'light');
     })();
   </script>
 

@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="{{ '/fonts/fonts.css' | relative_url }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <script>
+        (function() {
+            var savedTheme = localStorage.getItem('rawafed-theme');
+            if (['light','dark','pink','green','purple','orange'].indexOf(savedTheme) === -1) savedTheme = 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    
     <style>
         :root {
             /* الألوان الافتراضية (الوضع الداكن) */
@@ -42,6 +50,64 @@
 
             /* لون الشعار في الوضع الفاتح */
             --logo-color: #1a2ac6; 
+        }
+
+        /* الثيمات الملونة الجديدة */
+        [data-theme="pink"] {
+            --bg-color: #fdf3f6;
+            --card-gradient: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+            --card-back-gradient: linear-gradient(135deg, #ffffff 0%, #fce4ec 100%);
+            --text-color: #6d1f40;
+            --hint-color: rgba(109, 31, 64, 0.6);
+            --blur-bg: radial-gradient(circle, #f8bbd0 0%, #f48fb1 50%, transparent 85%);
+            --btn-bg: rgba(216, 27, 96, 0.08);
+            --btn-border: rgba(216, 27, 96, 0.25);
+            --btn-text: #6d1f40;
+            --counter-color: #6d1f40;
+            --card-border: 1px solid rgba(216, 27, 96, 0.18);
+            --logo-color: #d81b60;
+        }
+        [data-theme="green"] {
+            --bg-color: #f1faf4;
+            --card-gradient: linear-gradient(135deg, #dcfce7 0%, #a7f3d0 100%);
+            --card-back-gradient: linear-gradient(135deg, #ffffff 0%, #dcfce7 100%);
+            --text-color: #14532d;
+            --hint-color: rgba(20, 83, 45, 0.6);
+            --blur-bg: radial-gradient(circle, #a7f3d0 0%, #6ee7b7 50%, transparent 85%);
+            --btn-bg: rgba(22, 163, 74, 0.08);
+            --btn-border: rgba(22, 163, 74, 0.25);
+            --btn-text: #14532d;
+            --counter-color: #14532d;
+            --card-border: 1px solid rgba(22, 163, 74, 0.18);
+            --logo-color: #16a34a;
+        }
+        [data-theme="purple"] {
+            --bg-color: #f6f3fc;
+            --card-gradient: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            --card-back-gradient: linear-gradient(135deg, #ffffff 0%, #ede9fe 100%);
+            --text-color: #4c1d95;
+            --hint-color: rgba(76, 29, 149, 0.6);
+            --blur-bg: radial-gradient(circle, #ddd6fe 0%, #c4b5fd 50%, transparent 85%);
+            --btn-bg: rgba(124, 58, 237, 0.08);
+            --btn-border: rgba(124, 58, 237, 0.25);
+            --btn-text: #4c1d95;
+            --counter-color: #4c1d95;
+            --card-border: 1px solid rgba(124, 58, 237, 0.18);
+            --logo-color: #7c3aed;
+        }
+        [data-theme="orange"] {
+            --bg-color: #fdf6f0;
+            --card-gradient: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+            --card-back-gradient: linear-gradient(135deg, #ffffff 0%, #ffedd5 100%);
+            --text-color: #7c2d12;
+            --hint-color: rgba(124, 45, 18, 0.6);
+            --blur-bg: radial-gradient(circle, #fed7aa 0%, #fdba74 50%, transparent 85%);
+            --btn-bg: rgba(234, 88, 12, 0.08);
+            --btn-border: rgba(234, 88, 12, 0.25);
+            --btn-text: #7c2d12;
+            --counter-color: #7c2d12;
+            --card-border: 1px solid rgba(234, 88, 12, 0.18);
+            --logo-color: #ea580c;
         }
 
         * {
@@ -98,6 +164,18 @@
             font-size: 1.2rem;
             transition: all 0.3s ease;
         }
+
+        .theme-toggle-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.3s ease;
+        }
+        .theme-toggle-btn:hover svg { transform: rotate(20deg); }
 
         /* --- تنسيقات الشعار الجديد --- */
         .app-logo {
@@ -306,8 +384,14 @@
 
     <div class="app-logo" aria-label="شعار روافد"></div>
 
-    <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" aria-label="تبديل الوضع">
-        <i class="fas fa-sun" id="themeIcon"></i>
+    <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()" aria-label="تبديل المظهر" title="تبديل المظهر">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
+            <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
+            <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
+            <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
+        </svg>
     </button>
 
     <div class="background-blur"></div>
@@ -369,26 +453,18 @@
     const themeToggleBtn = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
 
-    // --- 2. إدارة الثيم (كما هي) ---
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-        themeIcon.className = 'fas fa-moon'; 
-    } else {
-        themeIcon.className = 'fas fa-sun'; 
-    }
+    // --- 2. إدارة المظهر (نظام الثيمات الموحّد) ---
+    const THEMES = ['light', 'dark', 'pink', 'green', 'purple', 'orange'];
+    const savedTheme = localStorage.getItem('rawafed-theme');
+    const validSaved = THEMES.indexOf(savedTheme) !== -1 ? savedTheme : 'light';
+    document.documentElement.setAttribute('data-theme', validSaved);
 
     function toggleTheme() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
-        if (currentTheme === 'light') {
-            document.documentElement.removeAttribute('data-theme');
-            themeIcon.className = 'fas fa-sun';
-            localStorage.setItem('theme', 'dark');
-        } else {
-            document.documentElement.setAttribute('data-theme', 'light');
-            themeIcon.className = 'fas fa-moon';
-            localStorage.setItem('theme', 'light');
-        }
+        const curIdx = THEMES.indexOf(currentTheme);
+        const next = THEMES[(curIdx + 1) % THEMES.length];
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('rawafed-theme', next);
     }
 
     // --- 3. وظائف البطاقات ---
