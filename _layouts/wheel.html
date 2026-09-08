@@ -61,7 +61,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 
     /* === Header & Actions === */
     .tool-header {
@@ -162,6 +162,34 @@
     .spin-btn:hover { opacity: 0.9; }
     .spin-btn:active { transform: scale(0.98); }
     .spin-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* === الاستجابة للشاشات الكبيرة === */
+    @media (min-width: 1200px) {
+        .container { max-width: 1400px; padding: 0 28px; }
+        .wheel-section { min-width: 380px; padding: 24px; }
+        .input-section { padding: 24px; }
+
+        /* إبقاء زر التدوير ظاهراً دائماً على الشاشات الكبيرة */
+        .input-section {
+            position: relative;
+            justify-content: flex-start;
+        }
+        .input-section textarea { flex-grow: 0; }
+        .spin-btn {
+            position: sticky;
+            bottom: 20px;
+            z-index: 5;
+            box-shadow: 0 8px 20px -4px rgba(26, 42, 198, 0.4);
+            margin-top: auto;
+            font-size: 1.15rem;
+        }
+    }
+
+    @media (max-width: 1000px) {
+        .wheel-layout { flex-direction: column; }
+        .wheel-section { min-width: 100%; }
+        .wheel-container { max-width: 400px; }
+    }
 
     .wheel-section {
         flex: 1.5;
