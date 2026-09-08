@@ -249,21 +249,54 @@
     }
     .empty-icon { font-size: 3rem; margin-bottom: 15px; opacity: 0.3; }
 
-    /* === الاستجابة للشاشات الكبيرة === */
+    /* === التوزيع العمودي (الشاشات الكبيرة) === */
+    .plan-split {
+        display: grid;
+        grid-template-columns: 330px 1fr;
+        gap: 26px;
+        align-items: start;
+    }
+    .plan-side, .plan-main { min-width: 0; }
+    .plan-side {
+        position: sticky;
+        top: calc(var(--nav-height, 70px) + 24px);
+    }
+    .plan-side .search-box-container { margin-bottom: 0; }
+    .side-label {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+    .side-label i { color: var(--primary-color); }
+    .side-hint {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 14px;
+        line-height: 1.7;
+    }
+
     @media (min-width: 1100px) {
-        .container { max-width: 1280px; padding: 0 28px; }
+        .container { max-width: 1360px; padding: 0 28px; }
         .card-header { padding: 24px 30px; }
         .card-body { padding: 30px; }
         .course-title { font-size: 2rem; }
-        .header-select { min-width: 260px; padding: 8px 18px; }
+    }
+
+    @media (max-width: 1000px) {
+        .plan-split { grid-template-columns: 1fr; }
+        .plan-side { position: static; }
+        .plan-side .search-box-container { margin-bottom: 30px; }
     }
 
     @media (max-width: 600px) {
         .tool-header { flex-direction: column; align-items: flex-start; }
-        .plan-controls { width: 100%; }
-        .header-select { width: 100%; min-width: 0; }
         .course-title { font-size: 1.4rem; }
         .card-body { padding: 18px; }
+        .card-header { flex-direction: column; align-items: flex-start; gap: 10px; }
     }
 
   </style>
@@ -278,25 +311,29 @@
     <div class="tool-header">
       <div>
           <h1>الخطة الدراسية</h1>
-          <p> </p>
+          <p>دليل تفاعلي للمقررات والمتطلبات والساعات المعتمدة</p>
       </div>
+    </div>
 
-      <div class="plan-controls">
-          <select id="planSelector" class="header-select" onchange="fetchPlanData()">
+    <div class="plan-split">
+      <aside class="plan-side">
+        <div class="search-box-container">
+          <div class="side-label"><i class="fas fa-graduation-cap"></i> التخصص</div>
+          <select id="planSelector" class="select-field" onchange="fetchPlanData()">
               <option value="edu" selected>تخصص التربية في اللغة العربية</option>
               <option value="aadab">تخصص آداب اللغة العربية</option>
           </select>
-      </div>
-    </div>
 
-    <div class="search-box-container">
-        <div style="margin-bottom:10px; font-weight:600; font-size:0.9rem;">اختر المقرر لعرض تفاصيله:</div>
-        <select id="courseSelect" class="select-field" onchange="displayCourse(this.value, true)">
-            <option value="" disabled selected>-- جاري تحميل الخطة --</option>
-        </select>
-    </div>
+          <div class="side-label" style="margin-top: 18px;"><i class="fas fa-book-open"></i> المقرر</div>
+          <select id="courseSelect" class="select-field" onchange="displayCourse(this.value, true)">
+              <option value="" disabled selected>-- جاري تحميل الخطة --</option>
+          </select>
+          <p class="side-hint"><i class="fas fa-lightbulb" style="margin-left: 6px; color: var(--primary-color);"></i>اختر مقررًا من القائمة لعرض المتطلبات السابقة واللاحقة، وعدد الساعات، ووصف المقرر.</p>
+        </div>
+      </aside>
 
-    <div id="resultContainer">
+      <main class="plan-main">
+        <div id="resultContainer">
         <div class="empty-state" id="emptyState">
             <i class="fas fa-book-open empty-icon"></i>
             <p>الرجاء اختيار مقرر من القائمة أعلاه لعرض المتطلبات والساعات وتفاصيل المقرر</p>
@@ -335,6 +372,9 @@
                 </div>
             </div>
         </div>
+      </div>
+
+      </main>
     </div>
 
   </div>

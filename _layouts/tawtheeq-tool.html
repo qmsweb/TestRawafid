@@ -176,9 +176,41 @@
     #result-container { display: none; animation: fadeIn 0.4s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* === التوزيع العمودي (الشاشات الكبيرة) === */
+    .ta-split {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 26px;
+        align-items: start;
+    }
+    .ta-side, .ta-main { min-width: 0; }
+    .ta-side {
+        position: sticky;
+        top: calc(var(--nav-height, 70px) + 24px);
+    }
+    .ta-side .ios-list-group { margin-bottom: 0; }
+    .side-hint {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 14px;
+        line-height: 1.7;
+    }
+    .ta-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 18px;
+    }
+    .ta-actions .action-btn { justify-content: center; width: 100%; }
+
+    @media (max-width: 1000px) {
+        .ta-split { grid-template-columns: 1fr; }
+        .ta-side { position: static; }
+    }
+
     /* === Desktop Responsive === */
     @media (min-width: 1100px) {
-        .container { max-width: 1240px; padding: 0 28px; }
+        .container { max-width: 1360px; padding: 0 28px; }
         .form-content { padding: 28px; }
         .form-grid { gap: 26px; }
         .input-field, .select-field { padding: 14px; font-size: 1.05rem; }
@@ -209,33 +241,43 @@
           <h1>توثيق المراجع (APA7)</h1>
           <p>الأداة لا تزال في وضع التجريب</p>
       </div>
-      
-      <div class="header-actions">
-          <button class="action-btn" onclick="loadExample()">
-            <i class="fas fa-lightbulb"></i> تحميل مثال
-          </button>
-
-          <button class="action-btn" onclick="clearForm()">
-            <i class="fas fa-eraser"></i> مسح الحقول
-          </button>
-      </div>
     </div>
 
-    <div class="ios-list-group">
-        <div class="list-header">
-            <span>نوع المصدر</span>
-            <select id="sourceType" class="select-field" style="padding: 6px 12px; font-size: 0.9rem; min-width: 200px; width: auto;" onchange="updateFormFields()">
-                <option value="book">كتاب</option>
-                <option value="journal">مقال في دورية (مجلة علمية)</option>
-                <option value="thesis_pub">رسالة ماجستير/دكتوراة (منشورة)</option>
-                <option value="thesis_unpub">رسالة ماجستير/دكتوراة (غير منشورة)</option>
-                <option value="conference">ورقة علمية في مؤتمر</option>
-                <option value="newspaper">مقال في صحيفة (إلكترونية)</option>
-            </select>
+    <div class="ta-split">
+      <aside class="ta-side">
+        <div class="ios-list-group source-card">
+            <div class="list-header">
+                <span>نوع المصدر</span>
+            </div>
+            <div class="form-content">
+                <select id="sourceType" class="select-field" onchange="updateFormFields()">
+                    <option value="book">كتاب</option>
+                    <option value="journal">مقال في دورية (مجلة علمية)</option>
+                    <option value="thesis_pub">رسالة ماجستير/دكتوراة (منشورة)</option>
+                    <option value="thesis_unpub">رسالة ماجستير/دكتوراة (غير منشورة)</option>
+                    <option value="conference">ورقة علمية في مؤتمر</option>
+                    <option value="newspaper">مقال في صحيفة (إلكترونية)</option>
+                </select>
+                <p class="side-hint"><i class="fas fa-lightbulb" style="margin-left: 6px; color: var(--primary-color);"></i>حدد نوع المصدر لتظهر الحقول المناسبة لكل نوع.</p>
+                <div class="ta-actions">
+                    <button class="action-btn" onclick="loadExample()">
+                        <i class="fas fa-lightbulb"></i> تحميل مثال
+                    </button>
+                    <button class="action-btn" onclick="clearForm()">
+                        <i class="fas fa-eraser"></i> مسح الحقول
+                    </button>
+                </div>
+            </div>
         </div>
-        
-        <div class="form-content">
-            <div class="form-grid">
+      </aside>
+
+      <main class="ta-main">
+        <div class="ios-list-group">
+            <div class="list-header">
+                <span>بيانات المصدر</span>
+            </div>
+            <div class="form-content">
+                <div class="form-grid">
                 
                 <div class="input-group full-width">
                     <label>المؤلف (المؤلفون)</label>
@@ -306,9 +348,9 @@
                 </button>
             </div>
         </div>
-    </div>
+        </div>
 
-    <div id="result-container">
+        <div id="result-container">
         <div class="ios-list-group">
             <div class="list-header">
                 <span>النتيجة (التوثيق)</span>
@@ -323,6 +365,9 @@
                 </div>
             </div>
         </div>
+        </div>
+
+      </main>
     </div>
 
   </div>

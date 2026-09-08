@@ -850,6 +850,72 @@
         .print-qr-code { width: 70px !important; height: 70px !important; }
     }
 
+    /* === التوزيع العمودي (الشاشات الكبيرة) === */
+    .cal-split {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 26px;
+      align-items: start;
+    }
+    .cal-side, .cal-main { min-width: 0; }
+    .cal-side {
+      position: sticky;
+      top: calc(var(--nav-height, 70px) + 24px);
+    }
+    .cal-side .current-event-banner {
+      flex-direction: column;
+      align-items: stretch;
+      text-align: center;
+      padding: 20px;
+      gap: 12px;
+    }
+    .cal-side .current-event-icon {
+      width: 52px;
+      height: 52px;
+      font-size: 1.3rem;
+      margin: 0 auto;
+    }
+    .cal-side .current-event-info { text-align: center; }
+    .cal-side .current-event-meta { justify-content: center; }
+    .cal-side .countdown-box {
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .cal-side .countdown-unit { min-width: 48px; padding: 8px 9px; }
+    .cal-side .countdown-num { font-size: 1.2rem; }
+    .cal-side .filter-strip {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      box-shadow: var(--card-shadow);
+    }
+    .cal-side .filter-chip {
+      width: 100%;
+      justify-content: flex-start;
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      background: transparent;
+    }
+    .cal-side .filter-divider { display: none; }
+
+    @media (max-width: 1000px) {
+      .cal-split { grid-template-columns: 1fr; gap: 20px; }
+      .cal-side { position: static; }
+      .cal-side .current-event-banner {
+        flex-direction: row;
+        text-align: right;
+        padding: 22px 26px;
+      }
+      .cal-side .current-event-icon { margin: 0; }
+      .cal-side .filter-strip { flex-direction: row; align-items: center; }
+      .cal-side .filter-chip { width: auto; justify-content: center; }
+    }
+
     /* === الاستجابة للشاشات === */
     @media (min-width: 1200px) {
       .container { max-width: 1500px; padding: 0 32px; }
@@ -946,6 +1012,9 @@
         </div>
       </div>
 
+      <div class="cal-split">
+        <aside class="cal-side">
+
       <!-- بنر الأحداث الحالية -->
       <div class="current-event-banner hidden" id="currentEventBanner">
         <div class="current-event-icon" id="currentEventIcon">
@@ -978,6 +1047,10 @@
           <i class="fas fa-hourglass-half"></i> الحالي/القادم <span class="chip-count" id="count-current">0</span>
         </button>
       </div>
+
+        </aside>
+
+        <main class="cal-main">
 
       <!-- شريط أدوات العرض الثلاثي مع فاصل -->
       <div class="view-toolbar">
@@ -1027,6 +1100,9 @@
           </thead>
           <tbody id="gridBody"></tbody>
         </table>
+      </div>
+
+        </main>
       </div>
 
       </div>
