@@ -86,7 +86,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 
     /* === Header & Actions === */
     .tool-header {
@@ -248,6 +248,23 @@
         color: var(--text-muted);
     }
     .empty-icon { font-size: 3rem; margin-bottom: 15px; opacity: 0.3; }
+
+    /* === الاستجابة للشاشات الكبيرة === */
+    @media (min-width: 1100px) {
+        .container { max-width: 1280px; padding: 0 28px; }
+        .card-header { padding: 24px 30px; }
+        .card-body { padding: 30px; }
+        .course-title { font-size: 2rem; }
+        .header-select { min-width: 260px; padding: 8px 18px; }
+    }
+
+    @media (max-width: 600px) {
+        .tool-header { flex-direction: column; align-items: flex-start; }
+        .plan-controls { width: 100%; }
+        .header-select { width: 100%; min-width: 0; }
+        .course-title { font-size: 1.4rem; }
+        .card-body { padding: 18px; }
+    }
 
   </style>
 </head>

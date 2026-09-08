@@ -87,7 +87,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    .container { max-width: 1380px; margin: 0 auto; padding: 0 24px; }
 
     /* === نظام التحميل === */
     #main-content-area { opacity: 0; transition: opacity 0.5s ease-in-out; }
@@ -553,8 +553,8 @@
 
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
     }
 
     .card-event {
@@ -851,6 +851,15 @@
     }
 
     /* === الاستجابة للشاشات === */
+    @media (min-width: 1200px) {
+      .container { max-width: 1500px; padding: 0 32px; }
+      .cards-grid { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
+      .cal-header h1 { font-size: 1.7rem; }
+      .filter-chip { padding: 8px 20px; font-size: 0.86rem; }
+      .cal-grid-table td { height: 84px; }
+      .cal-event-dot { font-size: 0.68rem; }
+    }
+
     @media (max-width: 900px) {
       .cards-grid { grid-template-columns: 1fr; }
       .current-event-banner { flex-wrap: wrap; }
