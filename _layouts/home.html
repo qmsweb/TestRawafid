@@ -217,7 +217,7 @@
     .filter-bar::-webkit-scrollbar { display: none; }
 
     .view-toggle { display: flex; gap: 5px; background: var(--bg-card); padding: 4px; border-radius: 50px; border: 1px solid var(--border-color); flex-shrink: 0; }
-    .view-toggle i { width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1rem; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease; }
+    .view-toggle i { width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1rem; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease; touch-action: manipulation; }
     .view-toggle i.active { background-color: var(--primary-light-bg); color: var(--primary-color); }
 
     .filter-divider { width: 1px; height: 20px; background: var(--border-color); margin: 0 10px; flex-shrink: 0; }
@@ -468,8 +468,8 @@
         else { container.classList.remove('grid-view'); listBtn.classList.add('active'); gridBtn.classList.remove('active'); }
         if (save) localStorage.setItem('rawafed-courses-view', mode);
       }
-      gridBtn.addEventListener('click', () => setView('grid'));
-      listBtn.addEventListener('click', () => setView('list'));
+      gridBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); setView('grid'); });
+      listBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); setView('list'); });
       const savedMode = localStorage.getItem('rawafed-courses-view');
       setView(savedMode || (window.innerWidth < 820 ? 'list' : 'grid'), false);
     }
