@@ -39,32 +39,78 @@
             padding: 28px 34px;
         }
 
-        /* === الهيدر === */
+        /* =====================================================
+           الواجهة (صفحة الغلاف)
+           ===================================================== */
+        .front-page {
+            display: flex;
+            flex-direction: column;
+            min-height: 900px;
+        }
+
+        /* === الهيدر: الشعار | العنوان | الباركود === */
         .print-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 16px;
             border-bottom: 2.5px solid #000;
-            padding-bottom: 12px;
+            padding-bottom: 14px;
             margin-bottom: 16px;
         }
-        .print-header-text h1 { font-size: 1.6rem; font-weight: 900; line-height: 1.4; }
-        .print-header-text .print-sub { font-size: 0.82rem; color: #444; margin-top: 4px; }
-        .print-logo-container img { height: 52px; width: auto; }
+        .print-logo-container img { height: 58px; width: auto; display: block; }
+        .print-header-text { flex: 1; text-align: center; min-width: 0; }
+        .print-header-text h1 { font-size: 1.85rem; font-weight: 900; line-height: 1.5; }
+        .print-header-text .print-sub { font-size: 0.85rem; color: #444; margin-top: 5px; font-weight: 700; }
+
+        .print-qr { display: flex; flex-direction: column; align-items: center; gap: 5px; flex-shrink: 0; }
+        #qrcode-container { width: 88px; height: 88px; padding: 6px; border: 1px solid #000; background: #fff; }
+        .print-qr .qr-caption { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.3px; }
 
         /* === بطاقة معلومات المقرر === */
         .print-info-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             border: 1px solid #000;
-            padding: 9px 14px;
             margin-bottom: 16px;
-            font-weight: 700;
-            flex-wrap: wrap;
         }
-        .print-info-card span { display: inline-flex; gap: 6px; align-items: center; }
+        .print-info-card .info-item {
+            padding: 9px 10px;
+            text-align: center;
+            border-inline-start: 1px solid #000;
+            background: #f6f6f6;
+        }
+        .print-info-card .info-item:first-child { border-inline-start: none; }
+        .print-info-card .info-item span {
+            display: block;
+            font-size: 0.68rem;
+            color: #555;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+        .print-info-card .info-item b { font-size: 0.9rem; font-weight: 800; }
+
+        /* === بيانات الطالب === */
+        .student-data { border: 1.5px solid #000; margin-bottom: 18px; }
+        .sd-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-bottom: 1px dashed #999;
+        }
+        .sd-row:last-child { border-bottom: none; }
+        .sd-cell {
+            padding: 8px 12px;
+            border-inline-start: 1px dashed #999;
+        }
+        .sd-cell:first-child { border-inline-start: none; }
+        .sd-cell label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        .sd-cell span { display: block; height: 18px; border-bottom: 1.5px solid #000; }
 
         /* === جدول التقييم الذاتي === */
         #print-eval-table {
@@ -74,12 +120,26 @@
         }
         #print-eval-table th, #print-eval-table td {
             border: 1px solid #000;
-            padding: 7px;
+            padding: 8px;
             text-align: center;
         }
-        #print-eval-table thead th { background: #f0f0f0; }
+        #print-eval-table thead th { background: #f0f0f0; font-weight: 800; }
+        #print-eval-table tbody td { height: 42px; }
+        #print-eval-table tbody td.criteria { text-align: right; font-weight: 700; padding-right: 14px; }
 
-        /* === عناوين الأقسام === */
+        /* === تعليمات عامة (أسفل الواجهة) === */
+        .print-notice {
+            border: 1px solid #000;
+            border-right: 4px solid #000;
+            padding: 12px 16px;
+            margin-top: auto;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .print-notice h3 { font-size: 0.92rem; font-weight: 800; margin-bottom: 7px; }
+        .print-notice p { font-size: 0.82rem; line-height: 1.8; color: #222; }
+
+        /* === عناوين الأقسام داخل الأسئلة === */
         .print-section-title {
             text-align: center;
             font-size: 1.12rem;
@@ -149,13 +209,14 @@
         .choice .letter { font-weight: 800; flex-shrink: 0; }
         .choice .c-text { line-height: 1.6; }
 
-        /* === الصح والخطأ === */
+        /* === الصح والخطأ: مربع واحد فارغ لكل عبارة === */
         .tf-group {
             border: 1px solid #000;
             padding: 10px 12px;
             margin-bottom: 14px;
             break-inside: avoid;
             page-break-inside: avoid;
+            background: #fcfcfc;
         }
         .tf-header {
             font-weight: 800;
@@ -175,13 +236,14 @@
         .tf-points { font-size: 0.72rem; font-weight: 800; border: 1px solid #000; border-radius: 20px; padding: 0 8px; flex-shrink: 0; align-self: center; }
         .tf-boxes { display: flex; gap: 8px; flex-shrink: 0; align-self: center; }
         .tf-cell {
-            width: 46px;
-            height: 24px;
+            width: 38px;
+            height: 26px;
             border: 1px solid #000;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             font-size: 0.72rem;
+            background: #fff;
         }
 
         /* === أسئلة المقال مع أسطر الكتابة === */
@@ -198,29 +260,30 @@
 
         /* === نموذج الإجابة === */
         .answer-key { break-before: page; page-break-before: always; margin-top: 24px; }
+        .answer-key-title {
+            font-size: 1.15rem;
+            font-weight: 900;
+            text-align: center;
+            border-bottom: 3px double #000;
+            padding-bottom: 8px;
+            margin-bottom: 14px;
+        }
         .answer-key table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 22px;
             page-break-inside: avoid;
         }
-        .answer-key th, .answer-key td { border: 1px solid #000; padding: 6px 10px; }
-        .answer-key th { background: #f0f0f0; }
-
-        /* === تذييل QR === */
-        .qr-footer {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;
-            margin-top: 26px;
-            padding-top: 14px;
-            border-top: 1px dashed #999;
+        .answer-key th, .answer-key td { border: 1px solid #000; padding: 7px 12px; }
+        .answer-key thead th { background: #f0f0f0; font-weight: 900; }
+        .answer-key tbody td.num-cell {
+            text-align: center;
+            font-weight: 800;
+            width: 90px;
+            background: #f8f8f8;
         }
-        .qr-text { text-align: right; }
-        .qr-text h3 { font-size: 0.9rem; margin-bottom: 4px; }
-        .qr-text p { font-size: 0.72rem; color: #555; }
-        #qrcode-container { padding: 8px; background: #fff; border: 1px solid #000; }
+        .answer-key tbody td.ans-cell { text-align: right; line-height: 1.6; }
+        .answer-key tbody tr:nth-child(even) td { background: #fafafa; }
 
         .loading-msg { text-align: center; padding: 60px 20px; color: #444; font-size: 0.9rem; }
 
@@ -229,14 +292,17 @@
             .sheet { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 18px !important; }
             .loading-msg { display: none !important; }
 
-            .front-page { break-after: page; page-break-after: always; }
+            .front-page {
+                min-height: calc(100vh - 40px);
+                break-after: page;
+                page-break-after: always;
+            }
 
             .q, .tf-group, .print-instructions {
                 break-inside: avoid !important;
                 page-break-inside: avoid !important;
             }
             .answer-key { break-before: page; page-break-before: always; }
-            .qr-footer { break-inside: avoid; page-break-inside: avoid; }
         }
     </style>
 </head>
@@ -244,19 +310,39 @@
     <div class="sheet">
         <div class="front-page">
             <header class="print-header">
+                <div class="print-logo-container">
+                    <img src="{{ '/images/rawafid-blue.png' | relative_url }}" alt="شعار روافد">
+                </div>
                 <div class="print-header-text">
                     <h1 id="print-title">اختبار</h1>
                     <div class="print-sub" id="print-subject"></div>
                 </div>
-                <div class="print-logo-container">
-                    <img src="{{ '/images/rawafid-blue.png' | relative_url }}" alt="شعار روافد">
+                <div class="print-qr">
+                    <div id="qrcode-container"></div>
+                    <span class="qr-caption">النسخة التفاعلية للاختبار</span>
                 </div>
             </header>
 
             <div class="print-info-card">
-                <span>المقرر: <b id="p-subject-name"></b></span>
-                <span>رمز المقرر: <b id="p-subject-code"></b></span>
-                <span>الدرجة الكلية: <b id="p-subject-total"></b></span>
+                <div class="info-item"><span>المقرر</span><b id="p-subject-name"></b></div>
+                <div class="info-item"><span>رمز المقرر</span><b id="p-subject-code"></b></div>
+                <div class="info-item"><span>الدرجة الكلية</span><b id="p-subject-total"></b></div>
+                <div class="info-item"><span>عدد الأسئلة</span><b id="p-question-count"></b></div>
+            </div>
+
+            <div class="student-data">
+                <div class="sd-row">
+                    <div class="sd-cell"><label>اسم الطالب</label><span></span></div>
+                    <div class="sd-cell"><label>الرقم الجامعي</label><span></span></div>
+                    <div class="sd-cell"><label>الشعبة</label><span></span></div>
+                    <div class="sd-cell"><label>القسم</label><span></span></div>
+                </div>
+                <div class="sd-row">
+                    <div class="sd-cell"><label>التاريخ</label><span></span></div>
+                    <div class="sd-cell"><label>توقيع الطالب</label><span></span></div>
+                    <div class="sd-cell"><label>توقيع المُصحِّح</label><span></span></div>
+                    <div class="sd-cell"><label>الدرجة النهائية</label><span></span></div>
+                </div>
             </div>
 
             <table id="print-eval-table">
@@ -272,12 +358,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td style="text-align: right;">فهم الأسئلة واستيعاب المطلوب</td><td></td><td></td><td></td></tr>
-                    <tr><td style="text-align: right;">دقة الإجابات وصحتها العلمية</td><td></td><td></td><td></td></tr>
-                    <tr><td style="text-align: right;">إدارة الوقت أثناء الحل</td><td></td><td></td><td></td></tr>
-                    <tr><td style="text-align: right;"><strong>التقدير العام للمستوى</strong></td><td colspan="3"></td></tr>
+                    <tr><td class="criteria">فهم الأسئلة واستيعاب المطلوب</td><td></td><td></td><td></td></tr>
+                    <tr><td class="criteria">دقة الإجابات وصحتها العلمية</td><td></td><td></td><td></td></tr>
+                    <tr><td class="criteria">إدارة الوقت أثناء الحل</td><td></td><td></td><td></td></tr>
+                    <tr><td class="criteria"><strong>التقدير العام للمستوى</strong></td><td colspan="3"></td></tr>
                 </tbody>
             </table>
+
+            <div class="print-notice">
+                <h3>تعليمات عامة</h3>
+                <p>
+                    اقرأ جميع الأسئلة والتعليمات بعناية قبل البدء في الحل، وأجب عن كل سؤال في المكان المخصص له.
+                    في أسئلة الصح والخطأ ضع علامة (&#10003;) أمام العبارة الصحيحة وعلامة (&#10007;) أمام العبارة الخاطئة داخل المربع المخصص لذلك.
+                </p>
+            </div>
         </div>
 
         <div id="print-loading" class="loading-msg">جاري تجهيز محتوى الطباعة...</div>
@@ -319,11 +413,9 @@
                     keyHTML += `
                     <table>
                         <thead>
+                            ${qCount > 1 ? `<tr><th colspan="2" style="font-size: 14px;">نموذج الإجابة (يتبع)</th></tr>` : ''}
                             <tr>
-                                <th colspan="2" style="font-size: 15px;">نموذج الإجابة ${qCount > 1 ? '(يتبع)' : ''}</th>
-                            </tr>
-                            <tr>
-                                <th style="width: 15%;">رقم السؤال</th>
+                                <th style="width: 90px;">رقم السؤال</th>
                                 <th>الإجابة الصحيحة</th>
                             </tr>
                         </thead>
@@ -335,8 +427,8 @@
                 const cleanAnswer = q.answer ? String(q.answer).replace(/\n/g, '<br>') : '—';
                 keyHTML += `
                     <tr>
-                        <td style="text-align: center; font-weight: bold;">${qCount}</td>
-                        <td style="text-align: right; line-height: 1.6;">${cleanAnswer}</td>
+                        <td class="num-cell">${qCount}</td>
+                        <td class="ans-cell">${cleanAnswer}</td>
                     </tr>
                 `;
 
@@ -369,16 +461,7 @@
                     return;
                 }
 
-                if (q.type === 'instructions') {
-                    html += `
-                        <div class="print-instructions">
-                            ${q.mainTitle ? `<h3>${escapeNewlines(q.mainTitle)}</h3>` : ''}
-                            ${q.description ? `<p>${escapeNewlines(q.description)}</p>` : ''}
-                        </div>`;
-                    return;
-                }
-
-                if (q.type === 'info') {
+                if (q.type === 'instructions' || q.type === 'info') {
                     html += `
                         <div class="print-instructions">
                             ${q.mainTitle ? `<h3>${escapeNewlines(q.mainTitle)}</h3>` : ''}
@@ -392,7 +475,7 @@
                         currentTfGroup = true;
                         html += `
                             <div class="tf-group">
-                                <div class="tf-header">ضع علامة (✓) أو (✗) أمام العبارات التالية</div>
+                                <div class="tf-header">ضع علامة (✓) أو (✗) أمام العبارات التالية داخل المربع المخصص</div>
                         `;
                     }
 
@@ -406,8 +489,7 @@
                             </div>
                             <span class="tf-points">${formatPoints(q.points || 1)}</span>
                             <div class="tf-boxes">
-                                <span class="tf-cell">صح</span>
-                                <span class="tf-cell">خطأ</span>
+                                <span class="tf-cell"></span>
                             </div>
                         </div>`;
                     questionNumber++;
@@ -500,30 +582,25 @@
                 document.getElementById('p-subject-code').textContent = quiz['subject-code'] || examCode;
 
                 let totalPoints = 0;
+                let questionCount = 0;
                 quiz.questions.forEach(q => {
                     if (q.divider || q.type === 'info' || q.type === 'instructions') return;
                     totalPoints += q.points || 1;
+                    questionCount++;
                 });
                 document.getElementById('p-subject-total').textContent = totalPoints;
+                document.getElementById('p-question-count').textContent = questionCount;
 
                 let contentHTML = '';
                 contentHTML += '<div id="quiz-questions">' + buildQuestions(quiz) + '</div>';
-                contentHTML += '<div class="answer-key"><h2 style="font-size:1.1rem; margin-bottom:10px; text-align:center; border-bottom:3px double #000; padding-bottom:8px;">نموذج الإجابة للمعلم</h2>' + buildAnswerKey(quiz.questions) + '</div>';
-                contentHTML += `
-                    <footer class="qr-footer">
-                        <div class="qr-text">
-                            <h3>للمزيد يرجى زيارة موقع منصة روافد</h3>
-                            <p>امسح الرمز للوصول السريع إلى النسخة التفاعلية من الاختبار</p>
-                        </div>
-                        <div id="qrcode-container"></div>
-                    </footer>`;
+                contentHTML += '<div class="answer-key"><h2 class="answer-key-title">نموذج الإجابة</h2>' + buildAnswerKey(quiz.questions) + '</div>';
 
                 contentEl.innerHTML = contentHTML;
 
                 new QRCode(document.getElementById('qrcode-container'), {
                     text: base + 'exam/' + encodeURIComponent(examCode),
-                    width: 110,
-                    height: 110,
+                    width: 88,
+                    height: 88,
                     colorDark: "#000000",
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.H
