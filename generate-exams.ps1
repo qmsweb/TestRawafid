@@ -19,7 +19,13 @@ Get-ChildItem "$onlineDir\*.yaml" | ForEach-Object {
 
     $front = "---`r`nlayout: exam`r`nexam_code: `"$code`"`r`ntitle: `"Exam $code`"`r`npermalink: /exam/$code`r`n---`r`n"
     [System.IO.File]::WriteAllText((Join-Path $dir "index.md"), $front, (New-Object System.Text.UTF8Encoding $false))
+
+    # صفحة طباعة مستقلة لكل اختبار على المسار /exam/CODE/print
+    $printDir = Join-Path $dir 'print'
+    New-Item -ItemType Directory -Path $printDir -Force | Out-Null
+    $frontPrint = "---`r`nlayout: exam_print`r`nexam_code: `"$code`"`r`ntitle: `"Exam $code - PDF`"`r`npermalink: /exam/$code/print`r`n---`r`n"
+    [System.IO.File]::WriteAllText((Join-Path $printDir "index.md"), $frontPrint, (New-Object System.Text.UTF8Encoding $false))
     $count++
 }
 
-Write-Output "Generated $count exam pages."
+Write-Output "Generated $count exam pages (with print pages)."

@@ -11,8 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="{{ '/topbar.css' | relative_url }}" />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
     <meta property="og:title" content="{{ page.title }} - روافد" id="og-title">
     <meta property="og:description" content="{{ page.description | default: 'تصفح مستندات وفيديوهات وملاحظات المقررات الدراسية بسهولة.' }}" id="og-description">
     <meta property="og:image" content="{{ page.image | default: '/images/cover3.png' | relative_url }}" id="og-image">
@@ -44,11 +42,9 @@
             --text-main: #2d2d2d;
             --text-header: #1e1e2f;
             --text-muted: #666666;
-            --border-color: #ccd1e0;
+            --border-color: #d9dce8;
             --hover-bg: #e0e7ff;
-            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06);
-            --hover-shadow: 0 20px 40px -5px rgba(26, 42, 198, 0.16);
-            --radius-lg: 20px;
+            --radius-lg: 18px;
             --radius-md: 14px;
 
             /* ألوان الحالة */
@@ -74,8 +70,6 @@
             --text-muted: #a0a0a0;
             --border-color: #333333;
             --hover-bg: #2c2e3e;
-            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
-            --hover-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5);
 
             --correct-bg: #388e3c;
             --correct-text: #ffffff;
@@ -98,7 +92,7 @@
             color: var(--text-main);
             min-height: 100vh;
             font-family: "IBM Plex Sans Arabic", sans-serif;
-            line-height: 1.6;
+            line-height: 1.7;
             display: flex;
             flex-direction: column;
             direction: rtl;
@@ -107,151 +101,158 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1040px;
             margin: 0 auto;
-            padding: 28px 24px 60px;
+            padding: 28px 20px 70px;
             flex: 1;
             width: 100%;
         }
 
-        /* إخفاء العناصر الخاصة بالطباعة في العرض العادي */
-        #print-only-logo, #print-eval-table, .print-essay-lines, #printable-qr-section, .print-letter {
-            display: none;
+        /* === بطاقة البداية (Hero) — تصميم مسطح دون ظلال === */
+        .quiz-front-page {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: 26px;
         }
 
-        .quiz-header {
+        .quiz-hero {
+            position: relative;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 26px 24px 22px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .quiz-hero::before,
+        .quiz-hero::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            pointer-events: none;
+        }
+        .quiz-hero::before { width: 180px; height: 180px; top: -80px; left: -60px; }
+        .quiz-hero::after { width: 120px; height: 120px; bottom: -60px; right: -40px; }
+        .quiz-hero > * { position: relative; z-index: 1; }
+
+        .quiz-hero-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 22px;
+            gap: 10px;
+            margin-bottom: 14px;
             flex-wrap: wrap;
-        }
-
-        .quiz-title-wrap {
-            flex: 1;
-            text-align: center;
-            min-width: 250px;
         }
 
         .quiz-kicker {
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 700;
-            color: var(--primary-color);
-            background: var(--primary-light);
-            border: 1px solid var(--primary-color);
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.45);
             padding: 5px 14px;
             border-radius: 50px;
-            margin-bottom: 10px;
         }
 
-        h1 {
-            text-align: center;
-            font-size: clamp(22px, 2.8vw, 30px);
-            color: var(--text-header);
-            font-weight: 800;
-            line-height: 1.4;
-            font-family: "Thmanyah Serif Text", "IBM Plex Sans Arabic", sans-serif;
-        }
-
-        #print-btn {
-            background-color: var(--bg-card);
-            color: var(--primary-color);
-            border: 1.5px solid var(--primary-color);
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            font-family: inherit;
+        .quiz-brand {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
+            gap: 7px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            opacity: 0.95;
         }
-        #print-btn:hover {
-            background-color: var(--primary-color);
+
+        .quiz-hero h1 {
+            font-size: clamp(24px, 3.2vw, 34px);
             color: #ffffff;
-            transform: translateY(-1px);
+            font-weight: 800;
+            line-height: 1.5;
+            font-family: "Thmanyah Serif Text", "IBM Plex Sans Arabic", sans-serif;
+            margin-bottom: 12px;
         }
 
-        /* === غلاف الصفحة الأمامية (Hero) === */
-        .quiz-front-page {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: clamp(20px, 3vw, 34px);
-            box-shadow: var(--card-shadow);
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 28px;
-        }
-        .quiz-front-page::before {
-            content: '';
-            position: absolute;
-            top: -70px;
-            left: -70px;
-            width: 210px;
-            height: 210px;
-            background: var(--primary-light);
-            border-radius: 50%;
-            opacity: 0.8;
-            z-index: 0;
-        }
-        .quiz-front-page > * { position: relative; z-index: 1; }
-
-        /* === شريط تقدم الإجابات === */
-        .quiz-progress {
+        .quiz-meta {
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 14px;
-            margin-top: 6px;
             flex-wrap: wrap;
+            gap: 8px;
         }
-        .quiz-progress-text {
-            font-size: 0.88rem;
-            font-weight: 600;
-            color: var(--text-muted);
+
+        .quiz-meta-chip {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            padding: 7px 14px;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 50px;
-            white-space: nowrap;
+            padding: 5px 12px;
+            font-size: 0.82rem;
+            font-weight: 600;
         }
-        .quiz-progress-text i { color: var(--primary-color); }
+        .quiz-meta-chip b { font-weight: 800; }
+
+        .quiz-body { padding: 18px 20px 20px; }
+
+        .quiz-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
         .quiz-progress-track {
             flex: 1;
-            height: 8px;
+            min-width: 180px;
+            height: 10px;
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: 50px;
             overflow: hidden;
-            min-width: 120px;
         }
         .quiz-progress-bar {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, var(--primary-color), var(--correct-bg));
+            background: var(--primary-color);
             border-radius: 50px;
             transition: width 0.35s ease;
         }
 
+        #print-btn {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border: 1.5px solid var(--primary-color);
+            padding: 9px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 700;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        #print-btn:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
         .divider-text {
             text-align: center;
-            font-size: clamp(18px, 2.4vw, 22px);
+            font-size: clamp(17px, 2.2vw, 20px);
             font-weight: 800;
             color: var(--primary-color);
-            margin: 42px 0 26px;
-            padding: 14px 26px;
             background: var(--primary-light);
             border: 1px solid var(--primary-color);
             border-radius: 50px;
+            margin: 36px 0 22px;
+            padding: 12px 22px;
         }
 
         .info-header {
@@ -263,41 +264,33 @@
         }
 
         .info-description {
-            font-size: 16px;
+            font-size: 15px;
             color: var(--text-muted);
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
             line-height: 1.8;
         }
 
         .question-item {
-            margin-bottom: 22px;
-            padding: clamp(16px, 2.4vw, 26px);
+            margin-bottom: 20px;
+            padding: clamp(16px, 2.2vw, 24px);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
             background: var(--bg-card);
-            box-shadow: var(--card-shadow);
-            transition: box-shadow 0.3s ease, border-color 0.3s ease;
         }
-        .question-item:hover {
-            box-shadow: var(--hover-shadow);
-            border-color: var(--primary-color);
-        }
-        .question-item.info-question {
-            background: linear-gradient(135deg, var(--primary-light), var(--bg-card));
-            border-style: dashed;
-        }
+        .question-item.info-question { border-style: dashed; }
 
         .question-text {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: flex-start;
-            font-size: 1.05rem;
+            gap: 14px;
+            font-size: 1.02rem;
             font-weight: 700;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             color: var(--text-main);
             width: 100%;
-            gap: 12px;
         }
 
         .question-content-span {
@@ -314,36 +307,36 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             background: var(--primary-color);
             color: #ffffff;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 800;
-            box-shadow: 0 3px 8px -2px rgba(26, 42, 198, 0.4);
         }
 
         .question-subtext {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-muted);
             margin-top: -10px;
-            margin-bottom: 15px;
+            margin-bottom: 14px;
             font-weight: normal;
             text-align: right;
         }
 
         .question-long-text {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: normal;
             color: var(--text-main);
             margin-top: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 14px;
             line-height: 1.8;
             text-align: justify;
             width: 100%;
         }
 
+        /* شارة الدرجات — تظهر دائماً في اليسار */
         .points-badge {
             flex-shrink: 0;
             display: inline-flex;
@@ -352,11 +345,12 @@
             background-color: var(--primary-light);
             color: var(--primary-color);
             border: 1px solid var(--primary-color);
-            padding: 4px 12px;
+            padding: 3px 11px;
             border-radius: 50px;
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 800;
             white-space: nowrap;
+            margin-inline-start: auto;
         }
 
         .choices-container {
@@ -375,33 +369,28 @@
         .choice-label {
             display: flex;
             align-items: center;
-            padding: 12px 16px;
+            gap: 10px;
+            padding: 11px 14px;
             border: 1.5px solid var(--border-color);
             border-radius: 12px;
             background-color: var(--bg-secondary);
             color: var(--text-main);
             cursor: pointer;
             text-align: right;
-            justify-content: flex-start;
-            gap: 10px;
-            margin: 0;
-            font-size: 0.98rem;
-            min-height: 50px;
-            transition: all 0.2s ease;
+            font-size: 0.97rem;
+            min-height: 48px;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
         }
 
         .choice-label:hover {
             background-color: var(--hover-bg);
-            color: var(--primary-color);
             border-color: var(--primary-color);
-            transform: translateY(-1px);
         }
 
         .choice-label.selected {
             background-color: var(--primary-light);
             color: var(--primary-color);
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(26, 42, 198, 0.12);
         }
 
         .choice-label.correct {
@@ -416,10 +405,6 @@
             border-color: var(--wrong-bg);
         }
 
-        .choice-label.correct.selected {
-            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25);
-        }
-
         .choice-radio {
             accent-color: var(--primary-color);
             width: 17px;
@@ -427,23 +412,128 @@
             flex-shrink: 0;
             margin: 0;
         }
-        .choice-label.selected .choice-radio { accent-color: var(--primary-color); }
+
+        .print-letter {
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+        .choice-label.selected .print-letter,
+        .choice-label.correct .print-letter,
+        .choice-label.wrong .print-letter { color: inherit; }
+
+        /* === مجموعة الصح والخطأ التفاعلية === */
+        .tf-interactive-container {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-card);
+            padding: clamp(16px, 2.2vw, 22px);
+            margin-bottom: 20px;
+        }
+
+        .tf-print-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-weight: 800;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            font-size: 1rem;
+        }
+
+        .tf-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .tf-row:last-child { border-bottom: none; }
+
+        .tf-text {
+            flex: 1;
+            font-weight: 600;
+            line-height: 1.7;
+            text-align: right;
+            color: var(--text-main);
+            display: flex;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-width: 0;
+        }
+        .tf-q-text { flex: 1 1 auto; min-width: 0; }
+
+        .tf-answers {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .tf-choice {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1.5px solid var(--border-color);
+            background-color: var(--bg-secondary);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 7px 13px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+        }
+        .tf-choice:hover { border-color: var(--primary-color); color: var(--primary-color); }
+        .tf-choice:disabled { cursor: default; opacity: 1; }
+        .tf-choice.selected.tf-choice-true,
+        .tf-choice.correct.tf-choice-true {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-bg);
+            color: #ffffff;
+        }
+        .tf-choice.selected.tf-choice-false,
+        .tf-choice.correct.tf-choice-false {
+            background-color: var(--wrong-bg);
+            border-color: var(--wrong-bg);
+            color: #ffffff;
+        }
+        .tf-choice.wrong {
+            background-color: var(--wrong-bg);
+            border-color: var(--wrong-bg);
+            color: #ffffff;
+        }
+
+        .tf-correct-note {
+            flex-basis: 100%;
+            width: 100%;
+            font-size: 0.86rem;
+            color: var(--correct-bg);
+            font-weight: 700;
+        }
 
         .essay-buttons {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 14px;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
         .essay-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
+            padding: 9px 18px;
+            border: 1.5px solid var(--btn-essay-border);
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: bold;
-            position: relative;
-            overflow: hidden;
+            font-weight: 700;
+            font-family: inherit;
+            font-size: 0.92rem;
+            background-color: var(--btn-essay-bg);
+            color: var(--primary-color);
         }
 
         .essay-btn.selected-essay {
@@ -451,30 +541,11 @@
             background-color: var(--hover-bg);
             color: var(--primary-color);
         }
-
-        .essay-btn.selected-essay::after {
-            content: "✓";
-            margin-right: 5px;
-            font-weight: bold;
-        }
-
-        .essay-btn.show-answer-btn,
-        .essay-btn.dont-know-btn {
-            background-color: var(--btn-essay-bg);
-            color: var(--primary-color);
-            border: 1px solid var(--btn-essay-border);
-        }
-
-        .essay-btn.selected-essay.show-answer-btn,
-        .essay-btn.selected-essay.dont-know-btn {
-            background-color: var(--hover-bg);
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-        }
+        .essay-btn.selected-essay::after { content: " ✓"; }
 
         .essay-answer {
-            margin-top: 15px;
-            padding: 16px 18px;
+            margin-top: 14px;
+            padding: 15px 16px;
             background-color: var(--primary-light);
             border-radius: 12px;
             border-right: 4px solid var(--primary-color);
@@ -488,9 +559,9 @@
 
         #submit-btn, #review-btn {
             display: block;
-            margin: 30px auto 14px;
-            padding: 13px 38px;
-            font-size: 1.05rem;
+            margin: 28px auto 14px;
+            padding: 12px 36px;
+            font-size: 1.02rem;
             font-weight: 700;
             color: white;
             border: none;
@@ -498,23 +569,16 @@
             cursor: pointer;
             font-family: "IBM Plex Sans Arabic", sans-serif;
             background-color: var(--primary-color);
-            box-shadow: 0 10px 25px -6px rgba(26, 42, 198, 0.45);
-            transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+            transition: opacity 0.2s ease;
         }
-
-        #submit-btn:hover, #review-btn:hover {
-            opacity: 0.95;
-            transform: translateY(-2px);
-        }
-        #submit-btn:active, #review-btn:active { transform: translateY(0); }
+        #submit-btn:hover, #review-btn:hover { opacity: 0.92; }
         #review-btn {
             background-color: #f59e0b;
-            box-shadow: 0 10px 25px -6px rgba(245, 158, 11, 0.45);
             display: none;
         }
 
         #result {
-            margin-top: 30px;
+            margin-top: 28px;
             display: none;
             text-align: right;
             direction: rtl;
@@ -524,7 +588,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 20px 0 40px;
+            margin: 20px 0 36px;
         }
         .score-gauge {
             position: relative;
@@ -535,31 +599,30 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: var(--card-shadow);
             transition: background 1.5s ease-out;
         }
         .score-gauge::before {
             content: "";
             position: absolute;
-            width: 130px;
-            height: 130px;
+            width: 132px;
+            height: 132px;
             background-color: var(--bg-card);
             border-radius: 50%;
         }
         .score-gauge-text {
             position: relative;
             font-size: 32px;
-            font-weight: bold;
+            font-weight: 800;
             color: var(--primary-color);
             z-index: 1;
         }
         .score-details {
-            margin-top: 15px;
-            font-size: 18px;
+            margin-top: 14px;
+            font-size: 17px;
             color: var(--text-muted);
-            font-weight: bold;
+            font-weight: 700;
             background: var(--bg-secondary);
-            padding: 5px 15px;
+            padding: 5px 16px;
             border-radius: 20px;
             border: 1px solid var(--border-color);
         }
@@ -567,7 +630,7 @@
         .wrong-answers-list {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 16px;
+            gap: 14px;
         }
         @media (min-width: 900px) {
             .wrong-answers-list {
@@ -580,532 +643,129 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: 20px;
-            box-shadow: var(--card-shadow);
-            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            padding: 18px;
         }
-        .wrong-answer-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--wrong-bg);
-            box-shadow: var(--hover-shadow);
-        }
+
         .wrong-answer-q {
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 15px;
+            font-weight: 700;
             color: var(--text-main);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
+            padding-bottom: 10px;
         }
         .answer-row {
             display: flex;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 11px;
             gap: 12px;
         }
         .answer-badge {
-            padding: 5px 12px;
+            padding: 4px 12px;
             border-radius: 6px;
-            font-size: 13px;
-            font-weight: bold;
+            font-size: 12px;
+            font-weight: 700;
             color: white;
             white-space: nowrap;
-            min-width: 110px;
+            min-width: 108px;
             text-align: center;
         }
         .badge-wrong { background-color: var(--wrong-bg); }
         .badge-correct { background-color: var(--correct-bg); }
         .answer-text {
-            font-size: 15px;
+            font-size: 14px;
             color: var(--text-main);
-            font-weight: 500;
+            font-weight: 600;
         }
         .points-lost {
-            margin-top: 12px;
-            padding-top: 12px;
+            margin-top: 10px;
+            padding-top: 10px;
             border-top: 1px dashed var(--border-color);
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-muted);
         }
         .points-lost strong {
             color: var(--wrong-bg);
-            font-size: 15px;
+            font-size: 14px;
         }
-
-        .quiz-info-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-bottom: 18px;
-            text-align: center;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            box-shadow: var(--card-shadow);
-            font-family: "IBM Plex Sans Arabic", sans-serif;
-        }
-
-        .quiz-info-table th, .quiz-info-table td {
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 14px;
-            color: var(--text-main);
-        }
-
-        .quiz-info-table th {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 700;
-            font-size: 0.95rem;
-        }
-        .quiz-info-table tbody td {
-            background-color: var(--bg-secondary);
-            font-weight: 600;
-            font-size: 1.05rem;
-        }
-        .quiz-info-table tbody tr:last-child td { border-bottom: none; }
 
         .question-image {
             width: 100%;
-            max-width: 500px;
-            margin: 15px 0;
+            max-width: 480px;
+            margin: 14px 0;
             border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             display: block;
         }
 
-        .image-question-container { text-align: center; margin: 15px 0; }
+        .image-question-container { text-align: center; margin: 14px 0; }
 
         .instructions-question {
-            margin-bottom: 28px;
-            padding: clamp(18px, 2.6vw, 28px);
+            margin-bottom: 24px;
+            padding: clamp(16px, 2.4vw, 24px);
             border: 1px solid var(--border-color);
             border-right: 5px solid var(--primary-color);
             border-radius: var(--radius-md);
             background: var(--bg-card);
-            box-shadow: var(--card-shadow);
             text-align: right;
             color: var(--text-main);
         }
 
         .instructions-header {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             color: var(--primary-color);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .instructions-description {
-            font-size: 16px;
-            color: var(--text-main);
-            line-height: 1.7;
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.8;
         }
 
-        /* === تنسيقات الصح والخطأ التفاعلية === */
-        .tf-interactive-container {
-            border: 1px solid var(--border-color);
-            padding: clamp(16px, 2.4vw, 24px);
-            margin-bottom: 22px;
-            border-radius: var(--radius-md);
-            background-color: var(--bg-card);
-            box-shadow: var(--card-shadow);
-            transition: box-shadow 0.3s ease, border-color 0.3s ease;
-            break-inside: avoid;
-        }
-
-        .tf-print-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 800;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-            font-size: 1rem;
-            color: var(--primary-color);
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .tf-row {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 12px;
-            direction: rtl; 
-            gap: 15px;
-            justify-content: space-between;
-        }
-
-        .tf-box {
-            width: 40px;
-            height: 40px;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            flex-shrink: 0;
-            position: relative;
-            cursor: pointer;
-            background-color: var(--bg-secondary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-right: 0;
-            transition: all 0.2s;
-            color: var(--text-main);
-        }
-
-        .tf-box:hover {
-            border-color: var(--primary-color);
-            transform: scale(1.05);
-        }
-
-        .tf-text {
-            flex-grow: 1;
-            font-weight: 700;
-            line-height: 1.7;
-            text-align: right;
-            padding-top: 2px;
-            color: var(--text-main);
-            display: flex;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .tf-q-text { flex: 1 1 auto; min-width: 0; }
-
-        .tf-popup {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border-radius: 8px;
-            display: none;
-            flex-direction: row;
-            gap: 5px;
-            padding: 5px;
-            z-index: 10;
-            margin-top: 8px;
-        }
-
-        .tf-popup.show {
-            display: flex;
-        }
-
-        .tf-popup-btn {
-            width: 35px;
-            height: 35px;
-            border: none;
-            background: var(--bg-secondary);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-
-        .tf-popup-btn.btn-true { color: var(--correct-bg); }
-        .tf-popup-btn.btn-false { color: var(--wrong-bg); }
-        .tf-popup-btn:hover { background: var(--hover-bg); }
-
-        .correct-icon-true { color: var(--correct-bg); }
-        .correct-icon-false { color: var(--wrong-bg); }
-
-        /* إعدادات النافذة المنبثقة (الفقاعة) */
+        /* === النافذة المنبثقة === */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(2px);
+            background: rgba(0, 0, 0, 0.55);
             display: none; align-items: center; justify-content: center; z-index: 1000;
         }
         .modal-content {
-            background: var(--bg-card); padding: 30px; border-radius: 12px;
-            text-align: center; max-width: 450px; width: 90%;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15); border: 1px solid var(--border-color);
+            background: var(--bg-card); padding: 28px; border-radius: 14px;
+            text-align: center; max-width: 440px; width: 90%;
+            border: 1px solid var(--border-color);
         }
-        .modal-content h3 { color: var(--primary-color); margin-bottom: 15px; font-size: 22px; }
-        .modal-content p { color: var(--text-main); margin-bottom: 25px; line-height: 1.6; font-size: 16px; }
-        .modal-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .modal-content h3 { color: var(--primary-color); margin-bottom: 14px; font-size: 21px; }
+        .modal-content p { color: var(--text-main); margin-bottom: 24px; line-height: 1.7; font-size: 15px; }
+        .modal-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
         .modal-btn {
-            padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;
-            font-weight: bold; font-family: "IBM Plex Sans Arabic", sans-serif; font-size: 15px; transition: 0.2s;
+            padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 700; font-family: "IBM Plex Sans Arabic", sans-serif; font-size: 14px; transition: opacity 0.2s ease;
         }
         .modal-btn.primary-btn { background: var(--primary-color); color: white; }
         .modal-btn.primary-btn:hover { opacity: 0.9; }
         .modal-btn.secondary-btn { background: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); }
         .modal-btn.secondary-btn:hover { background: var(--hover-bg); }
 
-        /* === تنسيقات متجاوبة لجميع الشاشات === */
+        /* === متجاوبة === */
         @media (max-width: 768px) {
-            .container { padding: 20px 16px 60px; }
-            .quiz-info-table th, .quiz-info-table td { padding: 11px 8px; }
+            .container { padding: 20px 14px 60px; }
         }
 
         @media (max-width: 640px) {
-            .quiz-header { justify-content: center; }
-            .quiz-title-wrap { min-width: 0; }
-            #print-btn { width: 100%; justify-content: center; }
-            .quiz-progress { flex-direction: column; align-items: stretch; }
+            .quiz-toolbar { flex-direction: column; align-items: stretch; }
+            #print-btn { justify-content: center; }
             .quiz-progress-track { min-width: 100%; }
-            .quiz-front-page { padding: 18px 16px; }
-            .question-item, .tf-interactive-container, .instructions-question { padding: 16px; }
-            .choices-container { gap: 8px; }
-            .score-details { font-size: 16px; }
+            .tf-row { flex-direction: column; }
+            .tf-answers { width: 100%; }
+            .tf-choice { flex: 1; justify-content: center; }
+            .tf-row .points-badge { align-self: flex-end; }
+            .score-details { font-size: 15px; }
         }
 
         @media (max-width: 480px) {
             h1 { font-size: 20px; }
-            .question-text { flex-direction: column; gap: 10px; }
-            .points-badge { align-self: flex-start; }
-            .quiz-info-table th, .quiz-info-table td { font-size: 0.85rem; }
             .choice-label { font-size: 0.92rem; min-height: 0; }
         }
-
-        /* === إعدادات الطباعة === */
-        @media print {
-            :root, [data-theme="dark"] {
-                --primary-color: #000000 !important;
-                --bg-body: #ffffff !important;
-                --bg-card: #ffffff !important;
-                --bg-secondary: #ffffff !important;
-                --text-main: #000000 !important;
-                --text-muted: #333333 !important;
-                --border-color: #000000 !important;
-                --hover-bg: #ffffff !important;
-            }
-
-            header, footer, #submit-btn, #review-btn, #result, .essay-buttons, #print-btn, .top-bar, .site-header, .modal-overlay, .quiz-kicker, .quiz-progress {
-                display: none !important;
-            }
-
-            #questions-container {
-                display: block !important;
-            }
-
-            /* تنسيقات الطباعة لمربع الصح والخطأ */
-            .tf-interactive-container {
-                border: 1px solid #000 !important;
-                box-shadow: none !important;
-                background-color: transparent !important;
-                padding: 10px !important;
-                margin-bottom: 10px !important;
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
-                border-radius: 0 !important;
-            }
-
-            .tf-print-header { border-bottom: 1px solid #000 !important; }
-            .tf-row { align-items: flex-start !important; }
-            .tf-box {
-                border: 1px solid #000 !important;
-                background-color: transparent !important;
-                width: 25px !important;
-                height: 25px !important;
-                border-radius: 0 !important; 
-            }
-            .tf-box i { color: #000 !important; font-size: 16px !important; }
-            .tf-popup { display: none !important; }
-
-            body {
-                background-color: #ffffff !important;
-                color: #000000 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                direction: rtl !important;
-                font-size: 14px !important;
-            }
-
-            .container {
-                max-width: 100% !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                box-shadow: none !important;
-                border: none !important;
-            }
-
-            table, .quiz-info-table, #print-eval-table {
-                width: 100% !important;
-                border-collapse: collapse !important;
-                margin-bottom: 25px !important;
-                border: 1px solid #000 !important;
-                box-shadow: none !important;
-                border-radius: 0 !important;
-            }
-
-            th, td {
-                border: 1px solid #000 !important;
-                padding: 10px !important;
-                color: #000 !important;
-                text-align: center !important;
-                background-color: transparent !important;
-            }
-
-            th {
-                background-color: #f0f0f0 !important;
-                font-weight: bold !important;
-            }
-
-            #print-only-logo { display: block !important; text-align: center; margin-bottom: 20px; }
-            #print-eval-table { display: table !important; }
-
-            .question-item, .instructions-question {
-                border: 1px solid #000 !important;
-                border-radius: 0 !important;
-                box-shadow: none !important;
-                background-color: #fff !important;
-                margin-bottom: 10px !important;
-                padding: 10px 15px !important;
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
-            }
-            
-            .question-text { margin-bottom: 8px !important; }
-
-            .choices-container {
-                display: flex !important;
-                flex-direction: row !important;
-                flex-wrap: wrap !important;
-                gap: 15px !important;
-                justify-content: flex-start !important;
-            }
-
-            .choice-label {
-                background-color: transparent !important;
-                border: none !important;
-                padding: 0 !important;
-                color: #000 !important;
-                flex: 0 1 auto !important;
-            }
-            
-            .choice-radio { display: none !important; }
-            
-            .print-letter { 
-                display: inline-block !important; 
-                margin-left: 5px; 
-                font-weight: bold;
-            }
-
-            .points-badge {
-                background-color: transparent !important;
-                color: #000 !important;
-                border: 1px solid #000 !important;
-                padding: 2px 6px !important;
-            }
-
-            .q-number-badge {
-                background-color: transparent !important;
-                color: #000 !important;
-                border: 1px solid #000 !important;
-                box-shadow: none !important;
-            }
-
-            .quiz-title-wrap { min-width: 0 !important; }
-            .tf-text { display: flex !important; }
-
-            .quiz-front-page {
-                display: block;
-                width: 100%;
-                break-after: page; 
-                page-break-after: always;
-                min-height: 90vh;
-            }
-
-            .essay-answer { display: none !important; }
-
-            .print-essay-lines {
-                display: block !important;
-                margin-top: 10px;
-                width: 100%;
-            }
-
-            .writing-line {
-                border-bottom: 1px dotted #888;
-                height: 28px !important;
-                width: 100%;
-                margin-bottom: 5px !important;
-            }
-            
-            .full-page-question {
-                break-before: page;
-                page-break-before: always;
-                min-height: 95vh;
-                display: flex;
-                flex-direction: column;
-            }
-            
-            .full-page-question .print-essay-lines {
-                flex-grow: 1;
-            }
-
-            #printable-answer-key {
-                display: block !important;
-                break-before: page;
-                page-break-before: always;
-                direction: rtl;
-                padding-top: 30px;
-                color: #000 !important;
-            }
-
-            .answer-key-table {
-                width: 100% !important;
-                border-collapse: collapse !important;
-                margin-bottom: 0 !important;
-            }
-            .answer-key-table th {
-                background-color: #e0e7ff !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                border: 2px solid #1a2ac6 !important;
-                padding: 10px !important;
-                color: #000 !important;
-            }
-            .answer-key-table td {
-                border: 1px solid #000 !important;
-                padding: 8px !important;
-            }
-            .answer-key-table tbody tr:nth-child(even) {
-                background-color: #f8f9fa !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-
-            #printable-qr-section {
-                display: flex !important;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                break-before: auto;
-                page-break-inside: avoid;
-                text-align: center;
-                margin-top: 20px;
-                padding: 20px;
-                width: 60%; 
-                margin-left: auto;
-                margin-right: auto;
-                background-color: #e0e7ff !important; 
-                border: 2px solid #1a2ac6 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-
-            #printable-qr-section h3 {
-                color: #1a2ac6 !important;
-                font-size: 18px; 
-                margin-top: 10px;
-                font-weight: bold;
-            }
-            
-            #qrcode-container {
-                padding: 10px;
-                background: white;
-                border-radius: 8px;
-                border: 1px solid #1a2ac6;
-            }
-        }
-
-        #printable-answer-key { display: none; }
     </style>
 </head>
 <body>
@@ -1118,86 +778,30 @@
         {{ content }}
 
         <div class="quiz-front-page">
-            <div id="print-only-logo">
-                <img src="{{ '/images/rawafid-blue.png' | relative_url }}" alt="روافد" style="max-width: 150px; height: auto;">
-            </div>
-            
-            <div class="quiz-header">
-                <button id="print-btn" onclick="printQuizPDF()">
-                    <i class="fa-solid fa-print"></i> طباعة الاختبار PDF
-                </button>
-                <div class="quiz-title-wrap">
+            <div class="quiz-hero">
+                <div class="quiz-hero-top">
                     <span class="quiz-kicker"><i class="fa-solid fa-clipboard-question"></i> اختبار تفاعلي</span>
-                    <h1 id="quiz-title">الاختبار</h1>
+                    <span class="quiz-brand"><i class="fa-solid fa-book-open"></i> منصة روافد</span>
+                </div>
+                <h1 id="quiz-title">الاختبار</h1>
+                <div class="quiz-meta">
+                    <span class="quiz-meta-chip"><i class="fa-solid fa-graduation-cap"></i> المقرر: <b id="subject-name"></b></span>
+                    <span class="quiz-meta-chip"><i class="fa-solid fa-tag"></i> رمز المقرر: <b id="subject-code"></b></span>
+                    <span class="quiz-meta-chip"><i class="fa-solid fa-star"></i> الدرجة الكلية: <b id="subject-total-score"></b></span>
+                    <span class="quiz-meta-chip"><i class="fa-solid fa-list-check"></i> <span id="answered-count">0</span>/<span id="total-count">0</span> مُجاب</span>
                 </div>
             </div>
-
-            <table class="quiz-info-table" id="quiz-info-table">
-                <thead>
-                    <tr>
-                        <th>اسم المقرر</th>
-                        <th>رمز المقرر</th>
-                        <th>الدرجة الكلية</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td id="subject-name"></td>
-                        <td id="subject-code"></td>
-                        <td id="subject-total-score"></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="quiz-progress" id="quiz-progress">
-                <div class="quiz-progress-text">
-                    <i class="fa-solid fa-list-check"></i>
-                    <span id="answered-count">0</span> / <span id="total-count">0</span>
-                    تمت الإجابة عليه
-                </div>
-                <div class="quiz-progress-track">
-                    <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+            <div class="quiz-body">
+                <div class="quiz-toolbar">
+                    <div class="quiz-progress-track">
+                        <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+                    </div>
+                    <button id="print-btn" onclick="openPrintPage()">
+                        <i class="fa-solid fa-print"></i> طباعة نسخة PDF
+                    </button>
                 </div>
             </div>
-
-            <table id="print-eval-table">
-                <thead>
-                    <tr>
-                        <th colspan="4" style="font-size: 18px;">جدول التقييم الذاتي للطالب</th>
-                    </tr>
-                    <tr>
-                        <th style="width: 40%;">معيار التقييم</th>
-                        <th style="width: 20%;">ممتاز</th>
-                        <th style="width: 20%;">جيد جدًا</th>
-                        <th style="width: 20%;">بحاجة للمراجعة</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="text-align: right;">فهم الأسئلة واستيعاب المطلوب</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td style="text-align: right;">دقة الإجابات وصحتها العلمية</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td style="text-align: right;">إدارة الوقت أثناء الحل</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td style="text-align: right;"><strong>التقدير العام للمستوى</strong></td>
-                        <td colspan="3"></td>
-                    </tr>
-                </tbody>
-            </table>
-            </div>
+        </div>
 
         <div id="questions-container"></div>
         <button id="submit-btn">تأكيد الإجابات</button>
@@ -1257,11 +861,6 @@
             }
         });
 
-        document.addEventListener('click', () => {
-            if(reviewMode) return;
-            document.querySelectorAll('.tf-popup.show').forEach(p => p.classList.remove('show'));
-        });
-
         // أحداث أزرار النافذة المنبثقة
         modalContinueBtn.addEventListener('click', () => {
             incompleteModal.style.display = 'none';
@@ -1272,110 +871,15 @@
             processSubmission(true); // تمرير true للتأكيد على أنه تسليم جزئي
         });
 
-        function printQuizPDF() {
-            if (!quizData[currentQuiz] || !quizData[currentQuiz].questions) {
+        function openPrintPage() {
+            const examCode = getExamCode();
+            if (!examCode || !quizData[currentQuiz] || !quizData[currentQuiz].questions) {
                 alert('لا توجد أسئلة للطباعة');
                 return;
             }
-
-            const oldKey = document.getElementById('printable-answer-key');
-            if (oldKey) oldKey.remove();
-            
-            const oldQr = document.getElementById('printable-qr-section');
-            if (oldQr) oldQr.remove();
-
-            const keyDiv = document.createElement('div');
-            keyDiv.id = 'printable-answer-key';
-            
-            let keyHTML = '';
-            let qCount = 1;
-            let tableOpen = false;
-            const rowsPerPage = 25; 
-
-            quizData[currentQuiz].questions.forEach((q, index) => {
-                if (q.divider || q.type === 'info' || q.type === 'instructions') return;
-                
-                if (!tableOpen) {
-                    keyHTML += `
-                    <div style="page-break-inside: avoid; margin-bottom: 30px;">
-                        <div style="text-align: center; margin-bottom: 15px; border-bottom: 3px double #1a2ac6; padding-bottom: 10px;">
-                            <h2 style="margin:0; font-size: 20px; color: #1a2ac6;">نموذج الإجابة ${qCount > 1 ? '(يتبع)' : ''}</h2>
-                            <p style="margin:5px 0; font-size: 14px; font-weight: bold;">${quizTitleElement.textContent}</p>
-                        </div>
-                        <table class="answer-key-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 15%;">رقم السؤال</th>
-                                    <th>الإجابة الصحيحة</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-                    tableOpen = true;
-                }
-
-                const cleanAnswer = q.answer ? String(q.answer).replace(/\n/g, '<br>') : '—';
-                keyHTML += `
-                    <tr>
-                        <td style="text-align: center; font-weight: bold;">${qCount}</td>
-                        <td style="text-align: right; line-height: 1.6;">${cleanAnswer}</td>
-                    </tr>
-                `;
-                
-                if (qCount % rowsPerPage === 0) {
-                    keyHTML += `</tbody></table></div>`;
-                    tableOpen = false;
-                }
-                qCount++;
-            });
-
-            if (tableOpen) {
-                keyHTML += `</tbody></table></div>`;
-            }
-
-            keyDiv.innerHTML = keyHTML;
-            document.querySelector('.container').appendChild(keyDiv);
-
-            const qrDiv = document.createElement('div');
-            qrDiv.id = 'printable-qr-section';
-            
-            const qrContainer = document.createElement('div');
-            qrContainer.id = 'qrcode-container';
-            qrDiv.appendChild(qrContainer);
-
-            const qrText = document.createElement('h3');
-            qrText.textContent = "امسح للوصول إلى النسخة التفاعلية";
-            qrDiv.appendChild(qrText);
-
-            const frontPageContainer = document.querySelector('.quiz-front-page');
-            frontPageContainer.appendChild(qrDiv);
-
-            new QRCode(qrContainer, {
-                text: window.location.href,
-                width: 128, 
-                height: 128,
-                colorDark : "#1a2ac6", 
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
-
-            const allRadios = document.querySelectorAll('input[type="radio"]');
-            const checkedStates = new Map();
-            allRadios.forEach((radio, index) => {
-                if(radio.checked) {
-                    checkedStates.set(index, true);
-                    radio.checked = false; 
-                }
-            });
-
-            setTimeout(() => {
-                window.print();
-                allRadios.forEach((radio, index) => {
-                    if(checkedStates.has(index)) {
-                        radio.checked = true;
-                    }
-                });
-            }, 500);
+            const base = ("{{ '/' | relative_url }}" || '/');
+            const url = base + 'exam/' + encodeURIComponent(examCode) + '/print';
+            window.open(url, '_blank');
         }
 
         function getExamCode() {
@@ -1454,13 +958,10 @@
             let questionNumber = 1;
 
             let currentTfContainer = null;
-            let currentTfScoreSpan = null;
-            let currentTfScore = 0;
 
             quiz.questions.forEach((q, qIndex) => {
                 if (q.divider || q.type !== 'tf') {
                     currentTfContainer = null;
-                    currentTfScore = 0;
                 }
 
                 if (q.divider) {
@@ -1501,24 +1002,23 @@
                         const titleSpan = document.createElement('span');
                         titleSpan.textContent = "ضع علامة (✓) أو (✗) أمام العبارات التالية:";
                         
-                        currentTfScoreSpan = document.createElement('span');
-                        currentTfScoreSpan.className = 'points-badge'; 
-                        currentTfScoreSpan.textContent = "";
-                        
                         headerDiv.appendChild(titleSpan);
-                        headerDiv.appendChild(currentTfScoreSpan);
                         currentTfContainer.appendChild(headerDiv);
                         
                         questionsContainer.appendChild(currentTfContainer);
-                        currentTfScore = 0;
                     }
-                    
-                    const pts = q.points || 1;
-                    currentTfScore += pts;
-                    currentTfScoreSpan.textContent = ` ${formatPoints(currentTfScore)}`;
-                    
+
+                    let trueIndex = 0;
+                    let falseIndex = 1;
+                    if (q.choices) {
+                        const tIdx = q.choices.findIndex(c => c.includes('صح') || c.includes('صواب'));
+                        if (tIdx !== -1) trueIndex = tIdx;
+                        const fIdx = q.choices.findIndex(c => c.includes('خطأ'));
+                        if (fIdx !== -1) falseIndex = fIdx;
+                    }
+
                     const tfRow = document.createElement('div');
-                    tfRow.className = 'tf-row question-item-tf';
+                    tfRow.className = 'tf-row';
                     tfRow.dataset.questionIndex = qIndex;
                     
                     const text = document.createElement('div');
@@ -1529,70 +1029,45 @@
                         text.innerHTML += `<div class="question-long-text" style="margin-top: 8px;">${q.text.replace(/\n/g, '<br>')}</div>`;
                     }
 
-                    const box = document.createElement('div');
-                    box.className = 'tf-box';
-                    
-                    const iconDisplay = document.createElement('i');
-                    iconDisplay.className = 'fa-solid fa-fw';
-                    iconDisplay.style.display = 'none';
+                    const pointsBadge = document.createElement('span');
+                    pointsBadge.className = 'points-badge';
+                    pointsBadge.textContent = formatPoints(q.points || 1);
 
-                    const popup = document.createElement('div');
-                    popup.className = 'tf-popup';
+                    const answersWrap = document.createElement('div');
+                    answersWrap.className = 'tf-answers';
 
                     const btnTrue = document.createElement('button');
-                    btnTrue.className = 'tf-popup-btn btn-true';
-                    btnTrue.innerHTML = '<i class="fa-solid fa-check"></i>';
-                    
+                    btnTrue.type = 'button';
+                    btnTrue.className = 'tf-choice tf-choice-true';
+                    btnTrue.innerHTML = '<i class="fa-solid fa-check"></i><span>صح</span>';
+
                     const btnFalse = document.createElement('button');
-                    btnFalse.className = 'tf-popup-btn btn-false';
-                    btnFalse.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                    btnFalse.type = 'button';
+                    btnFalse.className = 'tf-choice tf-choice-false';
+                    btnFalse.innerHTML = '<i class="fa-solid fa-xmark"></i><span>خطأ</span>';
 
-                    let trueIndex = 0;
-                    let falseIndex = 1;
-                    if(q.choices) {
-                        const tIdx = q.choices.findIndex(c => c.includes('صح') || c.includes('صواب'));
-                        if(tIdx !== -1) trueIndex = tIdx;
-                        const fIdx = q.choices.findIndex(c => c.includes('خطأ'));
-                        if(fIdx !== -1) falseIndex = fIdx;
-                    }
-
-                    btnTrue.onclick = (e) => {
-                        e.stopPropagation();
-                        if(reviewMode) return;
+                    btnTrue.addEventListener('click', () => {
+                        if (reviewMode) return;
                         userAnswers[qIndex] = trueIndex;
-                        iconDisplay.className = 'fa-solid fa-fw fa-check correct-icon-true';
-                        iconDisplay.style.display = 'inline-block';
-                        popup.classList.remove('show');
+                        btnTrue.classList.add('selected');
+                        btnFalse.classList.remove('selected');
                         updateProgress();
-                    };
+                    });
 
-                    btnFalse.onclick = (e) => {
-                        e.stopPropagation();
-                        if(reviewMode) return;
+                    btnFalse.addEventListener('click', () => {
+                        if (reviewMode) return;
                         userAnswers[qIndex] = falseIndex;
-                        iconDisplay.className = 'fa-solid fa-fw fa-xmark correct-icon-false';
-                        iconDisplay.style.display = 'inline-block';
-                        popup.classList.remove('show');
+                        btnFalse.classList.add('selected');
+                        btnTrue.classList.remove('selected');
                         updateProgress();
-                    };
+                    });
 
-                    popup.appendChild(btnTrue);
-                    popup.appendChild(btnFalse);
+                    answersWrap.appendChild(btnTrue);
+                    answersWrap.appendChild(btnFalse);
 
-                    box.appendChild(iconDisplay);
-                    box.appendChild(popup);
-
-                    box.onclick = (e) => {
-                        if(reviewMode) return;
-                        document.querySelectorAll('.tf-popup.show').forEach(p => {
-                            if(p !== popup) p.classList.remove('show');
-                        });
-                        popup.classList.toggle('show');
-                        e.stopPropagation();
-                    };
-                    
                     tfRow.appendChild(text);
-                    tfRow.appendChild(box);
+                    tfRow.appendChild(pointsBadge);
+                    tfRow.appendChild(answersWrap);
                     
                     currentTfContainer.appendChild(tfRow);
                     questionNumber++;
@@ -1682,26 +1157,6 @@
                     answerDiv.className = 'essay-answer';
                     answerDiv.innerHTML = `<strong>الإجابة:</strong> ${q.answer}`;
                     questionDiv.appendChild(answerDiv);
-
-                    const linesContainer = document.createElement('div');
-                    linesContainer.className = 'print-essay-lines';
-                    
-                    let points = q.points || 1;
-                    let lineCount = 3;
-
-                    if (points >= 10) {
-                        lineCount = 23; 
-                        questionDiv.classList.add('full-page-question');
-                    } else if (points > 2) {
-                        lineCount = Math.floor(points * 2.5);
-                    }
-
-                    for(let i=0; i<lineCount; i++) {
-                        const line = document.createElement('div');
-                        line.className = 'writing-line';
-                        linesContainer.appendChild(line);
-                    }
-                    questionDiv.appendChild(linesContainer);
 
                 } else if (q.type === 'mcq' || q.type === 'mcq-image') {
                     const choicesDiv = document.createElement('div');
@@ -1867,7 +1322,7 @@
 
             if (wrongAnswers.length > 0) {
                 resultHTML += `
-                    <div style="margin-bottom:20px; font-size:22px; font-weight:bold; color:var(--text-main); border-bottom:2px solid var(--primary-color); padding-bottom:10px; display:inline-block;">
+                    <div style="margin-bottom:20px; font-size:21px; font-weight:bold; color:var(--text-main); border-bottom:2px solid var(--primary-color); padding-bottom:10px; display:inline-block;">
                         مراجعة الإجابات الخاطئة
                     </div>
                     <div class="wrong-answers-list">
@@ -1928,9 +1383,6 @@
                 if (q.type === 'tf') {
                     const tfRow = document.querySelector(`.tf-row[data-question-index="${qIndex}"]`);
                     if (!tfRow) return;
-                    const box = tfRow.querySelector('.tf-box');
-                    const popup = tfRow.querySelector('.tf-popup');
-                    if (popup) popup.remove(); 
 
                     let trueIndex = 0; let falseIndex = 1;
                     if(q.choices) {
@@ -1942,34 +1394,30 @@
 
                     const userAnswerIndex = userAnswers[qIndex];
                     const correctAnswerIndex = q.choices ? q.choices.indexOf(q.answer) : trueIndex;
-                    
-                    box.style.color = 'white';
-                    
-                    if (userAnswerIndex === correctAnswerIndex) {
-                        box.style.borderColor = 'var(--correct-bg)';
-                        box.style.backgroundColor = 'var(--correct-bg)';
-                        const icon = box.querySelector('i.fa-fw');
-                        if (icon) {
-                            icon.className = `fa-solid fa-fw ${correctAnswerIndex === trueIndex ? 'fa-check' : 'fa-xmark'}`;
-                            icon.style.display = 'inline-block';
-                            icon.style.color = 'white';
-                        }
-                    } else {
-                        box.style.borderColor = 'var(--wrong-bg)';
-                        box.style.backgroundColor = 'var(--wrong-bg)';
-                        const icon = box.querySelector('i.fa-fw');
-                        if(icon && userAnswerIndex !== undefined) {
-                            icon.className = `fa-solid fa-fw ${userAnswerIndex === trueIndex ? 'fa-check' : 'fa-xmark'}`;
-                            icon.style.display = 'inline-block';
-                            icon.style.color = 'white';
-                        }
 
-                        const correctIcon = document.createElement('div');
-                        correctIcon.style.color = 'var(--wrong-bg)';
-                        correctIcon.style.fontSize = '14px';
-                        correctIcon.style.marginTop = '8px';
-                        correctIcon.innerHTML = `الإجابة الصحيحة: <i class="fa-solid ${correctAnswerIndex === trueIndex ? 'fa-check' : 'fa-xmark'}"></i>`;
-                        tfRow.querySelector('.tf-text').appendChild(correctIcon);
+                    const btnTrue = tfRow.querySelector('.tf-choice-true');
+                    const btnFalse = tfRow.querySelector('.tf-choice-false');
+                    if (!btnTrue || !btnFalse) return;
+
+                    btnTrue.disabled = true;
+                    btnFalse.disabled = true;
+
+                    const correctBtn = correctAnswerIndex === trueIndex ? btnTrue : btnFalse;
+                    correctBtn.classList.add('correct');
+                    correctBtn.classList.remove('selected');
+
+                    if (userAnswerIndex !== correctAnswerIndex) {
+                        const wrongBtn = userAnswerIndex === trueIndex ? btnTrue : btnFalse;
+                        wrongBtn.classList.add('wrong');
+                        wrongBtn.classList.remove('selected');
+
+                        const note = document.createElement('div');
+                        note.className = 'tf-correct-note';
+                        const correctLabel = (q.choices && q.choices[correctAnswerIndex]) ? q.choices[correctAnswerIndex] : (correctAnswerIndex === trueIndex ? 'صح' : 'خطأ');
+                        note.innerHTML = `الإجابة الصحيحة: ${correctLabel}`;
+                        tfRow.querySelector('.tf-text').appendChild(note);
+                    } else {
+                        correctBtn.classList.add('selected');
                     }
                 } else {
                     const questionDiv = document.querySelector(`.question-item[data-question-index="${qIndex}"]`);
