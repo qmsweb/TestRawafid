@@ -126,25 +126,27 @@
         .quiz-front-top {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-end;
             gap: 12px;
             flex-wrap: wrap;
             margin-bottom: 14px;
         }
 
-        .quiz-brand {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.88rem;
-            font-weight: 800;
-            color: var(--primary-color);
-            background: var(--bg-card);
-            border: 1.5px solid var(--primary-color);
-            padding: 6px 16px;
-            border-radius: 50px;
+        /* === تخطيط عمودي (مثل صفحة study-plan): معلومات الاختبار يمين الشاشة === */
+        .exam-split {
+            display: grid;
+            grid-template-columns: 330px 1fr;
+            gap: 26px;
+            align-items: start;
         }
-        .quiz-brand i { color: var(--primary-color); }
+        .exam-side,
+        .exam-main { min-width: 0; }
+
+        .exam-side {
+            position: sticky;
+            top: calc(var(--nav-height, 70px) + 24px);
+        }
+        .exam-side .quiz-front-page { margin-bottom: 0; }
 
         .quiz-front-header h1 {
             font-size: clamp(22px, 2.8vw, 30px);
@@ -736,6 +738,16 @@
         .modal-btn.secondary-btn:hover { background: var(--hover-bg); }
 
         /* === متجاوبة === */
+        @media (min-width: 1200px) {
+            .container { max-width: 1280px; }
+        }
+
+        @media (max-width: 1050px) {
+            .exam-split { grid-template-columns: 1fr; }
+            .exam-side { position: static; }
+            .exam-side .quiz-front-page { margin-bottom: 26px; }
+        }
+
         @media (max-width: 768px) {
             .container { padding: 20px 14px 60px; }
         }
@@ -766,34 +778,39 @@
         
         {{ content }}
 
-        <div class="quiz-front-page">
-            <div class="quiz-front-header">
-                <div class="quiz-front-top">
-                    <span class="quiz-brand"><i class="fa-solid fa-book-open"></i> منصة روافد</span>
-                    <button id="print-btn" onclick="openPrintPage()">
-                        <i class="fa-solid fa-print"></i> نسخة PDF
-                    </button>
+        <div class="exam-split">
+            <aside class="exam-side">
+                <div class="quiz-front-page">
+                    <div class="quiz-front-header">
+                        <div class="quiz-front-top">
+                            <button id="print-btn" onclick="openPrintPage()">
+                                <i class="fa-solid fa-print"></i> نسخة PDF
+                            </button>
+                        </div>
+                        <h1 id="quiz-title">الاختبار</h1>
+                        <div class="quiz-meta">
+                            <span class="quiz-meta-chip"><i class="fa-solid fa-graduation-cap"></i> المقرر: <b id="subject-name"></b></span>
+                            <span class="quiz-meta-chip"><i class="fa-solid fa-tag"></i> رمز المقرر: <b id="subject-code"></b></span>
+                            <span class="quiz-meta-chip"><i class="fa-solid fa-star"></i> الدرجة الكلية: <b id="subject-total-score"></b></span>
+                            <span class="quiz-meta-chip"><i class="fa-solid fa-list-check"></i> <span id="answered-count">0</span>/<span id="total-count">0</span> مُجاب</span>
+                        </div>
+                        <div class="quiz-progress-track">
+                            <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+                        </div>
+                        <div class="quiz-front-footer">
+                            <span class="autosave-hint" id="autosave-hint"><i class="fa-solid fa-circle-check"></i> تم الحفظ تلقائيًا</span>
+                        </div>
+                    </div>
                 </div>
-                <h1 id="quiz-title">الاختبار</h1>
-                <div class="quiz-meta">
-                    <span class="quiz-meta-chip"><i class="fa-solid fa-graduation-cap"></i> المقرر: <b id="subject-name"></b></span>
-                    <span class="quiz-meta-chip"><i class="fa-solid fa-tag"></i> رمز المقرر: <b id="subject-code"></b></span>
-                    <span class="quiz-meta-chip"><i class="fa-solid fa-star"></i> الدرجة الكلية: <b id="subject-total-score"></b></span>
-                    <span class="quiz-meta-chip"><i class="fa-solid fa-list-check"></i> <span id="answered-count">0</span>/<span id="total-count">0</span> مُجاب</span>
-                </div>
-                <div class="quiz-progress-track">
-                    <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
-                </div>
-                <div class="quiz-front-footer">
-                    <span class="autosave-hint" id="autosave-hint"><i class="fa-solid fa-circle-check"></i> تم الحفظ تلقائيًا</span>
-                </div>
-            </div>
-        </div>
+            </aside>
 
-        <div id="questions-container"></div>
-        <button id="submit-btn">تأكيد الإجابات</button>
-        <button id="review-btn">مراجعة الإجابات</button>
-        <div id="result"></div>
+            <main class="exam-main">
+                <div id="questions-container"></div>
+                <button id="submit-btn">تأكيد الإجابات</button>
+                <button id="review-btn">مراجعة الإجابات</button>
+                <div id="result"></div>
+            </main>
+        </div>
     </div>
 
     <!-- النافذة المنبثقة للتنبيه بعدم اكتمال الإجابات -->
