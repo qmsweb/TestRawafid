@@ -1150,8 +1150,19 @@
                         
                         const titleSpan = document.createElement('span');
                         titleSpan.textContent = "ضع علامة (✓) أو (✗) أمام العبارات التالية:";
-                        
+
+                        let tfTotal = 0;
+                        for (let i = qIndex; i < quiz.questions.length; i++) {
+                            const tfq = quiz.questions[i];
+                            if (tfq.divider || tfq.type !== 'tf') break;
+                            tfTotal += tfq.points || 1;
+                        }
+                        const totalBadge = document.createElement('span');
+                        totalBadge.className = 'points-badge';
+                        totalBadge.textContent = formatPoints(tfTotal);
+
                         headerDiv.appendChild(titleSpan);
+                        headerDiv.appendChild(totalBadge);
                         currentTfContainer.appendChild(headerDiv);
                         
                         questionsContainer.appendChild(currentTfContainer);
@@ -1177,10 +1188,6 @@
                     if (q.text) {
                         text.innerHTML += `<div class="question-long-text" style="margin-top: 8px;">${q.text.replace(/\n/g, '<br>')}</div>`;
                     }
-
-                    const pointsBadge = document.createElement('span');
-                    pointsBadge.className = 'points-badge';
-                    pointsBadge.textContent = formatPoints(q.points || 1);
 
                     const answersWrap = document.createElement('div');
                     answersWrap.className = 'tf-answers';
@@ -1217,7 +1224,6 @@
                     answersWrap.appendChild(btnFalse);
 
                     tfRow.appendChild(text);
-                    tfRow.appendChild(pointsBadge);
                     tfRow.appendChild(answersWrap);
                     
                     currentTfContainer.appendChild(tfRow);

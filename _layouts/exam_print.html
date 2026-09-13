@@ -223,6 +223,10 @@
             border-bottom: 1px solid #000;
             padding-bottom: 8px;
             margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
         }
         .tf-row {
             display: flex;
@@ -451,7 +455,7 @@
             let questionNumber = 1;
             let currentTfGroup = null;
 
-            quiz.questions.forEach(q => {
+            quiz.questions.forEach((q, qIndex) => {
                 if (q.divider || q.type !== 'tf') {
                     currentTfGroup = null;
                 }
@@ -473,9 +477,20 @@
                 if (q.type === 'tf') {
                     if (!currentTfGroup) {
                         currentTfGroup = true;
+
+                        let tfTotal = 0;
+                        for (let i = qIndex; i < quiz.questions.length; i++) {
+                            const tfq = quiz.questions[i];
+                            if (tfq.divider || tfq.type !== 'tf') break;
+                            tfTotal += tfq.points || 1;
+                        }
+
                         html += `
                             <div class="tf-group">
-                                <div class="tf-header">ضع علامة (✓) أو (✗) أمام العبارات التالية داخل المربع المخصص</div>
+                                <div class="tf-header">
+                                    <span>ضع علامة (✓) أو (✗) أمام العبارات التالية داخل المربع المخصص</span>
+                                    <span class="tf-points">${formatPoints(tfTotal)}</span>
+                                </div>
                         `;
                     }
 
@@ -487,7 +502,6 @@
                                 <span class="q-num">${questionNumber}</span> ${escapeNewlines(q.question)}
                                 ${longText}
                             </div>
-                            <span class="tf-points">${formatPoints(q.points || 1)}</span>
                             <div class="tf-boxes">
                                 <span class="tf-cell"></span>
                             </div>
