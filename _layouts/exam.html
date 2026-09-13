@@ -773,35 +773,20 @@
         }
 
         @media (max-width: 1050px) {
-            .exam-split { grid-template-columns: 1fr; }
-            .exam-side { position: static; }
-            .exam-side .quiz-front-page { margin-bottom: 26px; }
-            .exam-actions { margin-top: 0; }
+            .exam-split {
+                display: flex;
+                flex-direction: column;
+                gap: 26px;
+                align-items: stretch;
+            }
+            .exam-side { display: contents; }
+            .exam-side .quiz-front-page { margin-bottom: 0; }
+            .exam-main { order: 0; }
+            .exam-actions { order: 1; margin-top: 0; }
         }
 
         @media (max-width: 768px) {
             .container { padding: 20px 14px 60px; }
-            body { padding-bottom: 80px; }
-            .exam-actions {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                z-index: 999;
-                margin: 0;
-                padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px));
-                background: var(--bg-body);
-                border-top: 1px solid var(--border-color);
-                box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.12);
-            }
-            .exam-actions #submit-btn,
-            .exam-actions #review-btn {
-                width: 100%;
-                margin: 0;
-                padding: 14px 36px;
-                border-radius: 50px;
-                font-size: 1.05rem;
-            }
         }
 
         @media (max-width: 640px) {
