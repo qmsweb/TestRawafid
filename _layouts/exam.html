@@ -147,6 +147,12 @@
             top: calc(var(--nav-height, 70px) + 24px);
         }
         .exam-side .quiz-front-page { margin-bottom: 0; }
+        .exam-actions {
+            margin-top: 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
         .quiz-front-header h1 {
             font-size: clamp(22px, 2.8vw, 30px);
@@ -550,7 +556,7 @@
 
         #submit-btn, #review-btn {
             display: block;
-            margin: 28px auto 14px;
+            margin: 0 auto;
             padding: 12px 36px;
             font-size: 1.02rem;
             font-weight: 700;
@@ -746,6 +752,7 @@
             .exam-split { grid-template-columns: 1fr; }
             .exam-side { position: static; }
             .exam-side .quiz-front-page { margin-bottom: 26px; }
+            .exam-actions { margin-top: 0; }
         }
 
         @media (max-width: 768px) {
@@ -802,12 +809,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="exam-actions">
+                    <button id="submit-btn">تأكيد الإجابات</button>
+                    <button id="review-btn">مراجعة الإجابات</button>
+                </div>
             </aside>
 
             <main class="exam-main">
                 <div id="questions-container"></div>
-                <button id="submit-btn">تأكيد الإجابات</button>
-                <button id="review-btn">مراجعة الإجابات</button>
                 <div id="result"></div>
             </main>
         </div>

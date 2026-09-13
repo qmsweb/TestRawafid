@@ -65,6 +65,7 @@
 
         .print-qr { display: flex; flex-direction: column; align-items: center; gap: 5px; flex-shrink: 0; }
         #qrcode-container { width: 88px; height: 88px; padding: 6px; border: 1px solid #000; background: #fff; }
+        #qrcode-container img, #qrcode-container canvas { max-width: 100%; max-height: 100%; display: block; }
         .print-qr .qr-caption { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.3px; }
 
         /* === بطاقة معلومات المقرر === */
@@ -89,28 +90,6 @@
             margin-bottom: 3px;
         }
         .print-info-card .info-item b { font-size: 0.9rem; font-weight: 800; }
-
-        /* === بيانات الطالب === */
-        .student-data { border: 1.5px solid #000; margin-bottom: 18px; }
-        .sd-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            border-bottom: 1px dashed #999;
-        }
-        .sd-row:last-child { border-bottom: none; }
-        .sd-cell {
-            padding: 8px 12px;
-            border-inline-start: 1px dashed #999;
-        }
-        .sd-cell:first-child { border-inline-start: none; }
-        .sd-cell label {
-            display: block;
-            font-size: 0.72rem;
-            font-weight: 800;
-            color: #333;
-            margin-bottom: 6px;
-        }
-        .sd-cell span { display: block; height: 18px; border-bottom: 1.5px solid #000; }
 
         /* === جدول التقييم الذاتي === */
         #print-eval-table {
@@ -332,21 +311,6 @@
                 <div class="info-item"><span>رمز المقرر</span><b id="p-subject-code"></b></div>
                 <div class="info-item"><span>الدرجة الكلية</span><b id="p-subject-total"></b></div>
                 <div class="info-item"><span>عدد الأسئلة</span><b id="p-question-count"></b></div>
-            </div>
-
-            <div class="student-data">
-                <div class="sd-row">
-                    <div class="sd-cell"><label>اسم الطالب</label><span></span></div>
-                    <div class="sd-cell"><label>الرقم الجامعي</label><span></span></div>
-                    <div class="sd-cell"><label>الشعبة</label><span></span></div>
-                    <div class="sd-cell"><label>القسم</label><span></span></div>
-                </div>
-                <div class="sd-row">
-                    <div class="sd-cell"><label>التاريخ</label><span></span></div>
-                    <div class="sd-cell"><label>توقيع الطالب</label><span></span></div>
-                    <div class="sd-cell"><label>توقيع المُصحِّح</label><span></span></div>
-                    <div class="sd-cell"><label>الدرجة النهائية</label><span></span></div>
-                </div>
             </div>
 
             <table id="print-eval-table">
@@ -613,8 +577,8 @@
 
                 new QRCode(document.getElementById('qrcode-container'), {
                     text: base + 'exam/' + encodeURIComponent(examCode),
-                    width: 88,
-                    height: 88,
+                    width: 72,
+                    height: 72,
                     colorDark: "#000000",
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.H
