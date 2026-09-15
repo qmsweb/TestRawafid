@@ -143,6 +143,19 @@
       background: var(--bg-card); 
     }
 
+    .video-wrapper { 
+      width: 100%; border-radius: 12px; overflow: hidden; 
+      margin-bottom: 15px; 
+      border: 1px solid var(--border-color); 
+      background: #000; 
+      aspect-ratio: 16 / 9; 
+      position: relative; 
+    }
+    .video-wrapper iframe { 
+      width: 100%; height: 100%; display: block; border: none; 
+      position: absolute; top: 0; left: 0; 
+    }
+
     .pdf-container {
       width: calc(100% + 40px); margin-left: -20px; margin-right: -20px;
       height: 90vh;
@@ -330,6 +343,29 @@
     return 'fas fa-file-alt';
   }
 
+  function getYoutubeVideoId(url) {
+    if (!url) return null;
+    try {
+      const parsed = new URL(url);
+      const host = parsed.hostname.toLowerCase();
+      if (host.includes('youtu.be')) {
+        const id = parsed.pathname.split('/')[1] || '';
+        return id || null;
+      }
+      if (host.includes('youtube.com') || host.includes('youtube-nocookie.com')) {
+        const path = parsed.pathname;
+        if (path === '/watch') {
+          return parsed.searchParams.get('v');
+        }
+        if (path.startsWith('/embed/') || path.startsWith('/shorts/')) {
+          const id = path.split('/')[2] || '';
+          return id || null;
+        }
+      }
+    } catch (e) {}
+    return null;
+  }
+
   function toggleFullScreen(forceState) {
       const body = document.body;
       const isActive = body.classList.contains('fullscreen-active');
@@ -459,6 +495,12 @@
                     <p style="margin-bottom:15px; color:var(--text-muted);">تعذر عرض الملف مباشرة، يمكنك تحميله أو فتحه في تبويب جديد:</p>
                     <a href="${absolutePdfUrl}" target="_blank" class="action-btn btn-primary" style="display:inline-flex; text-decoration:none; margin-bottom:10px; flex:none;"><i class="fas fa-external-link-alt"></i> فتح الملف في تبويب جديد</a>
                 </div>
+            </div>`;
+        }
+        else if (item.type === 'videos' && getYoutubeVideoId(item.preview_url)) {
+            const youtubeId = getYoutubeVideoId(item.preview_url);
+            mediaHTML = `<div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/${youtubeId}" title="${item.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>`;
         }
         else if (item.image_url) {
