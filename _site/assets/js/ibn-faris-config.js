@@ -9,8 +9,7 @@
    ============================================================ */
 window.IBNAFARIS_CONFIG = {
   supabaseUrl: "https://veydmfljebzqwrolvuhe.supabase.co",
-  supabaseAnonKey:
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZleWRtZmxqZWJ6cXdyb2x2dWhlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNTE4MjUsImV4cCI6MjEwNzcyNzgyNX0.7jFXUA2yHeQ_G4VBFWZfJyA5AFLe0LgqIsRSeWjEi6s",
+  supabaseAnonKey: "sb_publishable_oXDBwGE8QOVhj1sNsjK_rQ_hBva9IPm",
   functionName: "ibn-faris-chat",
   maxHistory: 12,
 };
