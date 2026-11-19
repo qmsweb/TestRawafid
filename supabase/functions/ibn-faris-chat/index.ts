@@ -21,17 +21,19 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const DEFAULT_ORIGINS = [
   "https://rawafid.jassim.one",
   "https://www.rawafid.jassim.one",
+  "https://test-rwfd.jassim.one",
   "https://qmsweb.github.io",
   "http://localhost:4000",
   "http://127.0.0.1:4000",
 ];
 
 const MAX_MESSAGE_LENGTH = 4_000;
-const MAX_TOTAL_CHARS = 16_000;
+// 12 رسالة × 4000 حرف: لا يُقطع سياق المحادثة عملياً.
+const MAX_TOTAL_CHARS = 48_000;
 const MAX_MESSAGES = 12;
-const MAX_OUTPUT_TOKENS = 1_500;
+const MAX_OUTPUT_TOKENS = 2_500;
 const UPSTREAM_TIMEOUT_MS = 120_000;
-const RAG_TIMEOUT_MS = 3_500;
+const RAG_TIMEOUT_MS = 5_000;
 
 const DEEPSEEK_API_URL =
   Deno.env.get("DEEPSEEK_API_URL")?.trim() ||
@@ -59,7 +61,7 @@ const ALLOWED_ORIGINS = new Set(
     .filter(Boolean),
 );
 
-const VISITOR_DAILY_LIMIT = readIntEnv("IBNAFARIS_VISITOR_DAILY_LIMIT", 20);
+const VISITOR_DAILY_LIMIT = readIntEnv("IBNAFARIS_VISITOR_DAILY_LIMIT", 40);
 const GLOBAL_DAILY_LIMIT = readIntEnv("IBNAFARIS_GLOBAL_DAILY_LIMIT", 400);
 const RAG_ENABLED =
   (Deno.env.get("IBNAFARIS_RAG_ENABLED") ?? "true").trim() !== "false";
@@ -399,14 +401,17 @@ const IBNAFARIS_IDENTITY_PROMPT = [
 
 const BALANCED_ANSWER_PROMPT = [
   "نمط الإجابة المتوازن:",
-  "- قدّم جواباً واضحاً في فقرة إلى ثلاث فقرات قصيرة، دون مقدمة أو إعادة للسؤال.",
-  "- أضف سبباً أو مثالاً واحداً، واذكر وجهين عند وجود خلاف، مع ذكر المصدر.",
+  "- ابدأ بالجواب المباشر في فقرة إلى ثلاث فقرات قصيرة، دون مقدمة أو إعادة للسؤال.",
+  "- بيّن سبب الحكم أو وجهه، وأضف مثالاً أو شاهداً واحداً على الأقل.",
+  "- عند وجود خلاف أو وجهين فاذكرهما ثم رجّح، مع ذكر المصدر (الكتاب والباب).",
   "- عند الإعراب استخدم جدولاً موجزاً لكل كلمة، واذكر القاعدة في سطر واحد.",
+  "- راجع علامة الإعراب وسببها والمصدر قبل الإخراج، وصحّح أي تعارض.",
+  "- إذا كان السؤال متعدد الأجزاء فأجب عن كل جزء، وإذا احتاج تفصيلاً فأطل بقدر الحاجة دون حشو أو تكرار.",
 ].join("\n");
 
 const KNOWLEDGE_PROMPT = [
   "مقاطع مسترجعة من كتب اللغة العربية، وهي مرجعك الأول:",
-  "- استند إليها في الأحكام النحوية والصرفية، واذكر اسم الكتاب والباب كما وردا في المقطع.",
+  "- استند إليها في الأحكام النحوية والصرفية، واذكر اسم الكتاب والباب والصفحة إن وردت في المقطع.",
   "- إن لم تكفِ المقاطع للإجابة، فأكمل من معرفتك وصرّح بأن ذلك خارج المقاطع المسترجعة.",
   "- لا تختلق اسماً لكتاب أو باباً أو صفحة غير مذكورة في المقاطع.",
 ].join("\n");
