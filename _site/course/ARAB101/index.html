@@ -836,22 +836,12 @@
           <path d="M18 6 6 18"></path>
           <path d="m6 6 12 12"></path>
         </svg>
-      </button><button class="if-circle if-theme" id="if-theme" type="button" aria-label="تبديل المظهر" title="تبديل المظهر">
-        <svg class="if-icon if-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </button><div class="if-quota-ring" id="if-quota" role="img" aria-label="الحصة اليومية المتبقية">
+        <svg viewBox="0 0 42 42" aria-hidden="true">
+          <circle class="if-quota-track" cx="21" cy="21" r="18" pathLength="100"></circle>
+          <circle class="if-quota-value" id="if-quota-value" cx="21" cy="21" r="18" pathLength="100"></circle>
         </svg>
-        <svg class="if-icon if-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="4"></circle>
-          <path d="M12 2v2"></path>
-          <path d="M12 20v2"></path>
-          <path d="m4.93 4.93 1.41 1.41"></path>
-          <path d="m17.66 17.66 1.41 1.41"></path>
-          <path d="M2 12h2"></path>
-          <path d="M20 12h2"></path>
-          <path d="m6.34 17.66-1.41 1.41"></path>
-          <path d="m19.07 4.93-1.41 1.41"></path>
-        </svg>
-      </button>
+      </div>
     </div>
   </header>
 
@@ -945,7 +935,6 @@
           rows="1"
           maxlength="4000"
           placeholder="اسأل عن إعراب، صرف، معجم أو بلاغة..."
-          enterkeyhint="send"
         ></textarea>
 
         <div class="if-composer-actions">
@@ -961,11 +950,6 @@
           </button>
         </div>
       </form>
-
-      <div class="if-composer-foot">
-        <span class="if-quota" id="if-quota" hidden></span>
-        <span class="if-hint">Enter للإرسال · Shift+Enter لسطر جديد</span>
-      </div>
 
       <p class="if-disclaimer">
         <strong>ابن فارس</strong> قد يخطئ؛ تحقّق من المصادر. لا نحفظ محادثاتك.

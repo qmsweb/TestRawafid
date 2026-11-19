@@ -19,6 +19,7 @@
   --if-ink: #27251e;
   --if-ink-strong: #000000;
   --if-sand: #8a6e4b;
+  --if-on-sand: #000000;
   --if-on-accent: #ffffff;
   --if-danger: #a8452f;
   --if-danger-soft: #fdf1ee;
@@ -51,6 +52,7 @@ html[data-theme="dark"] .if-overlay {
   --if-ink: #f3f0e8;
   --if-ink-strong: #ffffff;
   --if-sand: #d2b48c;
+  --if-on-sand: #000000;
   --if-on-accent: #131210;
   --if-danger: #e28b73;
   --if-danger-soft: #2a1f1b;
@@ -365,16 +367,45 @@ html[data-theme="dark"] .if-brand-mark img {
   background: color-mix(in srgb, var(--if-sand) 10%, transparent);
 }
 
-.if-theme .if-sun {
-  display: none;
+.if-quota-ring {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  color: var(--if-sand);
 }
 
-html[data-theme="dark"] .if-theme .if-sun {
-  display: block;
+.if-quota-ring svg {
+  width: 42px;
+  height: 42px;
+  transform: rotate(-90deg);
 }
 
-html[data-theme="dark"] .if-theme .if-moon {
-  display: none;
+.if-quota-track,
+.if-quota-value {
+  fill: none;
+  stroke-width: 3;
+}
+
+.if-quota-track {
+  stroke: var(--if-warm-mist);
+}
+
+.if-quota-value {
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.35s ease;
+}
+
+.if-quota-ring.is-empty {
+  color: var(--if-danger);
+}
+
+.if-quota-ring.is-empty .if-quota-track {
+  stroke: var(--if-danger);
 }
 
 /* ------------------------------------------------------------
@@ -942,12 +973,13 @@ html[data-theme="dark"] .if-empty-mark img {
 }
 
 .if-composer {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 6px;
   padding: 6px;
   border: 1px solid var(--if-warm-mist);
-  border-radius: calc(var(--if-radius-full) - 2px);
+  border-radius: 22px;
   background: var(--if-soft-paper);
   box-shadow: var(--if-shadow-subtle);
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
@@ -963,9 +995,9 @@ html[data-theme="dark"] .if-empty-mark img {
 }
 
 .if-input {
-  flex: 1;
   display: block;
   width: 100%;
+  min-width: 0;
   min-height: 40px;
   max-height: 168px;
   padding: 9px 12px;
@@ -976,6 +1008,8 @@ html[data-theme="dark"] .if-empty-mark img {
   font-size: 16px;
   font-weight: 400;
   line-height: 1.55;
+  overflow-y: hidden;
+  overscroll-behavior: contain;
   resize: none;
   outline: none;
 }
@@ -993,7 +1027,7 @@ html[data-theme="dark"] .if-empty-mark img {
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-shrink: 0;
+  align-self: end;
 }
 
 .if-send {
@@ -1004,8 +1038,8 @@ html[data-theme="dark"] .if-empty-mark img {
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: var(--if-ink);
-  color: var(--if-parchment);
+  background: var(--if-sand);
+  color: var(--if-on-sand);
   cursor: pointer;
   transition: background-color 0.18s ease, opacity 0.18s ease,
     transform 0.18s ease;
@@ -1013,7 +1047,8 @@ html[data-theme="dark"] .if-empty-mark img {
 
 .if-send:hover,
 .if-send:focus-visible {
-  background: var(--if-ink-strong);
+  background: color-mix(in srgb, var(--if-sand) 86%, var(--if-ink));
+  color: var(--if-on-sand);
   outline: none;
 }
 
@@ -1058,35 +1093,6 @@ html[data-theme="dark"] .if-empty-mark img {
   height: 11px;
   border-radius: 3px;
   background: currentColor;
-}
-
-.if-composer-foot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 9px;
-}
-
-.if-quota {
-  color: var(--if-graphite);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-
-.if-quota.is-empty {
-  color: var(--if-danger);
-}
-
-.if-hint {
-  color: var(--if-graphite);
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 1.4;
-  white-space: nowrap;
 }
 
 .if-disclaimer {
@@ -1187,6 +1193,12 @@ html[data-theme="dark"] .if-empty-mark img {
     height: 40px;
   }
 
+  .if-quota-ring,
+  .if-quota-ring svg {
+    width: 40px;
+    height: 40px;
+  }
+
   .if-topbar-actions {
     gap: 6px;
   }
@@ -1232,10 +1244,6 @@ html[data-theme="dark"] .if-empty-mark img {
     padding: 6px 12px max(10px, env(safe-area-inset-bottom));
   }
 
-  .if-hint {
-    display: none;
-  }
-
   .if-disclaimer {
     font-size: 10px;
   }
@@ -1273,8 +1281,10 @@ html[data-theme="dark"] .if-empty-mark img {
 }
 
 @media (max-width: 380px) {
-  .if-quota {
-    display: none;
+  .if-quota-ring,
+  .if-quota-ring svg {
+    width: 36px;
+    height: 36px;
   }
 }
 

@@ -42,7 +42,7 @@
       alertText: q("#if-alert-text"),
       newChat: q("#if-new"),
       quota: q("#if-quota"),
-      theme: q("#if-theme"),
+      quotaValue: q("#if-quota-value"),
     };
 
     if (!els.main || !els.form || !els.input || !els.messages) return null;
@@ -59,39 +59,6 @@
       stick: true,
       turn: 0,
     };
-
-    // ----------------------------------------------------------
-    // المظهر
-    // ----------------------------------------------------------
-    function currentTheme() {
-      return document.documentElement.getAttribute("data-theme") === "dark"
-        ? "dark"
-        : "light";
-    }
-
-    function updateThemeLabel() {
-      if (!els.theme) return;
-      var next =
-        currentTheme() === "dark"
-          ? "التبديل إلى الوضع النهاري"
-          : "التبديل إلى الوضع الليلي";
-      els.theme.setAttribute("aria-label", next);
-      els.theme.setAttribute("title", next);
-    }
-
-    if (els.theme) {
-      updateThemeLabel();
-      els.theme.addEventListener("click", function () {
-        var next = currentTheme() === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        try {
-          localStorage.setItem("rawafed-theme", next);
-        } catch (error) {
-          // التخزين المحلي قد يكون معطلاً.
-        }
-        updateThemeLabel();
-      });
-    }
 
     // ----------------------------------------------------------
     // التنبيهات
@@ -115,17 +82,25 @@
 
       var remaining = Number(quota.remaining);
       var limit = Number(quota.limit);
-      if (!isFinite(remaining) || !isFinite(limit)) return;
+      if (!isFinite(remaining) || !isFinite(limit) || limit <= 0) return;
 
       state.quota = quota;
-      if (!els.quota) return;
 
-      els.quota.hidden = false;
-      els.quota.textContent =
-        remaining > 0
-          ? "متبقٍ اليوم: " + remaining + " من " + limit
-          : "انتهى حدّك اليومي";
-      els.quota.classList.toggle("is-empty", remaining <= 0);
+      var ratio = Math.max(0, Math.min(1, remaining / limit));
+
+      if (els.quotaValue) {
+        els.quotaValue.style.strokeDashoffset = String(100 - ratio * 100);
+      }
+
+      if (els.quota) {
+        els.quota.classList.toggle("is-empty", remaining <= 0);
+        els.quota.setAttribute(
+          "aria-label",
+          remaining > 0
+            ? "الحصة اليومية المتبقية: " + remaining + " من " + limit
+            : "انتهت الحصة اليومية"
+        );
+      }
     }
 
     // ----------------------------------------------------------
@@ -154,8 +129,13 @@
 
     function autoGrow() {
       els.input.style.height = "auto";
-      els.input.style.height =
-        Math.min(els.input.scrollHeight || 40, 168) + "px";
+
+      var contentHeight = els.input.scrollHeight || 40;
+      var maxHeight = 168;
+
+      els.input.style.height = Math.min(contentHeight, maxHeight) + "px";
+      els.input.style.overflowY =
+        contentHeight > maxHeight ? "auto" : "hidden";
     }
 
     function saveDraft() {
@@ -902,7 +882,6 @@
 
       restoreDraft();
       autoGrow();
-      updateThemeLabel();
       setStreaming(false);
 
       if (settings.focus) {
