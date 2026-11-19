@@ -633,6 +633,7 @@
     --if-fab-bg: #8a6e4b;
     --if-fab-bg-hover: #765c3e;
     --if-fab-fg: #ffffff;
+    --if-fab-logo-bg: #ffffff;
     --if-fab-shadow: 0 10px 28px rgba(39, 37, 30, 0.22);
 
     position: fixed;
@@ -642,7 +643,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 9px 16px 9px 13px;
+    padding: 7px 16px 7px 13px;
     border: 1px solid color-mix(in srgb, var(--if-fab-fg) 18%, transparent);
     border-radius: 9999px;
     background: var(--if-fab-bg);
@@ -673,16 +674,17 @@
   .if-fab-icon {
     display: grid;
     place-items: center;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--if-fab-logo-bg);
   }
 
   .if-fab-icon img {
     width: 22px;
     height: 22px;
     object-fit: contain;
-    filter: brightness(0) invert(1);
   }
 
   .if-fab-label {
@@ -696,15 +698,11 @@
     --if-fab-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
   }
 
-  html[data-theme="dark"] .if-fab-icon img {
-    filter: brightness(0);
-  }
-
   @media (max-width: 480px) {
     .if-fab {
       left: max(14px, env(safe-area-inset-left));
       bottom: max(14px, env(safe-area-inset-bottom));
-      padding: 9px 13px 9px 11px;
+      padding: 7px 13px 7px 11px;
       font-size: 13px;
     }
   }
@@ -727,8 +725,8 @@
   href="/ibn-faris/"
   data-if-open
   aria-haspopup="dialog"
-  aria-label="افتح محادثة ابن فارس — مساعد روافد اللغوي"
-  title="ابن فارس — مساعد روافد اللغوي"
+  aria-label="افتح محادثة ابن فارس"
+  title="ابن فارس"
 >
   <span class="if-fab-icon" aria-hidden="true">
     <img src="/images/ibnfaris-icon.png" alt="" width="22" height="22" loading="lazy" decoding="async">
@@ -742,7 +740,7 @@
       <div class="if-app" id="if-app" data-icon="/images/ibnfaris-icon.png">
   <span class="if-sheet-handle" aria-hidden="true"></span>
 
-  <h1 class="if-sr-only" id="if-title">ابن فارس — مساعد روافد اللغوي</h1>
+  <h1 class="if-sr-only" id="if-title">ابن فارس</h1>
 
   <header class="if-topbar">
     <div class="if-brand" aria-label="ابن فارس">
@@ -751,7 +749,6 @@
       </span>
       <span class="if-brand-text">
         <span class="if-brand-name">ابن فارس</span>
-        <span class="if-brand-sub">مساعد روافد اللغوي</span>
       </span>
     </div>
 
@@ -781,64 +778,7 @@
         <span class="if-empty-mark" aria-hidden="true">
           <img src="/images/ibnfaris-icon.png" alt="" width="34" height="34" />
         </span>
-        <h2 class="if-empty-title" id="if-empty-title">كيف أساعدك في لغتك؟</h2>
-        <p class="if-empty-text">
-          اسأل عن الإعراب أو الصرف أو المعاجم أو البلاغة، وسيجيبك ابن فارس
-          مستعيناً بكتب العربية.
-        </p>
-
-        <div class="if-suggestions">
-          <button class="if-suggestion" type="button" data-prompt="أعرب: «وَاللَّهُ غَالِبٌ عَلَى أَمْرِهِ» إعراباً كاملاً مع ذكر القاعدة.">
-            <span class="if-suggestion-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                <path d="M8 7h8"></path>
-                <path d="M8 11h5"></path>
-              </svg>
-            </span>
-            <span class="if-suggestion-title">أعرب آية</span>
-            <span class="if-suggestion-desc">«وَاللَّهُ غَالِبٌ عَلَى أَمْرِهِ»</span>
-          </button>
-
-          <button class="if-suggestion" type="button" data-prompt="ما الفرق بين الحال والتمييز؟ اشرح الفرق بمثالين وأذكر المصدر.">
-            <span class="if-suggestion-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8 3 4 7l4 4"></path>
-                <path d="M4 7h12a4 4 0 0 1 0 8h-2"></path>
-                <path d="m16 21 4-4-4-4"></path>
-                <path d="M20 17H8a4 4 0 0 1 0-8h2"></path>
-              </svg>
-            </span>
-            <span class="if-suggestion-title">فرق لغوي</span>
-            <span class="if-suggestion-desc">الحال والتمييز بمثالين</span>
-          </button>
-
-          <button class="if-suggestion" type="button" data-prompt="زِن كلمة «استخراج» واذكر أصلها ووزنها الصرفي مع الشرح.">
-            <span class="if-suggestion-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 3v18"></path>
-                <path d="M5 7h14"></path>
-                <path d="m5 7-2 5a3 3 0 0 0 6 0z"></path>
-                <path d="m19 7-2 5a3 3 0 0 0 6 0z"></path>
-              </svg>
-            </span>
-            <span class="if-suggestion-title">ميزان صرفي</span>
-            <span class="if-suggestion-desc">زِن كلمة «استخراج»</span>
-          </button>
-
-          <button class="if-suggestion" type="button" data-prompt="ما الفرق بين الضاد والظاء في النطق والكتابة؟ أعطني أمثلة عملية.">
-            <span class="if-suggestion-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                <path d="M8 9h8"></path>
-                <path d="M8 13h5"></path>
-              </svg>
-            </span>
-            <span class="if-suggestion-title">الضاد والظاء</span>
-            <span class="if-suggestion-desc">فرق النطق والكتابة</span>
-          </button>
-        </div>
+        <h2 class="if-empty-title" id="if-empty-title">ابدأ بالسؤال</h2>
       </section>
 
       <div class="if-messages" id="if-messages" aria-live="polite"></div>
@@ -864,7 +804,7 @@
           name="message"
           rows="1"
           maxlength="4000"
-          placeholder="اسأل عن إعراب، صرف، معجم أو بلاغة..."
+          placeholder="اسأل"
         ></textarea>
 
         <div class="if-composer-actions">

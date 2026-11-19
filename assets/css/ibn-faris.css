@@ -13,6 +13,7 @@
   --if-parchment: #faf8f5;
   --if-soft-paper: #fdfbfa;
   --if-white: #ffffff;
+  --if-logo-bg: #ffffff;
   --if-warm-mist: #d1d1cd;
   --if-ash: #92918b;
   --if-graphite: #72706b;
@@ -46,6 +47,7 @@ html[data-theme="dark"] .if-overlay {
   --if-parchment: #191815;
   --if-soft-paper: #23211d;
   --if-white: #23211d;
+  --if-logo-bg: #ffffff;
   --if-warm-mist: #3a3731;
   --if-ash: #8a867c;
   --if-graphite: #b5b0a4;
@@ -276,20 +278,17 @@ html[data-theme="dark"] .if-overlay {
 .if-brand-mark {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--if-logo-bg);
 }
 
 .if-brand-mark img {
   width: 28px;
   height: 28px;
   object-fit: contain;
-  filter: brightness(0);
-}
-
-html[data-theme="dark"] .if-brand-mark img {
-  filter: invert(1);
 }
 
 .if-brand-text {
@@ -303,13 +302,6 @@ html[data-theme="dark"] .if-brand-mark img {
   color: var(--if-ink);
   font-size: 18px;
   font-weight: 600;
-  white-space: nowrap;
-}
-
-.if-brand-sub {
-  color: var(--if-graphite);
-  font-size: 12px;
-  font-weight: 400;
   white-space: nowrap;
 }
 
@@ -459,18 +451,13 @@ html[data-theme="dark"] .if-brand-mark img {
   margin-bottom: 14px;
   border: 1px solid var(--if-warm-mist);
   border-radius: 50%;
-  background: var(--if-soft-paper);
+  background: var(--if-logo-bg);
 }
 
 .if-empty-mark img {
   width: 34px;
   height: 34px;
   object-fit: contain;
-  filter: brightness(0);
-}
-
-html[data-theme="dark"] .if-empty-mark img {
-  filter: invert(1);
 }
 
 .if-empty-title {
@@ -479,78 +466,6 @@ html[data-theme="dark"] .if-empty-mark img {
   font-size: 24px;
   font-weight: 600;
   line-height: 1.4;
-}
-
-.if-empty-text {
-  max-width: 480px;
-  margin: 0 0 22px;
-  color: var(--if-graphite);
-  font-size: 15px;
-  line-height: 1.7;
-}
-
-.if-suggestions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  width: 100%;
-  max-width: 640px;
-}
-
-.if-suggestion {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 14px 16px;
-  border: 1px solid transparent;
-  border-radius: var(--if-radius-lg);
-  background: var(--if-soft-paper);
-  box-shadow: var(--if-shadow-subtle);
-  color: var(--if-ink);
-  font-family: inherit;
-  text-align: start;
-  cursor: pointer;
-  transition: border-color 0.18s ease, transform 0.18s ease,
-    box-shadow 0.18s ease;
-}
-
-.if-suggestion:hover,
-.if-suggestion:focus-visible {
-  border-color: var(--if-warm-mist);
-  transform: translateY(-1px);
-  outline: none;
-}
-
-.if-suggestion:focus-visible {
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--if-sand) 35%, transparent);
-}
-
-.if-suggestion-icon {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  margin-bottom: 4px;
-  color: var(--if-ink);
-}
-
-.if-suggestion-icon svg {
-  width: 20px;
-  height: 20px;
-}
-
-.if-suggestion-title {
-  color: var(--if-ink);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.5;
-}
-
-.if-suggestion-desc {
-  color: var(--if-graphite);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.6;
 }
 
 /* ------------------------------------------------------------
@@ -1120,26 +1035,13 @@ html[data-theme="dark"] .if-empty-mark img {
     justify-content: flex-start;
   }
 
-  .if-empty-mark,
-  .if-empty-text {
+  .if-empty-mark {
     display: none;
   }
 
   .if-empty-title {
     margin-bottom: 14px;
     font-size: 20px;
-  }
-
-  .if-suggestions {
-    gap: 8px;
-  }
-
-  .if-suggestion {
-    padding: 10px 12px;
-  }
-
-  .if-suggestion-desc {
-    display: none;
   }
 }
 
@@ -1184,10 +1086,6 @@ html[data-theme="dark"] .if-empty-mark img {
     font-size: 17px;
   }
 
-  .if-brand-sub {
-    display: none;
-  }
-
   .if-circle {
     width: 40px;
     height: 40px;
@@ -1213,14 +1111,6 @@ html[data-theme="dark"] .if-empty-mark img {
 
   .if-empty-title {
     font-size: 21px;
-  }
-
-  .if-empty-text {
-    font-size: 14px;
-  }
-
-  .if-suggestions {
-    grid-template-columns: 1fr;
   }
 
   .if-msg {
@@ -1269,15 +1159,6 @@ html[data-theme="dark"] .if-empty-mark img {
   .if-empty-title {
     font-size: 19px;
   }
-
-  .if-suggestions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .if-suggestion {
-    padding: 9px 12px;
-  }
 }
 
 @media (max-width: 380px) {
@@ -1313,8 +1194,7 @@ html[data-theme="dark"] .if-empty-mark img {
   .if-overlay,
   .if-topbar,
   .if-composer-shell,
-  .if-msg-actions,
-  .if-suggestions {
+  .if-msg-actions {
     display: none !important;
   }
 

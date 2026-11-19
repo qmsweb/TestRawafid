@@ -195,16 +195,6 @@
       });
     }
 
-    root.querySelectorAll(".if-suggestion").forEach(function (button) {
-      button.addEventListener("click", function () {
-        var prompt = button.getAttribute("data-prompt") || "";
-        if (!prompt || state.streaming) return;
-        els.input.value = prompt;
-        autoGrow();
-        send(prompt);
-      });
-    });
-
     function setStreaming(value) {
       state.streaming = value;
       if (els.stop) els.stop.hidden = !value;

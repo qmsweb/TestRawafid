@@ -16,6 +16,7 @@
     --if-fab-bg: #8a6e4b;
     --if-fab-bg-hover: #765c3e;
     --if-fab-fg: #ffffff;
+    --if-fab-logo-bg: #ffffff;
     --if-fab-shadow: 0 10px 28px rgba(39, 37, 30, 0.22);
 
     position: fixed;
@@ -25,7 +26,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 9px 16px 9px 13px;
+    padding: 7px 16px 7px 13px;
     border: 1px solid color-mix(in srgb, var(--if-fab-fg) 18%, transparent);
     border-radius: 9999px;
     background: var(--if-fab-bg);
@@ -56,16 +57,17 @@
   .if-fab-icon {
     display: grid;
     place-items: center;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--if-fab-logo-bg);
   }
 
   .if-fab-icon img {
     width: 22px;
     height: 22px;
     object-fit: contain;
-    filter: brightness(0) invert(1);
   }
 
   .if-fab-label {
@@ -79,15 +81,11 @@
     --if-fab-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
   }
 
-  html[data-theme="dark"] .if-fab-icon img {
-    filter: brightness(0);
-  }
-
   @media (max-width: 480px) {
     .if-fab {
       left: max(14px, env(safe-area-inset-left));
       bottom: max(14px, env(safe-area-inset-bottom));
-      padding: 9px 13px 9px 11px;
+      padding: 7px 13px 7px 11px;
       font-size: 13px;
     }
   }
@@ -110,8 +108,8 @@
   href="{{ '/ibn-faris/' | relative_url }}"
   data-if-open
   aria-haspopup="dialog"
-  aria-label="افتح محادثة ابن فارس — مساعد روافد اللغوي"
-  title="ابن فارس — مساعد روافد اللغوي"
+  aria-label="افتح محادثة ابن فارس"
+  title="ابن فارس"
 >
   <span class="if-fab-icon" aria-hidden="true">
     <img src="{{ '/images/ibnfaris-icon.png' | relative_url }}" alt="" width="22" height="22" loading="lazy" decoding="async">
