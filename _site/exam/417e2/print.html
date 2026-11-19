@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exam 417e2 - PDF | روافد</title>
+
+    <link rel="stylesheet" href="/fonts/fonts.css" />
+  <link rel="stylesheet" href="/assets/css/design-system.css" />
+    <link rel="icon" href="/images/favicon.png" type="image/jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        /* =====================================================
+           صفحة الطباعة المستقلة للاختبارات - منفصلة تماماً عن نسخة العرض
+           ===================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        body {
+            font-family: "IBM Plex Sans Arabic", sans-serif;
+            background: #e8e8e8;
+            color: #000;
+            font-size: 12.5px;
+            direction: rtl;
+        }
+
+        .sheet {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 28px 34px;
+        }
+
+        /* =====================================================
+           الواجهة (صفحة الغلاف)
+           ===================================================== */
+        .front-page {
+            display: flex;
+            flex-direction: column;
+            min-height: 900px;
+        }
+
+        /* === الهيدر: الشعار | العنوان | الباركود === */
+        .print-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 2.5px solid #000;
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+        }
+        .print-logo-container img { height: 58px; width: auto; display: block; }
+        .print-header-text { flex: 1; text-align: center; min-width: 0; }
+        .print-header-text h1 { font-size: 1.85rem; font-weight: 900; line-height: 1.5; }
+        .print-header-text .print-sub { font-size: 0.85rem; color: #444; margin-top: 5px; font-weight: 700; }
+
+        .print-qr { display: flex; flex-direction: column; align-items: center; gap: 5px; flex-shrink: 0; }
+        #qrcode-container { width: 88px; height: 88px; padding: 6px; border: 1px solid #000; background: #fff; }
+        #qrcode-container img, #qrcode-container canvas { max-width: 100%; max-height: 100%; display: block; }
+        .print-qr .qr-caption { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.3px; }
+
+        /* === بطاقة معلومات المقرر === */
+        .print-info-card {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border: 1px solid #000;
+            margin-bottom: 16px;
+        }
+        .print-info-card .info-item {
+            padding: 9px 10px;
+            text-align: center;
+            border-inline-start: 1px solid #000;
+            background: #f6f6f6;
+        }
+        .print-info-card .info-item:first-child { border-inline-start: none; }
+        .print-info-card .info-item span {
+            display: block;
+            font-size: 0.68rem;
+            color: #555;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+        .print-info-card .info-item b { font-size: 0.9rem; font-weight: 800; }
+
+        /* === جدول التقييم الذاتي === */
+        #print-eval-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+        #print-eval-table th, #print-eval-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        #print-eval-table thead th { background: #f0f0f0; font-weight: 800; }
+        #print-eval-table tbody td { height: 42px; }
+        #print-eval-table tbody td.criteria { text-align: right; font-weight: 700; padding-right: 14px; }
+
+        /* === تعليمات عامة (أسفل الواجهة) === */
+        .print-notice {
+            border: 1px solid #000;
+            border-right: 4px solid #000;
+            padding: 12px 16px;
+            margin-top: auto;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .print-notice h3 { font-size: 0.92rem; font-weight: 800; margin-bottom: 7px; }
+        .print-notice p { font-size: 0.82rem; line-height: 1.8; color: #222; }
+
+        /* === عناوين الأقسام داخل الأسئلة === */
+        .print-section-title {
+            text-align: center;
+            font-size: 1.12rem;
+            font-weight: 900;
+            border-bottom: 3px double #000;
+            padding-bottom: 8px;
+            margin: 26px 0 14px;
+        }
+        .print-instructions {
+            border: 1px solid #000;
+            border-right: 4px solid #000;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .print-instructions h3 { font-size: 0.95rem; margin-bottom: 6px; }
+        .print-instructions p { font-size: 0.85rem; line-height: 1.7; }
+
+        /* === الأسئلة === */
+        .q {
+            margin-bottom: 14px;
+            padding: 10px 12px;
+            border: 1px solid #000;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .q-head {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-weight: 800;
+        }
+        .q-num {
+            min-width: 24px;
+            height: 24px;
+            border: 1px solid #000;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.78rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+        .q-text { flex: 1; line-height: 1.7; text-align: right; }
+        .q-points {
+            font-size: 0.78rem;
+            font-weight: 800;
+            border: 1px solid #000;
+            border-radius: 20px;
+            padding: 1px 8px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .q-longtext { font-size: 0.85rem; line-height: 1.7; margin-top: 8px; font-weight: normal; }
+        .q-image { display: block; max-width: 380px; margin: 10px auto; border: 1px solid #ccc; }
+
+        .choices {
+            margin-top: 10px;
+            padding-right: 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .choice { display: flex; gap: 8px; align-items: flex-start; }
+        .choice .letter { font-weight: 800; flex-shrink: 0; }
+        .choice .c-text { line-height: 1.6; }
+
+        /* === الصح والخطأ: مربع واحد فارغ لكل عبارة === */
+        .tf-group {
+            border: 1px solid #000;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+            background: #fcfcfc;
+        }
+        .tf-header {
+            font-weight: 800;
+            border-bottom: 1px solid #000;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .tf-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px dashed #888;
+        }
+        .tf-row:last-child { border-bottom: none; }
+        .tf-q-text { flex: 1; text-align: right; line-height: 1.7; font-weight: 600; }
+        .tf-points { font-size: 0.72rem; font-weight: 800; border: 1px solid #000; border-radius: 20px; padding: 0 8px; flex-shrink: 0; align-self: center; }
+        .tf-boxes { display: flex; gap: 8px; flex-shrink: 0; align-self: center; }
+        .tf-cell {
+            width: 38px;
+            height: 26px;
+            border: 1px solid #000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            background: #fff;
+        }
+
+        /* === أسئلة المقال مع أسطر الكتابة === */
+        .essay-lines { margin-top: 12px; }
+        .writing-line { border-bottom: 1px dotted #888; height: 26px; }
+        .q.full-page {
+            break-before: page;
+            page-break-before: always;
+            min-height: 95vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .q.full-page .essay-lines { flex-grow: 1; }
+
+        /* === نموذج الإجابة === */
+        .answer-key { break-before: page; page-break-before: always; margin-top: 24px; }
+        .answer-key-title {
+            font-size: 1.15rem;
+            font-weight: 900;
+            text-align: center;
+            border-bottom: 3px double #000;
+            padding-bottom: 8px;
+            margin-bottom: 14px;
+        }
+        .answer-key table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 22px;
+            page-break-inside: avoid;
+        }
+        .answer-key th, .answer-key td { border: 1px solid #000; padding: 7px 12px; }
+        .answer-key thead th { background: #f0f0f0; font-weight: 900; }
+        .answer-key tbody td.num-cell {
+            text-align: center;
+            font-weight: 800;
+            width: 90px;
+            background: #f8f8f8;
+        }
+        .answer-key tbody td.ans-cell { text-align: right; line-height: 1.6; }
+        .answer-key tbody tr:nth-child(even) td { background: #fafafa; }
+
+        .loading-msg { text-align: center; padding: 60px 20px; color: #444; font-size: 0.9rem; }
+
+        @media print {
+            body { background: #fff !important; font-size: 12px !important; }
+            .sheet { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 18px !important; }
+            .loading-msg { display: none !important; }
+
+            .front-page {
+                min-height: calc(100vh - 40px);
+                break-after: page;
+                page-break-after: always;
+            }
+
+            .q, .tf-group, .print-instructions {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+            .answer-key { break-before: page; page-break-before: always; }
+        }
+    </style>
+  
+
+
+
+
+<link rel="canonical" href="https://rawafid.jassim.one/exam/417e2/print">
+<meta name="robots" content="noindex">
+
+
+<meta name="description" content="منصة روافد التعليمية">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://rawafid.jassim.one/#organization",
+  "name": "منصة روافد",
+  "url": "https://rawafid.jassim.one/",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://rawafid.jassim.one/images/rawafid-1.png"
+  },
+  "description": "منصة روافد التعليمية",
+  "inLanguage": "ar"
+}
+</script>
+
+
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "الرئيسية", "item": "https://rawafid.jassim.one/" },
+    { "@type": "ListItem", "position": 2, "name": "Exam 417e2 - PDF", "item": "https://rawafid.jassim.one/exam/417e2/print" }
+  ]
+}
+</script>
+
+</head>
+<body>
+    <div class="sheet">
+        <div class="front-page">
+            <header class="print-header">
+                <div class="print-logo-container">
+                    <img src="/images/rawafid-blue.png" alt="شعار روافد">
+                </div>
+                <div class="print-header-text">
+                    <h1 id="print-title">اختبار</h1>
+                    <div class="print-sub" id="print-subject"></div>
+                </div>
+                <div class="print-qr">
+                    <div id="qrcode-container"></div>
+                    <span class="qr-caption">النسخة التفاعلية للاختبار</span>
+                </div>
+            </header>
+
+            <div class="print-info-card">
+                <div class="info-item"><span>المقرر</span><b id="p-subject-name"></b></div>
+                <div class="info-item"><span>رمز المقرر</span><b id="p-subject-code"></b></div>
+                <div class="info-item"><span>الدرجة الكلية</span><b id="p-subject-total"></b></div>
+                <div class="info-item"><span>عدد الأسئلة</span><b id="p-question-count"></b></div>
+            </div>
+
+            <table id="print-eval-table">
+                <thead>
+                    <tr>
+                        <th colspan="4" style="font-size: 15px;">جدول التقييم الذاتي للطالب</th>
+                    </tr>
+                    <tr>
+                        <th style="width: 40%;">معيار التقييم</th>
+                        <th style="width: 20%;">ممتاز</th>
+                        <th style="width: 20%;">جيد جدًا</th>
+                        <th style="width: 20%;">بحاجة للمراجعة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="criteria">فهم الأسئلة واستيعاب المطلوب</td><td></td><td></td><td></td></tr>
+                    <tr><td class="criteria">دقة الإجابات وصحتها العلمية</td><td></td><td></td><td></td></tr>
+                    <tr><td class="criteria">إدارة الوقت أثناء الحل</td><td></td><td></td><td></td></tr>
+                    <tr><td class="criteria"><strong>التقدير العام للمستوى</strong></td><td colspan="3"></td></tr>
+                </tbody>
+            </table>
+
+            <div class="print-notice">
+                <h3>تعليمات عامة</h3>
+                <p>
+                    اقرأ جميع الأسئلة والتعليمات بعناية قبل البدء في الحل، وأجب عن كل سؤال في المكان المخصص له.
+                    في أسئلة الصح والخطأ ضع علامة (&#10003;) أمام العبارة الصحيحة وعلامة (&#10007;) أمام العبارة الخاطئة داخل المربع المخصص لذلك.
+                </p>
+            </div>
+        </div>
+
+        <div id="print-loading" class="loading-msg">جاري تجهيز محتوى الطباعة...</div>
+        <div id="print-content"></div>
+    </div>
+
+    <script>
+        const arabicLetters = ['أ', 'ب', 'ج', 'د', 'هـ', 'و', 'ز', 'ح', 'ط', 'ي'];
+        const examPathPrefix = "exam";
+
+        function getExamCode() {
+            const pageExamCode = "417e2";
+            const params = new URLSearchParams(window.location.search);
+            const oldCode = params.get('i');
+            if (oldCode) return oldCode;
+            return pageExamCode;
+        }
+
+        function formatPoints(p) {
+            if (p === 1) return 'درجة واحدة';
+            if (p === 2) return 'درجتان';
+            if (p >= 3 && p <= 10) return `${p} درجات`;
+            return `${p} درجة`;
+        }
+
+        function escapeNewlines(t) {
+            return String(t || '').replace(/\n/g, '<br>');
+        }
+
+        function buildAnswerKey(questions) {
+            let keyHTML = '';
+            let qCount = 1;
+            let tableOpen = false;
+            const rowsPerPage = 25;
+
+            questions.forEach(q => {
+                if (q.divider || q.type === 'info' || q.type === 'instructions') return;
+
+                if (!tableOpen) {
+                    keyHTML += `
+                    <table>
+                        <thead>
+                            ${qCount > 1 ? `<tr><th colspan="2" style="font-size: 14px;">نموذج الإجابة (يتبع)</th></tr>` : ''}
+                            <tr>
+                                <th style="width: 90px;">رقم السؤال</th>
+                                <th>الإجابة الصحيحة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                    `;
+                    tableOpen = true;
+                }
+
+                const cleanAnswer = q.answer ? String(q.answer).replace(/\n/g, '<br>') : '—';
+                keyHTML += `
+                    <tr>
+                        <td class="num-cell">${qCount}</td>
+                        <td class="ans-cell">${cleanAnswer}</td>
+                    </tr>
+                `;
+
+                if (qCount % rowsPerPage === 0) {
+                    keyHTML += `</tbody></table>`;
+                    tableOpen = false;
+                }
+                qCount++;
+            });
+
+            if (tableOpen) {
+                keyHTML += `</tbody></table>`;
+            }
+
+            return keyHTML;
+        }
+
+        function buildQuestions(quiz) {
+            let html = '';
+            let questionNumber = 1;
+            let currentTfGroup = null;
+
+            quiz.questions.forEach((q, qIndex) => {
+                if (q.divider || q.type !== 'tf') {
+                    currentTfGroup = null;
+                }
+
+                if (q.divider) {
+                    html += `<div class="print-section-title">${escapeNewlines(q.divider)}</div>`;
+                    return;
+                }
+
+                if (q.type === 'instructions' || q.type === 'info') {
+                    html += `
+                        <div class="print-instructions">
+                            ${q.mainTitle ? `<h3>${escapeNewlines(q.mainTitle)}</h3>` : ''}
+                            ${q.description ? `<p>${escapeNewlines(q.description)}</p>` : ''}
+                        </div>`;
+                    return;
+                }
+
+                if (q.type === 'tf') {
+                    if (!currentTfGroup) {
+                        currentTfGroup = true;
+
+                        let tfTotal = 0;
+                        for (let i = qIndex; i < quiz.questions.length; i++) {
+                            const tfq = quiz.questions[i];
+                            if (tfq.divider || tfq.type !== 'tf') break;
+                            tfTotal += tfq.points || 1;
+                        }
+
+                        html += `
+                            <div class="tf-group">
+                                <div class="tf-header">
+                                    <span>ضع علامة (✓) أو (✗) أمام العبارات التالية داخل المربع المخصص</span>
+                                    <span class="tf-points">${formatPoints(tfTotal)}</span>
+                                </div>
+                        `;
+                    }
+
+                    const longText = q.text ? `<div class="q-longtext">${escapeNewlines(q.text)}</div>` : '';
+
+                    html += `
+                        <div class="tf-row">
+                            <div class="tf-q-text">
+                                <span class="q-num">${questionNumber}</span> ${escapeNewlines(q.question)}
+                                ${longText}
+                            </div>
+                            <div class="tf-boxes">
+                                <span class="tf-cell"></span>
+                            </div>
+                        </div>`;
+                    questionNumber++;
+                    return;
+                }
+
+                const qClass = (q.type === 'essay' || q.type === 'essay-image') && (q.points || 1) >= 10 ? 'q full-page' : 'q';
+
+                html += `<div class="${qClass}">`;
+                html += `
+                    <div class="q-head">
+                        <span class="q-num">${questionNumber}</span>
+                        <div class="q-text">${escapeNewlines(q.question)}</div>
+                        <span class="q-points">${formatPoints(q.points || 1)}</span>
+                    </div>`;
+
+                if (q.text) {
+                    html += `<div class="q-longtext">${escapeNewlines(q.text)}</div>`;
+                }
+
+                if (q.image) {
+                    html += `<img class="q-image" src="${q.image}" alt="صورة السؤال">`;
+                }
+
+                if (q.type === 'essay' || q.type === 'essay-image') {
+                    let points = q.points || 1;
+                    let lineCount = 3;
+
+                    if (points >= 10) {
+                        lineCount = 23;
+                    } else if (points > 2) {
+                        lineCount = Math.floor(points * 2.5);
+                    }
+
+                    html += '<div class="essay-lines">';
+                    for (let i = 0; i < lineCount; i++) {
+                        html += '<div class="writing-line"></div>';
+                    }
+                    html += '</div>';
+                }
+
+                if (q.type === 'mcq' || q.type === 'mcq-image') {
+                    html += '<div class="choices">';
+                    q.choices.forEach((choice, cIndex) => {
+                        const letter = arabicLetters[cIndex] || (cIndex + 1);
+                        html += `
+                            <div class="choice">
+                                <span class="letter">${letter}-</span>
+                                <span class="c-text">${escapeNewlines(choice)}</span>
+                            </div>`;
+                    });
+                    html += '</div>';
+                }
+
+                html += '</div>';
+                questionNumber++;
+            });
+
+            if (currentTfGroup) {
+                html += '</div>';
+            }
+
+            return html;
+        }
+
+        async function initPrint() {
+            const loadingEl = document.getElementById('print-loading');
+            const contentEl = document.getElementById('print-content');
+            const examCode = getExamCode();
+
+            if (!examCode) {
+                loadingEl.textContent = '⚠️ لم يتم تحديد رمز الاختبار.';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/assets/online/${examCode}.yaml`);
+                if (!res.ok) throw new Error('تعذر تحميل بيانات الاختبار');
+                const yamlText = await res.text();
+                const quizData = jsyaml.load(yamlText);
+
+                const quiz = Array.isArray(quizData) ? quizData[0] : quizData;
+                if (!quiz || !quiz.questions) throw new Error('لا توجد أسئلة');
+
+                const base = ("/" || '/');
+
+                document.getElementById('print-title').textContent = quiz.title || 'اختبار';
+                document.getElementById('print-subject').textContent = (quiz['subject-name'] || '') + (quiz['subject-code'] ? ' — ' + quiz['subject-code'] : '');
+                document.getElementById('p-subject-name').textContent = quiz['subject-name'] || 'غير محدد';
+                document.getElementById('p-subject-code').textContent = quiz['subject-code'] || examCode;
+
+                let totalPoints = 0;
+                let questionCount = 0;
+                quiz.questions.forEach(q => {
+                    if (q.divider || q.type === 'info' || q.type === 'instructions') return;
+                    totalPoints += q.points || 1;
+                    questionCount++;
+                });
+                document.getElementById('p-subject-total').textContent = totalPoints;
+                document.getElementById('p-question-count').textContent = questionCount;
+
+                let contentHTML = '';
+                contentHTML += '<div id="quiz-questions">' + buildQuestions(quiz) + '</div>';
+                contentHTML += '<div class="answer-key"><h2 class="answer-key-title">نموذج الإجابة</h2>' + buildAnswerKey(quiz.questions) + '</div>';
+
+                contentEl.innerHTML = contentHTML;
+
+                new QRCode(document.getElementById('qrcode-container'), {
+                    text: base + examPathPrefix + '/' + encodeURIComponent(examCode),
+                    width: 72,
+                    height: 72,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                loadingEl.remove();
+                contentEl.style.display = 'block';
+
+                const doPrint = () => {
+                    try { window.focus(); window.print(); } catch (e) { console.error(e); }
+                };
+
+                if (document.fonts && document.fonts.ready) {
+                    document.fonts.ready.then(() => setTimeout(doPrint, 250));
+                } else {
+                    setTimeout(doPrint, 250);
+                }
+            } catch (err) {
+                loadingEl.textContent = '❌ ' + err.message;
+                console.error(err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initPrint);
+    </script>
+  <script src="/assets/js/theme.js" defer></script>
+
+</body>
+</html>

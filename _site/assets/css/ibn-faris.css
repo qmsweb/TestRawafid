@@ -1,0 +1,1294 @@
+/* ============================================================
+   ابن فارس — واجهة المحادثة في روافد
+   هوية ابن فارس الأصلية: Parchment / Ink / Sand
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. رموز الهوية (نسخة فاتحة + نسخة داكنة)
+   تُطبَّق على صفحة ابن فارس وعلى لوحة المحادثة العائمة.
+   ------------------------------------------------------------ */
+.if-page,
+.if-sheet,
+.if-overlay {
+  --if-parchment: #faf8f5;
+  --if-soft-paper: #fdfbfa;
+  --if-white: #ffffff;
+  --if-warm-mist: #d1d1cd;
+  --if-ash: #92918b;
+  --if-graphite: #72706b;
+  --if-ink: #27251e;
+  --if-ink-strong: #000000;
+  --if-sand: #8a6e4b;
+  --if-on-accent: #ffffff;
+  --if-danger: #a8452f;
+  --if-danger-soft: #fdf1ee;
+
+  --if-radius-sm: 6px;
+  --if-radius-md: 12px;
+  --if-radius-lg: 16px;
+  --if-radius-full: 9999px;
+  --if-sheet-radius: 26px;
+
+  --if-shadow-subtle: rgba(0, 0, 0, 0.08) 0 1px 2px 0;
+  --if-shadow-fab: 0 10px 28px rgba(39, 37, 30, 0.22);
+  --if-shadow-sheet: 0 -8px 48px rgba(39, 37, 30, 0.18);
+  --if-scrim: rgba(39, 37, 30, 0.42);
+  --if-page-backdrop: #f1efea;
+
+  --if-font: var(--font-body), "Thmanyah Sans", "IBM Plex Sans Arabic",
+    system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+}
+
+html[data-theme="dark"] .if-page,
+html[data-theme="dark"] .if-sheet,
+html[data-theme="dark"] .if-overlay {
+  --if-parchment: #191815;
+  --if-soft-paper: #23211d;
+  --if-white: #23211d;
+  --if-warm-mist: #3a3731;
+  --if-ash: #8a867c;
+  --if-graphite: #b5b0a4;
+  --if-ink: #f3f0e8;
+  --if-ink-strong: #ffffff;
+  --if-sand: #d2b48c;
+  --if-on-accent: #131210;
+  --if-danger: #e28b73;
+  --if-danger-soft: #2a1f1b;
+
+  --if-shadow-subtle: rgba(0, 0, 0, 0.35) 0 1px 2px 0;
+  --if-shadow-fab: 0 10px 28px rgba(0, 0, 0, 0.42);
+  --if-shadow-sheet: 0 -8px 48px rgba(0, 0, 0, 0.5);
+  --if-scrim: rgba(0, 0, 0, 0.62);
+  --if-page-backdrop: #131210;
+}
+
+/* ------------------------------------------------------------
+   2. الصفحة والهيكل
+   ------------------------------------------------------------ */
+.if-app,
+.if-app *,
+.if-app *::before,
+.if-app *::after {
+  box-sizing: border-box;
+}
+
+.if-app [hidden],
+.if-overlay [hidden] {
+  display: none !important;
+}
+
+.if-page {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--if-page-backdrop);
+  color: var(--if-ink);
+  font-family: var(--if-font);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.if-page-stage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* اللوحة: تُستخدم في صفحة ابن فارس وفي النافذة العائمة */
+.if-sheet {
+  display: flex;
+  flex-direction: column;
+  width: min(820px, 100%);
+  max-height: 100vh;
+  max-height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--if-parchment);
+  border-radius: var(--if-sheet-radius) var(--if-sheet-radius) 0 0;
+  box-shadow: var(--if-shadow-sheet);
+  color: var(--if-ink);
+  font-family: var(--if-font);
+}
+
+.if-sheet--page {
+  height: 100vh;
+  height: 100dvh;
+}
+
+.if-app {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--if-parchment);
+  color: var(--if-ink);
+  font-family: var(--if-font);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.if-sheet-handle {
+  width: 46px;
+  height: 4px;
+  margin: 9px auto 0;
+  border-radius: var(--if-radius-full);
+  background: var(--if-warm-mist);
+  flex-shrink: 0;
+}
+
+.if-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.if-skip {
+  position: absolute;
+  top: -100px;
+  inset-inline-start: 16px;
+  z-index: 200;
+  padding: 8px 12px;
+  border-radius: var(--if-radius-sm);
+  background: var(--if-ink);
+  color: var(--if-parchment);
+  font-size: 14px;
+}
+
+.if-skip:focus {
+  top: 12px;
+}
+
+.if-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------
+   3. النافذة العائمة (لوحة سفلية فوق أي صفحة)
+   ------------------------------------------------------------ */
+.if-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  background: var(--if-scrim);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.26s ease, visibility 0s linear 0.26s;
+}
+
+.if-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.26s ease, visibility 0s linear 0s;
+}
+
+.if-overlay .if-sheet {
+  max-height: min(88dvh, 880px);
+  transform: translate3d(0, 100%, 0);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.if-overlay.is-open .if-sheet {
+  transform: translate3d(0, 0, 0);
+}
+
+.if-locked {
+  overflow: hidden !important;
+}
+
+/* ------------------------------------------------------------
+   4. الشريط العلوي
+   ------------------------------------------------------------ */
+.if-topbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px clamp(14px, 4vw, 22px) 12px;
+  border-bottom: 1px solid var(--if-warm-mist);
+  background: var(--if-parchment);
+}
+
+.if-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.if-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.if-brand-mark img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: brightness(0);
+}
+
+html[data-theme="dark"] .if-brand-mark img {
+  filter: invert(1);
+}
+
+.if-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.if-brand-name {
+  color: var(--if-ink);
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.if-brand-sub {
+  color: var(--if-graphite);
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.if-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.if-circle {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--if-graphite);
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.if-circle:hover,
+.if-circle:focus-visible {
+  border-color: var(--if-graphite);
+  background: var(--if-soft-paper);
+  color: var(--if-ink);
+  outline: none;
+}
+
+.if-circle:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--if-sand) 35%, transparent);
+}
+
+.if-circle svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.if-circle--accent {
+  border-color: color-mix(in srgb, var(--if-sand) 55%, var(--if-warm-mist));
+  color: var(--if-sand);
+}
+
+.if-circle--accent:hover,
+.if-circle--accent:focus-visible {
+  border-color: var(--if-sand);
+  color: var(--if-sand);
+  background: color-mix(in srgb, var(--if-sand) 10%, transparent);
+}
+
+.if-theme .if-sun {
+  display: none;
+}
+
+html[data-theme="dark"] .if-theme .if-sun {
+  display: block;
+}
+
+html[data-theme="dark"] .if-theme .if-moon {
+  display: none;
+}
+
+/* ------------------------------------------------------------
+   5. منطقة المحادثة
+   ------------------------------------------------------------ */
+.if-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.if-thread {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 22px clamp(16px, 4vw, 28px) 12px;
+}
+
+.if-messages {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ------------------------------------------------------------
+   6. الحالة الفارغة والاقتراحات
+   ------------------------------------------------------------ */
+.if-empty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  justify-content: safe center;
+  min-height: 300px;
+  padding: 20px 0 26px;
+  text-align: center;
+}
+
+.if-empty-mark {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin-bottom: 14px;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: 50%;
+  background: var(--if-soft-paper);
+}
+
+.if-empty-mark img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  filter: brightness(0);
+}
+
+html[data-theme="dark"] .if-empty-mark img {
+  filter: invert(1);
+}
+
+.if-empty-title {
+  margin: 0 0 8px;
+  color: var(--if-ink);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.if-empty-text {
+  max-width: 480px;
+  margin: 0 0 22px;
+  color: var(--if-graphite);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.if-suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 640px;
+}
+
+.if-suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 14px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--if-radius-lg);
+  background: var(--if-soft-paper);
+  box-shadow: var(--if-shadow-subtle);
+  color: var(--if-ink);
+  font-family: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.if-suggestion:hover,
+.if-suggestion:focus-visible {
+  border-color: var(--if-warm-mist);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.if-suggestion:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--if-sand) 35%, transparent);
+}
+
+.if-suggestion-icon {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-bottom: 4px;
+  color: var(--if-ink);
+}
+
+.if-suggestion-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.if-suggestion-title {
+  color: var(--if-ink);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.if-suggestion-desc {
+  color: var(--if-graphite);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* ------------------------------------------------------------
+   7. الرسائل: السؤال عنوان، والإجابة نصّ
+   ------------------------------------------------------------ */
+.if-msg {
+  display: block;
+  padding-bottom: 28px;
+}
+
+.if-msg:last-child {
+  padding-bottom: 10px;
+}
+
+.if-avatar {
+  display: none;
+}
+
+.if-msg-body {
+  min-width: 0;
+  color: var(--if-ink);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.85;
+}
+
+.if-msg-user .if-msg-body {
+  color: var(--if-ink);
+  font-size: clamp(21px, 5.4vw, 26px);
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.if-answer-label {
+  margin: 0 0 10px;
+  color: var(--if-graphite);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.if-msg-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.if-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: var(--if-radius-full);
+  background: transparent;
+  color: var(--if-graphite);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.if-copy:hover,
+.if-copy:focus-visible {
+  background: var(--if-soft-paper);
+  color: var(--if-ink);
+  outline: none;
+}
+
+.if-copy.is-copied {
+  color: var(--if-ink);
+}
+
+/* ------------------------------------------------------------
+   8. تنسيق Markdown
+   ------------------------------------------------------------ */
+.if-md {
+  overflow-wrap: anywhere;
+  color: var(--if-ink);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.85;
+  text-align: start;
+}
+
+.if-plain {
+  white-space: pre-wrap;
+}
+
+.if-md > :first-child {
+  margin-top: 0;
+}
+
+.if-md > :last-child {
+  margin-bottom: 0;
+}
+
+/* كل مقطع Markdown يُغلف في div مستقل داخل renderMarkdown */
+.if-md > div > :first-child {
+  margin-top: 0;
+}
+
+.if-md > div > :last-child {
+  margin-bottom: 0;
+}
+
+.if-md h1,
+.if-md h2,
+.if-md h3,
+.if-md h4,
+.if-md h5,
+.if-md h6 {
+  margin: 24px 0 8px;
+  color: var(--if-ink);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.if-md h4,
+.if-md h5,
+.if-md h6 {
+  font-size: 15px;
+}
+
+.if-md p {
+  margin: 12px 0;
+}
+
+.if-md strong {
+  color: var(--if-ink);
+  font-weight: 600;
+}
+
+.if-md em {
+  font-style: italic;
+}
+
+.if-md del {
+  color: var(--if-graphite);
+}
+
+.if-md a {
+  color: var(--if-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--if-sand);
+  text-underline-offset: 2px;
+}
+
+.if-md a:hover {
+  color: var(--if-graphite);
+}
+
+.if-md ul,
+.if-md ol {
+  margin: 12px 0;
+  padding-inline-start: 24px;
+}
+
+.if-md ul {
+  list-style: disc;
+}
+
+.if-md ol {
+  list-style: decimal;
+}
+
+.if-md li {
+  margin: 4px 0;
+  padding-inline-start: 2px;
+}
+
+.if-md li > p {
+  margin: 4px 0;
+}
+
+.if-md li::marker {
+  color: var(--if-graphite);
+}
+
+.if-md blockquote {
+  margin: 16px 0;
+  padding-inline-start: 16px;
+  border-inline-start: 2px solid var(--if-warm-mist);
+  color: var(--if-graphite);
+}
+
+.if-md blockquote p {
+  margin: 6px 0;
+}
+
+.if-md hr {
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid var(--if-warm-mist);
+}
+
+.if-md code {
+  direction: ltr;
+  unicode-bidi: isolate;
+  padding: 2px 6px;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-sm);
+  background: var(--if-soft-paper);
+  color: var(--if-ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    monospace;
+  font-size: 13px;
+}
+
+.if-md pre {
+  direction: ltr;
+  margin: 16px 0;
+  padding: 16px;
+  overflow-x: auto;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-md);
+  background: var(--if-soft-paper);
+  text-align: left;
+}
+
+.if-md pre code {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.if-md table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin: 16px 0;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.if-md thead {
+  color: var(--if-graphite);
+}
+
+.if-md th {
+  padding: 0 12px 8px;
+  border-bottom: 1px solid var(--if-warm-mist);
+  font-size: 11px;
+  font-weight: 400;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.if-md td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--if-warm-mist);
+  color: var(--if-ink);
+  font-size: 14px;
+  line-height: 1.75;
+  text-align: start;
+  vertical-align: top;
+}
+
+.if-md tr:last-child td {
+  border-bottom: 0;
+}
+
+.if-md input[type="checkbox"] {
+  margin-inline-end: 6px;
+  accent-color: var(--if-sand);
+  vertical-align: middle;
+}
+
+.if-md img {
+  max-width: 100%;
+  margin: 12px 0;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-md);
+}
+
+/* أبيات الشعر العمودي */
+.if-poetry {
+  margin: 16px 0;
+  overflow: hidden;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-md);
+  background: var(--if-soft-paper);
+}
+
+.if-poetry figcaption {
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--if-warm-mist);
+  color: var(--if-graphite);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.if-poetry-body {
+  padding: 16px;
+}
+
+.if-verse {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.if-verse span {
+  color: var(--if-ink);
+  font-size: 16px;
+  line-height: 2;
+  text-align: center;
+}
+
+.if-verse span + span {
+  padding-inline-start: 16px;
+  border-inline-start: 1px solid var(--if-warm-mist);
+}
+
+/* ------------------------------------------------------------
+   9. مؤشرات البث
+   ------------------------------------------------------------ */
+.if-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 0;
+}
+
+.if-typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--if-graphite);
+  animation: if-pulse 1.2s ease-in-out infinite;
+}
+
+.if-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.if-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.if-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-inline-start: 2px;
+  background: var(--if-graphite);
+  vertical-align: -0.12em;
+  animation: if-blink 1s steps(2, start) infinite;
+}
+
+@keyframes if-pulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.75);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes if-blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+/* ------------------------------------------------------------
+   10. شريط الكتابة
+   ------------------------------------------------------------ */
+.if-composer-shell {
+  flex-shrink: 0;
+  padding: 8px clamp(14px, 4vw, 24px) max(14px, env(safe-area-inset-bottom));
+  background: var(--if-parchment);
+}
+
+.if-composer-width {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.if-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-lg);
+  background: var(--if-soft-paper);
+  color: var(--if-ink);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.if-alert svg {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  color: var(--if-danger);
+}
+
+.if-alert.is-quota {
+  border-color: color-mix(in srgb, var(--if-danger) 35%, var(--if-warm-mist));
+  background: var(--if-danger-soft);
+}
+
+.if-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: calc(var(--if-radius-full) - 2px);
+  background: var(--if-soft-paper);
+  box-shadow: var(--if-shadow-subtle);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.if-composer:focus-within {
+  border-color: color-mix(
+    in srgb,
+    var(--if-sand) 45%,
+    var(--if-warm-mist)
+  );
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--if-sand) 16%, transparent);
+}
+
+.if-input {
+  flex: 1;
+  display: block;
+  width: 100%;
+  min-height: 40px;
+  max-height: 168px;
+  padding: 9px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--if-ink);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.55;
+  resize: none;
+  outline: none;
+}
+
+.if-input::placeholder {
+  color: var(--if-graphite);
+  opacity: 1;
+}
+
+.if-input:disabled {
+  opacity: 0.6;
+}
+
+.if-composer-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.if-send {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--if-ink);
+  color: var(--if-parchment);
+  cursor: pointer;
+  transition: background-color 0.18s ease, opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.if-send:hover,
+.if-send:focus-visible {
+  background: var(--if-ink-strong);
+  outline: none;
+}
+
+.if-send:active {
+  transform: scale(0.94);
+}
+
+.if-send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.if-send svg {
+  width: 20px;
+  height: 20px;
+}
+
+.if-stop {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--if-graphite);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+.if-stop:hover,
+.if-stop:focus-visible {
+  border-color: var(--if-graphite);
+  color: var(--if-ink);
+  outline: none;
+}
+
+.if-stop-square {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: currentColor;
+}
+
+.if-composer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 9px;
+}
+
+.if-model-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-full);
+  color: var(--if-graphite);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.if-model-pill svg {
+  width: 13px;
+  height: 13px;
+  color: var(--if-sand);
+}
+
+.if-quota {
+  color: var(--if-graphite);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.if-quota.is-empty {
+  color: var(--if-danger);
+}
+
+.if-hint {
+  color: var(--if-graphite);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.if-disclaimer {
+  margin: 8px 2px 0;
+  color: var(--if-graphite);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.if-disclaimer strong {
+  color: var(--if-graphite);
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------
+   11. الجوال والشاشات الصغيرة
+   ------------------------------------------------------------ */
+@media (max-height: 660px) {
+  .if-empty {
+    min-height: 0;
+    padding-top: 4px;
+    padding-bottom: 12px;
+    justify-content: flex-start;
+  }
+
+  .if-empty-mark,
+  .if-empty-text {
+    display: none;
+  }
+
+  .if-empty-title {
+    margin-bottom: 14px;
+    font-size: 20px;
+  }
+
+  .if-suggestions {
+    gap: 8px;
+  }
+
+  .if-suggestion {
+    padding: 10px 12px;
+  }
+
+  .if-suggestion-desc {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .if-overlay {
+    align-items: center;
+    padding: 32px 24px;
+  }
+
+  .if-overlay .if-sheet {
+    border-radius: var(--if-sheet-radius);
+    max-height: min(86dvh, 840px);
+    transform: translate3d(0, 24px, 0) scale(0.99);
+  }
+
+  .if-overlay.is-open .if-sheet {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  .if-page-stage {
+    align-items: center;
+    padding: 32px 24px;
+  }
+
+  .if-sheet--page {
+    height: min(86dvh, 860px);
+    border-radius: var(--if-sheet-radius);
+  }
+}
+
+@media (max-width: 640px) {
+  .if-topbar {
+    padding: 8px 14px 10px;
+  }
+
+  .if-brand-name {
+    font-size: 17px;
+  }
+
+  .if-brand-sub {
+    display: none;
+  }
+
+  .if-circle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .if-topbar-actions {
+    gap: 6px;
+  }
+
+  .if-thread {
+    padding: 20px 16px 10px;
+  }
+
+  .if-empty {
+    padding: 16px 0 22px;
+  }
+
+  .if-empty-title {
+    font-size: 21px;
+  }
+
+  .if-empty-text {
+    font-size: 14px;
+  }
+
+  .if-suggestions {
+    grid-template-columns: 1fr;
+  }
+
+  .if-msg {
+    padding-bottom: 24px;
+  }
+
+  .if-msg-body,
+  .if-md {
+    font-size: 16px;
+  }
+
+  .if-verse {
+    gap: 10px;
+  }
+
+  .if-verse span {
+    font-size: 15px;
+  }
+
+  .if-composer-shell {
+    padding: 6px 12px max(10px, env(safe-area-inset-bottom));
+  }
+
+  .if-hint {
+    display: none;
+  }
+
+  .if-disclaimer {
+    font-size: 10px;
+  }
+}
+
+/* على الشاشات القصيرة جداً نختصر رأس اللوحة */
+@media (max-height: 620px) {
+  .if-sheet-handle {
+    margin-top: 6px;
+  }
+
+  .if-topbar {
+    padding-top: 6px;
+    padding-bottom: 8px;
+  }
+}
+
+@media (max-height: 560px) {
+  .if-overlay .if-sheet {
+    max-height: 94dvh;
+  }
+
+  .if-empty-title {
+    font-size: 19px;
+  }
+
+  .if-suggestions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .if-suggestion {
+    padding: 9px 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .if-quota {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   12. تقليل الحركة والطباعة
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .if-page *,
+  .if-page *::before,
+  .if-page *::after,
+  .if-overlay,
+  .if-overlay * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  .if-page {
+    height: auto;
+    overflow: visible;
+  }
+
+  .if-overlay,
+  .if-topbar,
+  .if-composer-shell,
+  .if-msg-actions,
+  .if-suggestions {
+    display: none !important;
+  }
+
+  .if-main {
+    overflow: visible;
+  }
+}

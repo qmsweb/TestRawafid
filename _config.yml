@@ -22,3 +22,5 @@ collections:
 # استبعاد الملفات غير المطلوبة في النشر
 exclude:
   - README.md
+  # كود Supabase ودليل النشر لا يُنشران مع الموقع الثابت
+  - supabase

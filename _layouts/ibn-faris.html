@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title | default: "ابن فارس — مساعد روافد اللغوي" }}</title>
+
+  <link rel="stylesheet" href="{{ '/fonts/fonts.css' | relative_url }}" />
+  <link rel="stylesheet" href="{{ '/assets/css/design-system.css' | relative_url }}" />
+  <link rel="stylesheet" href="{{ '/assets/css/ibn-faris.css' | relative_url }}" />
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/png">
+
+  <meta property="og:title" content="{{ page.title | default: 'ابن فارس — مساعد روافد اللغوي' }}">
+  <meta property="og:description" content="{{ page.description | default: 'مساعد ذكي متخصص في اللغة العربية من منصة روافد التعليمية.' }}">
+  <meta property="og:image" content="{{ '/images/ibnfaris-icon.png' | absolute_url }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+
+  <script>
+    (function () {
+      var savedTheme = localStorage.getItem('rawafed-theme');
+      document.documentElement.setAttribute(
+        'data-theme',
+        ['light', 'dark'].indexOf(savedTheme) !== -1 ? savedTheme : 'light'
+      );
+    })();
+  </script>
+
+  {% include seo.html %}
+</head>
+
+<body class="if-page">
+  <a class="if-skip" href="#if-main">تخطَّ إلى المحادثة</a>
+
+  <div class="if-page-stage">
+    <div class="if-sheet if-sheet--page" role="dialog" aria-modal="true" aria-labelledby="if-title">
+      {% include ibn-faris-app.html mode="page" %}
+    </div>
+  </div>
+
+  <noscript>
+    <p style="padding: 24px; text-align: center">
+      تحتاج إلى تفعيل JavaScript لاستخدام ابن فارس.
+    </p>
+  </noscript>
+
+  <script src="{{ '/assets/js/vendor/marked.min.js' | relative_url }}"></script>
+  <script src="{{ '/assets/js/vendor/purify.min.js' | relative_url }}"></script>
+  <script src="{{ '/assets/js/ibn-faris-config.js' | relative_url }}"></script>
+  <script src="{{ '/assets/js/ibn-faris.js' | relative_url }}"></script>
+</body>
+</html>

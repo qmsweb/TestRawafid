@@ -301,6 +301,37 @@ ol {
   display: none;
 }
 
+/* صورة اختيارية في التوب بار (بجوار الشعار من جهة اليسار) */
+.topbar-banner {
+  display: block;
+  align-self: center;
+  flex: 0 1 280px;
+  min-width: 120px;
+  height: 34px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: var(--radius-sm);
+}
+
+/* على الحاسوب: الصورة ملاصقة للشعار، وروابط التنقل تُدفع إلى أقصى اليسار (جهة البحث) */
+@media (min-width: 900px) {
+  .navbar--with-banner {
+    justify-content: flex-start;
+  }
+
+  .navbar--with-banner .nav-links {
+    margin-inline-start: auto;
+    flex-shrink: 0;
+  }
+}
+
+/* على الشاشات الصغيرة تُخفى الصورة ويبقى الشريط كما هو */
+@media (max-width: 899px) {
+  .topbar-banner {
+    display: none;
+  }
+}
+
 /* ------------------------------------------------------------
    5ب. الترويسة الزرقاء في الوضع النهاري
    ------------------------------------------------------------ */

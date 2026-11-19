@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ملخص في الدرس الرابع: مناهج النقد السياقي</title>
+
+  <link rel="stylesheet" href="/fonts/fonts.css" />
+  <link rel="stylesheet" href="/assets/css/design-system.css" />
+  <link rel="icon" href="/images/favicon.png" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  
+
+  
+  
+  
+
+  
+  
+  
+
+  <meta property="og:site_name" content="منصة روافد">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="ملخص في الدرس الرابع: مناهج النقد السياقي">
+  <meta property="og:description" content="يعرض هذا الدرس مناهج النقد السياقي من أربعة وجوه: المفهوم، والأسئلة المنهجية، والأسس الفلسفية، وطريقة التعامل مع النص.">
+  <meta property="og:url" content="https://rawafid.jassim.one/blog/417s4">
+  <meta property="og:image" content="https://rawafid.jassim.one/images/blog-cover.png">
+  <meta property="og:image:alt" content="ملخص في الدرس الرابع: مناهج النقد السياقي">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ملخص في الدرس الرابع: مناهج النقد السياقي">
+  <meta name="twitter:description" content="يعرض هذا الدرس مناهج النقد السياقي من أربعة وجوه: المفهوم، والأسئلة المنهجية، والأسس الفلسفية، وطريقة التعامل مع النص.">
+  <meta name="twitter:image" content="https://rawafid.jassim.one/images/blog-cover.png">
+
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('rawafed-theme');
+      document.documentElement.setAttribute('data-theme', ['light','dark'].indexOf(savedTheme) !== -1 ? savedTheme : 'light');
+    })();
+  </script>
+
+  <style>
+    .blog-page {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: var(--space-lg) var(--space-md);
+    }
+
+    .blog-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+
+    .action-buttons-top {
+      display: flex;
+      gap: var(--space-sm);
+    }
+
+    .back-btn,
+    .share-btn-top,
+    .print-btn-top,
+    .related-btn-top,
+    .fontplus-btn-top,
+    .fontminus-btn-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--rawafid-primary);
+      font-weight: var(--font-bold);
+      font-size: var(--text-sm);
+      padding: 8px 16px;
+      border-radius: 50px;
+      background: var(--rawafid-surface);
+      border: 1px solid var(--rawafid-border);
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .back-btn:hover,
+    .back-btn:focus-visible,
+    .share-btn-top:hover,
+    .share-btn-top:focus-visible,
+    .print-btn-top:hover,
+    .print-btn-top:focus-visible,
+    .related-btn-top:hover,
+    .related-btn-top:focus-visible,
+    .fontplus-btn-top:hover,
+    .fontplus-btn-top:focus-visible,
+    .fontminus-btn-top:hover,
+    .fontminus-btn-top:focus-visible {
+      background: var(--rawafid-primary);
+      color: var(--rawafid-white);
+      border-color: var(--rawafid-primary);
+    }
+
+    .related-btn-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: var(--space-md);
+    }
+
+    .article-meta {
+      font-size: var(--text-sm);
+      color: var(--rawafid-text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+
+    .article-meta .author-avatar {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      vertical-align: middle;
+      margin-inline-end: 6px;
+    }
+
+    #post-author {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .ai-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: var(--font-bold);
+      font-size: 0.78rem;
+      padding: 4px 14px;
+      background: var(--rawafid-primary-soft);
+      color: var(--rawafid-primary);
+      border: 1px solid var(--rawafid-border);
+      border-radius: 50px;
+    }
+
+    .ibnfaris-tag {
+      --ibnfaris-tag-bg: #8a6e4b;
+      --ibnfaris-tag-text: #ffffff;
+      --ibnfaris-logo-bg: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: var(--font-bold);
+      font-size: 0.78rem;
+      padding-block: 4px;
+      padding-inline-start: 5px;
+      padding-inline-end: 14px;
+      background: var(--ibnfaris-tag-bg);
+      color: var(--ibnfaris-tag-text);
+      border-radius: 50px;
+    }
+
+    .ibnfaris-tag-logo {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: block;
+      border-radius: 50%;
+      background: var(--ibnfaris-logo-bg);
+      object-fit: contain;
+      padding: 2px;
+    }
+
+    .page-title {
+      font-size: clamp(1.7rem, 3vw, 2rem);
+      font-weight: var(--font-black);
+      font-family: var(--font-heading);
+      line-height: 1.4;
+      margin: var(--space-xs) 0 var(--space-md);
+      color: var(--rawafid-text);
+    }
+
+    .cover-image {
+      width: 100%;
+      max-height: 420px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--rawafid-border);
+      display: block;
+      margin: var(--space-sm) 0 var(--space-lg);
+    }
+
+    .cover-caption {
+      display: block;
+      text-align: center;
+      color: var(--rawafid-text-muted);
+      font-size: var(--text-sm);
+      margin: calc(-1 * var(--space-md)) 0 var(--space-lg);
+    }
+
+    /* تنسيق محتوى المارك داون */
+    .page-content {
+      color: var(--rawafid-text);
+      --fs: 1;
+      font-size: calc(var(--text-base) * var(--fs));
+    }
+
+    .page-content h1,
+    .page-content h2,
+    .page-content h3,
+    .page-content h4 {
+      font-weight: var(--font-bold);
+      color: var(--rawafid-primary);
+      margin-top: var(--space-xl);
+      margin-bottom: var(--space-md);
+      line-height: 1.5;
+    }
+
+    .page-content h1 { font-size: calc(var(--text-2xl) * var(--fs)); }
+    .page-content h2 { font-size: calc(var(--text-xl) * var(--fs)); border-right: 4px solid var(--rawafid-primary); padding-right: var(--space-md); }
+    .page-content h3 { font-size: calc(var(--text-lg) * var(--fs)); }
+    .page-content h4 { font-size: calc(var(--text-base) * var(--fs)); }
+
+    .page-content p {
+      font-size: calc(var(--text-base) * var(--fs));
+      line-height: 1.9;
+      margin-bottom: var(--space-md);
+      text-align: justify;
+    }
+
+    .page-content a {
+      color: var(--rawafid-primary);
+      font-weight: var(--font-bold);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .page-content a:hover,
+    .page-content a:focus-visible {
+      opacity: 0.8;
+    }
+
+    .page-content strong { font-weight: var(--font-bold); }
+    .page-content em { font-style: italic; }
+    .page-content del { opacity: 0.6; }
+
+    .page-content ul,
+    .page-content ol {
+      padding-right: var(--space-lg);
+      margin-bottom: var(--space-md);
+      line-height: 2;
+    }
+
+    .page-content li { margin-bottom: var(--space-xs); text-align: justify; }
+    .page-content ul { list-style: disc; }
+    .page-content ul ul { list-style: circle; }
+    .page-content ol { list-style: decimal; }
+    .page-content li::marker { color: var(--rawafid-primary); font-weight: var(--font-bold); }
+
+    .page-content blockquote {
+      background: var(--rawafid-primary-soft);
+      border-right: 4px solid var(--rawafid-primary);
+      border-radius: var(--radius-sm);
+      padding: var(--space-md);
+      margin: var(--space-lg) 0;
+      color: var(--rawafid-text);
+      font-size: calc(var(--text-base) * var(--fs));
+      text-align: justify;
+    }
+
+    .page-content blockquote p { margin-bottom: 0; }
+
+    .page-content code {
+      background: var(--rawafid-bg);
+      border: 1px solid var(--rawafid-border);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      direction: ltr;
+      display: inline-block;
+    }
+
+    .page-content pre {
+      background: var(--rawafid-bg);
+      border: 1px solid var(--rawafid-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      overflow-x: auto;
+      margin: var(--space-lg) 0;
+      direction: ltr;
+      text-align: left;
+    }
+
+    .page-content pre code {
+      background: transparent;
+      border: 0;
+      padding: 0;
+      border-radius: 0;
+      font-size: 0.88em;
+    }
+
+    .page-content img {
+      max-width: 100%;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--rawafid-border);
+      display: block;
+      margin: var(--space-xl) auto;
+    }
+
+    .page-content .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      max-width: 100%;
+      margin: var(--space-lg) auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .page-content table {
+      width: auto;
+      max-width: none;
+      min-width: 100%;
+      margin: 0;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: calc(var(--text-sm) * var(--fs));
+      border: 1px solid var(--rawafid-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--rawafid-surface);
+      direction: rtl;
+    }
+
+    .page-content thead th {
+      background: var(--rawafid-primary-soft);
+      color: var(--rawafid-text);
+      font-weight: var(--font-bold);
+      text-align: right;
+      padding: 12px var(--space-md);
+      border: 0;
+      border-bottom: 1px solid var(--rawafid-border);
+      font-size: calc(var(--text-base) * var(--fs));
+      white-space: nowrap;
+    }
+
+    .page-content th,
+    .page-content td {
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--rawafid-border);
+      text-align: justify !important;
+      text-align-last: right;
+      direction: rtl;
+    }
+
+    .page-content tbody tr { background: var(--rawafid-surface); }
+    .page-content tbody tr:last-child td { border-bottom: 0; }
+    .page-content td { color: var(--rawafid-text); }
+
+    .page-content hr {
+      border: 0;
+      border-top: 2px dashed var(--rawafid-border);
+      margin: var(--space-xl) 0;
+    }
+
+    .page-content .task-list-item { list-style: none; }
+    .page-content input[type="checkbox"] {
+      margin-left: 8px;
+      accent-color: var(--rawafid-primary);
+    }
+
+    /* الخرائط الذهنية (markmap): تُدرج في الماركداون عبر كتلة markmap */
+    .page-content .mindmap {
+      position: relative;
+      width: calc(100% + 120px);
+      max-width: none;
+      margin: var(--space-lg) -60px;
+      padding: 0;
+      background: var(--rawafid-surface);
+      border: 1px solid var(--rawafid-border);
+      border-radius: var(--radius-md);
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .page-content .mindmap .markmap {
+      --markmap-text-color: var(--rawafid-text);
+      --markmap-circle-open-bg: var(--rawafid-surface);
+      --markmap-code-bg: var(--rawafid-bg);
+      --markmap-code-color: var(--rawafid-text);
+      --markmap-highlight-bg: var(--rawafid-accent);
+      --markmap-font: 400 15px/1.5 var(--font-body);
+      --markmap-a-color: var(--rawafid-primary);
+      --markmap-a-hover-color: var(--rawafid-primary-dark);
+    }
+
+    .mindmap-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: var(--space-sm);
+      background: var(--rawafid-bg);
+      border-bottom: 1px solid var(--rawafid-border);
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+    }
+
+    .mindmap-btn {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid var(--rawafid-border);
+      background: var(--rawafid-surface);
+      color: var(--rawafid-primary);
+      font-size: 0.85rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .mindmap-btn:hover,
+    .mindmap-btn:focus-visible {
+      background: var(--rawafid-primary);
+      color: var(--rawafid-white);
+      border-color: var(--rawafid-primary);
+    }
+
+    .mindmap-viewport {
+      overflow: hidden;
+      padding: var(--space-sm);
+      background: var(--rawafid-surface);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .page-content .mindmap svg {
+      width: 100%;
+      height: clamp(380px, 62vh, 680px);
+      display: block;
+      margin: 0 auto;
+      font-family: var(--font-body);
+      touch-action: none;
+    }
+
+    .page-content .mindmap .markmap-foreign > div {
+      direction: rtl;
+      text-align: right;
+    }
+
+    .page-content .mindmap-error {
+      color: var(--rawafid-text-muted);
+      font-size: var(--text-sm);
+      text-align: center;
+      padding: var(--space-md);
+    }
+
+    .mindmap-pending { display: none !important; }
+
+    .blog-status {
+      text-align: center;
+      color: var(--rawafid-text-muted);
+      font-size: var(--text-base);
+      padding: var(--space-xl) var(--space-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+    }
+
+    @media (max-width: 1100px) {
+      .page-content .mindmap { width: 100%; margin-left: 0; margin-right: 0; }
+    }
+
+    @media (max-width: 900px) {
+      .blog-page { padding: var(--space-md); }
+    }
+
+    @media (max-width: 600px) {
+      .blog-page { padding: var(--space-md) var(--space-lg); }
+      .page-content p { font-size: calc(var(--text-sm) * var(--fs)); }
+      .article-meta { gap: var(--space-sm); }
+      .page-title { font-size: 1.7rem; }
+      .page-content table,
+      .page-content th,
+      .page-content td { font-size: calc(var(--text-xs) * var(--fs)); padding: var(--space-sm); }
+      .page-content .table-wrapper { margin: var(--space-md) 0; }
+      .page-content h1 { font-size: calc(var(--text-xl) * var(--fs)); }
+      .page-content h2 { font-size: calc(var(--text-lg) * var(--fs)); }
+      .page-content h3 { font-size: calc(var(--text-base) * var(--fs)); }
+    }
+
+    @media print {
+      :root, [data-theme="dark"] {
+        --rawafid-primary: #000000 !important;
+        --rawafid-bg: #ffffff !important;
+        --rawafid-surface: #ffffff !important;
+        --rawafid-text: #000000 !important;
+        --rawafid-text-muted: #333333 !important;
+        --rawafid-border: #000000 !important;
+        --rawafid-primary-soft: #f2f2f2 !important;
+      }
+
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      header, footer, .blog-actions, .action-buttons-top, .related-btn-wrapper {
+        display: none !important;
+      }
+
+      .cover-image {
+        max-height: 800px !important;
+        border: none !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .page-content thead th { background: #f2f2f2 !important; color: #000000 !important; }
+
+      .page-content .mindmap {
+        width: 100% !important;
+        margin: 0 !important;
+        border: none !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .mindmap-toolbar { display: none !important; }
+
+      .mindmap-viewport {
+        overflow: visible !important;
+        max-height: none !important;
+        padding: 0 !important;
+      }
+
+      /* نترك الارتفاع يُحسب من نسبة الخريطة (viewBox) حتى تُطبع كاملة وبحجم مقروء */
+      .page-content .mindmap svg {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 380px !important;
+        max-height: none !important;
+      }
+
+    .mindmap-pending { visibility: hidden; }
+    }
+  </style>
+  
+
+
+
+
+<link rel="canonical" href="https://rawafid.jassim.one/blog/417s4">
+<meta name="robots" content="index, follow">
+
+
+<meta name="description" content="منصة روافد التعليمية">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://rawafid.jassim.one/#organization",
+  "name": "منصة روافد",
+  "url": "https://rawafid.jassim.one/",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://rawafid.jassim.one/images/rawafid-1.png"
+  },
+  "description": "منصة روافد التعليمية",
+  "inLanguage": "ar"
+}
+</script>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "ملخص في الدرس الرابع: مناهج النقد السياقي",
+  "datePublished": "2026-11-17T00:00:00+04:00",
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://rawafid.jassim.one/blog/417s4" },
+  "author": { "@type": "Organization", "name": "منصة روافد", "url": "https://rawafid.jassim.one/" },
+  "publisher": { "@id": "https://rawafid.jassim.one/#organization" },
+  "image": "https://rawafid.jassim.one/images/cover.png",
+  "inLanguage": "ar"
+}
+</script>
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "الرئيسية", "item": "https://rawafid.jassim.one/" },
+    { "@type": "ListItem", "position": 2, "name": "ملخص في الدرس الرابع: مناهج النقد السياقي", "item": "https://rawafid.jassim.one/blog/417s4" }
+  ]
+}
+</script>
+
+</head>
+<body>
+
+  <!-- === مكون التحميل الموحد (يغطي المحتوى فقط ويبقي الترويسة مرئية) === -->
+<style>
+  #rawafid-loading-overlay {
+    position: fixed;
+    top: var(--nav-height, 70px);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: var(--rawafid-surface, #ffffff);
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  #rawafid-loading-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .rawafid-loader-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--rawafid-border, #ccd1e0);
+    border-top-color: var(--rawafid-primary, #1a2ac6);
+    border-radius: 50%;
+    animation: rawafid-spin 0.75s linear infinite;
+  }
+
+  .rawafid-loader-text {
+    font-family: var(--font-body, "IBM Plex Sans Arabic", system-ui, sans-serif);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--rawafid-text-muted, #666666);
+  }
+
+  .rawafid-loader-dots {
+    display: inline-flex;
+    gap: 4px;
+    direction: ltr;
+    margin-inline-start: 4px;
+  }
+
+  .rawafid-loader-dots span {
+    width: 5px;
+    height: 5px;
+    background: var(--rawafid-primary, #1a2ac6);
+    border-radius: 50%;
+    animation: rawafid-dot-pulse 1.2s ease-in-out infinite;
+  }
+
+  .rawafid-loader-dots span:nth-child(2) { animation-delay: 0.15s; }
+  .rawafid-loader-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes rawafid-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes rawafid-dot-pulse {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  @media (max-width: 768px) {
+    #rawafid-loading-overlay {
+      top: var(--nav-height, 60px);
+    }
+  }
+</style>
+
+<div id="rawafid-loading-overlay" role="status" aria-live="polite" aria-label="جاري التحميل">
+  <div class="rawafid-loader-spinner"></div>
+  <div class="rawafid-loader-text">
+    جاري التحميل
+    <span class="rawafid-loader-dots">
+      <span></span><span></span><span></span>
+    </span>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var overlay = document.getElementById('rawafid-loading-overlay');
+
+    var hidden = false;        /* هل الشاشة مخفية بالفعل */
+    var pinned = false;        /* بعد إظهارها يدوياً: تخفى فقط بطلب صريح */
+    var loadDone = (document.readyState === 'complete');
+    var pendingFetches = 0;    /* عدد عمليات جلب البيانات الجارية */
+
+    function forceHide() {
+      hidden = true;
+      if (overlay) overlay.classList.add('hidden');
+    }
+
+    /* الإخفاء لا يتم إلا بعد اكتمال حدث load وانتهاء كل عمليات الجلب الجارية */
+    function tryHide() {
+      if (!hidden && !pinned && loadDone && pendingFetches <= 0) forceHide();
+    }
+
+    window.rawafidHideLoader = function () {
+      pinned = false;
+      tryHide();
+    };
+
+    window.rawafidShowLoader = function () {
+      pinned = true;
+      hidden = false;
+      if (overlay) overlay.classList.remove('hidden');
+    };
+
+    if (!loadDone) {
+      window.addEventListener('load', function () {
+        loadDone = true;
+        tryHide();
+      });
+    }
+
+    /* تتبع طلبات fetch الصادرة من الصفحة: تبقى شاشة التحميل ظاهرة حتى تنتهي آخر عملية جلب بيانات */
+    if (typeof window.fetch === 'function') {
+      var originalFetch = window.fetch;
+      window.fetch = function () {
+        var request;
+        pendingFetches += 1;
+        try {
+          request = originalFetch.apply(this, arguments);
+        } catch (err) {
+          pendingFetches -= 1;
+          tryHide();
+          throw err;
+        }
+        if (request && typeof request.then === 'function') {
+          request.then(release, release);
+        } else {
+          release();
+        }
+        return request;
+
+        function release() {
+          pendingFetches -= 1;
+          tryHide();
+        }
+      };
+    }
+
+    /* أمان: إخفاء شاشة التحميل إلزامياً بعد 6 ثوانٍ حتى لو فشل أي سكربت */
+    setTimeout(forceHide, 6000);
+
+    /* إخفاء فوري عند التنقل ذهاباً/إياباً من ذاكرة المتصفح */
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted) forceHide();
+    });
+  })();
+</script>
+
+  <header class="site-header">
+  <nav class="navbar" aria-label="التنقل الرئيسي">
+    <a href="/" class="logo" aria-label="روافد - الصفحة الرئيسية">
+      <img src="/images/Rawafid-white.png" alt="شعار روافد" class="logo-light" width="120" height="36" loading="eager">
+    </a>
+
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/">الرئيسة</a></li>
+      <li><a href="/blog">المدونة</a></li>
+      <li><a href="/tools">الأدوات</a></li>
+      <li><a href="/doc">الأفلام</a></li>
+      <li><a href="/contact">تواصل معنا</a></li>
+      <li><a href="/about">عن روافد</a></li>
+      <li>
+        <button class="theme-toggle-mobile" id="theme-toggle-mobile" aria-label="تبديل المظهر">
+          <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <line x1="12" y1="2" x2="12" y2="4"></line>
+            <line x1="12" y1="20" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+            <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="4" y2="12"></line>
+            <line x1="20" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+            <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+          </svg>
+          <span>المظهر</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="/search" class="icon-btn search-btn" aria-label="بحث" title="بحث">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </a>
+
+      <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="تبديل المظهر" title="تبديل المظهر">
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="12" y1="2" x2="12" y2="4"></line>
+          <line x1="12" y1="20" x2="12" y2="22"></line>
+          <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+          <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+          <line x1="2" y1="12" x2="4" y2="12"></line>
+          <line x1="20" y1="12" x2="22" y2="12"></line>
+          <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+          <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+        </svg>
+      </button>
+
+      <button class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="القائمة">
+        <svg class="icon-menu" viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <svg class="icon-close" viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .if-fab {
+    --if-fab-bg: #8a6e4b;
+    --if-fab-bg-hover: #765c3e;
+    --if-fab-fg: #ffffff;
+    --if-fab-shadow: 0 10px 28px rgba(39, 37, 30, 0.22);
+
+    position: fixed;
+    left: max(18px, env(safe-area-inset-left));
+    bottom: max(18px, env(safe-area-inset-bottom));
+    z-index: 990;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px 9px 13px;
+    border: 1px solid color-mix(in srgb, var(--if-fab-fg) 18%, transparent);
+    border-radius: 9999px;
+    background: var(--if-fab-bg);
+    box-shadow: var(--if-fab-shadow);
+    color: var(--if-fab-fg);
+    font-family: var(--font-body), "Thmanyah Sans", "IBM Plex Sans Arabic",
+      system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.18s ease, background-color 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .if-fab:hover {
+    transform: translateY(-2px);
+    background: var(--if-fab-bg-hover);
+    box-shadow: 0 14px 32px rgba(39, 37, 30, 0.28);
+  }
+
+  .if-fab:focus-visible {
+    outline: 2px solid var(--if-fab-fg);
+    outline-offset: 3px;
+  }
+
+  .if-fab-icon {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .if-fab-icon img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+
+  .if-fab-label {
+    white-space: nowrap;
+  }
+
+  html[data-theme="dark"] .if-fab {
+    --if-fab-bg: #d2b48c;
+    --if-fab-bg-hover: #e2c8a4;
+    --if-fab-fg: #131210;
+    --if-fab-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
+  }
+
+  html[data-theme="dark"] .if-fab-icon img {
+    filter: brightness(0);
+  }
+
+  @media (max-width: 480px) {
+    .if-fab {
+      left: max(14px, env(safe-area-inset-left));
+      bottom: max(14px, env(safe-area-inset-bottom));
+      padding: 9px 13px 9px 11px;
+      font-size: 13px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .if-fab {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .if-fab {
+      display: none !important;
+    }
+  }
+</style>
+
+<a
+  class="if-fab"
+  href="/ibn-faris/"
+  data-if-open
+  aria-haspopup="dialog"
+  aria-label="افتح محادثة ابن فارس — مساعد روافد اللغوي"
+  title="ابن فارس — مساعد روافد اللغوي"
+>
+  <span class="if-fab-icon" aria-hidden="true">
+    <img src="/images/ibnfaris-icon.png" alt="" width="22" height="22" loading="lazy" decoding="async">
+  </span>
+  <span class="if-fab-label">ابن فارس</span>
+</a>
+
+<template id="if-widget-template">
+  <div class="if-overlay" id="if-overlay" hidden aria-hidden="true">
+    <div class="if-sheet" role="dialog" aria-modal="true" aria-labelledby="if-title">
+      <div class="if-app" id="if-app" data-icon="/images/ibnfaris-icon.png">
+  <span class="if-sheet-handle" aria-hidden="true"></span>
+
+  <h1 class="if-sr-only" id="if-title">ابن فارس — مساعد روافد اللغوي</h1>
+
+  <header class="if-topbar">
+    <div class="if-brand" aria-label="ابن فارس">
+      <span class="if-brand-mark" aria-hidden="true">
+        <img src="/images/ibnfaris-icon.png" alt="" width="28" height="28" />
+      </span>
+      <span class="if-brand-text">
+        <span class="if-brand-name">ابن فارس</span>
+        <span class="if-brand-sub">مساعد روافد اللغوي</span>
+      </span>
+    </div>
+
+    <div class="if-topbar-actions">
+      <button class="if-circle if-circle--accent" id="if-new" type="button" aria-label="محادثة جديدة" title="محادثة جديدة">
+        <svg class="if-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 5v14"></path>
+          <path d="M5 12h14"></path>
+        </svg>
+      </button><button class="if-circle" type="button" data-if-close aria-label="إغلاق نافذة ابن فارس" title="إغلاق">
+        <svg class="if-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button><button class="if-circle if-theme" id="if-theme" type="button" aria-label="تبديل المظهر" title="تبديل المظهر">
+        <svg class="if-icon if-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="if-icon if-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path>
+          <path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path>
+          <path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="if-main" id="if-main">
+    <div class="if-thread" id="if-thread">
+      <section class="if-empty" id="if-empty" aria-labelledby="if-empty-title">
+        <span class="if-empty-mark" aria-hidden="true">
+          <img src="/images/ibnfaris-icon.png" alt="" width="34" height="34" />
+        </span>
+        <h2 class="if-empty-title" id="if-empty-title">كيف أساعدك في لغتك؟</h2>
+        <p class="if-empty-text">
+          اسأل عن الإعراب أو الصرف أو المعاجم أو البلاغة، وسيجيبك ابن فارس
+          مستعيناً بكتب العربية.
+        </p>
+
+        <div class="if-suggestions">
+          <button class="if-suggestion" type="button" data-prompt="أعرب: «وَاللَّهُ غَالِبٌ عَلَى أَمْرِهِ» إعراباً كاملاً مع ذكر القاعدة.">
+            <span class="if-suggestion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                <path d="M8 7h8"></path>
+                <path d="M8 11h5"></path>
+              </svg>
+            </span>
+            <span class="if-suggestion-title">أعرب آية</span>
+            <span class="if-suggestion-desc">«وَاللَّهُ غَالِبٌ عَلَى أَمْرِهِ»</span>
+          </button>
+
+          <button class="if-suggestion" type="button" data-prompt="ما الفرق بين الحال والتمييز؟ اشرح الفرق بمثالين وأذكر المصدر.">
+            <span class="if-suggestion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3 4 7l4 4"></path>
+                <path d="M4 7h12a4 4 0 0 1 0 8h-2"></path>
+                <path d="m16 21 4-4-4-4"></path>
+                <path d="M20 17H8a4 4 0 0 1 0-8h2"></path>
+              </svg>
+            </span>
+            <span class="if-suggestion-title">فرق لغوي</span>
+            <span class="if-suggestion-desc">الحال والتمييز بمثالين</span>
+          </button>
+
+          <button class="if-suggestion" type="button" data-prompt="زِن كلمة «استخراج» واذكر أصلها ووزنها الصرفي مع الشرح.">
+            <span class="if-suggestion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v18"></path>
+                <path d="M5 7h14"></path>
+                <path d="m5 7-2 5a3 3 0 0 0 6 0z"></path>
+                <path d="m19 7-2 5a3 3 0 0 0 6 0z"></path>
+              </svg>
+            </span>
+            <span class="if-suggestion-title">ميزان صرفي</span>
+            <span class="if-suggestion-desc">زِن كلمة «استخراج»</span>
+          </button>
+
+          <button class="if-suggestion" type="button" data-prompt="ما الفرق بين الضاد والظاء في النطق والكتابة؟ أعطني أمثلة عملية.">
+            <span class="if-suggestion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                <path d="M8 9h8"></path>
+                <path d="M8 13h5"></path>
+              </svg>
+            </span>
+            <span class="if-suggestion-title">الضاد والظاء</span>
+            <span class="if-suggestion-desc">فرق النطق والكتابة</span>
+          </button>
+        </div>
+      </section>
+
+      <div class="if-messages" id="if-messages" aria-live="polite"></div>
+    </div>
+  </main>
+
+  <div class="if-composer-shell">
+    <div class="if-composer-width">
+      <div class="if-alert" id="if-alert" role="alert" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 8v5"></path>
+          <path d="M12 16.5h.01"></path>
+        </svg>
+        <span id="if-alert-text"></span>
+      </div>
+
+      <form class="if-composer" id="if-form" autocomplete="off">
+        <label class="if-sr-only" for="if-input">سؤالك إلى ابن فارس</label>
+        <textarea
+          class="if-input"
+          id="if-input"
+          name="message"
+          rows="1"
+          maxlength="4000"
+          placeholder="اسأل عن إعراب، صرف، معجم أو بلاغة..."
+          enterkeyhint="send"
+        ></textarea>
+
+        <div class="if-composer-actions">
+          <button class="if-stop" id="if-stop" type="button" hidden>
+            <span class="if-stop-square" aria-hidden="true"></span>
+            <span class="if-sr-only">إيقاف</span>
+          </button>
+          <button class="if-send" id="if-send" type="submit" aria-label="إرسال السؤال" title="إرسال">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 19V5"></path>
+              <path d="m5 12 7-7 7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <div class="if-composer-foot">
+        <span class="if-model-pill" title="النموذج السريع">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M13 2 3 14h9l-1 8 10-12h-9z"></path>
+          </svg>
+          برق
+        </span>
+        <span class="if-quota" id="if-quota" hidden></span>
+        <span class="if-hint">Enter للإرسال · Shift+Enter لسطر جديد</span>
+      </div>
+
+      <p class="if-disclaimer">
+        <strong>ابن فارس</strong> قد يخطئ؛ تحقّق من المصادر. لا نحفظ محادثاتك.
+      </p>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+</template>
+
+<script
+  src="/assets/js/ibn-faris-widget.js"
+  data-base="/"
+  defer
+></script>
+
+
+  <main class="blog-page">
+    <div class="blog-actions">
+      <a href="/" class="back-btn">
+        <i class="fas fa-arrow-right" aria-hidden="true"></i> رجوع
+      </a>
+      
+      <div class="action-buttons-top">
+        <button id="print-btn" onclick="printContent()" class="print-btn-top">
+          <i class="fas fa-print" aria-hidden="true"></i> طباعة
+        </button>
+        <button id="share-btn" onclick="sharePage()" class="share-btn-top">
+          <i class="fas fa-share-alt" aria-hidden="true"></i> مشاركة
+        </button>
+        <button id="fontplus-btn" onclick="increaseFontSize()" class="fontplus-btn-top" title="تكبير النص" aria-label="تكبير النص">ض+</button>
+        <button id="fontminus-btn" onclick="decreaseFontSize()" class="fontminus-btn-top" title="تصغير النص" aria-label="تصغير النص">ض-</button>
+      </div>
+      
+    </div>
+
+    <div class="related-btn-wrapper" id="related-wrapper" style="display: none;">
+      <a href="#" id="related-btn" class="related-btn-top">
+        <i class="fas fa-link" aria-hidden="true"></i> <span id="related-btn-text"></span>
+      </a>
+    </div>
+
+    <h1 id="post-title" class="page-title">ملخص في الدرس الرابع: مناهج النقد السياقي</h1>
+
+    <img id="post-cover" class="cover-image" src="" alt="" style="display: none;">
+
+    <div id="post-meta" class="article-meta">
+      <span><i class="far fa-calendar" aria-hidden="true"></i> 17 نوفمبر 2026</span>
+      
+      
+      
+      <span class="ibnfaris-tag"><img class="ibnfaris-tag-logo" src="/images/ibnfaris-icon.png" alt="ابن فارس" width="24" height="24" loading="lazy"><span>بواسطة خدمة ابن فارس</span></span>
+      
+    </div>
+
+    <div id="post-content" class="page-content">
+      <p>يعرض هذا الدرس مناهج النقد السياقي من أربعة وجوه: المفهوم، والأسئلة المنهجية، والأسس الفلسفية، وطريقة التعامل مع النص.</p>
+
+<h2 id="أولًا-المفهوم-والنشأة">أولًا: المفهوم والنشأة</h2>
+
+<p>نشأت مناهج النقد السياقي في القرن التاسع عشر وبدايات القرن العشرين كردة فعل مباشرة على النقد الانطباعي والذاتي والتأثري، مستفيدة من الثورة العلمية لتأسيس مناهج تقترب من الدقة والموضوعية. ويتخذ هذا التوجه من المؤثرات والعوامل الخارجية المحيطة بالعمل الإبداعي (التاريخية، والاجتماعية، والنفسية) مرتكزًا أساسيًا لفهم النص وإضاءته من الخارج عبر شبكة علاقاته بسياق نشأته.</p>
+
+<p>ويُعرَّف النقد السياقي بأنه الممارسة النقدية التي تقارب النص الإبداعي بالاعتماد على المؤثرات الخارجية (تاريخية، نفسية، أسطورية، اجتماعية) التي أحاطت بميلاده وتكوّنه، وكان لها التأثير المباشر أو غير المباشر فيه. ويُعرَّف من منظور آخر بأنه «استعمال منظم لأساليب وتقنيات غير أدبية، وضروب معرفة غير أدبية أيضًا، في الحصول على بصيرة نافذة في الأدب».</p>
+
+<p>وتكمن أهمية مصطلح «منظم» في نقل النقد من الانطباعية الذوقية إلى المنهجية العلمية التي تتعامل مع العمل المنقود كعينة مخبرية تحت المجهر لضبط الأحكام.</p>
+
+<h2 id="ثانيًا-الأسئلة-المنهجية">ثانيًا: الأسئلة المنهجية</h2>
+
+<p>يطرح الناقد السياقي أسئلة محددة للكشف عن مضامين النص، منها:</p>
+
+<ul>
+  <li>ما أهمية العمل الأدبي في علاقته بحياة الفنان النفسية والأسرية والاجتماعية؟</li>
+  <li>ما صلة النص بالطبقة الاجتماعية وبالمؤسسات الاقتصادية والسياسية للفرد؟</li>
+  <li>ما مدى صحة نسبة العمل الإبداعي إلى صاحبه التاريخي؟</li>
+  <li>ما مدى تأثير العمل الإبداعي في ذات مبدعه وفي جمهور المتلقين؟</li>
+  <li>ما علاقة النص بالسياقات الثقافية والاجتماعية والتاريخية والموروث العقائدي والأسطوري؟</li>
+  <li>ما غاية الخطاب الأدبي ومعانيه، وما مبررات جودته أو رداءته من خلال سياقاته؟</li>
+</ul>
+
+<h2 id="ثالثًا-الأسس-الفلسفية-والمرجعيات">ثالثًا: الأسس الفلسفية والمرجعيات</h2>
+
+<ol>
+  <li><strong>فلسفة العلوم التجريبية (ديفيد هيوم، جون لوك، هوبز، ليسينغ):</strong> تقوم على الحواس والملاحظة والتجربة، وقد نقل النقاد شروط التجربة العلمية من علوم المادة والأحياء إلى الأدب لجعل أحكامه قريبة من العلمية واليقين ومستقلة عن الذاتية.</li>
+  <li><strong>الفلسفة الوضعية (أوغست كونت):</strong> نقلت الفكر الإنساني إلى الطور الوضعي القائم على ملاحظة الظواهر واستنباط القوانين، فلا يُعد الأدب إلا نتيجة لأسباب غير أدبية محددة دائمًا من الخارج.</li>
+  <li><strong>الفلسفات النفسية (سيغموند فرويد):</strong> استعارة فروض اللاشعور والتداعي الحر والأحلام، واعتبار الأدب تعبيرًا مقنعًا عن رغبات مكبوتة وتحقيقًا لها.</li>
+  <li><strong>الفلسفات الاجتماعية والماركسية (دوركايم، كونت، ماركس):</strong> الأخذ بنظرية الانعكاس، والعلاقة الجدلية بين البنية التحتية (الاقتصاد) والبنية الفوقية (الثقافة والأدب)، واعتبار الأدب مرآة تعكس العلاقات الإنتاجية والاجتماعية.</li>
+  <li><strong>الفلسفة الوجودية:</strong> رفدت النقد السياقي بمفهومي الالتزام والحرية، واعتبار الأديب قائدًا فكريًا يعبّر عن صراعات مجتمعه.</li>
+  <li><strong>الأنثروبولوجيا (جيمس فريزر) وتطورية داروين:</strong> استثمار مفاهيم السحر والطوطم والأسطورة والنموذج الأعلى، واعتبار الإنسان والحضارة نظامًا تطوريًا يخضع لقوانين موضوعية.</li>
+</ol>
+
+<h2 id="رابعًا-الاتجاهات-المنهجية-الكبرى">رابعًا: الاتجاهات المنهجية الكبرى</h2>
+
+<p>يتوزع النقد السياقي إلى ثلاثة اتجاهات رئيسة:</p>
+
+<ul>
+  <li><strong>المنهج التاريخي:</strong> المعتمد على حياة المؤلف والسياق التاريخي والوثائق المحيطة بالنص.</li>
+  <li><strong>المنهج الاجتماعي:</strong> المعتمد على البيئة الاجتماعية والأطر الاقتصادية والسياسية للمجتمع.</li>
+  <li><strong>المنهج النفسي:</strong> القائم على دراسة الحياة النفسية ومستويات الوعي واللاشعور وأثرها في الإنتاج والتلقي.</li>
+</ul>
+
+<h2 id="خامسًا-التعامل-مع-النص">خامسًا: التعامل مع النص</h2>
+
+<p>بيّنت دراسة د. محمد عروس («النقد السياقي: أسئلته المنهجية وأسسه الفلسفية») أن النقد السياقي يُحدث تحولًا جوهريًا في كيفية التعاطي مع النص، حيث ينقله من دائرة «الاستحسان الذاتي والانطباعي» إلى نطاق «المقاربة العلمية المنظمة». وتتلخص رؤيته للنص في خمسة أبعاد:</p>
+
+<h3 id="1-النص-كـعينة-مخبرية-خاضعة-للتحليل-العلمي">1. النص كـ«عينة مخبرية» خاضعة للتحليل العلمي</h3>
+
+<p>يُنظر إلى العمل المنقود بوصفه «أشبه ما يكون بعينة مخبرية تحت مجهر، تتسع دائرة عدسته إلى ما هو خارج العمل الأدبي». فالناقد السياقي يتعامل مع النص كـ«عينة تجريبية قابلة للملاحظة والقياس، وتسمح بإصدار الأحكام العلمية حولها»، بهدف تخليص الأحكام النقدية من الذاتية والانطباعية وتقريبها من اليقين والروح العلمية التي فرضتها تحولات القرن التاسع عشر.</p>
+
+<h3 id="2-النص-كـتنظيم-ثقافي-اجتماعي">2. النص كـ«تنظيم ثقافي اجتماعي»</h3>
+
+<p>النص ليس بنية معزولة عن بيئته، بل هو «تنظيم ثقافي اجتماعي، ينتمي إلى سياق تاريخي يؤثر فيه، ويتأثر به». فالنص مثلما يتولد من ذات مبدعه فإنه يخضع للمؤثرات الثقافية والحضارية التي توجّه رؤية المبدع، وبالتالي تكون تلك الموجهات الخارجية سبيلًا لفهم النص والكشف عن أسراره.</p>
+
+<h3 id="3-النص-كـنتيجة-لأسباب-غير-أدبية-سلب-الاستقلالية-الذاتية">3. النص كـ«نتيجة لأسباب غير أدبية» (سلب الاستقلالية الذاتية)</h3>
+
+<p>تستند هذه النظرة إلى الخلفية الفلسفية الوضعية التي تعرّف الأدب بأنه «ليس شيئًا مستقلًا، وإنما نتيجة أسباب غير أدبية». وبناءً على ذلك يرى الدرس أنه لا يمكن إدراك النص وتفسير قيمه النقدية بذاته بمعزل عن محيطه، بل يجب «ربطه بعلم الاجتماع، وعلم وصف الأجناس البشرية، وعلم النفس والفيزياء، وحتى الميتافيزيقا».</p>
+
+<h3 id="4-تقطيع-النص-إلى-شكل-ومحتوى-والتركيز-على-المضمون">4. تقطيع النص إلى شكل ومحتوى والتركيز على المضمون</h3>
+
+<p>على المستوى الإجرائي، يعامل الناقد السياقي البناء النصي عبر فصل الشكل عن المضمون؛ إذ توصل النقاد السياقيون إلى «تقطيع النص إلى شكل ومحتوى، ويصرفون النظر عن الشكل، ويقلبون في المضمون بحثًا عن مواد اجتماعية وتاريخية ولغوية ودينية وسياسية وأيديولوجية ومأثورات شعبية»، وهو ما يقتضي دائمًا «تجاوز الشكل الأدبي نحو المضمون الاجتماعي المنتج للأدبية بوعي».</p>
+
+<h3 id="5-النص-كـوثيقة-وسجل-لبيئته-ومبدعه">5. النص كـ«وثيقة وسجل» لبيئته ومبدعه</h3>
+
+<p>تُقرأ النصوص في القراءة السياقية بوصفها «وثيقة تاريخية وسجلًا حافلًا بالدلالات»؛ إذ يفتح الناقد «سجل حياة المؤلف، وظروف بيئته، وما فيها من تغيرات سياسية وثقافية واجتماعية ليقيم أحكامه النقدية»، فتصبح التجربة الإبداعية انعكاسًا للواقع النفسي والاجتماعي والتاريخي المحيط بالنص.</p>
+
+<h2 id="سادسًا-الخاتمة">سادسًا: الخاتمة</h2>
+
+<p>إن النقد السياقي ليس ذوقًا فرديًا ذاتيًا، بل ممارسة نقدية منظمة تستثمر المعارف والتقنيات غير الأدبية (التاريخ، الاجتماع، النفس، الأنثروبولوجيا) للوصول إلى رؤية نقدية موضوعية. ورغم تنوع مناهجه الثلاثة، فإن أصلها الفكري يرجع إلى الفلسفات الوضعية والتجريبية التي تعاملت مع النص بوصفه عينة قابلة للملاحظة والقياس والتفسير الخارجي.</p>
+
+<h2 id="سابعًا-مصطلحات-أساسية">سابعًا: مصطلحات أساسية</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>المصطلح</th>
+      <th>التعريف المختصر</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>النقد السياقي</td>
+      <td>مقاربة النص بالمؤثرات الخارجية التي أحاطت بميلاده</td>
+    </tr>
+    <tr>
+      <td>الاستعمال المنظم</td>
+      <td>توظيف تقنيات ومعارف غير أدبية بضبط منهجي</td>
+    </tr>
+    <tr>
+      <td>العينة المخبرية</td>
+      <td>تصور النص موضوعًا للملاحظة والقياس</td>
+    </tr>
+    <tr>
+      <td>نظرية الانعكاس</td>
+      <td>كون الأدب مرآة للعلاقات الاجتماعية والإنتاجية</td>
+    </tr>
+    <tr>
+      <td>البنية التحتية</td>
+      <td>الاقتصاد في التصور الماركسي</td>
+    </tr>
+    <tr>
+      <td>البنية الفوقية</td>
+      <td>الثقافة والأدب في التصور الماركسي</td>
+    </tr>
+    <tr>
+      <td>اللاشعور</td>
+      <td>مادة التحليل النفسي في تفسير الإبداع</td>
+    </tr>
+    <tr>
+      <td>الطوطم والأسطورة</td>
+      <td>مفاهيم أنثروبولوجية لتفسير الموروث الثقافي</td>
+    </tr>
+    <tr>
+      <td>سلب الاستقلالية</td>
+      <td>رد النص إلى أسباب غير أدبية</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="ثامنًا-آليات-إجرائية">ثامنًا: آليات إجرائية</h2>
+
+<ol>
+  <li>تحديد السياق المرجّح: تاريخي، اجتماعي، أو نفسي.</li>
+  <li>جمع الوثائق عن حياة المؤلف وبيئته.</li>
+  <li>طرح الأسئلة المنهجية الستة على النص.</li>
+  <li>فصل الشكل عن المضمون وقراءة المضمون في ضوء سياقه.</li>
+  <li>ربط النص بعلومه المساعدة دون إذابته فيها.</li>
+  <li>تقويم النتائج بمعيار الموضوعية مع الوعي بحدود المنهج.</li>
+</ol>
+
+<pre><code class="language-markmap"># مناهج النقد السياقي
+
+## المفهوم
+### مقاربة النص بالمؤثرات الخارجية
+### ردة فعل على النقد الانطباعي
+### استفادة من الثورة العلمية
+### «استعمال منظم» لتقنيات غير أدبية
+
+## الأسئلة المنهجية
+### حياة الفنان النفسية والأسرية
+### الطبقة والمؤسسات الاقتصادية
+### صحة نسبة العمل لصاحبه
+### أثر العمل في المبدع والمتلقي
+### السياقات الثقافية والعقائدية
+### غاية الخطاب ومبررات جودته
+
+## الأسس الفلسفية
+### التجريبية: هيوم، لوك، هوبز، ليسينغ
+### الوضعية: كونت
+### التحليل النفسي: فرويد
+### الاجتماعية والماركسية: ماركس، دوركايم
+### الوجودية: الالتزام والحرية
+### الأنثروبولوجيا: فريزر وداروين
+
+## الاتجاهات
+### التاريخي
+### الاجتماعي
+### النفسي
+
+## النص عند محمد عروس
+### عينة مخبرية
+### تنظيم ثقافي اجتماعي
+### نتيجة أسباب غير أدبية
+### تقطيع الشكل والمحتوى
+### وثيقة وسجل
+
+## الخاتمة
+### ممارسة منظمة لا ذوق فردي
+### استثمار معارف غير أدبية
+### الأصل: الوضعية والتجريبية
+</code></pre>
+
+    </div>
+  </main>
+
+  <style>
+  html:not([data-theme="dark"]) .footer-dev-logo,
+  html[data-theme="light"] .footer-dev-logo {
+    filter: brightness(0) saturate(100%);
+  }
+</style>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+
+      <div class="footer-col">
+        <img src="/images/rawafid-blue.png" alt="شعار روافد" class="footer-logo" width="100" height="27" style="width: 100px;" loading="lazy">
+        <p class="footer-desc">منصة تعليمية مجانية لطلبة اللغة العربية بجامعة الشرقية، حائزة على جائزة أفضل مشروع بحثي عن كلية الآداب والعلوم الإنسانية لعام 2026.</p>
+      </div>
+
+      <nav class="footer-col" aria-label="روابط سريعة">
+        <h3 class="footer-col-title">روابط سريعة</h3>
+        <a href="/">الرئيسة</a>
+        <a href="/blog">المدونة</a>
+        <a href="/doc">الأفلام</a>
+        <a href="/tools">الأدوات</a>
+        <a href="/search">البحث</a>
+      </nav>
+
+      <div class="footer-col">
+        <h3 class="footer-col-title">عن المنصة</h3>
+        <a href="/about">عن روافد</a>
+        <a href="/contact">تواصل معنا</a>
+        <a href="https://whatsapp.com/channel/0029VbBp4c9FMqrbKcP1Fq2m" class="whatsapp-btn" target="_blank" rel="noopener" aria-label="انضم لقناتنا على واتساب">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.463 1.065 2.876 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+          </svg>
+          <span>انضم لقناتنا</span>
+        </a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span>&copy; <span id="footer-year">2026</span> روافد · جميع الحقوق محفوظة</span>
+      <span class="footer-dev">
+        تطوير
+        <img src="/images/jassim-logo.png" alt="شعار جاسم الفارسي" class="footer-dev-logo" width="91" height="26" loading="lazy">
+      </span>
+    </div>
+  </div>
+</footer>
+<script>
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+</script>
+
+
+  <script src="/assets/js/theme.js" defer></script>
+
+  <script>
+    function sharePage() {
+      if (navigator.share) {
+        navigator.share({ title: document.title, url: window.location.href }).catch(()=>{});
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('تم نسخ الرابط');
+      }
+    }
+
+    function printContent() {
+      window.print();
+    }
+
+    function adjustFontSize(delta) {
+      var content = document.getElementById('post-content');
+      if (!content) return;
+      var current = parseFloat(content.style.getPropertyValue('--fs')) || 1;
+      var next = Math.round((current + delta) * 100) / 100;
+      if (next < 0.8) next = 0.8;
+      if (next > 1.5) next = 1.5;
+      content.style.setProperty('--fs', next);
+    }
+
+    function increaseFontSize() { adjustFontSize(0.1); }
+    function decreaseFontSize() { adjustFontSize(-0.1); }
+
+    const BASE_URL = "";
+    const RELATED = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      rawafidHideLoader();
+
+      document.querySelectorAll('#post-content table').forEach(function(table) {
+        if (table.parentElement && table.parentElement.classList.contains('table-wrapper')) return;
+        var wrapper = document.createElement('div');
+        wrapper.className = 'table-wrapper';
+        table.parentNode.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+      });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const slug = urlParams.get('i');
+
+      if (slug) {
+        const cleanUrl = (BASE_URL || '') + '/blog/' + encodeURIComponent(slug);
+        window.location.replace(cleanUrl);
+        return;
+      }
+
+      const coverImg = document.getElementById('post-cover');
+      if (coverImg && coverImg.getAttribute('src')) {
+        coverImg.style.display = 'block';
+      }
+
+      const authorEl = document.getElementById('post-author');
+      if (authorEl) {
+        const authorUid = authorEl.getAttribute('data-author-uid');
+        const timestamp = new Date().getTime();
+        fetch(`${BASE_URL}/assets/blogdata/authors.json?v=${timestamp}`, { cache: "no-store" })
+          .then(r => r.json())
+          .then(authorData => {
+            const authors = Array.isArray(authorData) ? authorData : (authorData.authors || []);
+            const author = authors.find(a => a.uid === authorUid);
+            if (author) {
+              const nameEl = authorEl.querySelector('.author-name');
+              if (nameEl) nameEl.textContent = author.name;
+              if (author.image) {
+                const imgEl = authorEl.querySelector('.author-avatar');
+                if (imgEl) {
+                  imgEl.src = author.image;
+                }
+              }
+            }
+          })
+          .catch(() => {
+            const nameEl = authorEl.querySelector('.author-name');
+            if (nameEl) nameEl.textContent = authorUid;
+          });
+      }
+
+      if (!RELATED) return;
+
+      const relatedWrapper = document.getElementById('related-wrapper');
+      const relatedBtn = document.getElementById('related-btn');
+      const relatedBtnText = document.getElementById('related-btn-text');
+
+      let relatedCourse = null;
+      let relatedId = null;
+
+      if (typeof RELATED === 'object') {
+        relatedCourse = RELATED.course;
+        relatedId = RELATED.id;
+      } else {
+        const m = String(RELATED).match(/^([^:]+):(.+)$/);
+        if (m) {
+          relatedCourse = m[1].trim();
+          relatedId = m[2].trim();
+        }
+      }
+
+      if (relatedCourse && relatedId) {
+        relatedBtn.href = `${BASE_URL}/details/${encodeURIComponent(relatedCourse)}/${encodeURIComponent(relatedId)}`;
+        relatedBtnText.textContent = "...";
+
+        const timestamp = new Date().getTime();
+        fetch(`${BASE_URL}/assets/data/${relatedCourse}.json?v=${timestamp}`, { cache: "no-store" })
+          .then(r => r.json())
+          .then(relatedData => {
+            const rItem = relatedData.items.find(x => x.id == relatedId || x['time-ms'] == relatedId);
+            relatedBtnText.textContent = (rItem && rItem.title) ? rItem.title : "عنصر مرتبط";
+          })
+          .catch(() => { relatedBtnText.textContent = "عنصر مرتبط"; });
+      } else {
+        relatedBtn.href = (BASE_URL || '') + '/blog/' + encodeURIComponent(RELATED);
+        relatedBtnText.textContent = 'مقال مرتبط';
+      }
+    });
+  </script>
+
+  <script>
+    /* إخفاء كتل الخرائط الخام قبل تحميل markmap لمنع وميض الكود */
+    (function () {
+      var content = document.getElementById('post-content');
+      if (!content) return;
+      content.querySelectorAll('[class*="language-markmap"]').forEach(function (el) {
+        var wrapper = el.closest('.highlighter-rouge') || el.closest('pre') || el;
+        if (wrapper) wrapper.classList.add('mindmap-pending');
+      });
+    })();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.18.12/dist/browser/index.iife.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.12/dist/browser/index.js"></script>
+
+  <script>
+    /* تحويل كتل markmap في الماركداون إلى خرائط ذهنية متوافقة مع الثيم */
+    (function () {
+      'use strict';
+
+      var content = document.getElementById('post-content');
+      if (!content) return;
+
+      var blocks = content.querySelectorAll('[class*="language-markmap"]');
+      if (!blocks.length) return;
+
+      var lib = window.markmap;
+      if (!lib || typeof lib.Transformer !== 'function' || typeof lib.Markmap !== 'function') {
+        content.querySelectorAll('.mindmap-pending').forEach(function (w) { w.classList.remove('mindmap-pending'); });
+        return;
+      }
+
+      var SVG_NS = 'http://www.w3.org/2000/svg';
+      var transformer = new lib.Transformer();
+      var instances = [];
+      var renderToken = 0;
+
+      function cssVar(name, fallback) {
+        var value = getComputedStyle(document.documentElement).getPropertyValue(name);
+        value = (value || '').trim();
+        return value || fallback;
+      }
+
+      function isDarkMode() {
+        return document.documentElement.getAttribute('data-theme') === 'dark';
+      }
+
+      function parseColor(color) {
+        if (!color) return null;
+        color = String(color).trim();
+        var hex = color.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+        if (hex) {
+          var h = hex[1];
+          if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+          return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+        }
+        var rgb = color.match(/^rgba?\(([^)]+)\)$/i);
+        if (rgb) {
+          var parts = rgb[1].split(',').map(function (v) { return parseFloat(v); });
+          if (parts.length >= 3) return [parts[0], parts[1], parts[2]];
+        }
+        return null;
+      }
+
+      function toHex(rgb) {
+        return '#' + rgb.map(function (v) {
+          var s = Math.round(Math.max(0, Math.min(255, v))).toString(16);
+          return s.length < 2 ? '0' + s : s;
+        }).join('');
+      }
+
+      function mix(a, b, t) {
+        var ca = parseColor(a), cb = parseColor(b);
+        if (!ca || !cb) return a;
+        return toHex([0, 1, 2].map(function (i) { return ca[i] + (cb[i] - ca[i]) * t; }));
+      }
+
+      function buildPalette() {
+        var primary = cssVar('--rawafid-primary', '#1a2ac6');
+        var primaryDark = cssVar('--rawafid-primary-dark', primary);
+        var accent = cssVar('--rawafid-accent', '#ffcc00');
+        var success = cssVar('--rawafid-success', '#25d366');
+        var error = cssVar('--rawafid-error', '#e74c3c');
+        var surface = cssVar('--rawafid-surface', '#ffffff');
+        var text = cssVar('--rawafid-text', '#2d2d2d');
+        var dark = isDarkMode();
+        return [
+          primary,
+          mix(primary, accent, dark ? 0.22 : 0.42),
+          mix(primary, success, dark ? 0.22 : 0.42),
+          mix(primary, error, dark ? 0.25 : 0.35),
+          primaryDark,
+          mix(primary, text, 0.3),
+          mix(primary, surface, 0.3),
+          mix(primary, surface, dark ? 0.55 : 0.68)
+        ];
+      }
+
+      function buildOptions(frontmatter) {
+        var custom = (frontmatter && frontmatter.markmap) || {};
+        var json = {
+          color: buildPalette(),
+          colorFreezeLevel: 2,
+          duration: 300,
+          maxWidth: 340,
+          initialExpandLevel: -1,
+          spacingHorizontal: 90,
+          spacingVertical: 10,
+          paddingX: 8,
+          lineWidth: 2,
+          zoom: true,
+          pan: true
+        };
+        Object.keys(custom).forEach(function (key) {
+          var value = custom[key];
+          if (value !== undefined && value !== null) json[key] = value;
+        });
+        return lib.deriveOptions(json);
+      }
+
+      function convertBlocks() {
+        blocks.forEach(function (el) {
+          var wrapper = el.closest('.mindmap-pending') || el.closest('.highlighter-rouge') || el.closest('pre') || el;
+          if (!wrapper || !wrapper.parentNode) return;
+          var source = el.textContent.replace(/^\s+|\s+$/g, '');
+          if (!source) return;
+
+          var box = document.createElement('div');
+          box.className = 'mindmap mindmap-pending';
+          box.setAttribute('role', 'group');
+          box.setAttribute('aria-label', 'خريطة ذهنية');
+          box.setAttribute('data-markmap-src', source);
+
+          var toolbar = document.createElement('div');
+          toolbar.className = 'mindmap-toolbar';
+          toolbar.innerHTML =
+            '<button type="button" class="mindmap-btn" data-mm-action="zoom-in" title="تكبير" aria-label="تكبير"><i class="fas fa-magnifying-glass-plus" aria-hidden="true"></i></button>' +
+            '<button type="button" class="mindmap-btn" data-mm-action="zoom-out" title="تصغير" aria-label="تصغير"><i class="fas fa-magnifying-glass-minus" aria-hidden="true"></i></button>' +
+            '<button type="button" class="mindmap-btn" data-mm-action="reset" title="إعادة الضبط" aria-label="إعادة الضبط"><i class="fas fa-rotate-left" aria-hidden="true"></i></button>' +
+            '<button type="button" class="mindmap-btn" data-mm-action="save" title="حفظ كصورة" aria-label="حفظ كصورة"><i class="fas fa-download" aria-hidden="true"></i></button>';
+
+          var viewport = document.createElement('div');
+          viewport.className = 'mindmap-viewport';
+
+          var svg = document.createElementNS(SVG_NS, 'svg');
+          svg.setAttribute('role', 'img');
+          svg.setAttribute('aria-label', 'خريطة ذهنية');
+
+          viewport.appendChild(svg);
+          box.appendChild(toolbar);
+          box.appendChild(viewport);
+          wrapper.parentNode.replaceChild(box, wrapper);
+
+          instances.push({ box: box, svg: svg, source: source, mm: null });
+        });
+      }
+
+      function showError(item, err) {
+        item.box.classList.remove('mindmap-pending');
+        item.box.classList.add('mindmap-error');
+        var viewport = item.box.querySelector('.mindmap-viewport');
+        if (viewport) viewport.textContent = 'تعذّر عرض الخريطة الذهنية، تحقّق من صياغة markmap.';
+        if (window.console && console.error) console.error('Markmap render error:', err);
+      }
+
+      function loadAssets(features) {
+        var keys = Object.keys(features || {});
+        if (!keys.length || typeof transformer.getAssets !== 'function') return;
+        var assets = transformer.getAssets(keys);
+        if (!assets) return;
+        if (assets.styles) lib.loadCSS(assets.styles);
+        if (assets.scripts) lib.loadJS(assets.scripts, { getMarkmap: function () { return lib; } });
+      }
+
+      function renderItem(item) {
+        return new Promise(function (resolve) {
+          var result;
+          try {
+            result = transformer.transform(item.source);
+          } catch (err) {
+            showError(item, err);
+            resolve();
+            return;
+          }
+
+          loadAssets(result.features);
+          var options = buildOptions(result.frontmatter);
+
+          if (item.mm) {
+            try { item.mm.destroy(); } catch (err) {}
+            item.mm = null;
+          }
+          while (item.svg.firstChild) item.svg.removeChild(item.svg.firstChild);
+
+          var mm = lib.Markmap.create(item.svg, options);
+          item.mm = mm;
+          item.box.classList.remove('mindmap-pending');
+
+          Promise.resolve(mm.setData(result.root, options)).then(function () {
+            item.box.classList.remove('mindmap-error');
+            item.box.removeAttribute('data-mm-scale');
+            mm.fit();
+            resolve();
+          }).catch(function (err) {
+            showError(item, err);
+            resolve();
+          });
+        });
+      }
+
+      function renderAll() {
+        var token = ++renderToken;
+        var chain = Promise.resolve();
+        instances.forEach(function (item) {
+          chain = chain.then(function () {
+            if (token !== renderToken) return;
+            return renderItem(item);
+          });
+        });
+        return chain;
+      }
+
+      function getScale(item) {
+        try {
+          return window.d3.zoomTransform(item.svg).k || 1;
+        } catch (err) {
+          return 1;
+        }
+      }
+
+      function downloadBlob(blob) {
+        var name = (document.title || 'mindmap').replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim();
+        var a = document.createElement('a');
+        var objectUrl = URL.createObjectURL(blob);
+        a.href = objectUrl;
+        a.download = name + '.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(objectUrl); }, 1000);
+      }
+
+      function canvasToBlob(canvas, cb) {
+        if (canvas.toBlob) {
+          try {
+            canvas.toBlob(function (blob) { cb(blob); }, 'image/png');
+          } catch (err) {
+            if (window.console && console.error) console.error('Markmap export error:', err);
+            cb(null);
+          }
+          return;
+        }
+        try {
+          var parts = canvas.toDataURL('image/png').split(',');
+          var binary = atob(parts[1]);
+          var bytes = new Uint8Array(binary.length);
+          for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+          cb(new Blob([bytes], { type: 'image/png' }));
+        } catch (err) {
+          cb(null);
+        }
+      }
+
+      var exportFontPromise = null;
+      function loadExportFont() {
+        if (exportFontPromise) return exportFontPromise;
+        var base = (typeof BASE_URL === 'string' ? BASE_URL : '');
+        exportFontPromise = fetch(base + '/fonts/thmanyahsans-Regular.otf', { cache: 'force-cache' })
+          .then(function (res) { return res.ok ? res.blob() : null; })
+          .then(function (blob) {
+            if (!blob) return null;
+            return new Promise(function (resolve) {
+              var reader = new FileReader();
+              reader.onload = function () { resolve(reader.result); };
+              reader.onerror = function () { resolve(null); };
+              reader.readAsDataURL(blob);
+            });
+          })
+          .catch(function () { return null; });
+        return exportFontPromise;
+      }
+
+      function embedExportStyles(svg, fontDataUrl) {
+        var style = document.createElementNS(SVG_NS, 'style');
+        var text = '.markmap{' +
+          '--markmap-text-color:' + cssVar('--rawafid-text', '#2d2d2d') + ';' +
+          '--markmap-circle-open-bg:' + cssVar('--rawafid-surface', '#ffffff') + ';' +
+          '--markmap-code-bg:' + cssVar('--rawafid-bg', '#f4f6fb') + ';' +
+          '--markmap-code-color:' + cssVar('--rawafid-text', '#2d2d2d') + ';' +
+          '--markmap-font:400 15px/1.5 ' + cssVar('--font-body', 'sans-serif') + ';' +
+          '}' +
+          /* بلا text-align:right، لأنها تُخفي نصوص الـ foreignObject عند تحويل SVG إلى صورة في كروم */
+          '.markmap-foreign>div{direction:rtl;}';
+        if (fontDataUrl) {
+          text += "@font-face{font-family:'RawafidExport';src:url(\"" + fontDataUrl + "\") format('opentype');font-weight:400;font-style:normal;}" +
+            ".markmap-foreign,.markmap-foreign *{font-family:'RawafidExport','IBM Plex Sans Arabic',sans-serif !important;}";
+        }
+        style.textContent = text;
+        svg.appendChild(style);
+      }
+
+      /* قياس الخريطة بإحداثياتها الأصلية (بدون تحويل التكبير/التحريك) */
+      function measureContent(svg) {
+        if (!svg || typeof svg.getBBox !== 'function') return null;
+        var group = svg.querySelector('g');
+        var saved = null;
+        if (group && group.hasAttribute('transform')) {
+          saved = group.getAttribute('transform');
+          group.removeAttribute('transform');
+        }
+        var bounds = null;
+        try { bounds = svg.getBBox(); } catch (err) { bounds = null; }
+        if (saved !== null) group.setAttribute('transform', saved);
+        return bounds && bounds.width > 0 && bounds.height > 0 ? bounds : null;
+      }
+
+      function saveMindmap(item) {
+        var svg = item.svg;
+        if (!svg || typeof svg.getBBox !== 'function') return;
+        if (item.box.getAttribute('data-mm-saving') === '1') return;
+        item.box.setAttribute('data-mm-saving', '1');
+
+        var finished = false;
+        function done() {
+          if (finished) return;
+          finished = true;
+          item.box.removeAttribute('data-mm-saving');
+        }
+
+        var pad = 24;
+        var bounds = measureContent(svg);
+        var rect = svg.getBoundingClientRect();
+        var vb = svg.viewBox && svg.viewBox.baseVal;
+        var x, y, width, height;
+        if (bounds) {
+          x = bounds.x - pad;
+          y = bounds.y - pad;
+          width = bounds.width + pad * 2;
+          height = bounds.height + pad * 2;
+        } else {
+          x = 0;
+          y = 0;
+          width = (vb && vb.width) || rect.width;
+          height = (vb && vb.height) || rect.height;
+        }
+        if (!width || !height) { done(); return; }
+
+        var clone = svg.cloneNode(true);
+        var cloneGroup = clone.querySelector('g');
+        if (cloneGroup) cloneGroup.removeAttribute('transform');
+        clone.removeAttribute('style');
+        clone.removeAttribute('width');
+        clone.removeAttribute('height');
+        clone.setAttribute('xmlns', SVG_NS);
+        clone.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+        clone.setAttribute('viewBox', x + ' ' + y + ' ' + width + ' ' + height);
+        clone.setAttribute('width', width);
+        clone.setAttribute('height', height);
+
+        var surface = cssVar('--rawafid-surface', '#ffffff');
+        var bg = document.createElementNS(SVG_NS, 'rect');
+        bg.setAttribute('x', x);
+        bg.setAttribute('y', y);
+        bg.setAttribute('width', width);
+        bg.setAttribute('height', height);
+        bg.setAttribute('fill', surface);
+        clone.insertBefore(bg, clone.firstChild);
+
+        var ratio = Math.min(2, 7000 / Math.max(width, height));
+        if (!isFinite(ratio) || ratio < 1) ratio = 1;
+
+        loadExportFont().then(function (fontDataUrl) {
+          embedExportStyles(clone, fontDataUrl);
+
+          var data;
+          try {
+            data = new XMLSerializer().serializeToString(clone);
+          } catch (err) {
+            if (window.console && console.error) console.error('Markmap export error:', err);
+            done();
+            return;
+          }
+
+          /* data: URL وليس blob: لأن كروم يعدّ صور SVG ذات الـ foreignObject قادمة من blob ملوِّثة للكانفس */
+          var url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(data);
+          var img = new Image();
+
+          img.onload = function () {
+            var canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(width * ratio));
+            canvas.height = Math.max(1, Math.round(height * ratio));
+            var ctx = canvas.getContext('2d');
+            if (!ctx) { done(); return; }
+            try {
+              ctx.fillStyle = surface;
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            } catch (err) {
+              if (window.console && console.error) console.error('Markmap export error:', err);
+              done();
+              return;
+            }
+            canvasToBlob(canvas, function (blob) {
+              if (blob) downloadBlob(blob);
+              done();
+            });
+          };
+
+          img.onerror = function () {
+            if (window.console && console.error) console.error('Markmap export error: could not rasterize SVG');
+            done();
+          };
+          img.src = url;
+        }).catch(function (err) {
+          if (window.console && console.error) console.error('Markmap export error:', err);
+          done();
+        });
+      }
+
+      /* عند الطباعة: نضبط viewBox على أبعاد الخريطة كي تُطبع كاملة وبحجم مقروء وتمتد على عدة صفحات */
+      function preparePrint() {
+        instances.forEach(function (item) {
+          var svg = item.svg;
+          if (!svg || !item.mm || typeof svg.getBBox !== 'function') return;
+          var bounds = null;
+          try { bounds = svg.getBBox(); } catch (err) { bounds = null; }
+          if (!bounds || !bounds.width || !bounds.height) return;
+          svg.setAttribute('viewBox', bounds.x + ' ' + bounds.y + ' ' + bounds.width + ' ' + bounds.height);
+          svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        });
+      }
+
+      function cleanupPrint() {
+        instances.forEach(function (item) {
+          var svg = item.svg;
+          if (!svg) return;
+          svg.removeAttribute('viewBox');
+          svg.removeAttribute('preserveAspectRatio');
+        });
+      }
+
+      window.addEventListener('beforeprint', preparePrint);
+      window.addEventListener('afterprint', cleanupPrint);
+      if (window.matchMedia) {
+        var printQuery = window.matchMedia('print');
+        var onPrintChange = function (event) {
+          if (event.matches) preparePrint(); else cleanupPrint();
+        };
+        if (printQuery.addEventListener) printQuery.addEventListener('change', onPrintChange);
+        else if (printQuery.addListener) printQuery.addListener(onPrintChange);
+      }
+
+      content.addEventListener('click', function (event) {
+        var btn = event.target.closest ? event.target.closest('.mindmap-btn') : null;
+        if (!btn) return;
+        var box = btn.closest('.mindmap');
+        if (!box) return;
+        var item = instances.filter(function (entry) { return entry.box === box; })[0];
+        if (!item || !item.mm) return;
+        var action = btn.getAttribute('data-mm-action');
+        if (action === 'zoom-in') {
+          item.mm.rescale(Math.min(4, getScale(item) * 1.2));
+        } else if (action === 'zoom-out') {
+          item.mm.rescale(Math.max(0.25, getScale(item) / 1.2));
+        } else if (action === 'reset') {
+          item.mm.fit();
+        } else if (action === 'save') {
+          saveMindmap(item);
+        }
+      });
+
+      function whenFontsReady(cb) {
+        if (document.fonts && document.fonts.ready && typeof document.fonts.load === 'function') {
+          var loads = [];
+          try {
+            loads.push(document.fonts.load('400 16px "IBM Plex Sans Arabic"'));
+            loads.push(document.fonts.load('700 16px "IBM Plex Sans Arabic"'));
+          } catch (err) {}
+          Promise.all(loads).catch(function () {}).then(function () {
+            return document.fonts.ready;
+          }).then(function () { cb(); }).catch(function () { cb(); });
+        } else {
+          cb();
+        }
+      }
+
+      convertBlocks();
+      whenFontsReady(renderAll);
+
+      var currentTheme = document.documentElement.getAttribute('data-theme');
+      var observer = new MutationObserver(function () {
+        var theme = document.documentElement.getAttribute('data-theme');
+        if (theme === currentTheme) return;
+        currentTheme = theme;
+        renderAll();
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    })();
+  </script>
+
+</body>
+</html>

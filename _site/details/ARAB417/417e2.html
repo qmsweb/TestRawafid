@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <link rel="stylesheet" href="/fonts/fonts.css" />
+  <link rel="stylesheet" href="/assets/css/design-system.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>اختبار في الدرس الثاني: مفهوم النقد الأدبي ونشأة قواعده وقضاياه</title>
+
+  <link rel="icon" href="/images/favicon.png" type="image/jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<script>
+    (function() {
+      const savedTheme = localStorage.getItem('rawafed-theme');
+      document.documentElement.setAttribute('data-theme', ['light','dark'].indexOf(savedTheme) !== -1 ? savedTheme : 'light');
+    })();
+  </script>
+
+  <style>
+    /* === إعدادات الألوان والمتغيرات === */
+    :root {
+      --primary-color: #1a2ac6;
+      --primary-dark: #121e9ec4;
+      --text-color: #1d1d1d;
+      --text-muted: #666666;
+      --bg-color: #f8f9fc;
+      --bg-card: #ffffff;
+      --border-color: #e0e0e0;
+      --bg-pdf: #f4f4f7;
+      --btn-secondary-bg: #eff3ff;
+      --btn-secondary-text: #1a2ac6;
+    }
+
+    [data-theme="dark"] {
+      --primary-color: #7986cb; 
+      --primary-dark: #5c6bc0;
+      --text-color: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --bg-color: #121212;
+      --bg-card: #1e1e1e;
+      --border-color: #333333;
+      --bg-pdf: #2c2c2c;
+      --btn-secondary-bg: #2c2e3e;
+      --btn-secondary-text: #7986cb;
+    }
+
+    * { box-sizing: border-box; font-family: "IBM Plex Sans Arabic", sans-serif; }
+
+    body {
+      margin: 0; padding: 0; 
+      background-color: var(--bg-color); 
+      color: var(--text-color);
+      padding-bottom: 90px;
+      padding-top: 60px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .nav-header {
+      margin-top: 30px; 
+      padding: 0 20px;
+      margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: space-between; 
+      max-width: 900px; margin-left: auto; margin-right: auto;
+    }
+
+    .action-buttons-top {
+      display: flex; gap: 8px;
+    }
+
+    .back-btn, .share-btn-top, .print-btn-top, .related-btn-top {
+      text-decoration: none; color: var(--primary-color); 
+      font-weight: 700; font-size: 0.9rem;
+      display: inline-flex; align-items: center; gap: 8px; 
+      padding: 8px 16px;
+      background: var(--bg-card); 
+      border-radius: 50px; transition: 0.3s;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+    
+    .back-btn:hover, .share-btn-top:hover, .print-btn-top:hover, .related-btn-top:hover { 
+      background: var(--primary-color); 
+      color: #ffffff; 
+      border-color: var(--primary-color); 
+    }
+
+    /* حاوية زر المتعلقات الجديد */
+    .related-btn-wrapper {
+      max-width: 900px; 
+      margin: 0 auto 15px auto; 
+      padding: 0 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .content-container { 
+      max-width: 900px; margin: 0 auto; 
+      padding: 0 20px; 
+      background: transparent;
+      box-shadow: none;
+      border: none;
+      border-radius: 0;
+    }
+
+    .item-title { 
+      font-size: 1.6rem; font-weight: 800; 
+      font-family: "Thmanyah Serif Text", "IBM Plex Sans Arabic", sans-serif;
+      font-feature-settings: "ss01";
+      color: var(--text-color); 
+      margin-bottom: 5px; margin-top: 0; line-height: 1.3; 
+    }
+
+    .item-meta { 
+      font-size: 0.9rem; 
+      color: var(--text-muted); 
+      margin-bottom: 20px; 
+      display: flex; align-items: center; gap: 8px; 
+    }
+    .item-meta i { color: var(--primary-color); }
+
+    .item-description { 
+      font-size: 1rem; 
+      color: var(--text-color); 
+      line-height: 1.7; 
+      margin-bottom: 20px; 
+      white-space: pre-wrap; 
+      opacity: 0.9;
+    }
+
+    .bold-black-text { font-weight: 900; color: #000000; }
+    [data-theme="dark"] .bold-black-text { color: #ffffff; }
+
+    .image-wrapper { 
+      width: 100%; border-radius: 12px; overflow: hidden; 
+      margin-bottom: 15px; 
+      border: 1px solid var(--border-color); 
+    }
+    .image-wrapper img { 
+      width: 100%; height: auto; display: block; max-height: 450px; 
+      object-fit: contain; 
+      background: var(--bg-card); 
+    }
+
+    .video-wrapper { 
+      width: 100%; border-radius: 12px; overflow: hidden; 
+      margin-bottom: 15px; 
+      border: 1px solid var(--border-color); 
+      background: #000; 
+      aspect-ratio: 16 / 9; 
+      position: relative; 
+    }
+    .video-wrapper iframe { 
+      width: 100%; height: 100%; display: block; border: none; 
+      position: absolute; top: 0; left: 0; 
+    }
+
+    .pdf-container {
+      width: calc(100% + 40px); margin-left: -20px; margin-right: -20px;
+      height: 90vh;
+      border: none; border-radius: 0;
+      overflow: hidden; background: var(--bg-pdf); 
+      margin-bottom: 10px; position: relative;
+    }
+    
+    .pdf-frame { width: 100%; height: 100%; border: none; display: block; }
+    .pdfjs-iframe { width: 100%; height: 100%; border: none; display: block; }
+
+    .pdf-fallback {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 30px 20px; text-align: center; min-height: 300px;
+    }
+
+    .exit-fullscreen-btn {
+       display: none; position: fixed; top: 20px; left: 20px; z-index: 99999;
+       background: rgba(0, 0, 0, 0.8); color: white; border: none;
+       padding: 10px 20px; border-radius: 30px; cursor: pointer;
+       font-weight: bold; backdrop-filter: blur(5px); transition: 0.3s;
+    }
+    .exit-fullscreen-btn:hover { background: #000; transform: scale(1.05); }
+
+    .floating-btns {
+      position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+      z-index: 1000;
+      display: flex; flex-direction: column; gap: 8px;
+      align-items: center;
+      transition: opacity 0.3s ease;
+    }
+
+    .floating-btn {
+      text-decoration: none; color: var(--primary-color);
+      font-weight: 700; font-size: 0.85rem;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 50px; transition: 0.3s;
+      border: 1px solid var(--border-color);
+      cursor: pointer; white-space: nowrap;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    [data-theme="dark"] .floating-btn {
+      background: rgba(30, 30, 30, 0.85);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .floating-btn:hover {
+      background: var(--primary-color);
+      color: #ffffff;
+      border-color: var(--primary-color);
+    }
+    
+    .hidden { display: none !important; }
+    .loading-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+
+    body.fullscreen-active { padding: 0 !important; overflow: hidden; background: #222; }
+    body.fullscreen-active .content-container { padding: 0; margin: 0; max-width: none; }
+    body.fullscreen-active .item-title, body.fullscreen-active .item-meta, body.fullscreen-active .item-description,
+    body.fullscreen-active .image-wrapper, body.fullscreen-active .nav-header, body.fullscreen-active .related-btn-wrapper, body.fullscreen-active .floating-btns,
+    body.fullscreen-active #topbar-container { display: none !important; }
+
+    body.fullscreen-active .pdf-container {
+       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+       width: 100vw; height: 100vh; z-index: 9999; margin: 0; border-radius: 0; border: none; background: #000;
+    }
+    body.fullscreen-active .exit-fullscreen-btn { display: block; }
+
+    /* === إعدادات الطباعة === */
+    @media print {
+      /* إجبار الصفحة على اللون الفاتح لإبراز النص وتوفير الحبر */
+      :root, [data-theme="dark"] {
+        --primary-color: #000000 !important;
+        --bg-color: #ffffff !important;
+        --bg-card: #ffffff !important;
+        --text-color: #000000 !important;
+        --text-muted: #333333 !important;
+        --border-color: #000000 !important;
+      }
+      
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      /* إخفاء الأزرار وأشرطة التنقل أثناء الطباعة */
+      #topbar-container, .nav-header, .related-btn-wrapper, .floating-btns, .exit-fullscreen-btn, .loading-state {
+        display: none !important;
+      }
+
+      /* إزالة الهوامش لتوسيع المحتوى على الورقة */
+      .content-container {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      /* تنسيق الصور للطباعة */
+      .image-wrapper {
+        border: none !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+      .image-wrapper img {
+        max-height: 800px !important;
+      }
+
+      /* تنسيق PDF في حال تمت الطباعة العادية */
+      .pdf-container {
+        height: 80vh !important;
+        border: 1px solid #000 !important;
+        page-break-inside: avoid;
+      }
+      .pdf-fallback embed { display: none !important; }
+      .pdfjs-iframe { display: none !important; }
+    }
+
+    @media (max-width: 768px) {
+      .pdf-container { height: 82vh; }
+      body.fullscreen-active .pdf-container { height: 100vh; }
+    }
+  </style>
+  
+
+
+
+
+<link rel="canonical" href="https://rawafid.jassim.one/details/ARAB417/417e2">
+<meta name="robots" content="index, follow">
+
+
+<meta name="description" content="منصة روافد التعليمية">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://rawafid.jassim.one/#organization",
+  "name": "منصة روافد",
+  "url": "https://rawafid.jassim.one/",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://rawafid.jassim.one/images/rawafid-1.png"
+  },
+  "description": "منصة روافد التعليمية",
+  "inLanguage": "ar"
+}
+</script>
+
+
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "الرئيسية", "item": "https://rawafid.jassim.one/" },
+    { "@type": "ListItem", "position": 2, "name": "اختبار في الدرس الثاني: مفهوم النقد الأدبي ونشأة قواعده وقضاياه", "item": "https://rawafid.jassim.one/details/ARAB417/417e2" }
+  ]
+}
+</script>
+
+</head>
+<body>
+
+  <button id="exit-fullscreen" class="exit-fullscreen-btn" onclick="toggleFullScreen(false)">
+      <i class="fas fa-times"></i> خروج
+  </button>
+
+  <!-- === مكون التحميل الموحد (يغطي المحتوى فقط ويبقي الترويسة مرئية) === -->
+<style>
+  #rawafid-loading-overlay {
+    position: fixed;
+    top: var(--nav-height, 70px);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: var(--rawafid-surface, #ffffff);
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  #rawafid-loading-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .rawafid-loader-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--rawafid-border, #ccd1e0);
+    border-top-color: var(--rawafid-primary, #1a2ac6);
+    border-radius: 50%;
+    animation: rawafid-spin 0.75s linear infinite;
+  }
+
+  .rawafid-loader-text {
+    font-family: var(--font-body, "IBM Plex Sans Arabic", system-ui, sans-serif);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--rawafid-text-muted, #666666);
+  }
+
+  .rawafid-loader-dots {
+    display: inline-flex;
+    gap: 4px;
+    direction: ltr;
+    margin-inline-start: 4px;
+  }
+
+  .rawafid-loader-dots span {
+    width: 5px;
+    height: 5px;
+    background: var(--rawafid-primary, #1a2ac6);
+    border-radius: 50%;
+    animation: rawafid-dot-pulse 1.2s ease-in-out infinite;
+  }
+
+  .rawafid-loader-dots span:nth-child(2) { animation-delay: 0.15s; }
+  .rawafid-loader-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes rawafid-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes rawafid-dot-pulse {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  @media (max-width: 768px) {
+    #rawafid-loading-overlay {
+      top: var(--nav-height, 60px);
+    }
+  }
+</style>
+
+<div id="rawafid-loading-overlay" role="status" aria-live="polite" aria-label="جاري التحميل">
+  <div class="rawafid-loader-spinner"></div>
+  <div class="rawafid-loader-text">
+    جاري التحميل
+    <span class="rawafid-loader-dots">
+      <span></span><span></span><span></span>
+    </span>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var overlay = document.getElementById('rawafid-loading-overlay');
+
+    var hidden = false;        /* هل الشاشة مخفية بالفعل */
+    var pinned = false;        /* بعد إظهارها يدوياً: تخفى فقط بطلب صريح */
+    var loadDone = (document.readyState === 'complete');
+    var pendingFetches = 0;    /* عدد عمليات جلب البيانات الجارية */
+
+    function forceHide() {
+      hidden = true;
+      if (overlay) overlay.classList.add('hidden');
+    }
+
+    /* الإخفاء لا يتم إلا بعد اكتمال حدث load وانتهاء كل عمليات الجلب الجارية */
+    function tryHide() {
+      if (!hidden && !pinned && loadDone && pendingFetches <= 0) forceHide();
+    }
+
+    window.rawafidHideLoader = function () {
+      pinned = false;
+      tryHide();
+    };
+
+    window.rawafidShowLoader = function () {
+      pinned = true;
+      hidden = false;
+      if (overlay) overlay.classList.remove('hidden');
+    };
+
+    if (!loadDone) {
+      window.addEventListener('load', function () {
+        loadDone = true;
+        tryHide();
+      });
+    }
+
+    /* تتبع طلبات fetch الصادرة من الصفحة: تبقى شاشة التحميل ظاهرة حتى تنتهي آخر عملية جلب بيانات */
+    if (typeof window.fetch === 'function') {
+      var originalFetch = window.fetch;
+      window.fetch = function () {
+        var request;
+        pendingFetches += 1;
+        try {
+          request = originalFetch.apply(this, arguments);
+        } catch (err) {
+          pendingFetches -= 1;
+          tryHide();
+          throw err;
+        }
+        if (request && typeof request.then === 'function') {
+          request.then(release, release);
+        } else {
+          release();
+        }
+        return request;
+
+        function release() {
+          pendingFetches -= 1;
+          tryHide();
+        }
+      };
+    }
+
+    /* أمان: إخفاء شاشة التحميل إلزامياً بعد 6 ثوانٍ حتى لو فشل أي سكربت */
+    setTimeout(forceHide, 6000);
+
+    /* إخفاء فوري عند التنقل ذهاباً/إياباً من ذاكرة المتصفح */
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted) forceHide();
+    });
+  })();
+</script>
+
+
+  <div id="topbar-container">
+      <header class="site-header">
+  <nav class="navbar" aria-label="التنقل الرئيسي">
+    <a href="/" class="logo" aria-label="روافد - الصفحة الرئيسية">
+      <img src="/images/Rawafid-white.png" alt="شعار روافد" class="logo-light" width="120" height="36" loading="eager">
+    </a>
+
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/">الرئيسة</a></li>
+      <li><a href="/blog">المدونة</a></li>
+      <li><a href="/tools">الأدوات</a></li>
+      <li><a href="/doc">الأفلام</a></li>
+      <li><a href="/contact">تواصل معنا</a></li>
+      <li><a href="/about">عن روافد</a></li>
+      <li>
+        <button class="theme-toggle-mobile" id="theme-toggle-mobile" aria-label="تبديل المظهر">
+          <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <line x1="12" y1="2" x2="12" y2="4"></line>
+            <line x1="12" y1="20" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+            <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="4" y2="12"></line>
+            <line x1="20" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+            <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+          </svg>
+          <span>المظهر</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="/search" class="icon-btn search-btn" aria-label="بحث" title="بحث">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </a>
+
+      <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="تبديل المظهر" title="تبديل المظهر">
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="12" y1="2" x2="12" y2="4"></line>
+          <line x1="12" y1="20" x2="12" y2="22"></line>
+          <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+          <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+          <line x1="2" y1="12" x2="4" y2="12"></line>
+          <line x1="20" y1="12" x2="22" y2="12"></line>
+          <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+          <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+        </svg>
+      </button>
+
+      <button class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="القائمة">
+        <svg class="icon-menu" viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <svg class="icon-close" viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .if-fab {
+    --if-fab-bg: #8a6e4b;
+    --if-fab-bg-hover: #765c3e;
+    --if-fab-fg: #ffffff;
+    --if-fab-shadow: 0 10px 28px rgba(39, 37, 30, 0.22);
+
+    position: fixed;
+    left: max(18px, env(safe-area-inset-left));
+    bottom: max(18px, env(safe-area-inset-bottom));
+    z-index: 990;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px 9px 13px;
+    border: 1px solid color-mix(in srgb, var(--if-fab-fg) 18%, transparent);
+    border-radius: 9999px;
+    background: var(--if-fab-bg);
+    box-shadow: var(--if-fab-shadow);
+    color: var(--if-fab-fg);
+    font-family: var(--font-body), "Thmanyah Sans", "IBM Plex Sans Arabic",
+      system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.18s ease, background-color 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .if-fab:hover {
+    transform: translateY(-2px);
+    background: var(--if-fab-bg-hover);
+    box-shadow: 0 14px 32px rgba(39, 37, 30, 0.28);
+  }
+
+  .if-fab:focus-visible {
+    outline: 2px solid var(--if-fab-fg);
+    outline-offset: 3px;
+  }
+
+  .if-fab-icon {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .if-fab-icon img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+
+  .if-fab-label {
+    white-space: nowrap;
+  }
+
+  html[data-theme="dark"] .if-fab {
+    --if-fab-bg: #d2b48c;
+    --if-fab-bg-hover: #e2c8a4;
+    --if-fab-fg: #131210;
+    --if-fab-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
+  }
+
+  html[data-theme="dark"] .if-fab-icon img {
+    filter: brightness(0);
+  }
+
+  @media (max-width: 480px) {
+    .if-fab {
+      left: max(14px, env(safe-area-inset-left));
+      bottom: max(14px, env(safe-area-inset-bottom));
+      padding: 9px 13px 9px 11px;
+      font-size: 13px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .if-fab {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .if-fab {
+      display: none !important;
+    }
+  }
+</style>
+
+<a
+  class="if-fab"
+  href="/ibn-faris/"
+  data-if-open
+  aria-haspopup="dialog"
+  aria-label="افتح محادثة ابن فارس — مساعد روافد اللغوي"
+  title="ابن فارس — مساعد روافد اللغوي"
+>
+  <span class="if-fab-icon" aria-hidden="true">
+    <img src="/images/ibnfaris-icon.png" alt="" width="22" height="22" loading="lazy" decoding="async">
+  </span>
+  <span class="if-fab-label">ابن فارس</span>
+</a>
+
+<template id="if-widget-template">
+  <div class="if-overlay" id="if-overlay" hidden aria-hidden="true">
+    <div class="if-sheet" role="dialog" aria-modal="true" aria-labelledby="if-title">
+      <div class="if-app" id="if-app" data-icon="/images/ibnfaris-icon.png">
+  <span class="if-sheet-handle" aria-hidden="true"></span>
+
+  <h1 class="if-sr-only" id="if-title">ابن فارس — مساعد روافد اللغوي</h1>
+
+  <header class="if-topbar">
+    <div class="if-brand" aria-label="ابن فارس">
+      <span class="if-brand-mark" aria-hidden="true">
+        <img src="/images/ibnfaris-icon.png" alt="" width="28" height="28" />
+      </span>
+      <span class="if-brand-text">
+        <span class="if-brand-name">ابن فارس</span>
+        <span class="if-brand-sub">مساعد روافد اللغوي</span>
+      </span>
+    </div>
+
+    <div class="if-topbar-actions">
+      <button class="if-circle if-circle--accent" id="if-new" type="button" aria-label="محادثة جديدة" title="محادثة جديدة">
+        <svg class="if-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 5v14"></path>
+          <path d="M5 12h14"></path>
+        </svg>
+      </button><button class="if-circle" type="button" data-if-close aria-label="إغلاق نافذة ابن فارس" title="إغلاق">
+        <svg class="if-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button><button class="if-circle if-theme" id="if-theme" type="button" aria-label="تبديل المظهر" title="تبديل المظهر">
+        <svg class="if-icon if-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="if-icon if-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path>
+          <path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path>
+          <path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="if-main" id="if-main">
+    <div class="if-thread" id="if-thread">
+      <section class="if-empty" id="if-empty" aria-labelledby="if-empty-title">
+        <span class="if-empty-mark" aria-hidden="true">
+          <img src="/images/ibnfaris-icon.png" alt="" width="34" height="34" />
+        </span>
+        <h2 class="if-empty-title" id="if-empty-title">كيف أساعدك في لغتك؟</h2>
+        <p class="if-empty-text">
+          اسأل عن الإعراب أو الصرف أو المعاجم أو البلاغة، وسيجيبك ابن فارس
+          مستعيناً بكتب العربية.
+        </p>
+
+        <div class="if-suggestions">
+          <button class="if-suggestion" type="button" data-prompt="أعرب: «وَاللَّهُ غَالِبٌ عَلَى أَمْرِهِ» إعراباً كاملاً مع ذكر القاعدة.">
+            <span class="if-suggestion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                <path d="M8 7h8"></path>
+                <path d="M8 11h5"></path>
+              </svg>
+            </span>
+            <span class="if-suggestion-title">أعرب آية</span>
+            <span class="if-suggestion-desc">«وَاللَّهُ غَالِبٌ عَلَى أَمْرِهِ»</span>
+          </button>
+
+          <button class="if-suggestion" type="button" data-prompt="ما الفرق بين الحال والتمييز؟ اشرح الفرق بمثالين وأذكر المصدر.">
+            <span class="if-suggestion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3 4 7l4 4"></path>
+                <path d="M4 7h12a4 4 0 0 1 0 8h-2"></path>
+                <path d="m16 21 4-4-4-4"></path>
+                <path d="M20 17H8a4 4 0 0 1 0-8h2"></path>
+              </svg>
+            </span>
+            <span class="if-suggestion-title">فرق لغوي</span>
+            <span class="if-suggestion-desc">الحال والتمييز بمثالين</span>
+          </button>
+
+          <button class="if-suggestion" type="button" data-prompt="زِن كلمة «استخراج» واذكر أصلها ووزنها الصرفي مع الشرح.">
+            <span class="if-suggestion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v18"></path>
+                <path d="M5 7h14"></path>
+                <path d="m5 7-2 5a3 3 0 0 0 6 0z"></path>
+                <path d="m19 7-2 5a3 3 0 0 0 6 0z"></path>
+              </svg>
+            </span>
+            <span class="if-suggestion-title">ميزان صرفي</span>
+            <span class="if-suggestion-desc">زِن كلمة «استخراج»</span>
+          </button>
+
+          <button class="if-suggestion" type="button" data-prompt="ما الفرق بين الضاد والظاء في النطق والكتابة؟ أعطني أمثلة عملية.">
+            <span class="if-suggestion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                <path d="M8 9h8"></path>
+                <path d="M8 13h5"></path>
+              </svg>
+            </span>
+            <span class="if-suggestion-title">الضاد والظاء</span>
+            <span class="if-suggestion-desc">فرق النطق والكتابة</span>
+          </button>
+        </div>
+      </section>
+
+      <div class="if-messages" id="if-messages" aria-live="polite"></div>
+    </div>
+  </main>
+
+  <div class="if-composer-shell">
+    <div class="if-composer-width">
+      <div class="if-alert" id="if-alert" role="alert" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 8v5"></path>
+          <path d="M12 16.5h.01"></path>
+        </svg>
+        <span id="if-alert-text"></span>
+      </div>
+
+      <form class="if-composer" id="if-form" autocomplete="off">
+        <label class="if-sr-only" for="if-input">سؤالك إلى ابن فارس</label>
+        <textarea
+          class="if-input"
+          id="if-input"
+          name="message"
+          rows="1"
+          maxlength="4000"
+          placeholder="اسأل عن إعراب، صرف، معجم أو بلاغة..."
+          enterkeyhint="send"
+        ></textarea>
+
+        <div class="if-composer-actions">
+          <button class="if-stop" id="if-stop" type="button" hidden>
+            <span class="if-stop-square" aria-hidden="true"></span>
+            <span class="if-sr-only">إيقاف</span>
+          </button>
+          <button class="if-send" id="if-send" type="submit" aria-label="إرسال السؤال" title="إرسال">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 19V5"></path>
+              <path d="m5 12 7-7 7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <div class="if-composer-foot">
+        <span class="if-model-pill" title="النموذج السريع">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M13 2 3 14h9l-1 8 10-12h-9z"></path>
+          </svg>
+          برق
+        </span>
+        <span class="if-quota" id="if-quota" hidden></span>
+        <span class="if-hint">Enter للإرسال · Shift+Enter لسطر جديد</span>
+      </div>
+
+      <p class="if-disclaimer">
+        <strong>ابن فارس</strong> قد يخطئ؛ تحقّق من المصادر. لا نحفظ محادثاتك.
+      </p>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+</template>
+
+<script
+  src="/assets/js/ibn-faris-widget.js"
+  data-base="/"
+  defer
+></script>
+ 
+  </div>
+
+  <div class="nav-header">
+    <a href="#" id="back-link" class="back-btn">
+      <i class="fas fa-arrow-right"></i> عودة للمقرر
+    </a>
+    <div class="action-buttons-top">
+      <button id="print-btn" onclick="printContent()" class="print-btn-top">
+        <i class="fas fa-print"></i> طباعة
+      </button>
+      <button onclick="sharePage()" class="share-btn-top">
+        <i class="fas fa-share-alt"></i> مشاركة
+      </button>
+    </div>
+  </div>
+
+  <div class="related-btn-wrapper" id="related-wrapper" style="display: none;">
+    <a href="#" id="related-btn" class="related-btn-top">
+      <i class="fas fa-link"></i> <span id="related-btn-text"></span>
+    </a>
+  </div>
+
+  <div class="content-container" id="main-content">
+    
+
+    
+    <div class="loading-state">
+        <i class="fas fa-circle-notch fa-spin fa-2x"></i><br><br>
+        جاري التحميل...
+    </div>
+  </div>
+
+  <div class="floating-btns hidden" id="floating-actions"></div>
+
+<script>
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('rawafed-theme', newTheme);
+  }
+
+  const BASE_URL = "";
+
+  function getIconClass(type) {
+    if (type === 'pdf') return 'fas fa-file-pdf';
+    if (type === 'videos') return 'fab fa-youtube';
+    return 'fas fa-file-alt';
+  }
+
+  function getYoutubeVideoId(url) {
+    if (!url) return null;
+    try {
+      const parsed = new URL(url);
+      const host = parsed.hostname.toLowerCase();
+      if (host.includes('youtu.be')) {
+        const id = parsed.pathname.split('/')[1] || '';
+        return id || null;
+      }
+      if (host.includes('youtube.com') || host.includes('youtube-nocookie.com')) {
+        const path = parsed.pathname;
+        if (path === '/watch') {
+          return parsed.searchParams.get('v');
+        }
+        if (path.startsWith('/embed/') || path.startsWith('/shorts/')) {
+          const id = path.split('/')[2] || '';
+          return id || null;
+        }
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function toggleFullScreen(forceState) {
+      const body = document.body;
+      const isActive = body.classList.contains('fullscreen-active');
+      const newState = (typeof forceState !== 'undefined') ? forceState : !isActive;
+      if (newState) body.classList.add('fullscreen-active');
+      else body.classList.remove('fullscreen-active');
+  }
+
+  // === دالة الطباعة ===
+  function printContent() {
+    const pdfFrame = document.querySelector('.pdfjs-iframe');
+    
+    // إذا كان هناك ملف PDF معروض في عارض pdfjs، نطبع من الصفحة الرئيسية
+    if (pdfFrame && pdfFrame.contentWindow) {
+      try {
+        window.print();
+        return;
+      } catch (error) {
+        console.warn("تعذرت طباعة إطار PDF، سيتم استخدام الطباعة العادية.");
+      }
+    }
+    
+    // الطباعة العادية في حال كان المحتوى صورة أو نصاً
+    window.print();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // عنوان المقرر ومعرّف العنصر يُحقنان عبر Jekyll في الصفحات النظيفة /details/CODE/ID
+    const pageCourse = "ARAB417";
+    const pageItemId = "417e2";
+    const urlParams = new URLSearchParams(window.location.search);
+    let courseCode = urlParams.get('i') || pageCourse;
+    let itemId = urlParams.get('id') || pageItemId;
+    const contentDiv = document.getElementById('main-content');
+    const floatingBtns = document.getElementById('floating-actions');
+    const backLink = document.getElementById('back-link');
+    const printBtn = document.getElementById('print-btn');
+    const relatedBtn = document.getElementById('related-btn');
+    const relatedBtnText = document.getElementById('related-btn-text');
+    const relatedWrapper = document.getElementById('related-wrapper');
+
+    backLink.addEventListener('click', (e) => {
+        if (courseCode && courseCode !== 'null') {
+            backLink.href = `${BASE_URL}/course/${courseCode}`;
+        } else {
+            e.preventDefault();
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                backLink.href = `${BASE_URL}/index.html`;
+            }
+        }
+    });
+
+    if(courseCode) {
+        backLink.href = `${BASE_URL}/course/${courseCode}`;
+    }
+
+    const timestamp = new Date().getTime();
+    
+    fetch(`${BASE_URL}/assets/data/${courseCode}.json?v=${timestamp}`, { cache: "no-store" })
+      .then(res => res.json())
+      .then(data => {
+        rawafidHideLoader();
+        
+        const item = data.items.find(x => x.id == itemId || x['time-ms'] == itemId);
+        
+        if (!item) {
+            contentDiv.innerHTML = `
+            <div style="text-align:center; padding:80px 20px; color:var(--text-muted);">
+                <i class="fas fa-exclamation-triangle fa-3x" style="color:var(--primary-color); margin-bottom:15px;"></i>
+                <h3 style="color:var(--text-color); margin-bottom:10px;">عذراً، المحتوى غير متوفر</h3>
+                <p>لم نتمكن من العثور على هذا العنصر، ربما تم حذفه أو أن الرابط غير صحيح.</p>
+            </div>`;
+            return;
+        }
+
+        // تحويل العناصر المرتبطة بتدوينة (مفتاح direct) إلى رابط التدوينة مباشرة
+        if (item.direct === 'yes' && item.url) {
+            window.location.replace(item.url);
+            return;
+        }
+
+        // معالجة زر المتعلقات
+        if (item.related && item.related.course && item.related.id) {
+            relatedWrapper.style.display = 'flex'; // إظهار الحاوية
+            relatedBtn.href = `${BASE_URL}/details/${item.related.course}/${item.related.id}`;
+            relatedBtnText.textContent = "...";
+            
+            // جلب اسم العنصر المتعلق من ملف المقرر الخاص به
+            fetch(`${BASE_URL}/assets/data/${item.related.course}.json?v=${timestamp}`, { cache: "no-store" })
+                .then(r => r.json())
+                .then(relatedData => {
+                    const rItem = relatedData.items.find(x => x.id == item.related.id || x['time-ms'] == item.related.id);
+                    if (rItem && rItem.title) {
+                        relatedBtnText.textContent = rItem.title;
+                    } else {
+                        relatedBtnText.textContent = "عنصر مرتبط";
+                    }
+                })
+                .catch(() => {
+                    relatedBtnText.textContent = "عنصر مرتبط";
+                });
+        }
+
+        document.title = item.title;
+        let mediaHTML = '';
+
+        const isPdf = (item.type === 'pdf') || (item.download_url && item.download_url.toLowerCase().endsWith('.pdf'));
+
+        // إخفاء زر الطباعة إذا كان الملف PDF
+        if (printBtn) {
+            if (isPdf) {
+                printBtn.style.display = 'none';
+            } else {
+                printBtn.style.display = 'inline-flex';
+            }
+        }
+
+        if (isPdf && item.download_url) {
+            const absolutePdfUrl = new URL(item.download_url, window.location.href).href;
+            const pdfViewerUrl = `${BASE_URL}/pdfjs/web/viewer.html?file=${encodeURIComponent(absolutePdfUrl)}`;
+            mediaHTML = `<div class="pdf-container" id="pdf-wrapper">
+                <iframe id="pdf-embed" src="${pdfViewerUrl}" class="pdfjs-iframe" allowfullscreen></iframe>
+                <div class="pdf-fallback" id="pdf-fallback" style="display:none;">
+                    <i class="fas fa-file-pdf fa-3x" style="color:var(--primary-color); margin-bottom:15px;"></i>
+                    <p style="margin-bottom:15px; color:var(--text-muted);">تعذر عرض الملف مباشرة، يمكنك تحميله أو فتحه في تبويب جديد:</p>
+                    <a href="${absolutePdfUrl}" target="_blank" class="action-btn btn-primary" style="display:inline-flex; text-decoration:none; margin-bottom:10px; flex:none;"><i class="fas fa-external-link-alt"></i> فتح الملف في تبويب جديد</a>
+                </div>
+            </div>`;
+        }
+        else if (item.type === 'videos' && getYoutubeVideoId(item.preview_url)) {
+            const youtubeId = getYoutubeVideoId(item.preview_url);
+            mediaHTML = `<div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/${youtubeId}" title="${item.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>`;
+        }
+        else if (item.image_url) {
+            const imgSrc = item.image_url.startsWith('http') || item.image_url.startsWith('/')
+                ? item.image_url
+                : new URL(item.image_url, window.location.href).href;
+            mediaHTML = `<div class="image-wrapper"><img src="${imgSrc}" alt="${item.title}"></div>`;
+        }
+
+        let formattedDescription = item.description || '';
+        formattedDescription = formattedDescription.replace(/\*\*(.*?)\*\*/g, '<span class="bold-black-text">$1</span>');
+        formattedDescription = formattedDescription.replace(/\*(.*?)\*/g, '<span class="bold-black-text">$1</span>');
+
+        contentDiv.innerHTML = `
+            <div class="item-meta"><i class="${getIconClass(item.type)}"></i> <span>${data.name}</span></div>
+            <h1 class="item-title">${item.title}</h1>
+            <div class="item-description">${formattedDescription}</div>
+            ${mediaHTML}
+            <div style="height: 10px;"></div>`;
+
+        let buttonsHTML = '';
+        if (item.download_url) {
+            const downloadLabel = isPdf ? 'تحميل بهيئة PDF' : 'تحميل';
+            buttonsHTML += `<a href="${item.download_url}" class="floating-btn" download target="_blank"><i class="fas fa-download"></i> ${downloadLabel}</a>`;
+        }
+      
+        if (isPdf && item.download_url) {
+             buttonsHTML += `<button onclick="toggleFullScreen(true)" class="floating-btn"><i class="fas fa-expand"></i> ملء الشاشة</button>`;
+        } 
+        else if (item.preview_url) {
+             buttonsHTML += `<a href="${item.preview_url}" class="floating-btn" target="_blank"><i class="fas fa-external-link-alt"></i> فتح</a>`;
+        }
+      
+        if (buttonsHTML.trim() !== '') {
+            floatingBtns.innerHTML = buttonsHTML;
+            floatingBtns.classList.remove('hidden');
+        } else {
+            floatingBtns.classList.add('hidden');
+        }
+
+        if (isPdf && item.download_url) {
+            const pdfEmbed = document.getElementById('pdf-embed');
+            const pdfFallback = document.getElementById('pdf-fallback');
+            if (pdfEmbed && pdfFallback) {
+                let loadTimeout = setTimeout(() => {
+                    pdfEmbed.style.display = 'none';
+                    pdfFallback.style.display = 'flex';
+                }, 8000);
+                pdfEmbed.addEventListener('load', () => {
+                    clearTimeout(loadTimeout);
+                });
+                pdfEmbed.addEventListener('error', () => {
+                    clearTimeout(loadTimeout);
+                    pdfEmbed.style.display = 'none';
+                    pdfFallback.style.display = 'flex';
+                });
+            }
+        }
+      })
+      .catch(err => {
+        rawafidHideLoader();
+         contentDiv.innerHTML = `<div style="text-align:center; padding:30px; color:red;">خطأ في التحميل: ${err.message}</div>`;
+      });
+  });
+
+  function sharePage() {
+    if (navigator.share) navigator.share({ title: document.title, url: window.location.href }).catch(()=>{});
+    else { navigator.clipboard.writeText(window.location.href); alert('تم النسخ'); }
+  }
+</script>
+  <script src="/assets/js/theme.js" defer></script>
+
+</body>
+</html>

@@ -1,8 +1,20 @@
+{%- comment -%}
+  صورة اختيارية في التوب بار، بجوار الشعار من جهة اليسار.
+  للتحكم بها: غيّر السطر التالي فقط إلى true (إظهار) أو false (إخفاء).
+  لإظهار الصورة: ضع ملف الصورة في المسار المحدد في topbar_banner_src.
+{%- endcomment -%}
+{%- assign topbar_banner = false -%}
+{%- assign topbar_banner_src = '/images/banners/topbar.png' -%}
+
 <header class="site-header">
-  <nav class="navbar" aria-label="التنقل الرئيسي">
+  <nav class="navbar{% if topbar_banner %} navbar--with-banner{% endif %}" aria-label="التنقل الرئيسي">
     <a href="{{ '/' | relative_url }}" class="logo" aria-label="روافد - الصفحة الرئيسية">
       <img src="{{ '/images/Rawafid-white.png' | relative_url }}" alt="شعار روافد" class="logo-light" width="120" height="36" loading="eager">
     </a>
+
+{%- if topbar_banner %}
+    <img class="topbar-banner" src="{{ topbar_banner_src | relative_url }}" alt="" width="280" height="34" loading="eager" decoding="async">
+{%- endif %}
 
     <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
 
@@ -73,3 +85,5 @@
     </div>
   </nav>
 </header>
+
+{% include ibn-faris-button.html %}

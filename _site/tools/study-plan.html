@@ -617,6 +617,298 @@
   </nav>
 </header>
 
+<style>
+  .if-fab {
+    --if-fab-bg: #8a6e4b;
+    --if-fab-bg-hover: #765c3e;
+    --if-fab-fg: #ffffff;
+    --if-fab-shadow: 0 10px 28px rgba(39, 37, 30, 0.22);
+
+    position: fixed;
+    left: max(18px, env(safe-area-inset-left));
+    bottom: max(18px, env(safe-area-inset-bottom));
+    z-index: 990;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px 9px 13px;
+    border: 1px solid color-mix(in srgb, var(--if-fab-fg) 18%, transparent);
+    border-radius: 9999px;
+    background: var(--if-fab-bg);
+    box-shadow: var(--if-fab-shadow);
+    color: var(--if-fab-fg);
+    font-family: var(--font-body), "Thmanyah Sans", "IBM Plex Sans Arabic",
+      system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.18s ease, background-color 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .if-fab:hover {
+    transform: translateY(-2px);
+    background: var(--if-fab-bg-hover);
+    box-shadow: 0 14px 32px rgba(39, 37, 30, 0.28);
+  }
+
+  .if-fab:focus-visible {
+    outline: 2px solid var(--if-fab-fg);
+    outline-offset: 3px;
+  }
+
+  .if-fab-icon {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .if-fab-icon img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+
+  .if-fab-label {
+    white-space: nowrap;
+  }
+
+  html[data-theme="dark"] .if-fab {
+    --if-fab-bg: #d2b48c;
+    --if-fab-bg-hover: #e2c8a4;
+    --if-fab-fg: #131210;
+    --if-fab-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
+  }
+
+  html[data-theme="dark"] .if-fab-icon img {
+    filter: brightness(0);
+  }
+
+  @media (max-width: 480px) {
+    .if-fab {
+      left: max(14px, env(safe-area-inset-left));
+      bottom: max(14px, env(safe-area-inset-bottom));
+      padding: 9px 13px 9px 11px;
+      font-size: 13px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .if-fab {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .if-fab {
+      display: none !important;
+    }
+  }
+</style>
+
+<a
+  class="if-fab"
+  href="/ibn-faris/"
+  data-if-open
+  aria-haspopup="dialog"
+  aria-label="افتح محادثة ابن فارس — مساعد روافد اللغوي"
+  title="ابن فارس — مساعد روافد اللغوي"
+>
+  <span class="if-fab-icon" aria-hidden="true">
+    <img src="/images/ibnfaris-icon.png" alt="" width="22" height="22" loading="lazy" decoding="async">
+  </span>
+  <span class="if-fab-label">ابن فارس</span>
+</a>
+
+<template id="if-widget-template">
+  <div class="if-overlay" id="if-overlay" hidden aria-hidden="true">
+    <div class="if-sheet" role="dialog" aria-modal="true" aria-labelledby="if-title">
+      <div class="if-app" id="if-app" data-icon="/images/ibnfaris-icon.png">
+  <span class="if-sheet-handle" aria-hidden="true"></span>
+
+  <h1 class="if-sr-only" id="if-title">ابن فارس — مساعد روافد اللغوي</h1>
+
+  <header class="if-topbar">
+    <div class="if-brand" aria-label="ابن فارس">
+      <span class="if-brand-mark" aria-hidden="true">
+        <img src="/images/ibnfaris-icon.png" alt="" width="28" height="28" />
+      </span>
+      <span class="if-brand-text">
+        <span class="if-brand-name">ابن فارس</span>
+        <span class="if-brand-sub">مساعد روافد اللغوي</span>
+      </span>
+    </div>
+
+    <div class="if-topbar-actions">
+      <button class="if-circle if-circle--accent" id="if-new" type="button" aria-label="محادثة جديدة" title="محادثة جديدة">
+        <svg class="if-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 5v14"></path>
+          <path d="M5 12h14"></path>
+        </svg>
+      </button><button class="if-circle" type="button" data-if-close aria-label="إغلاق نافذة ابن فارس" title="إغلاق">
+        <svg class="if-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button><button class="if-circle if-theme" id="if-theme" type="button" aria-label="تبديل المظهر" title="تبديل المظهر">
+        <svg class="if-icon if-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="if-icon if-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path>
+          <path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path>
+          <path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="if-main" id="if-main">
+    <div class="if-thread" id="if-thread">
+      <section class="if-empty" id="if-empty" aria-labelledby="if-empty-title">
+        <span class="if-empty-mark" aria-hidden="true">
+          <img src="/images/ibnfaris-icon.png" alt="" width="34" height="34" />
+        </span>
+        <h2 class="if-empty-title" id="if-empty-title">كيف أساعدك في لغتك؟</h2>
+        <p class="if-empty-text">
+          اسأل عن الإعراب أو الصرف أو المعاجم أو البلاغة، وسيجيبك ابن فارس
+          مستعيناً بكتب العربية.
+        </p>
+
+        <div class="if-suggestions">
+          <button class="if-suggestion" type="button" data-prompt="أعرب: «وَاللَّهُ غَالِبٌ عَلَى أَمْرِهِ» إعراباً كاملاً مع ذكر القاعدة.">
+            <span class="if-suggestion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                <path d="M8 7h8"></path>
+                <path d="M8 11h5"></path>
+              </svg>
+            </span>
+            <span class="if-suggestion-title">أعرب آية</span>
+            <span class="if-suggestion-desc">«وَاللَّهُ غَالِبٌ عَلَى أَمْرِهِ»</span>
+          </button>
+
+          <button class="if-suggestion" type="button" data-prompt="ما الفرق بين الحال والتمييز؟ اشرح الفرق بمثالين وأذكر المصدر.">
+            <span class="if-suggestion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3 4 7l4 4"></path>
+                <path d="M4 7h12a4 4 0 0 1 0 8h-2"></path>
+                <path d="m16 21 4-4-4-4"></path>
+                <path d="M20 17H8a4 4 0 0 1 0-8h2"></path>
+              </svg>
+            </span>
+            <span class="if-suggestion-title">فرق لغوي</span>
+            <span class="if-suggestion-desc">الحال والتمييز بمثالين</span>
+          </button>
+
+          <button class="if-suggestion" type="button" data-prompt="زِن كلمة «استخراج» واذكر أصلها ووزنها الصرفي مع الشرح.">
+            <span class="if-suggestion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v18"></path>
+                <path d="M5 7h14"></path>
+                <path d="m5 7-2 5a3 3 0 0 0 6 0z"></path>
+                <path d="m19 7-2 5a3 3 0 0 0 6 0z"></path>
+              </svg>
+            </span>
+            <span class="if-suggestion-title">ميزان صرفي</span>
+            <span class="if-suggestion-desc">زِن كلمة «استخراج»</span>
+          </button>
+
+          <button class="if-suggestion" type="button" data-prompt="ما الفرق بين الضاد والظاء في النطق والكتابة؟ أعطني أمثلة عملية.">
+            <span class="if-suggestion-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                <path d="M8 9h8"></path>
+                <path d="M8 13h5"></path>
+              </svg>
+            </span>
+            <span class="if-suggestion-title">الضاد والظاء</span>
+            <span class="if-suggestion-desc">فرق النطق والكتابة</span>
+          </button>
+        </div>
+      </section>
+
+      <div class="if-messages" id="if-messages" aria-live="polite"></div>
+    </div>
+  </main>
+
+  <div class="if-composer-shell">
+    <div class="if-composer-width">
+      <div class="if-alert" id="if-alert" role="alert" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 8v5"></path>
+          <path d="M12 16.5h.01"></path>
+        </svg>
+        <span id="if-alert-text"></span>
+      </div>
+
+      <form class="if-composer" id="if-form" autocomplete="off">
+        <label class="if-sr-only" for="if-input">سؤالك إلى ابن فارس</label>
+        <textarea
+          class="if-input"
+          id="if-input"
+          name="message"
+          rows="1"
+          maxlength="4000"
+          placeholder="اسأل عن إعراب، صرف، معجم أو بلاغة..."
+          enterkeyhint="send"
+        ></textarea>
+
+        <div class="if-composer-actions">
+          <button class="if-stop" id="if-stop" type="button" hidden>
+            <span class="if-stop-square" aria-hidden="true"></span>
+            <span class="if-sr-only">إيقاف</span>
+          </button>
+          <button class="if-send" id="if-send" type="submit" aria-label="إرسال السؤال" title="إرسال">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 19V5"></path>
+              <path d="m5 12 7-7 7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <div class="if-composer-foot">
+        <span class="if-model-pill" title="النموذج السريع">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M13 2 3 14h9l-1 8 10-12h-9z"></path>
+          </svg>
+          برق
+        </span>
+        <span class="if-quota" id="if-quota" hidden></span>
+        <span class="if-hint">Enter للإرسال · Shift+Enter لسطر جديد</span>
+      </div>
+
+      <p class="if-disclaimer">
+        <strong>ابن فارس</strong> قد يخطئ؛ تحقّق من المصادر. لا نحفظ محادثاتك.
+      </p>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+</template>
+
+<script
+  src="/assets/js/ibn-faris-widget.js"
+  data-base="/"
+  defer
+></script>
+
   <!-- === مكون التحميل الموحد (يغطي المحتوى فقط ويبقي الترويسة مرئية) === -->
 <style>
   #rawafid-loading-overlay {

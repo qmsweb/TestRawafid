@@ -1,0 +1,135 @@
+{%- comment -%}
+  زر «ابن فارس» العائم + لوحة المحادثة السفلية.
+  يظهر في صفحات روافد التي تستدعي الترويسة، ويُستثنى من صفحات
+  الاختبارات والمحرر والطباعة حتى لا يشتّت الطالب.
+  الزر يفتح المحادثة فوق الصفحة نفسها؛ وبدون JavaScript يبقى رابطاً
+  إلى صفحة /ibn-faris/ الكاملة.
+{%- endcomment -%}
+{%- assign if_hide_fab = false -%}
+{%- if page.layout == 'exam2' or page.layout == 'testexam' or page.layout == 'test-card' or page.layout == 'editor' or page.layout == 'exam_print' or page.layout == 'calendar_print' -%}
+  {%- assign if_hide_fab = true -%}
+{%- endif -%}
+
+{%- unless if_hide_fab -%}
+<style>
+  .if-fab {
+    --if-fab-bg: #8a6e4b;
+    --if-fab-bg-hover: #765c3e;
+    --if-fab-fg: #ffffff;
+    --if-fab-shadow: 0 10px 28px rgba(39, 37, 30, 0.22);
+
+    position: fixed;
+    left: max(18px, env(safe-area-inset-left));
+    bottom: max(18px, env(safe-area-inset-bottom));
+    z-index: 990;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px 9px 13px;
+    border: 1px solid color-mix(in srgb, var(--if-fab-fg) 18%, transparent);
+    border-radius: 9999px;
+    background: var(--if-fab-bg);
+    box-shadow: var(--if-fab-shadow);
+    color: var(--if-fab-fg);
+    font-family: var(--font-body), "Thmanyah Sans", "IBM Plex Sans Arabic",
+      system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.18s ease, background-color 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .if-fab:hover {
+    transform: translateY(-2px);
+    background: var(--if-fab-bg-hover);
+    box-shadow: 0 14px 32px rgba(39, 37, 30, 0.28);
+  }
+
+  .if-fab:focus-visible {
+    outline: 2px solid var(--if-fab-fg);
+    outline-offset: 3px;
+  }
+
+  .if-fab-icon {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .if-fab-icon img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+
+  .if-fab-label {
+    white-space: nowrap;
+  }
+
+  html[data-theme="dark"] .if-fab {
+    --if-fab-bg: #d2b48c;
+    --if-fab-bg-hover: #e2c8a4;
+    --if-fab-fg: #131210;
+    --if-fab-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
+  }
+
+  html[data-theme="dark"] .if-fab-icon img {
+    filter: brightness(0);
+  }
+
+  @media (max-width: 480px) {
+    .if-fab {
+      left: max(14px, env(safe-area-inset-left));
+      bottom: max(14px, env(safe-area-inset-bottom));
+      padding: 9px 13px 9px 11px;
+      font-size: 13px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .if-fab {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .if-fab {
+      display: none !important;
+    }
+  }
+</style>
+
+<a
+  class="if-fab"
+  href="{{ '/ibn-faris/' | relative_url }}"
+  data-if-open
+  aria-haspopup="dialog"
+  aria-label="افتح محادثة ابن فارس — مساعد روافد اللغوي"
+  title="ابن فارس — مساعد روافد اللغوي"
+>
+  <span class="if-fab-icon" aria-hidden="true">
+    <img src="{{ '/images/ibnfaris-icon.png' | relative_url }}" alt="" width="22" height="22" loading="lazy" decoding="async">
+  </span>
+  <span class="if-fab-label">ابن فارس</span>
+</a>
+
+<template id="if-widget-template">
+  <div class="if-overlay" id="if-overlay" hidden aria-hidden="true">
+    <div class="if-sheet" role="dialog" aria-modal="true" aria-labelledby="if-title">
+      {% include ibn-faris-app.html mode="sheet" %}
+    </div>
+  </div>
+</template>
+
+<script
+  src="{{ '/assets/js/ibn-faris-widget.js' | relative_url }}"
+  data-base="{{ '/' | relative_url }}"
+  defer
+></script>
+{%- endunless -%}
