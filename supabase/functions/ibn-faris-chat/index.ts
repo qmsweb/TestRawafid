@@ -37,6 +37,12 @@ const RAG_TIMEOUT_MS = 10_000;
 const RAG_MATCH_COUNT = 6;
 const RAG_MIN_SCORE = 0.2;
 const JUDGE_TIMEOUT_MS = 15_000;
+// حَكَم المصادر يقرأ أول 400 حرف من كل مقطع، وبأربعة مقاطع كحد أقصى،
+// لتقليل زمن المعالجة قبل بدء الإجابة.
+const JUDGE_MAX_CHUNKS = 4;
+const JUDGE_SNIPPET_CHARS = 400;
+// إذا كان أفضل مقطع مطابقاً بقوة فلا حاجة لسؤال الحَكَم.
+const JUDGE_SKIP_SCORE = 0.55;
 const WEB_RESULT_LIMIT = 3;
 const WEB_PROVIDER_TIMEOUT_MS = 6_000;
 const WEB_USER_AGENT =
@@ -156,23 +162,6 @@ function jsonResponse(
       ...corsHeaders(origin),
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store",
-    },
-  });
-}
-
-function sseResponse(events: unknown[], origin: string | null): Response {
-  const body = events
-    .map((event) => `data: ${JSON.stringify(event)}\n\n`)
-    .join("");
-
-  return new Response(body, {
-    status: 200,
-    headers: {
-      ...corsHeaders(origin),
-      "Content-Type": "text/event-stream; charset=utf-8",
-      "Cache-Control": "no-store, no-transform",
-      "X-Accel-Buffering": "no",
-      "X-Model": DEEPSEEK_MODEL,
     },
   });
 }
@@ -512,14 +501,21 @@ function formatKnowledgeContext(chunks: KnowledgeChunk[]): string {
   return lines.join("\n\n");
 }
 
-async function retrieveKnowledge(question: string): Promise<KnowledgeChunk[]> {
+async function retrieveKnowledge(
+  question: string,
+  timings?: Record<string, number>,
+): Promise<KnowledgeChunk[]> {
   if (!admin || !RAG_ENABLED) return [];
 
   try {
+    const embedStarted = performance.now();
     const embedding = await embedQuery(question);
+    if (timings) timings.embed = Math.round(performance.now() - embedStarted);
+
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), RAG_TIMEOUT_MS);
 
+    const rpcStarted = performance.now();
     const { data, error } = await admin
       .rpc("match_knowledge_chunks", {
         p_query_embedding: embedding,
@@ -529,6 +525,7 @@ async function retrieveKnowledge(question: string): Promise<KnowledgeChunk[]> {
       .abortSignal(controller.signal);
 
     clearTimeout(timer);
+    if (timings) timings.rpc = Math.round(performance.now() - rpcStarted);
 
     if (error) {
       console.error("rag_rpc_failed", error.message);
@@ -542,11 +539,11 @@ async function retrieveKnowledge(question: string): Promise<KnowledgeChunk[]> {
   }
 }
 
-function formatChunkBlock(chunk: KnowledgeChunk, index: number): string {
+// نسخة مختصرة تُرسل إلى الحَكَم فقط: تقلّل حجم الطلب وزمنه.
+function formatJudgeChunk(chunk: KnowledgeChunk, index: number): string {
   const meta = [`الكتاب: ${chunk.book}`];
   if (chunk.chapter) meta.push(`الباب: ${chunk.chapter}`);
-  if (chunk.page !== null) meta.push(`الصفحة: ${chunk.page}`);
-  return `[${index + 1}] ${meta.join(" | ")}\n${chunk.content}`;
+  return `[${index + 1}] ${meta.join(" | ")}\n${chunk.content.slice(0, JUDGE_SNIPPET_CHARS)}`;
 }
 
 // حَكَم المصادر: يرفض المقاطع التي لا تجيب عن السؤال إجابة مباشرة.
@@ -556,6 +553,14 @@ async function judgeChunks(
 ): Promise<KnowledgeChunk[]> {
   if (chunks.length === 0) return [];
 
+  const topScore = Math.max(...chunks.map((chunk) => chunk.score));
+  if (topScore >= JUDGE_SKIP_SCORE) {
+    console.log("chunk_judge_skipped", topScore.toFixed(3));
+    return chunks.slice(0, 3);
+  }
+
+  console.log("chunk_judge_called", topScore.toFixed(3));
+  const candidates = chunks.slice(0, JUDGE_MAX_CHUNKS);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), JUDGE_TIMEOUT_MS);
 
@@ -578,46 +583,46 @@ async function judgeChunks(
       body: JSON.stringify({
         model: DEEPSEEK_MODEL,
         stream: false,
-        max_tokens: 80,
+        max_tokens: 24,
         temperature: 0,
         thinking: { type: "disabled" },
         messages: [
           { role: "system", content: judgeSystem },
           {
             role: "user",
-            content: `السؤال: ${question}\n\n${chunks
-              .map(formatChunkBlock)
+            content: `السؤال: ${question}\n\n${candidates
+              .map(formatJudgeChunk)
               .join("\n\n")}`,
           },
         ],
       }),
     });
 
-    if (!response.ok) return chunks;
+    if (!response.ok) return candidates;
 
     const data = (await response.json()) as {
       choices?: Array<{ message?: { content?: unknown } }>;
     };
     const text = data.choices?.[0]?.message?.content;
-    if (typeof text !== "string") return chunks;
+    if (typeof text !== "string") return candidates;
 
     const match = text.match(/\{[\s\S]*\}/);
-    if (!match) return chunks;
+    if (!match) return candidates;
 
     const parsed = JSON.parse(match[0]) as { relevant?: unknown };
-    if (!Array.isArray(parsed.relevant)) return chunks;
+    if (!Array.isArray(parsed.relevant)) return candidates;
 
     const indexes = parsed.relevant
       .map((value) => Number(value))
       .filter(
         (value) =>
-          Number.isInteger(value) && value >= 1 && value <= chunks.length,
+          Number.isInteger(value) && value >= 1 && value <= candidates.length,
       );
 
-    return [...new Set(indexes)].map((value) => chunks[value - 1]);
+    return [...new Set(indexes)].map((value) => candidates[value - 1]);
   } catch (error) {
     console.error("chunk_judge_failed", error);
-    return chunks;
+    return candidates;
   } finally {
     clearTimeout(timer);
   }
@@ -1090,125 +1095,8 @@ Deno.serve(async (request) => {
     );
   }
 
-  const question = messages[messages.length - 1].content;
-  const retrievalQuestion = buildRetrievalQuestion(messages);
-  const [candidates, inScope] = await Promise.all([
-    retrieveKnowledge(retrievalQuestion),
-    isQuestionInScope(question, buildScopeContext(messages)),
-  ]);
-
-  if (!inScope) {
-    await releaseQuota(visitorHash);
-    const refunded = {
-      ...quota,
-      used: Math.max(0, quota.used - 1),
-      remaining: quota.remaining + 1,
-    };
-
-    return sseResponse(
-      [
-        { type: "quota", quota: refunded },
-        { type: "answer", text: SCOPE_REFUSAL_TEXT },
-        { type: "done" },
-      ],
-      origin,
-    );
-  }
-
-  const chunks = await judgeChunks(retrievalQuestion, candidates);
-
-  let knowledgeContext: string | null = null;
-  let webContext: string | null = null;
-
-  if (chunks.length > 0) {
-    knowledgeContext = formatKnowledgeContext(chunks);
-  } else {
-    const webResults = await searchWeb(retrievalQuestion);
-    if (webResults.length > 0) {
-      webContext = formatWebSearchContext(webResults);
-    }
-  }
-
-  const systemPrompt = buildSystemPrompt({ knowledgeContext, webContext });
-
-  // إذا أغلق المتصفح الاتصال أثناء الاسترجاع فلا نستهلك طلب DeepSeek.
-  if (request.signal.aborted) {
-    await releaseQuota(visitorHash);
-    return jsonResponse({ error: "أُلغي الطلب." }, 499, origin);
-  }
-
-  const upstreamController = new AbortController();
-  let upstreamTimedOut = false;
-  const timeoutTimer = setTimeout(() => {
-    upstreamTimedOut = true;
-    upstreamController.abort();
-  }, UPSTREAM_TIMEOUT_MS);
-
-  const abortUpstream = () => upstreamController.abort();
-  request.signal.addEventListener("abort", abortUpstream);
-
-  let upstream: Response;
-  try {
-    upstream = await fetch(DEEPSEEK_API_URL, {
-      method: "POST",
-      signal: upstreamController.signal,
-      headers: {
-        Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
-        "Content-Type": "application/json",
-        Accept: "text/event-stream",
-      },
-      body: JSON.stringify({
-        model: DEEPSEEK_MODEL,
-        stream: true,
-        stream_options: { include_usage: true },
-        max_tokens: MAX_OUTPUT_TOKENS,
-        temperature: 0.2,
-        thinking: { type: "disabled" },
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...messages,
-        ],
-      }),
-    });
-  } catch (error) {
-    clearTimeout(timeoutTimer);
-    request.signal.removeEventListener("abort", abortUpstream);
-    await releaseQuota(visitorHash);
-    console.error("deepseek_fetch_failed", error);
-
-    return jsonResponse(
-      {
-        error: upstreamTimedOut
-          ? "تأخّرت خدمة الذكاء الاصطناعي. حاول مرة أخرى."
-          : "تعذّر الوصول إلى خدمة الذكاء الاصطناعي.",
-      },
-      502,
-      origin,
-    );
-  }
-
-  const upstreamBody = upstream.body;
-
-  if (!upstream.ok || !upstreamBody) {
-    clearTimeout(timeoutTimer);
-    request.signal.removeEventListener("abort", abortUpstream);
-    await releaseQuota(visitorHash);
-
-    const detail = await upstream.text().catch(() => "");
-    console.error("deepseek_upstream_error", upstream.status, detail.slice(0, 500));
-
-    return jsonResponse(
-      {
-        error: `فشل الطلب من DeepSeek (${upstream.status}). حاول مرة أخرى.`,
-      },
-      502,
-      origin,
-    );
-  }
-
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
-  const reader = upstreamBody.getReader();
 
   let answerChars = 0;
   let thinkingChars = 0;
@@ -1216,12 +1104,22 @@ Deno.serve(async (request) => {
   let completionTokens = 0;
   let released = false;
   let finished = false;
+  let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+  let timeoutTimer: number | undefined;
 
   const releaseOnce = async () => {
     if (released) return;
     released = true;
     await releaseQuota(visitorHash);
   };
+
+  const upstreamController = new AbortController();
+  let upstreamTimedOut = false;
+  const abortUpstream = () => upstreamController.abort();
+  request.signal.addEventListener("abort", abortUpstream);
+
+  // قناة تشخيص للأداء: لا تُستخدم من المتصفح (الترويسة غير مسموحة في CORS).
+  const debugTimings = request.headers.get("x-ibnfaris-debug") === "1";
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -1235,7 +1133,153 @@ Deno.serve(async (request) => {
         }
       };
 
+      const close = () => {
+        try {
+          controller.close();
+        } catch {
+          // الدفق مغلق مسبقاً.
+        }
+      };
+
+      const finishWithError = async (message: string) => {
+        finished = true;
+        if (timeoutTimer !== undefined) clearTimeout(timeoutTimer);
+        request.signal.removeEventListener("abort", abortUpstream);
+        await releaseOnce();
+        send({ type: "error", error: message });
+        send({ type: "done" });
+        close();
+      };
+
       send({ type: "quota", quota });
+      // يُرسل قبل بدء العمل حتى يرى المستخدم أن الطلب وصل.
+      send({ type: "status", text: "أراجع المصادر…" });
+
+      const startedAt = performance.now();
+      const timings: Record<string, number> = {};
+      const mark = (name: string) => {
+        timings[name] = Math.round(performance.now() - startedAt);
+      };
+
+      const question = messages[messages.length - 1].content;
+      const retrievalQuestion = buildRetrievalQuestion(messages);
+      const previousQuestion = lastPreviousUserMessage(messages);
+      // متابعة قصيرة ترث حكم النطاق من السؤال السابق، فلا نكلّف نداءً مستقلاً.
+      const checkScope = !previousQuestion || !needsPreviousQuestion(question);
+
+      const [candidates, inScope] = await Promise.all([
+        retrieveKnowledge(retrievalQuestion, debugTimings ? timings : undefined),
+        checkScope
+          ? isQuestionInScope(question, buildScopeContext(messages))
+          : Promise.resolve(true),
+      ]);
+      mark("retrieval");
+
+      if (!inScope) {
+        await releaseOnce();
+        finished = true;
+        request.signal.removeEventListener("abort", abortUpstream);
+
+        const refunded = {
+          ...quota,
+          used: Math.max(0, quota.used - 1),
+          remaining: quota.remaining + 1,
+        };
+
+        send({ type: "quota", quota: refunded });
+        send({ type: "answer", text: SCOPE_REFUSAL_TEXT });
+        send({ type: "done" });
+        close();
+        return;
+      }
+
+      send({ type: "status", text: "أتحقق من المقاطع…" });
+
+      const chunks = await judgeChunks(retrievalQuestion, candidates);
+      mark("judge");
+
+      let knowledgeContext: string | null = null;
+      let webContext: string | null = null;
+
+      if (chunks.length > 0) {
+        knowledgeContext = formatKnowledgeContext(chunks);
+      } else {
+        send({ type: "status", text: "أبحث عن مصادر إضافية…" });
+        const webResults = await searchWeb(retrievalQuestion);
+        if (webResults.length > 0) {
+          webContext = formatWebSearchContext(webResults);
+        }
+      }
+      mark("web");
+
+      const systemPrompt = buildSystemPrompt({ knowledgeContext, webContext });
+
+      // إذا أغلق المتصفح الاتصال أثناء الاسترجاع فلا نستهلك طلب DeepSeek.
+      if (request.signal.aborted) {
+        finished = true;
+        await releaseOnce();
+        close();
+        return;
+      }
+
+      send({ type: "status", text: "أصوغ الإجابة…" });
+
+      timeoutTimer = setTimeout(() => {
+        upstreamTimedOut = true;
+        upstreamController.abort();
+      }, UPSTREAM_TIMEOUT_MS);
+
+      let upstream: Response;
+      try {
+        upstream = await fetch(DEEPSEEK_API_URL, {
+          method: "POST",
+          signal: upstreamController.signal,
+          headers: {
+            Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
+            "Content-Type": "application/json",
+            Accept: "text/event-stream",
+          },
+          body: JSON.stringify({
+            model: DEEPSEEK_MODEL,
+            stream: true,
+            stream_options: { include_usage: true },
+            max_tokens: MAX_OUTPUT_TOKENS,
+            temperature: 0.2,
+            thinking: { type: "disabled" },
+            messages: [
+              { role: "system", content: systemPrompt },
+              ...messages,
+            ],
+          }),
+        });
+      } catch (error) {
+        console.error("deepseek_fetch_failed", error);
+        await finishWithError(
+          upstreamTimedOut
+            ? "تأخّرت خدمة الذكاء الاصطناعي. حاول مرة أخرى."
+            : "تعذّر الوصول إلى خدمة الذكاء الاصطناعي.",
+        );
+        return;
+      }
+
+      const upstreamBody = upstream.body;
+
+      if (!upstream.ok || !upstreamBody) {
+        const detail = await upstream.text().catch(() => "");
+        console.error(
+          "deepseek_upstream_error",
+          upstream.status,
+          detail.slice(0, 500),
+        );
+        await finishWithError(
+          `فشل الطلب من DeepSeek (${upstream.status}). حاول مرة أخرى.`,
+        );
+        return;
+      }
+
+      const upstreamReader = upstreamBody.getReader();
+      reader = upstreamReader;
+      mark("upstream");
 
       const handleLine = (rawLine: string) => {
         const line = rawLine.trim();
@@ -1294,6 +1338,7 @@ Deno.serve(async (request) => {
 
         const content = delta?.content;
         if (typeof content === "string" && content.length > 0) {
+          if (answerChars === 0) mark("firstToken");
           answerChars += content.length;
           send({ type: "answer", text: content });
         }
@@ -1304,7 +1349,7 @@ Deno.serve(async (request) => {
 
       try {
         while (true) {
-          const { done, value } = await reader.read();
+          const { done, value } = await upstreamReader.read();
           if (done) break;
 
           buffer += decoder.decode(value, { stream: true });
@@ -1342,7 +1387,7 @@ Deno.serve(async (request) => {
         }
       } finally {
         finished = true;
-        clearTimeout(timeoutTimer);
+        if (timeoutTimer !== undefined) clearTimeout(timeoutTimer);
         request.signal.removeEventListener("abort", abortUpstream);
 
         if (answerChars > 0 || thinkingChars > 0) {
@@ -1366,6 +1411,8 @@ Deno.serve(async (request) => {
           await releaseOnce();
         }
 
+        if (debugTimings) send({ type: "timings", timings });
+
         send({ type: "done" });
 
         try {
@@ -1379,13 +1426,15 @@ Deno.serve(async (request) => {
     async cancel() {
       upstreamController.abort();
 
-      try {
-        await reader.cancel();
-      } catch {
-        // يتم تجاهل خطأ إلغاء القارئ.
+      if (reader) {
+        try {
+          await reader.cancel();
+        } catch {
+          // يتم تجاهل خطأ إلغاء القارئ.
+        }
       }
 
-      clearTimeout(timeoutTimer);
+      if (timeoutTimer !== undefined) clearTimeout(timeoutTimer);
       request.signal.removeEventListener("abort", abortUpstream);
 
       if (!finished && answerChars === 0) {

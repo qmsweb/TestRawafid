@@ -216,6 +216,14 @@
       return typing;
     }
 
+    function makeStatus(text) {
+      var status = document.createElement("span");
+      status.className = "if-status";
+      status.setAttribute("role", "status");
+      status.textContent = text;
+      return status;
+    }
+
     function appendCaret(container) {
       var caret = document.createElement("span");
       caret.className = "if-caret";
@@ -276,7 +284,9 @@
       el.innerHTML = "";
 
       if (message.role === "assistant" && !message.content && state.streaming) {
-        el.appendChild(makeTyping());
+        el.appendChild(
+          message.status ? makeStatus(message.status) : makeTyping(),
+        );
         return;
       }
 
@@ -765,6 +775,12 @@
           try {
             event = JSON.parse(raw);
           } catch (error) {
+            continue;
+          }
+
+          if (event.type === "status" && typeof event.text === "string") {
+            assistant.status = event.text;
+            scheduleRender(assistant);
             continue;
           }
 
