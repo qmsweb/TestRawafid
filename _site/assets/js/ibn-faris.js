@@ -805,6 +805,13 @@
             continue;
           }
 
+          if (event.type === "ungrounded" && typeof event.text === "string") {
+            gotAnswer = true;
+            assistant.content = event.text;
+            scheduleRender(assistant);
+            continue;
+          }
+
           if (event.type === "quota") {
             setQuota(event.quota);
             continue;
