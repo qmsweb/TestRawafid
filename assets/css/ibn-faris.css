@@ -203,12 +203,47 @@ html[data-theme="dark"] .if-overlay {
 .if-overlay .if-sheet {
   max-height: min(88dvh, 880px);
   transform: translate3d(0, 100%, 0);
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.3s ease;
   will-change: transform;
 }
 
 .if-overlay.is-open .if-sheet {
   transform: translate3d(0, 0, 0);
+}
+
+/* السحب لأعلى من المقبض: يتمدد حتى أعلى الشاشة */
+.if-overlay.is-dragging .if-sheet,
+.if-overlay.is-expanded .if-sheet {
+  max-height: none;
+}
+
+.if-overlay.is-dragging .if-sheet {
+  transition: none;
+  will-change: transform, height;
+}
+
+.if-overlay.is-expanded .if-sheet {
+  border-radius: 0;
+}
+
+.if-overlay .if-sheet-handle {
+  position: relative;
+  cursor: grab;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* توسيع مساحة اللمس حول المقبض دون تغيير شكله */
+.if-overlay .if-sheet-handle::before {
+  content: "";
+  position: absolute;
+  inset: -9px -60px -7px;
+}
+
+.if-overlay.is-dragging .if-sheet-handle {
+  cursor: grabbing;
 }
 
 .if-locked {
@@ -1034,26 +1069,6 @@ html[data-theme="dark"] .if-empty-mark img {
   margin-top: 9px;
 }
 
-.if-model-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
-  border: 1px solid var(--if-warm-mist);
-  border-radius: var(--if-radius-full);
-  color: var(--if-graphite);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-
-.if-model-pill svg {
-  width: 13px;
-  height: 13px;
-  color: var(--if-sand);
-}
-
 .if-quota {
   color: var(--if-graphite);
   font-size: 12px;
@@ -1132,6 +1147,11 @@ html[data-theme="dark"] .if-empty-mark img {
     border-radius: var(--if-sheet-radius);
     max-height: min(86dvh, 840px);
     transform: translate3d(0, 24px, 0) scale(0.99);
+  }
+
+  /* على الشاشات الكبيرة تبقى الزوايا مستديرة عند التوسيع */
+  .if-overlay.is-expanded .if-sheet {
+    border-radius: var(--if-sheet-radius);
   }
 
   .if-overlay.is-open .if-sheet {

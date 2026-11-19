@@ -124,9 +124,180 @@
     });
 
     document.addEventListener("keydown", onKeydown);
+    initSheetDrag();
 
     return state.overlay;
   }
+
+  // ----------------------------------------------------------
+  // سحب اللوحة لأعلى من المقبض
+  // ----------------------------------------------------------
+  var drag = null;
+
+  function overlayMaxHeight() {
+    if (!state.overlay) return 0;
+
+    var styles = window.getComputedStyle(state.overlay);
+    var padding =
+      (parseFloat(styles.paddingTop) || 0) +
+      (parseFloat(styles.paddingBottom) || 0);
+
+    return Math.max(0, state.overlay.clientHeight - padding);
+  }
+
+  function measureBaseHeight() {
+    if (!state.overlay || !state.sheet) return 0;
+
+    var overlay = state.overlay;
+    var sheet = state.sheet;
+    var wasExpanded = overlay.classList.contains("is-expanded");
+    var previousHeight = sheet.style.height;
+
+    overlay.classList.remove("is-expanded");
+    sheet.style.height = "";
+    var height = sheet.getBoundingClientRect().height;
+    sheet.style.height = previousHeight;
+    if (wasExpanded) overlay.classList.add("is-expanded");
+
+    return height;
+  }
+
+  function resetSheetSize() {
+    drag = null;
+    if (!state.overlay || !state.sheet) return;
+
+    state.overlay.classList.remove("is-dragging", "is-expanded");
+    state.sheet.style.height = "";
+  }
+
+  function onHandlePointerDown(event) {
+    if (!state.isOpen || !state.sheet) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+
+    var sheet = state.sheet;
+    var overlay = state.overlay;
+    var rect = sheet.getBoundingClientRect();
+    var max = overlayMaxHeight();
+    var base = Math.min(measureBaseHeight(), max);
+    var startHeight = Math.min(rect.height, max);
+
+    drag = {
+      pointerId: event.pointerId,
+      startY: event.clientY,
+      startHeight: startHeight,
+      lastY: event.clientY,
+      lastTime: event.timeStamp,
+      velocity: 0,
+      height: startHeight,
+      base: base,
+      max: max,
+      handle: event.currentTarget,
+    };
+
+    sheet.style.height = startHeight + "px";
+    overlay.classList.add("is-dragging");
+
+    if (event.cancelable) event.preventDefault();
+
+    var handle = event.currentTarget;
+    if (handle.setPointerCapture) {
+      try {
+        handle.setPointerCapture(event.pointerId);
+      } catch (error) {}
+    }
+  }
+
+  function onHandlePointerMove(event) {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+    if (event.cancelable) event.preventDefault();
+
+    var now = event.timeStamp;
+    if (now > drag.lastTime) {
+      drag.velocity = (drag.lastY - event.clientY) / (now - drag.lastTime);
+      drag.lastY = event.clientY;
+      drag.lastTime = now;
+    }
+
+    var next = drag.startHeight + (drag.startY - event.clientY);
+    next = Math.min(drag.max, Math.max(drag.base, next));
+    drag.height = next;
+    state.sheet.style.height = Math.round(next) + "px";
+  }
+
+  function onHandlePointerUp(event) {
+    if (!drag || event.pointerId !== drag.pointerId) return;
+
+    var overlay = state.overlay;
+    var sheet = state.sheet;
+    var handle = drag.handle;
+    var range = drag.max - drag.base;
+    var extra = drag.height - drag.base;
+    var velocity = drag.velocity;
+    var base = drag.base;
+    var max = drag.max;
+
+    drag = null;
+
+    if (handle && handle.releasePointerCapture) {
+      try {
+        handle.releasePointerCapture(event.pointerId);
+      } catch (error) {}
+    }
+
+    // اتجاه السحب الأخير يحسم النتيجة، ثم المسافة المقطوعة.
+    var ratio = range > 0 ? extra / range : 0;
+    var shouldExpand;
+    if (ratio > 0.9) {
+      shouldExpand = true;
+    } else if (ratio < 0.1) {
+      shouldExpand = false;
+    } else if (velocity < -0.55) {
+      shouldExpand = false;
+    } else if (velocity > 0.55) {
+      shouldExpand = true;
+    } else {
+      shouldExpand = ratio > 0.35;
+    }
+
+    overlay.classList.remove("is-dragging");
+
+    if (shouldExpand) {
+      overlay.classList.add("is-expanded");
+      sheet.style.height = max + "px";
+      return;
+    }
+
+    overlay.classList.remove("is-expanded");
+    sheet.style.height = base + "px";
+
+    // بعد انتهاء الحركة نعيد الارتفاع للتنسيق الطبيعي.
+    window.setTimeout(function () {
+      if (!state.isOpen || drag) return;
+      if (!overlay.classList.contains("is-expanded")) {
+        sheet.style.height = "";
+      }
+    }, 320);
+  }
+
+  function initSheetDrag() {
+    var handle =
+      state.sheet && state.sheet.querySelector(".if-sheet-handle");
+    if (!handle || handle.hasAttribute("data-if-drag")) return;
+
+    handle.setAttribute("data-if-drag", "");
+    handle.addEventListener("pointerdown", onHandlePointerDown);
+    handle.addEventListener("pointermove", onHandlePointerMove);
+    handle.addEventListener("pointerup", onHandlePointerUp);
+    handle.addEventListener("pointercancel", onHandlePointerUp);
+  }
+
+  window.addEventListener("resize", function () {
+    if (!state.isOpen || drag || !state.overlay) return;
+
+    if (state.overlay.classList.contains("is-expanded")) {
+      state.sheet.style.height = overlayMaxHeight() + "px";
+    }
+  });
 
   function focusables() {
     if (!state.sheet) return [];
@@ -272,6 +443,7 @@
     window.setTimeout(function () {
       if (!state.isOpen && state.overlay) {
         state.overlay.hidden = true;
+        resetSheetSize();
       }
     }, 320);
 
