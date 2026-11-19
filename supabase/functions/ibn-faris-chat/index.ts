@@ -42,7 +42,7 @@ const WEB_PROVIDER_TIMEOUT_MS = 6_000;
 const WEB_USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 const SCOPE_REFUSAL_TEXT =
-  "أعتذر، أختص بأسئلة اللغة العربية وعلومها، والتربية، وسلطنة عمان. لا أستطيع الإجابة عن هذا السؤال.";
+  "أعتذر، أختص بأسئلة اللغة العربية وعلومها. لا أستطيع الإجابة عن هذا السؤال.";
 
 const DEEPSEEK_API_URL =
   Deno.env.get("DEEPSEEK_API_URL")?.trim() ||
