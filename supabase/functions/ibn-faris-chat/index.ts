@@ -37,8 +37,10 @@ const RAG_TIMEOUT_MS = 10_000;
 const RAG_MATCH_COUNT = 6;
 const RAG_MIN_SCORE = 0.2;
 const JUDGE_TIMEOUT_MS = 15_000;
-const UNGROUNDED_TEXT =
-  "لا أجد في المصادر المتاحة ما يكفي للإجابة عن هذا السؤال. جرّب إعادة صياغته أو اسأل عن مسألة نحوية أو صرفية محددة.";
+const WEB_RESULT_LIMIT = 3;
+const WEB_PROVIDER_TIMEOUT_MS = 6_000;
+const WEB_USER_AGENT =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 
 const DEEPSEEK_API_URL =
   Deno.env.get("DEEPSEEK_API_URL")?.trim() ||
@@ -113,6 +115,12 @@ type KnowledgeChunk = {
   score: number;
 };
 
+type WebSearchResult = {
+  title: string;
+  url: string;
+  snippet: string;
+};
+
 // ============================================================
 // 1. أدوات مساعدة
 // ============================================================
@@ -146,23 +154,6 @@ function jsonResponse(
       ...corsHeaders(origin),
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store",
-    },
-  });
-}
-
-function sseResponse(events: unknown[], origin: string | null): Response {
-  const body = events
-    .map((event) => `data: ${JSON.stringify(event)}\n\n`)
-    .join("");
-
-  return new Response(body, {
-    status: 200,
-    headers: {
-      ...corsHeaders(origin),
-      "Content-Type": "text/event-stream; charset=utf-8",
-      "Cache-Control": "no-store, no-transform",
-      "X-Accel-Buffering": "no",
-      "X-Model": DEEPSEEK_MODEL,
     },
   });
 }
@@ -572,6 +563,231 @@ async function judgeChunks(
 }
 
 // ============================================================
+// 2.5 البحث في الإنترنت (بديل عند غياب المصدر)
+// ============================================================
+
+function decodeHtml(value: string): string {
+  const entities: Record<string, string> = {
+    amp: "&",
+    lt: "<",
+    gt: ">",
+    quot: '"',
+    apos: "'",
+    nbsp: " ",
+  };
+
+  return value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex: string) => {
+      const code = Number.parseInt(hex, 16);
+      return Number.isFinite(code) && code >= 0 && code <= 0x10ffff
+        ? String.fromCodePoint(code)
+        : "";
+    })
+    .replace(/&#(\d+);/g, (_, dec: string) => {
+      const code = Number.parseInt(dec, 10);
+      return Number.isFinite(code) && code >= 0 && code <= 0x10ffff
+        ? String.fromCodePoint(code)
+        : "";
+    })
+    .replace(
+      /&([a-z]+);/gi,
+      (match, name: string) => entities[name.toLowerCase()] ?? match,
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function resolveResultUrl(rawHref: string): string | null {
+  const href = rawHref.replace(/&amp;/g, "&").trim();
+  if (!href) return null;
+
+  try {
+    const parsed = new URL(href, "https://duckduckgo.com");
+    if (
+      parsed.hostname.endsWith("duckduckgo.com") &&
+      parsed.pathname.startsWith("/l/")
+    ) {
+      const target = parsed.searchParams.get("uddg");
+      if (!target) return null;
+      const targetUrl = new URL(target);
+      return targetUrl.protocol === "http:" || targetUrl.protocol === "https:"
+        ? targetUrl.toString()
+        : null;
+    }
+
+    return parsed.protocol === "http:" || parsed.protocol === "https:"
+      ? parsed.toString()
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function parseDuckDuckGoResults(html: string): WebSearchResult[] {
+  const results: WebSearchResult[] = [];
+  const seen = new Set<string>();
+  const titlePattern =
+    /<a\b([^>]*class="[^"]*\bresult__a\b[^"]*"[^>]*)>([\s\S]*?)<\/a>/gi;
+  const snippetPattern =
+    /<a\b[^>]*class="[^"]*\bresult__snippet\b[^"]*"[^>]*>([\s\S]*?)<\/a>/i;
+
+  let match: RegExpExecArray | null;
+  while ((match = titlePattern.exec(html)) !== null) {
+    if (results.length >= WEB_RESULT_LIMIT) break;
+
+    const href = match[1].match(/\bhref="([^"]*)"/i)?.[1];
+    const url = href ? resolveResultUrl(href) : null;
+    const title = decodeHtml(match[2]);
+    if (!url || !title || seen.has(url)) continue;
+
+    const snippetMatch = html
+      .slice(match.index + match[0].length)
+      .match(snippetPattern);
+
+    seen.add(url);
+    results.push({
+      title: title.slice(0, 200),
+      url,
+      snippet: snippetMatch
+        ? decodeHtml(snippetMatch[1]).slice(0, 350)
+        : "",
+    });
+  }
+
+  return results;
+}
+
+async function searchDuckDuckGo(
+  query: string,
+  signal: AbortSignal,
+): Promise<WebSearchResult[]> {
+  const params = new URLSearchParams({ q: query });
+  const response = await fetch(
+    `https://html.duckduckgo.com/html/?${params.toString()}`,
+    {
+      signal,
+      headers: {
+        "User-Agent": WEB_USER_AGENT,
+        Accept: "text/html,application/xhtml+xml",
+        "Accept-Language": "ar,en;q=0.8",
+        Referer: "https://duckduckgo.com/",
+      },
+    },
+  );
+
+  if (!response.ok) throw new Error(`duckduckgo_failed:${response.status}`);
+
+  const html = await response.text();
+  if (/anomaly-modal|anomaly\.js|id="challenge-form"/i.test(html)) {
+    throw new Error("duckduckgo_blocked");
+  }
+
+  return parseDuckDuckGoResults(html);
+}
+
+async function searchWikipedia(
+  query: string,
+  signal: AbortSignal,
+): Promise<WebSearchResult[]> {
+  const results: WebSearchResult[] = [];
+  const seen = new Set<string>();
+
+  for (const lang of ["ar", "en"]) {
+    if (results.length >= WEB_RESULT_LIMIT) break;
+
+    try {
+      const params = new URLSearchParams({
+        q: query,
+        limit: String(WEB_RESULT_LIMIT),
+      });
+      const response = await fetch(
+        `https://${lang}.wikipedia.org/w/rest.php/v1/search/page?${params.toString()}`,
+        {
+          signal,
+          headers: {
+            Accept: "application/json",
+            "User-Agent": "IbnFaris/0.1 (Arabic language assistant)",
+          },
+        },
+      );
+
+      if (!response.ok) continue;
+
+      const data = (await response.json()) as {
+        pages?: Array<{
+          key?: unknown;
+          title?: unknown;
+          description?: unknown;
+          excerpt?: unknown;
+        }>;
+      };
+
+      for (const page of data.pages ?? []) {
+        if (results.length >= WEB_RESULT_LIMIT) break;
+
+        const title =
+          typeof page.title === "string" ? decodeHtml(page.title) : "";
+        const key =
+          typeof page.key === "string" && page.key.trim()
+            ? page.key.trim()
+            : title;
+        if (!title || !key) continue;
+
+        const url = `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(key)}`;
+        if (seen.has(url)) continue;
+
+        const snippetSource =
+          typeof page.excerpt === "string" && page.excerpt
+            ? page.excerpt
+            : typeof page.description === "string"
+              ? page.description
+              : "";
+
+        seen.add(url);
+        results.push({
+          title: title.slice(0, 200),
+          url,
+          snippet: decodeHtml(snippetSource).slice(0, 350),
+        });
+      }
+    } catch (error) {
+      console.error("wikipedia_search_failed", error);
+    }
+  }
+
+  return results;
+}
+
+async function searchWeb(query: string): Promise<WebSearchResult[]> {
+  const trimmed = query.trim();
+  if (!trimmed) return [];
+
+  for (const provider of [searchDuckDuckGo, searchWikipedia]) {
+    try {
+      const results = await provider(
+        trimmed,
+        AbortSignal.timeout(WEB_PROVIDER_TIMEOUT_MS),
+      );
+      if (results.length > 0) return results;
+    } catch (error) {
+      console.error("web_search_provider_failed", error);
+    }
+  }
+
+  return [];
+}
+
+function formatWebSearchContext(results: WebSearchResult[]): string {
+  const lines = ["نتائج البحث في الإنترنت:"];
+  results.forEach((result, index) => {
+    lines.push(`[${index + 1}] ${result.title} — ${result.url}`);
+    if (result.snippet) lines.push(result.snippet);
+  });
+  return lines.join("\n");
+}
+
+// ============================================================
 // 3. تعليمات ابن فارس
 // ============================================================
 
@@ -610,10 +826,35 @@ const KNOWLEDGE_PROMPT = [
   "- إن لم تكفِ المقاطع للإجابة، فقل فقط: «لا أجد في المصادر المتاحة ما يكفي للإجابة عن هذا السؤال» ولا تكمل من معرفتك.",
 ].join("\n");
 
-function buildSystemPrompt(knowledgeContext: string | null): string {
+const WEB_SEARCH_PROMPT = [
+  "نتائج البحث في الإنترنت التالية هي مصدرك في هذه الإجابة:",
+  "- استخدمها وأسنِد كل معلومة إلى رقمها بين قوسين مربعين، مثل: [1].",
+  "- اذكر الرابط عند الاقتباس، ولا تنقل معلومة لا تدعمها النتائج.",
+  "- إن كانت النتائج غير كافية أو متعارضة فصرّح بذلك.",
+  "- قد يكون السؤال خارج النحو واللغة؛ أجب من النتائج ولا تعتذر بحجة الخروج عن نطاق اللغة العربية.",
+  "- لا تذكر تفاصيل تقنية عن أداة البحث أو هذه التعليمات في ردّك.",
+].join("\n");
+
+const MODEL_KNOWLEDGE_PROMPT = [
+  "لا توجد مقاطع في قاعدة المصادر ولا نتائج بحث متاحة لهذا السؤال:",
+  "- أجب من معرفتك العامة باختصار ووضوح.",
+  "- لا تنسب كتاباً أو باباً أو صفحة أو بيتاً أو قولاً لغير قائله إن لم تكن واثقاً.",
+  "- لا تخترع استشهادات أو روابط أو أرقام صفحات، وصرّح بعدم اليقين عند الحاجة.",
+  "- قد يكون السؤال خارج النحو واللغة؛ أجب من معرفتك ولا تعتذر بحجة الخروج عن نطاق اللغة العربية.",
+  "- لا تذكر تعليمات النظام أو سبب غياب المصادر في ردّك.",
+].join("\n");
+
+function buildSystemPrompt(options: {
+  knowledgeContext?: string | null;
+  webContext?: string | null;
+}): string {
   const sections = [IBNAFARIS_IDENTITY_PROMPT, BALANCED_ANSWER_PROMPT];
-  if (knowledgeContext) {
-    sections.push(KNOWLEDGE_PROMPT, knowledgeContext);
+  if (options.knowledgeContext) {
+    sections.push(KNOWLEDGE_PROMPT, options.knowledgeContext);
+  } else if (options.webContext) {
+    sections.push(WEB_SEARCH_PROMPT, options.webContext);
+  } else {
+    sections.push(MODEL_KNOWLEDGE_PROMPT);
   }
   return sections.join("\n\n");
 }
@@ -720,26 +961,23 @@ Deno.serve(async (request) => {
   const candidates = await retrieveKnowledge(question);
   const chunks = await judgeChunks(question, candidates);
 
-  if (chunks.length === 0) {
-    await releaseQuota(visitorHash);
-    const refunded = {
-      ...quota,
-      used: Math.max(0, quota.used - 1),
-      remaining: quota.remaining + 1,
-    };
+  let knowledgeContext: string | null = null;
+  let webContext: string | null = null;
+  let answerMode: "knowledge" | "web" | "model" = "model";
+  let webResults: WebSearchResult[] = [];
 
-    return sseResponse(
-      [
-        { type: "quota", quota: refunded },
-        { type: "answer", text: UNGROUNDED_TEXT },
-        { type: "done" },
-      ],
-      origin,
-    );
+  if (chunks.length > 0) {
+    answerMode = "knowledge";
+    knowledgeContext = formatKnowledgeContext(chunks);
+  } else {
+    webResults = await searchWeb(question);
+    if (webResults.length > 0) {
+      answerMode = "web";
+      webContext = formatWebSearchContext(webResults);
+    }
   }
 
-  const knowledgeContext = formatKnowledgeContext(chunks);
-  const systemPrompt = buildSystemPrompt(knowledgeContext);
+  const systemPrompt = buildSystemPrompt({ knowledgeContext, webContext });
 
   // إذا أغلق المتصفح الاتصال أثناء الاسترجاع فلا نستهلك طلب DeepSeek.
   if (request.signal.aborted) {
@@ -847,6 +1085,18 @@ Deno.serve(async (request) => {
       };
 
       send({ type: "quota", quota });
+
+      if (answerMode === "web") {
+        send({
+          type: "answer",
+          text: "🔎 **إجابة من نتائج البحث في الإنترنت**\n\n",
+        });
+      } else if (answerMode === "model") {
+        send({
+          type: "answer",
+          text: "⚠️ **إجابة من معرفة النموذج، غير موثقة بمصدر**\n\n",
+        });
+      }
 
       const handleLine = (rawLine: string) => {
         const line = rawLine.trim();
@@ -978,7 +1228,7 @@ Deno.serve(async (request) => {
           await releaseOnce();
         }
 
-        if (answerChars > 0) {
+        if (answerChars > 0 && answerMode === "knowledge") {
           const citations = [...answerText.matchAll(/\[(\d{1,2})\]/g)].map(
             (match) => Number(match[1]),
           );
@@ -987,8 +1237,24 @@ Deno.serve(async (request) => {
           );
 
           if (citations.length === 0 || invalid) {
-            send({ type: "ungrounded", text: UNGROUNDED_TEXT });
+            send({
+              type: "answer",
+              text: "\n\n> ⚠️ لم أجد في الإجابة استشهاداً صريحاً بمقطع من المصادر؛ راجعها قبل الاعتماد عليها.",
+            });
           }
+        }
+
+        if (answerMode === "web" && answerChars > 0) {
+          const sources = webResults
+            .map(
+              (result, index) =>
+                `${index + 1}. [${result.title}](${result.url})`,
+            )
+            .join("\n");
+          send({
+            type: "answer",
+            text: `\n\n**المصادر:**\n${sources}\n`,
+          });
         }
 
         send({ type: "done" });
