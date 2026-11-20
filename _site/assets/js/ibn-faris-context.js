@@ -126,4 +126,19 @@
     get: get,
     update: update
   };
+
+  // تخزين شعار ابن فارس والخطوط في المتصفح بعد أول زيارة.
+  function registerServiceWorker() {
+    if (!("serviceWorker" in navigator)) return;
+
+    navigator.serviceWorker.register("/sw.js").catch(function () {
+      // التسجيل تحسيني فقط؛ لا نعطّل المحادثة إذا فشل.
+    });
+  }
+
+  if (document.readyState === "complete") {
+    registerServiceWorker();
+  } else {
+    window.addEventListener("load", registerServiceWorker);
+  }
 })();
