@@ -1103,8 +1103,8 @@ async function retrieveRawafidContext(
   ];
   let used = lines[0].length;
 
-  for (const [index, snippet] of selected.entries()) {
-    const block = `[${index + 1}] ${snippet.source} — ${snippet.title}\n${snippet.text}`;
+  for (const snippet of selected) {
+    const block = `${snippet.source} - ${snippet.title}\n${snippet.text}`;
     if (used + block.length > RAWAFID_CONTEXT_CHARS) break;
     lines.push(block);
     used += block.length;
@@ -1281,12 +1281,12 @@ function formatKnowledgeContext(chunks: KnowledgeChunk[]): string {
   const lines: string[] = [];
   let used = 0;
 
-  for (const [index, chunk] of chunks.entries()) {
+  for (const chunk of chunks) {
     const meta = [`الكتاب: ${chunk.book}`];
     if (chunk.chapter) meta.push(`الباب: ${chunk.chapter}`);
     if (chunk.page !== null) meta.push(`الصفحة: ${chunk.page}`);
 
-    const block = `[${index + 1}] ${meta.join(" | ")}\n${chunk.content}`;
+    const block = `${meta.join(" | ")}\n${chunk.content}`;
     if (used + block.length > 4_000 && lines.length > 0) break;
 
     lines.push(block);
@@ -1717,8 +1717,8 @@ async function searchWeb(query: string): Promise<WebSearchResult[]> {
 
 function formatWebSearchContext(results: WebSearchResult[]): string {
   const lines = ["نتائج البحث في الإنترنت:"];
-  results.forEach((result, index) => {
-    lines.push(`[${index + 1}] ${result.title} — ${result.url}`);
+  results.forEach((result) => {
+    lines.push(`${result.title} - ${result.url}`);
     if (result.snippet) lines.push(result.snippet);
   });
   return lines.join("\n");
@@ -1756,14 +1756,16 @@ const BALANCED_ANSWER_PROMPT = [
   "- عند الإعراب استخدم جدولاً موجزاً لكل كلمة، واذكر القاعدة في سطر واحد.",
   "- راجع علامة الإعراب وسببها والمصدر قبل الإخراج، وصحّح أي تعارض.",
   "- إذا كان السؤال متعدد الأجزاء فأجب عن كل جزء، وإذا احتاج تفصيلاً فأطل بقدر الحاجة دون حشو أو تكرار.",
+  "- لا تكتب أرقام مراجع أو مقاطع بين قوسين مربعين مثل [1] في ردّك.",
 ].join("\n");
 
 const KNOWLEDGE_PROMPT = [
   "المقاطع التالية من كتب اللغة والتراث، وهي مصدرك الأول للإجابة:",
-  "- اعتمد على المقاطع أولاً، وضع بعد كل حكم أو معلومة مأخوذة منها رقم المقطع بين قوسين مربعين، مثل: [1].",
+  "- اعتمد على المقاطع أولاً، واذكر اسم الكتاب والباب عند الإسناد.",
   "- اذكر اسم الكتاب والباب والصفحة كما وردت في المقطع، ولا تنسب حكماً إلى كتاب أو باب أو صفحة ليست في المقاطع.",
   "- إن لم تكفِ المقاطع للإجابة (كأن يكون السؤال لغوياً بسيطاً لا تغطيه) فأجب من معرفتك العامة باختصار ودقة، دون استشهاد ودون نسبة كتاب أو باب أو صفحة.",
-  "- لا تخترع استشهاداً ولا رقم مقطع غير موجود، ولا تذكر للمستخدم أن المصادر لم تكفِ أو أنك أجبت من معرفتك.",
+  "- لا تخترع استشهاداً ولا تنسب حكماً إلى كتاب أو باب أو صفحة غير موجودة، ولا تذكر للمستخدم أن المصادر لم تكفِ أو أنك أجبت من معرفتك.",
+  "- لا تكتب أرقام المقاطع أو مراجع بين قوسين مربعين مثل [1] في ردّك.",
 ].join("\n");
 
 const RAWAFID_CONTENT_PROMPT = [
@@ -1771,6 +1773,7 @@ const RAWAFID_CONTENT_PROMPT = [
   "- استخدمها لفهم سياق المقرر أو العنصر أو المقال، ولا تنسبها إلى كتب اللغة أو التراث.",
   "- إن كان السؤال عن ملف أو عنصر ولم يكن نصه ضمن المقتطفات، فصرّح بأن المتاح هو بياناته فقط ولا تخمّن محتواه.",
   "- لا تذكر أنك تتلقى مقتطفات داخلية، ولا تصف طريقة عمل المصادر.",
+  "- لا تكتب مراجع رقمية أو أقواسًا مثل [1] في ردّك.",
 ].join("\n");
 
 const WEB_SEARCH_PROMPT = [
