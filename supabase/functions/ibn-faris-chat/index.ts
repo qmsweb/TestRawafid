@@ -772,8 +772,58 @@ function normalizePathForMatch(value: string): string {
     .replace(/\.html$/i, "");
 }
 
-// المقالات لا تحمل رمز مقرر في الغالب؛ نستنتجه من عنوان المقال ووسومه
-// ثم من أوله إن لزم، حتى يعرف ابن فارس المقرر الذي ينتمي إليه المقال.
+// المقالات لا تحمل رمز مقرر في الغالب؛ نستنتجه فقط عند تطابق واضح مع
+// وسم من وسوم المقال أو عنوانه، لا من نصه العام، لتجنّب نسب خاطئ.
+function detectCourseFromPostMetadata(
+  post: PostsIndexItem,
+  profiles: Profiles,
+  materials: MaterialEntry[],
+): string | null {
+  const normalizedTitle = normalizeArabic(post.title);
+  const normalizedTags = new Set(post.tags.map((tag) => normalizeArabic(tag)));
+
+  let bestCode: string | null = null;
+  let bestScore = 0;
+
+  const consider = (code: string, aliases: unknown[]) => {
+    for (const alias of aliases) {
+      if (typeof alias !== "string") continue;
+
+      const normalizedAlias = normalizeArabic(alias);
+      if (normalizedAlias.length < 3) continue;
+
+      const bare = normalizedAlias.replace(/^ال/, "");
+      const exactTag =
+        normalizedTags.has(normalizedAlias) || normalizedTags.has(bare);
+      const inTitle =
+        normalizedAlias.length >= 8 &&
+        normalizedTitle.includes(normalizedAlias);
+
+      if (!exactTag && !inTitle) continue;
+
+      const score = (exactTag ? 20 : 0) + normalizedAlias.length;
+      if (score > bestScore) {
+        bestCode = code;
+        bestScore = score;
+      }
+    }
+  };
+
+  for (const [code, profile] of Object.entries(profiles.courses ?? {})) {
+    consider(code, [
+      code,
+      profile.name,
+      ...(Array.isArray(profile.aliases) ? profile.aliases : []),
+    ]);
+  }
+
+  for (const material of materials) {
+    consider(material.code, [material.code, material.name]);
+  }
+
+  return bestCode;
+}
+
 async function resolvePostCourseContext(
   page: PageContext,
   profiles: Profiles,
@@ -789,20 +839,7 @@ async function resolvePostCourseContext(
   );
   if (!post) return page;
 
-  let code = detectCourseFromQuestion(
-    `${post.title} ${post.tags.join(" ")}`,
-    profiles,
-    materials,
-  );
-
-  if (!code) {
-    code = detectCourseFromQuestion(
-      post.content.slice(0, 1_200),
-      profiles,
-      materials,
-    );
-  }
-
+  const code = detectCourseFromPostMetadata(post, profiles, materials);
   if (!code) return page;
 
   const course = await fetchCourse(code, siteUrl);
