@@ -1,0 +1,20 @@
+---
+layout: null
+---
+[
+{%- assign if_post_count = 0 -%}
+{%- for post in site.posts -%}
+  {%- if post.visible == false -%}{%- continue -%}{%- endif -%}
+  {%- if post.url contains '/test' or post.url contains '/example' or post.url contains '/mindmap-test' or post.url contains '/arab224-testing' or post.url contains '/one' -%}{%- continue -%}{%- endif -%}
+  {%- if if_post_count > 0 -%},{%- endif -%}
+  {%- assign if_post_count = if_post_count | plus: 1 -%}
+  {
+    "title": {{ post.title | default: "" | jsonify }},
+    "slug": {{ post.url | replace: "/blog/", "" | jsonify }},
+    "url": {{ post.url | relative_url | jsonify }},
+    "date": "{{ post.date | date: "%Y-%m-%d" }}",
+    "tags": {% if post.tags %}{{ post.tags | jsonify }}{% else %}[]{% endif %},
+    "content": {{ post.content | strip_html | truncate: 8000 | jsonify }}
+  }
+{%- endfor -%}
+]

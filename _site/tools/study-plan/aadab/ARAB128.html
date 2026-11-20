@@ -833,6 +833,24 @@
   </div>
 </template>
 
+<script type="application/json" id="if-page-context">
+{
+  "version": 1,
+  "type": "study-plan",
+  "layout": "study-plan",
+  "title": "مدخل إلى المصادر اللغوية والأدبية - الخطة الدراسية",
+  "description": "تفاصيل مقرر مدخل إلى المصادر اللغوية والأدبية (ARAB128) ضمن تخصص آداب اللغة العربية: المتطلبات السابقة والمتزامنة والساعات المعتمدة.",
+  "path": "/tools/study-plan/aadab/ARAB128",
+  "courseCode": "ARAB128",
+  "itemId": "",
+  "examCode": "",
+  "plan": "aadab",
+  "tags": []
+}
+</script>
+
+
+<script src="/assets/js/ibn-faris-context.js" defer></script>
 <script
   src="/assets/js/ibn-faris-widget.js"
   data-base="/"
@@ -1336,6 +1354,15 @@
           currentPlan = plan;
           focusedCourseCode = course.id;
           lastCourseId = course.id;
+
+          if (window.IbnFarisPageContext) {
+              window.IbnFarisPageContext.update({
+                  type: 'study-plan',
+                  plan: plan,
+                  courseCode: course.id,
+                  title: course.name || course.id,
+              });
+          }
 
           renderFocusedCourse(course);
           applyHistoryAction(opts.historyAction, plan, code);

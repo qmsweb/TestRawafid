@@ -775,6 +775,24 @@
   </div>
 </template>
 
+<script type="application/json" id="if-page-context">
+{
+  "version": 1,
+  "type": "details",
+  "layout": "details",
+  "title": "اختبار تفاعلي في الوحدة الرابعة",
+  "description": "",
+  "path": "/details/EDUC317/4",
+  "courseCode": "EDUC317",
+  "itemId": "4",
+  "examCode": "",
+  "plan": "",
+  "tags": []
+}
+</script>
+
+
+<script src="/assets/js/ibn-faris-context.js" defer></script>
 <script
   src="/assets/js/ibn-faris-widget.js"
   data-base="/"
@@ -929,6 +947,16 @@
                 <p>لم نتمكن من العثور على هذا العنصر، ربما تم حذفه أو أن الرابط غير صحيح.</p>
             </div>`;
             return;
+        }
+
+        if (window.IbnFarisPageContext) {
+            window.IbnFarisPageContext.update({
+                type: 'details',
+                courseCode: courseCode,
+                itemId: String(item.id || itemId || ''),
+                title: item.title || document.title,
+                group: item.group || '',
+            });
         }
 
         // تحويل العناصر المرتبطة بتدوينة (مفتاح direct) إلى رابط التدوينة مباشرة

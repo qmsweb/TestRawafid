@@ -822,6 +822,24 @@
   </div>
 </template>
 
+<script type="application/json" id="if-page-context">
+{
+  "version": 1,
+  "type": "study-plan",
+  "layout": "study-plan",
+  "title": "الخطة الدراسية - روافد",
+  "description": "أداة الخطة الدراسية لتنظيم المقررات والمواد - منصة روافد.",
+  "path": "/tools/study-plan",
+  "courseCode": "",
+  "itemId": "",
+  "examCode": "",
+  "plan": "",
+  "tags": []
+}
+</script>
+
+
+<script src="/assets/js/ibn-faris-context.js" defer></script>
 <script
   src="/assets/js/ibn-faris-widget.js"
   data-base="/"
@@ -1325,6 +1343,15 @@
           currentPlan = plan;
           focusedCourseCode = course.id;
           lastCourseId = course.id;
+
+          if (window.IbnFarisPageContext) {
+              window.IbnFarisPageContext.update({
+                  type: 'study-plan',
+                  plan: plan,
+                  courseCode: course.id,
+                  title: course.name || course.id,
+              });
+          }
 
           renderFocusedCourse(course);
           applyHistoryAction(opts.historyAction, plan, code);

@@ -442,6 +442,16 @@
             return;
         }
 
+        if (window.IbnFarisPageContext) {
+            window.IbnFarisPageContext.update({
+                type: 'details',
+                courseCode: courseCode,
+                itemId: String(item.id || itemId || ''),
+                title: item.title || document.title,
+                group: item.group || '',
+            });
+        }
+
         // تحويل العناصر المرتبطة بتدوينة (مفتاح direct) إلى رابط التدوينة مباشرة
         if (item.direct === 'yes' && item.url) {
             window.location.replace(item.url);

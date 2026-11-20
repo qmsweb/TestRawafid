@@ -1,0 +1,40 @@
+{%- comment -%}
+  سياق الصفحة لابن فارس.
+  يُطبع كـ JSON فقط، ثم يقرأه assets/js/ibn-faris-context.js.
+  الهدف: أن يعرف ابن فارس موقعه في روافد دون إرسال الصفحة كاملة.
+{%- endcomment -%}
+{%- assign if_ctx_type = "page" -%}
+{%- if page.collection == "posts" -%}
+  {%- assign if_ctx_type = "post" -%}
+{%- elsif page.layout == "course" -%}
+  {%- assign if_ctx_type = "course" -%}
+{%- elsif page.layout == "details" -%}
+  {%- assign if_ctx_type = "details" -%}
+{%- elsif page.layout == "study-plan" -%}
+  {%- assign if_ctx_type = "study-plan" -%}
+{%- elsif page.layout == "exam2" or page.layout == "exam_print" or page.layout == "testexam" or page.layout == "test-card" -%}
+  {%- assign if_ctx_type = "exam" -%}
+{%- elsif page.layout == "ibn-faris" -%}
+  {%- assign if_ctx_type = "assistant" -%}
+{%- elsif page.layout == "search" -%}
+  {%- assign if_ctx_type = "search" -%}
+{%- elsif page.layout == "tools" or page.layout == "tool" -%}
+  {%- assign if_ctx_type = "tool" -%}
+{%- elsif page.layout == "home" or page.layout == "home-v1" -%}
+  {%- assign if_ctx_type = "home" -%}
+{%- endif -%}
+<script type="application/json" id="if-page-context">
+{
+  "version": 1,
+  "type": {{ if_ctx_type | jsonify }},
+  "layout": {{ page.layout | default: "" | jsonify }},
+  "title": {{ page.title | default: "" | jsonify }},
+  "description": {{ page.description | default: page.og_description | default: "" | jsonify }},
+  "path": {{ page.url | relative_url | jsonify }},
+  "courseCode": {{ page.code | default: "" | jsonify }},
+  "itemId": {{ page.item_id | default: "" | jsonify }},
+  "examCode": {{ page.exam_code | default: "" | jsonify }},
+  "plan": {{ page.plan | default: "" | jsonify }},
+  "tags": {% if page.tags %}{{ page.tags | jsonify }}{% else %}[]{% endif %}
+}
+</script>

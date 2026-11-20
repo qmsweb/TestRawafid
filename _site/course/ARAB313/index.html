@@ -903,6 +903,24 @@
   </div>
 </template>
 
+<script type="application/json" id="if-page-context">
+{
+  "version": 1,
+  "type": "course",
+  "layout": "course",
+  "title": "الشعر الحديث",
+  "description": "",
+  "path": "/course/ARAB313/",
+  "courseCode": "ARAB313",
+  "itemId": "",
+  "examCode": "",
+  "plan": "",
+  "tags": []
+}
+</script>
+
+
+<script src="/assets/js/ibn-faris-context.js" defer></script>
 <script
   src="/assets/js/ibn-faris-widget.js"
   data-base="/"
@@ -1391,12 +1409,22 @@ function createFolderHeader(options) {
         }
       });
 
+      if (window.IbnFarisPageContext) {
+        window.IbnFarisPageContext.update({ group: '' });
+      }
+
       syncMasterFolderState(folder);
       return;
     }
 
     const isNowCollapsed = !folder.classList.contains('collapsed');
     setFolderCollapsed(folder, isNowCollapsed);
+
+    if (window.IbnFarisPageContext) {
+      window.IbnFarisPageContext.update({
+        group: isNowCollapsed ? '' : options.title,
+      });
+    }
 
     if (isNowCollapsed) collapsedGroups.add(key);
     else collapsedGroups.delete(key);
@@ -1563,6 +1591,11 @@ function createMaterialElement(item) {
 
 function renderMaterials(filter = 'all') {
   currentFilter = filter;
+
+  if (window.IbnFarisPageContext) {
+    window.IbnFarisPageContext.update({ filter: filter === 'all' ? '' : filter });
+  }
+
   materialsList.innerHTML = '';
   folderIdCounter = 0;
 
@@ -1683,6 +1716,15 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(data => {
       rawafidHideLoader();
       materialsData = data.items || [];
+
+      if (window.IbnFarisPageContext) {
+        window.IbnFarisPageContext.update({
+          type: 'course',
+          courseCode: courseCode,
+          title: data.name || document.title,
+          group: '',
+        });
+      }
 
       // تجهيز تعريفات المجموعات (اختيارية) وحالة الفتح/الإغلاق
       groupDefinitions = parseGroupDefinitions(data.groups);

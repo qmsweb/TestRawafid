@@ -788,6 +788,15 @@
           focusedCourseCode = course.id;
           lastCourseId = course.id;
 
+          if (window.IbnFarisPageContext) {
+              window.IbnFarisPageContext.update({
+                  type: 'study-plan',
+                  plan: plan,
+                  courseCode: course.id,
+                  title: course.name || course.id,
+              });
+          }
+
           renderFocusedCourse(course);
           applyHistoryAction(opts.historyAction, plan, code);
           rawafidHideLoader();

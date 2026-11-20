@@ -833,6 +833,16 @@
       var controller = new AbortController();
       state.controller = controller;
 
+      var payload = { messages: history };
+      if (window.IbnFarisPageContext && window.IbnFarisPageContext.get) {
+        try {
+          var pageContext = window.IbnFarisPageContext.get();
+          if (pageContext) payload.context = pageContext;
+        } catch (error) {
+          // السياق تحسيني فقط؛ لا نمنع السؤال إذا تعذّر بناؤه.
+        }
+      }
+
       fetch(ENDPOINT, {
         method: "POST",
         headers: {
@@ -840,7 +850,7 @@
           Authorization: "Bearer " + ANON_KEY,
           apikey: ANON_KEY,
         },
-        body: JSON.stringify({ messages: history }),
+        body: JSON.stringify(payload),
         signal: controller.signal,
       })
         .then(function (response) {
