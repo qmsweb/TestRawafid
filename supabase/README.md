@@ -75,6 +75,7 @@ DeepSeek API
 |---|---|---|
 | `IBNAFARIS_VISITOR_DAILY_LIMIT` | `40` | أقصى عدد أسئلة للزائر في اليوم |
 | `IBNAFARIS_GLOBAL_DAILY_LIMIT` | `400` | سقف طلبات الخدمة كلها في اليوم |
+| `IBNAFARIS_GLOBAL_DAILY_BUDGET_USD` | `0` | ميزانية DeepSeek اليومية بالدولار؛ `0` تعني بلا حد |
 | `IBNAFARIS_RAG_ENABLED` | `true` | الاستعانة بقاعدة معرفة `knowledge_chunks` إن وُجدت |
 | `IBNAFARIS_PAGE_CONTEXT_ENABLED` | `true` | تفعيل سياق الصفحة القادم من روافد |
 | `IBNAFARIS_RAWAFID_ENABLED` | `true` | تفعيل استرجاع محتوى المقررات والمقالات |
@@ -236,6 +237,42 @@ data: {"type":"done"}
   النطاقات تقرأ من `rawafid.jassim.one`.
 - يمكن تعطيل الطبقات الجديدة مؤقتًا:
   `IBNAFARIS_PAGE_CONTEXT_ENABLED=false` أو `IBNAFARIS_RAWAFID_ENABLED=false`.
+
+## الميزانية اليومية بالدولار
+
+يمكن وضع سقف عام لتكلفة DeepSeek بدل الاعتماد على عدد الرسائل فقط:
+
+```text
+IBNAFARIS_GLOBAL_DAILY_BUDGET_USD=1.00
+```
+
+- يُحجز تقدير متحفظ قبل كل طلب، ثم تُسوّى الميزانية بالتكلفة الفعلية من
+  توكنات الإدخال والإخراج بعد انتهاء الرد.
+- الحجز ذري في Postgres، فلا تتجاوز الطلبات المتزامنة الميزانية.
+- عند الوصول إلى السقف تُرفض الطلبات الجديدة برسالة السقف اليومي.
+- `IBNAFARIS_GLOBAL_DAILY_LIMIT` يبقى سقف عدد الطلبات، والميزانية سقف التكلفة.
+
+الأسعار المستخدمة في `index.ts` هي أسعار `deepseek-flash` الرسمية لكل مليون
+توكن:
+
+| النوع | خارج الذروة | الذروة |
+|---|---|---|
+| إدخال (cache hit) | $0.003 | $0.006 |
+| إدخال (cache miss) | $0.15 | $0.30 |
+| إخراج | $0.60 | $1.20 |
+
+الذروة هي 01:00–04:00 و06:00–10:00 UTC من الاثنين إلى الجمعة. تُستخدم أسعار
+الذروة في العطلات الصينية أيضًا (تقدير متحفظ)، لذا قد تكون التكلفة الفعلية
+أقل من المحسوبة.
+
+لمعرفة الاستهلاك الحالي:
+
+```sql
+select usage_day, requests_used, prompt_tokens, completion_tokens, cost_usd
+from public.ibnfaris_daily_totals
+order by usage_day desc
+limit 7;
+```
 
 ## الحصص والخصوصية
 

@@ -54,6 +54,15 @@ create table if not exists public.ibnfaris_usage_log (
 comment on table public.ibnfaris_usage_log is
   'سجل استهلاك مختصر لأغراض المراقبة فقط، ولا يحتوي على نص المحادثات.';
 
+-- تكلفة DeepSeek بالدولار: تُحجز تقديريًا عند الطلب ثم تُسوّى بالتكلفة الفعلية.
+alter table public.ibnfaris_daily_totals
+  add column if not exists cost_usd numeric(12, 6) not null default 0
+  check (cost_usd >= 0);
+
+alter table public.ibnfaris_usage_log
+  add column if not exists cost_usd numeric(12, 6) not null default 0
+  check (cost_usd >= 0);
+
 create index if not exists ibnfaris_usage_log_created_idx
   on public.ibnfaris_usage_log (created_at desc);
 
@@ -249,6 +258,191 @@ comment on function public.ibnfaris_record_usage(text, text, integer, integer) i
   'يسجّل التوكنات المستهلكة في الطلب، بلا حفظ لنص السؤال أو الإجابة.';
 
 -- ------------------------------------------------------------
+-- 5.1 نسخة الميزانية بالدولار: حجز تقديري ثم تسوية فعلية
+-- ------------------------------------------------------------
+
+create or replace function public.ibnfaris_reserve_request_v2(
+  p_visitor_hash text,
+  p_visitor_limit integer,
+  p_global_limit integer,
+  p_global_budget_usd numeric,
+  p_estimated_cost_usd numeric
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_today date := (now() at time zone 'Asia/Muscat')::date;
+  v_guest public.ibnfaris_guest_usage%rowtype;
+  v_total public.ibnfaris_daily_totals%rowtype;
+  v_allowed boolean := false;
+  v_reason text := null;
+  v_visitor_limit integer := greatest(coalesce(p_visitor_limit, 0), 0);
+  v_global_limit integer := greatest(coalesce(p_global_limit, 0), 0);
+  v_budget numeric := greatest(coalesce(p_global_budget_usd, 0), 0);
+  v_estimate numeric := greatest(coalesce(p_estimated_cost_usd, 0), 0);
+begin
+  if p_visitor_hash is null or char_length(p_visitor_hash) < 32 then
+    raise exception 'invalid visitor hash';
+  end if;
+
+  insert into public.ibnfaris_daily_totals (usage_day)
+  values (v_today)
+  on conflict (usage_day) do nothing;
+
+  select * into v_total
+  from public.ibnfaris_daily_totals
+  where usage_day = v_today
+  for update;
+
+  insert into public.ibnfaris_guest_usage (visitor_hash, usage_day)
+  values (p_visitor_hash, v_today)
+  on conflict (visitor_hash) do nothing;
+
+  select * into v_guest
+  from public.ibnfaris_guest_usage
+  where visitor_hash = p_visitor_hash
+  for update;
+
+  if v_guest.usage_day <> v_today then
+    v_guest.usage_day := v_today;
+    v_guest.requests_used := 0;
+  end if;
+
+  if v_global_limit <= 0 or v_total.requests_used >= v_global_limit then
+    v_reason := 'global_limit';
+  elsif v_budget > 0 and (v_total.cost_usd + v_estimate) > v_budget then
+    v_reason := 'global_budget';
+  elsif v_visitor_limit <= 0 or v_guest.requests_used >= v_visitor_limit then
+    v_reason := 'visitor_limit';
+  else
+    v_allowed := true;
+    v_total.requests_used := v_total.requests_used + 1;
+    v_total.cost_usd := v_total.cost_usd + v_estimate;
+    v_guest.requests_used := v_guest.requests_used + 1;
+  end if;
+
+  update public.ibnfaris_daily_totals
+  set requests_used = v_total.requests_used,
+      cost_usd = v_total.cost_usd,
+      updated_at = now()
+  where usage_day = v_today;
+
+  update public.ibnfaris_guest_usage
+  set usage_day = v_guest.usage_day,
+      requests_used = v_guest.requests_used,
+      updated_at = now()
+  where visitor_hash = p_visitor_hash;
+
+  return jsonb_build_object(
+    'allowed', v_allowed,
+    'reason', v_reason,
+    'used', v_guest.requests_used,
+    'limit', v_visitor_limit,
+    'remaining', greatest(v_visitor_limit - v_guest.requests_used, 0),
+    'global_used', v_total.requests_used,
+    'global_limit', v_global_limit,
+    'global_cost_usd', v_total.cost_usd,
+    'global_budget_usd', v_budget,
+    'global_remaining_usd', greatest(v_budget - v_total.cost_usd, 0),
+    'reset_on', to_char(v_today, 'YYYY-MM-DD')
+  );
+end;
+$$;
+
+comment on function public.ibnfaris_reserve_request_v2(text, integer, integer, numeric, numeric) is
+  'يحجز طلباً واحداً ويطبّق الحد الفردي والسقف العام وميزانية DeepSeek اليومية بالدولار.';
+
+create or replace function public.ibnfaris_release_request_v2(
+  p_visitor_hash text,
+  p_reserved_cost_usd numeric
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_today date := (now() at time zone 'Asia/Muscat')::date;
+  v_reserved numeric := greatest(coalesce(p_reserved_cost_usd, 0), 0);
+begin
+  if p_visitor_hash is null or char_length(p_visitor_hash) < 32 then
+    return;
+  end if;
+
+  update public.ibnfaris_daily_totals
+  set requests_used = greatest(requests_used - 1, 0),
+      cost_usd = greatest(cost_usd - v_reserved, 0),
+      updated_at = now()
+  where usage_day = v_today;
+
+  update public.ibnfaris_guest_usage
+  set requests_used = greatest(requests_used - 1, 0),
+      updated_at = now()
+  where visitor_hash = p_visitor_hash
+    and usage_day = v_today;
+end;
+$$;
+
+comment on function public.ibnfaris_release_request_v2(text, numeric) is
+  'يُعيد طلباً محجوزاً ويكشف الحجز التقديري من ميزانية اليوم.';
+
+create or replace function public.ibnfaris_record_usage_v2(
+  p_visitor_hash text,
+  p_model text,
+  p_prompt_tokens integer,
+  p_completion_tokens integer,
+  p_reserved_cost_usd numeric,
+  p_actual_cost_usd numeric
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_today date := (now() at time zone 'Asia/Muscat')::date;
+  v_prompt integer := greatest(coalesce(p_prompt_tokens, 0), 0);
+  v_completion integer := greatest(coalesce(p_completion_tokens, 0), 0);
+  v_reserved numeric := greatest(coalesce(p_reserved_cost_usd, 0), 0);
+  v_actual numeric := greatest(coalesce(p_actual_cost_usd, 0), 0);
+  v_model text := left(coalesce(nullif(btrim(p_model), ''), 'deepseek-flash'), 120);
+begin
+  if p_visitor_hash is null or char_length(p_visitor_hash) < 32 then
+    return;
+  end if;
+
+  insert into public.ibnfaris_usage_log (
+    visitor_hash,
+    model,
+    prompt_tokens,
+    completion_tokens,
+    cost_usd
+  )
+  values (p_visitor_hash, v_model, v_prompt, v_completion, v_actual);
+
+  update public.ibnfaris_daily_totals
+  set prompt_tokens = prompt_tokens + v_prompt,
+      completion_tokens = completion_tokens + v_completion,
+      cost_usd = greatest(cost_usd - v_reserved + v_actual, 0),
+      updated_at = now()
+  where usage_day = v_today;
+
+  update public.ibnfaris_guest_usage
+  set prompt_tokens = prompt_tokens + v_prompt,
+      completion_tokens = completion_tokens + v_completion,
+      updated_at = now()
+  where visitor_hash = p_visitor_hash
+    and usage_day = v_today;
+end;
+$$;
+
+comment on function public.ibnfaris_record_usage_v2(text, text, integer, integer, numeric, numeric) is
+  'يسجّل التوكنات والتكلفة الفعلية ويستبدل الحجز التقديري في ميزانية اليوم.';
+
+-- ------------------------------------------------------------
 -- 6. الصلاحيات: الخادم فقط
 -- ------------------------------------------------------------
 
@@ -258,12 +452,24 @@ revoke all on function public.ibnfaris_release_request(text)
   from public, anon, authenticated;
 revoke all on function public.ibnfaris_record_usage(text, text, integer, integer)
   from public, anon, authenticated;
+revoke all on function public.ibnfaris_reserve_request_v2(text, integer, integer, numeric, numeric)
+  from public, anon, authenticated;
+revoke all on function public.ibnfaris_release_request_v2(text, numeric)
+  from public, anon, authenticated;
+revoke all on function public.ibnfaris_record_usage_v2(text, text, integer, integer, numeric, numeric)
+  from public, anon, authenticated;
 
 grant execute on function public.ibnfaris_reserve_request(text, integer, integer)
   to service_role;
 grant execute on function public.ibnfaris_release_request(text)
   to service_role;
 grant execute on function public.ibnfaris_record_usage(text, text, integer, integer)
+  to service_role;
+grant execute on function public.ibnfaris_reserve_request_v2(text, integer, integer, numeric, numeric)
+  to service_role;
+grant execute on function public.ibnfaris_release_request_v2(text, numeric)
+  to service_role;
+grant execute on function public.ibnfaris_record_usage_v2(text, text, integer, integer, numeric, numeric)
   to service_role;
 
 notify pgrst, 'reload schema';

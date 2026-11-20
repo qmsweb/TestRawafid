@@ -68,6 +68,16 @@ const RAWAFID_SNIPPET_CHARS = 700;
 const RAWAFID_CONTEXT_CHARS = 2_200;
 const MAX_PAGE_PROMPT_CHARS = 800;
 const MAX_PROFILE_PROMPT_CHARS = 1_800;
+
+// ميزانية DeepSeek اليومية بالدولار. صفر = بلا حد دولاري.
+const GLOBAL_DAILY_BUDGET_USD = readFloatEnv(
+  "IBNAFARIS_GLOBAL_DAILY_BUDGET_USD",
+  0,
+);
+// تقدير متحفظ لحجم السياق الإضافي (التعليمات + RAG + سياق الصفحة).
+const ESTIMATED_CONTEXT_CHARS = 14_000;
+const ESTIMATED_AUX_INPUT_TOKENS = 4_000;
+const ESTIMATED_AUX_OUTPUT_TOKENS = 200;
 // حَكَم المصادر يقرأ أول 400 حرف من كل مقطع، وبأربعة مقاطع كحد أقصى،
 // لتقليل زمن المعالجة قبل بدء الإجابة.
 const JUDGE_MAX_CHUNKS = 4;
@@ -142,6 +152,9 @@ type QuotaSnapshot = {
   remaining: number;
   global_used?: number;
   global_limit?: number;
+  global_cost_usd?: number;
+  global_budget_usd?: number;
+  global_remaining_usd?: number;
   reset_on?: string;
 };
 
@@ -159,6 +172,107 @@ type WebSearchResult = {
   url: string;
   snippet: string;
 };
+
+type DeepSeekUsage = {
+  prompt_tokens?: unknown;
+  completion_tokens?: unknown;
+  prompt_cache_hit_tokens?: unknown;
+  prompt_cache_miss_tokens?: unknown;
+};
+
+type UsageTotals = {
+  promptTokens: number;
+  completionTokens: number;
+  cacheHitTokens: number;
+  cacheMissTokens: number;
+};
+
+function createUsageTotals(): UsageTotals {
+  return {
+    promptTokens: 0,
+    completionTokens: 0,
+    cacheHitTokens: 0,
+    cacheMissTokens: 0,
+  };
+}
+
+function addUsage(totals: UsageTotals | undefined, usage: unknown): void {
+  if (!totals || !usage || typeof usage !== "object") return;
+
+  const row = usage as DeepSeekUsage;
+  const prompt = Math.max(0, Number(row.prompt_tokens) || 0);
+  const completion = Math.max(0, Number(row.completion_tokens) || 0);
+  const rawHit = Number(row.prompt_cache_hit_tokens);
+  const rawMiss = Number(row.prompt_cache_miss_tokens);
+  const hit = Number.isFinite(rawHit) ? Math.max(0, rawHit) : 0;
+  const miss = Number.isFinite(rawMiss)
+    ? Math.max(0, rawMiss)
+    : Math.max(0, prompt - hit);
+
+  totals.promptTokens += prompt;
+  totals.completionTokens += completion;
+  totals.cacheHitTokens += hit;
+  totals.cacheMissTokens += miss;
+}
+
+// أسعار deepseek-flash الرسمية لكل مليون توكن (USD).
+// الذروة: 01:00-04:00 و06:00-10:00 UTC من الاثنين إلى الجمعة.
+function isPeakPricing(now: Date): boolean {
+  const day = now.getUTCDay();
+  if (day === 0 || day === 6) return false;
+
+  const hour = now.getUTCHours();
+  return (hour >= 1 && hour < 4) || (hour >= 6 && hour < 10);
+}
+
+function currentPricing() {
+  const peak = isPeakPricing(new Date());
+  return {
+    inputCacheHit: peak ? 0.006 : 0.003,
+    inputCacheMiss: peak ? 0.3 : 0.15,
+    output: peak ? 1.2 : 0.6,
+  };
+}
+
+function costForUsage(totals: UsageTotals): number {
+  const price = currentPricing();
+  return (
+    (totals.cacheHitTokens * price.inputCacheHit +
+      totals.cacheMissTokens * price.inputCacheMiss +
+      totals.completionTokens * price.output) /
+    1_000_000
+  );
+}
+
+function estimatedCostForTokens(
+  promptTokens: number,
+  completionTokens: number,
+): number {
+  const price = currentPricing();
+  return (
+    (Math.max(0, promptTokens) * price.inputCacheMiss +
+      Math.max(0, completionTokens) * price.output) /
+    1_000_000
+  );
+}
+
+// تقدير متحفظ قبل الطلب: السياق + أقصى إخراج + نداءات التصنيف والحَكَم.
+function estimateRequestCost(messages: ChatMessage[]): number {
+  const inputChars =
+    messages.reduce((sum, message) => sum + message.content.length, 0) +
+    ESTIMATED_CONTEXT_CHARS;
+  const inputTokens = Math.ceil(inputChars / 2.5);
+  const price = currentPricing();
+
+  const cost =
+    (inputTokens * price.inputCacheMiss +
+      MAX_OUTPUT_TOKENS * price.output +
+      ESTIMATED_AUX_INPUT_TOKENS * price.inputCacheMiss +
+      ESTIMATED_AUX_OUTPUT_TOKENS * price.output) /
+    1_000_000;
+
+  return Math.max(cost, 0.000001);
+}
 
 type PageContextInput = {
   version?: unknown;
@@ -254,6 +368,13 @@ function readIntEnv(name: string, fallback: number): number {
   const parsed = raw ? Number(raw) : Number.NaN;
   if (!Number.isFinite(parsed) || parsed < 0) return fallback;
   return Math.max(0, Math.round(parsed));
+}
+
+function readFloatEnv(name: string, fallback: number): number {
+  const raw = Deno.env.get(name);
+  const parsed = raw ? Number(raw) : Number.NaN;
+  if (!Number.isFinite(parsed) || parsed < 0) return fallback;
+  return parsed;
 }
 
 function corsHeaders(origin: string | null): HeadersInit {
@@ -1261,7 +1382,7 @@ function normalizeMessages(input: unknown): ChatMessage[] | null {
 }
 
 function quotaErrorText(quota: QuotaSnapshot): string {
-  if (quota.reason === "global_limit") {
+  if (quota.reason === "global_limit" || quota.reason === "global_budget") {
     return "بلغت خدمة ابن فارس سقفها اليومي. جرّب مرة أخرى غداً.";
   }
 
@@ -1272,14 +1393,18 @@ function quotaErrorText(quota: QuotaSnapshot): string {
   return "تعذّر التحقق من حدّ الاستخدام. حاول مرة أخرى.";
 }
 
-async function releaseQuota(visitorHash: string): Promise<void> {
+async function releaseQuota(
+  visitorHash: string,
+  reservedCostUsd: number,
+): Promise<void> {
   if (!admin) return;
   try {
-    await admin.rpc("ibnfaris_release_request", {
+    await admin.rpc("ibnfaris_release_request_v2", {
       p_visitor_hash: visitorHash,
+      p_reserved_cost_usd: Math.max(0, reservedCostUsd),
     });
   } catch (error) {
-    console.error("ibnfaris_release_request failed", error);
+    console.error("ibnfaris_release_request_v2 failed", error);
   }
 }
 
@@ -1308,11 +1433,30 @@ async function readQuota(visitorHash: string): Promise<QuotaSnapshot> {
       : 0;
   const remaining = Math.max(0, VISITOR_DAILY_LIMIT - used);
 
+  let dailyCost = 0;
+  try {
+    const totals = await admin
+      .from("ibnfaris_daily_totals")
+      .select("cost_usd")
+      .eq("usage_day", today)
+      .maybeSingle();
+    const totalRow = totals.data as { cost_usd?: number } | null;
+    dailyCost = totalRow ? Math.max(0, Number(totalRow.cost_usd) || 0) : 0;
+  } catch {
+    // عرض الحصة لا يتوقف إذا تعذّر قراءة التكلفة.
+  }
+
   return {
     allowed: remaining > 0,
     used,
     limit: VISITOR_DAILY_LIMIT,
     remaining,
+    global_cost_usd: dailyCost,
+    global_budget_usd: GLOBAL_DAILY_BUDGET_USD,
+    global_remaining_usd:
+      GLOBAL_DAILY_BUDGET_USD > 0
+        ? Math.max(0, GLOBAL_DAILY_BUDGET_USD - dailyCost)
+        : 0,
     reset_on: today,
   };
 }
@@ -1321,17 +1465,21 @@ async function recordUsage(
   visitorHash: string,
   promptTokens: number,
   completionTokens: number,
+  reservedCostUsd: number,
+  actualCostUsd: number,
 ): Promise<void> {
   if (!admin) return;
   try {
-    await admin.rpc("ibnfaris_record_usage", {
+    await admin.rpc("ibnfaris_record_usage_v2", {
       p_visitor_hash: visitorHash,
       p_model: DEEPSEEK_MODEL,
       p_prompt_tokens: Math.max(0, Math.round(promptTokens)),
       p_completion_tokens: Math.max(0, Math.round(completionTokens)),
+      p_reserved_cost_usd: Math.max(0, reservedCostUsd),
+      p_actual_cost_usd: Math.max(0, actualCostUsd),
     });
   } catch (error) {
-    console.error("ibnfaris_record_usage failed", error);
+    console.error("ibnfaris_record_usage_v2 failed", error);
   }
 }
 
@@ -1490,6 +1638,7 @@ function formatJudgeChunk(chunk: KnowledgeChunk, index: number): string {
 async function judgeChunks(
   question: string,
   chunks: KnowledgeChunk[],
+  usageTotals?: UsageTotals,
 ): Promise<KnowledgeChunk[]> {
   if (chunks.length === 0) return [];
 
@@ -1542,7 +1691,10 @@ async function judgeChunks(
 
     const data = (await response.json()) as {
       choices?: Array<{ message?: { content?: unknown } }>;
+      usage?: unknown;
     };
+    addUsage(usageTotals, data.usage);
+
     const text = data.choices?.[0]?.message?.content;
     if (typeof text !== "string") return candidates;
 
@@ -1576,6 +1728,7 @@ async function isQuestionInScope(
   question: string,
   conversationContext: string,
   pageContext: PageContext | null = null,
+  usageTotals?: UsageTotals,
 ): Promise<boolean> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), JUDGE_TIMEOUT_MS);
@@ -1627,7 +1780,10 @@ async function isQuestionInScope(
 
     const data = (await response.json()) as {
       choices?: Array<{ message?: { content?: unknown } }>;
+      usage?: unknown;
     };
+    addUsage(usageTotals, data.usage);
+
     const text = data.choices?.[0]?.message?.content;
     if (typeof text !== "string") return true;
 
@@ -2045,19 +2201,22 @@ Deno.serve(async (request) => {
   }
 
   const visitorHash = await hashVisitor(clientIp(request));
+  const reservedCostUsd = estimateRequestCost(messages);
 
   let quota: QuotaSnapshot | null = null;
   try {
-    const { data, error } = await admin.rpc("ibnfaris_reserve_request", {
+    const { data, error } = await admin.rpc("ibnfaris_reserve_request_v2", {
       p_visitor_hash: visitorHash,
       p_visitor_limit: VISITOR_DAILY_LIMIT,
       p_global_limit: GLOBAL_DAILY_LIMIT,
+      p_global_budget_usd: GLOBAL_DAILY_BUDGET_USD,
+      p_estimated_cost_usd: reservedCostUsd,
     });
 
     if (error) throw error;
     quota = data as QuotaSnapshot;
   } catch (error) {
-    console.error("ibnfaris_reserve_request failed", error);
+    console.error("ibnfaris_reserve_request_v2 failed", error);
     return jsonResponse(
       { error: "تعذّر التحقق من حدّ الاستخدام. حاول مرة أخرى." },
       500,
@@ -2096,6 +2255,7 @@ Deno.serve(async (request) => {
   let thinkingChars = 0;
   let promptTokens = 0;
   let completionTokens = 0;
+  const mainUsage = createUsageTotals();
   let released = false;
   let finished = false;
   let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
@@ -2104,7 +2264,7 @@ Deno.serve(async (request) => {
   const releaseOnce = async () => {
     if (released) return;
     released = true;
-    await releaseQuota(visitorHash);
+    await releaseQuota(visitorHash, reservedCostUsd);
   };
 
   const upstreamController = new AbortController();
@@ -2176,6 +2336,7 @@ Deno.serve(async (request) => {
       }
 
       const requestSiteUrl = siteUrlForOrigin(origin);
+      const auxiliaryUsage = createUsageTotals();
       const [candidates, inScope, pageContext, profiles, materials] =
         await Promise.all([
           retrieveKnowledge(
@@ -2187,6 +2348,7 @@ Deno.serve(async (request) => {
                 question,
                 buildScopeContext(messages),
                 pageContextInput,
+                auxiliaryUsage,
               )
             : Promise.resolve(true),
           resolvePageContext(pageContextInput, requestSiteUrl),
@@ -2268,7 +2430,7 @@ Deno.serve(async (request) => {
       send({ type: "status", text: "أتحقق من المقاطع…" });
 
       const [chunks, rawafidContext] = await Promise.all([
-        judgeChunks(retrievalQuestion, candidates),
+        judgeChunks(retrievalQuestion, candidates, auxiliaryUsage),
         retrieveRawafidContext(
           rawafidQuestion,
           page,
@@ -2411,6 +2573,8 @@ Deno.serve(async (request) => {
           usage?: {
             prompt_tokens?: unknown;
             completion_tokens?: unknown;
+            prompt_cache_hit_tokens?: unknown;
+            prompt_cache_miss_tokens?: unknown;
           };
           error?: { message?: unknown };
         };
@@ -2437,6 +2601,7 @@ Deno.serve(async (request) => {
           if (Number.isFinite(completion)) {
             completionTokens = Math.max(0, completion);
           }
+          addUsage(mainUsage, parsed.usage);
         }
 
         const delta = parsed.choices?.[0]?.delta;
@@ -2511,10 +2676,37 @@ Deno.serve(async (request) => {
             (answerChars + thinkingChars) / 2,
           );
 
+          const actualPromptTokens =
+            mainUsage.promptTokens || promptTokens || estimatedPrompt;
+          const actualCompletionTokens =
+            mainUsage.completionTokens ||
+            completionTokens ||
+            estimatedCompletion;
+          const mainCostUsd =
+            mainUsage.promptTokens > 0 || mainUsage.completionTokens > 0
+              ? costForUsage(mainUsage)
+              : estimatedCostForTokens(
+                  actualPromptTokens,
+                  actualCompletionTokens,
+                );
+          const totalCostUsd = mainCostUsd + costForUsage(auxiliaryUsage);
+
+          if (debugTimings) {
+            console.log("ibnfaris_request_cost", {
+              reserved: reservedCostUsd,
+              actual: totalCostUsd,
+              promptTokens: actualPromptTokens + auxiliaryUsage.promptTokens,
+              completionTokens:
+                actualCompletionTokens + auxiliaryUsage.completionTokens,
+            });
+          }
+
           await recordUsage(
             visitorHash,
-            promptTokens || estimatedPrompt,
-            completionTokens || estimatedCompletion,
+            actualPromptTokens + auxiliaryUsage.promptTokens,
+            actualCompletionTokens + auxiliaryUsage.completionTokens,
+            reservedCostUsd,
+            totalCostUsd,
           );
         }
 
