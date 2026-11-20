@@ -709,21 +709,78 @@ html[data-theme="dark"] .if-overlay {
   line-height: 1.7;
 }
 
-.if-md table {
-  display: block;
-  width: 100%;
-  max-width: 100%;
+.if-table {
   margin: 16px 0;
+  overflow: hidden;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-md);
+  background: var(--if-soft-paper);
+}
+
+.if-table-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--if-warm-mist);
+}
+
+.if-table-label {
+  color: var(--if-graphite);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.if-table-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: var(--if-radius-sm);
+  background: transparent;
+  color: var(--if-graphite);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.if-table-copy:hover {
+  background: var(--if-parchment);
+  color: var(--if-ink);
+}
+
+.if-table-copy:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--if-sand) 35%, transparent);
+  outline-offset: 2px;
+}
+
+.if-table-copy svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.if-table-scroll {
   overflow-x: auto;
+  padding: 8px 16px 10px;
+}
+
+.if-md .if-table table {
+  width: 100%;
   border-collapse: collapse;
   font-size: 14px;
 }
 
-.if-md thead {
+.if-md .if-table thead {
   color: var(--if-graphite);
 }
 
-.if-md th {
+.if-md .if-table th {
   padding: 0 12px 8px;
   border-bottom: 1px solid var(--if-warm-mist);
   font-size: 11px;
@@ -732,7 +789,7 @@ html[data-theme="dark"] .if-overlay {
   white-space: nowrap;
 }
 
-.if-md td {
+.if-md .if-table td {
   padding: 8px 12px;
   border-bottom: 1px solid var(--if-warm-mist);
   color: var(--if-ink);
@@ -742,7 +799,7 @@ html[data-theme="dark"] .if-overlay {
   vertical-align: top;
 }
 
-.if-md tr:last-child td {
+.if-md .if-table tbody tr:last-child td {
   border-bottom: 0;
 }
 

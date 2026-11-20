@@ -687,7 +687,73 @@
         link.rel = "noopener noreferrer";
       });
 
+      decorateTables(container);
+
       return container;
+    }
+
+    function decorateTables(container) {
+      var tables = Array.prototype.slice.call(
+        container.querySelectorAll("table")
+      );
+
+      var COPY_ICON =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+      var CHECK_ICON =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m20 6-11 11-5-5"></path></svg>';
+
+      tables.forEach(function (table) {
+        if (!table.parentNode) return;
+
+        var figure = document.createElement("figure");
+        figure.className = "if-table";
+        figure.setAttribute("dir", "rtl");
+        figure.setAttribute("aria-label", "جدول");
+
+        var caption = document.createElement("figcaption");
+        caption.className = "if-table-caption";
+
+        var label = document.createElement("span");
+        label.className = "if-table-label";
+        label.textContent = "جدول";
+
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "if-table-copy";
+        button.setAttribute("aria-label", "نسخ الجدول");
+        button.innerHTML = COPY_ICON + "<span>نسخ الجدول</span>";
+
+        var copyTimer = null;
+        button.addEventListener("click", function () {
+          var text = (table.innerText || "").trim();
+          if (!text) return;
+
+          copyText(text)
+            .then(function () {
+              button.innerHTML = CHECK_ICON + "<span>تم النسخ</span>";
+              button.setAttribute("aria-label", "تم نسخ الجدول");
+              if (copyTimer) window.clearTimeout(copyTimer);
+              copyTimer = window.setTimeout(function () {
+                button.innerHTML = COPY_ICON + "<span>نسخ الجدول</span>";
+                button.setAttribute("aria-label", "نسخ الجدول");
+              }, 1800);
+            })
+            .catch(function () {
+              // نُبقي الزر كما هو إن تعذّر النسخ.
+            });
+        });
+
+        caption.appendChild(label);
+        caption.appendChild(button);
+
+        var scroll = document.createElement("div");
+        scroll.className = "if-table-scroll";
+
+        table.parentNode.insertBefore(figure, table);
+        scroll.appendChild(table);
+        figure.appendChild(caption);
+        figure.appendChild(scroll);
+      });
     }
 
     function renderMarkdown(content) {
