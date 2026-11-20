@@ -31,7 +31,7 @@
   "title": {{ page.title | default: "" | jsonify }},
   "description": {{ page.description | default: page.og_description | default: "" | jsonify }},
   "path": {{ page.url | relative_url | jsonify }},
-  "courseCode": {{ page.code | default: "" | jsonify }},
+  "courseCode": {{ page.course | default: page.code | default: "" | jsonify }},
   "itemId": {{ page.item_id | default: "" | jsonify }},
   "examCode": {{ page.exam_code | default: "" | jsonify }},
   "plan": {{ page.plan | default: "" | jsonify }},

@@ -763,6 +763,57 @@ function detectCourseFromQuestion(
   return bestCode;
 }
 
+function normalizePathForMatch(value: string): string {
+  return value
+    .trim()
+    .split("?")[0]
+    .split("#")[0]
+    .replace(/\/+$/, "")
+    .replace(/\.html$/i, "");
+}
+
+// المقالات لا تحمل رمز مقرر في الغالب؛ نستنتجه من عنوان المقال ووسومه
+// ثم من أوله إن لزم، حتى يعرف ابن فارس المقرر الذي ينتمي إليه المقال.
+async function resolvePostCourseContext(
+  page: PageContext,
+  profiles: Profiles,
+  materials: MaterialEntry[],
+  siteUrl: string,
+): Promise<PageContext> {
+  if (page.type !== "post" || page.courseCode) return page;
+
+  const posts = await loadPostsIndex(siteUrl);
+  const targetPath = normalizePathForMatch(page.path);
+  const post = posts.find(
+    (item) => normalizePathForMatch(item.url) === targetPath,
+  );
+  if (!post) return page;
+
+  let code = detectCourseFromQuestion(
+    `${post.title} ${post.tags.join(" ")}`,
+    profiles,
+    materials,
+  );
+
+  if (!code) {
+    code = detectCourseFromQuestion(
+      post.content.slice(0, 1_200),
+      profiles,
+      materials,
+    );
+  }
+
+  if (!code) return page;
+
+  const course = await fetchCourse(code, siteUrl);
+  return {
+    ...page,
+    courseCode: code,
+    courseName: cleanText(course?.name, 120),
+    courseDescription: cleanText(course?.description, 220),
+  };
+}
+
 function detectBranch(question: string, profiles: Profiles): string | null {
   const normalized = normalizeArabic(question);
   let best: { id: string; score: number } | null = null;
@@ -2014,7 +2065,7 @@ Deno.serve(async (request) => {
       }
 
       const requestSiteUrl = siteUrlForOrigin(origin);
-      const [candidates, inScope, page, profiles, materials] =
+      const [candidates, inScope, pageContext, profiles, materials] =
         await Promise.all([
           retrieveKnowledge(
             retrievalQuestion,
@@ -2049,6 +2100,17 @@ Deno.serve(async (request) => {
         send({ type: "done" });
         close();
         return;
+      }
+
+      // المقالات: نستنتج المقرر من العنوان والوسوم قبل اختيار التعليمات.
+      let page = pageContext;
+      if (page) {
+        page = await resolvePostCourseContext(
+          page,
+          profiles,
+          materials,
+          requestSiteUrl,
+        );
       }
 
       // المقرر: من الصفحة أولًا، ثم من نص السؤال.
