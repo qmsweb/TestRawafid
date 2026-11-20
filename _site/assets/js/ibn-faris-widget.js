@@ -252,7 +252,7 @@
     var closeThreshold = Math.max(60, base * 0.45);
     var shouldClose =
       dragHeight <= closeThreshold ||
-      (velocity > 0.9 && dragHeight < base - 24);
+      (velocity < -0.9 && dragHeight < base - 24);
 
     overlay.classList.remove("is-dragging");
 
@@ -266,12 +266,12 @@
       // من الوضع المكبّر: السحب لأعلى يبقيه مكبّرًا، وأي سحب واضح
       // لأسفل يعيد الحجم السابق، والسحب الكبير يطويه بالكامل.
       shouldExpand = true;
-      if (extra < -16 || velocity > 0.55) shouldExpand = false;
+      if (extra < -16 || velocity < -0.55) shouldExpand = false;
     } else {
       var ratio = range > 0 ? extra / range : 0;
-      if (velocity < -0.55) {
+      if (velocity > 0.55) {
         shouldExpand = true;
-      } else if (velocity > 0.55) {
+      } else if (velocity < -0.55) {
         shouldExpand = false;
       } else {
         shouldExpand = ratio > 0.35;
