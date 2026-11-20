@@ -2000,6 +2000,16 @@ Deno.serve(async (request) => {
         pageContextInput,
       );
 
+      if (debugTimings) {
+        send({
+          type: "debug",
+          pageType: pageContextInput?.type ?? null,
+          pageCourse: pageContextInput?.courseCode ?? null,
+          fastPath: pageScopeFastPath,
+          checkScope,
+        });
+      }
+
       const requestSiteUrl = siteUrlForOrigin(origin);
       const [candidates, inScope, page, profiles, materials] =
         await Promise.all([
