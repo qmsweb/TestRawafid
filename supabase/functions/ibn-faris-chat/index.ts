@@ -798,6 +798,17 @@ const PAGE_TYPE_LABELS: Record<string, string> = {
   page: "صفحة",
 };
 
+function describePageForScope(page: PageContext | null): string | null {
+  if (!page) return null;
+
+  const label = PAGE_TYPE_LABELS[page.type] ?? "صفحة";
+  if (page.courseCode) {
+    return `${label}، ورمز المقرر ${page.courseCode}`;
+  }
+
+  return label;
+}
+
 function buildPageContextPrompt(page: PageContext | null): string | null {
   if (!page) return null;
 
@@ -1383,6 +1394,7 @@ async function judgeChunks(
 async function isQuestionInScope(
   question: string,
   conversationContext: string,
+  pageContext: PageContext | null = null,
 ): Promise<boolean> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), JUDGE_TIMEOUT_MS);
@@ -1393,14 +1405,21 @@ async function isQuestionInScope(
     "1) اللغة العربية وعلومها: النحو، الصرف، البلاغة، الأدب، العروض، الإملاء، المعاجم، فقه اللغة، وأي سؤال لغوي بسيط مثل معنى كلمة، مفرد أو جمع، ضد أو مرادف، وزن، حركة، إعراب كلمة، أو مثال.",
     "2) التربية والتعليم: طرائق التدريس، المناهج، التقويم، علم النفس التربوي، شؤون المعلم والطالب.",
     "3) سلطنة عمان: تاريخها، جغرافيتها، ثقافتها، مؤسساتها، تعليمها، وشؤونها العامة.",
+    "4) محتوى منصة روافد: المقررات، عناصرها، ملفاتها، الخطط الدراسية، المقالات، الاختبارات، والأسئلة عن الصفحة الحالية أو المقرر الحالي أو طريقة دراسته.",
     "التحيات والأسئلة عن هويتك أو عن منصة روافد مسموحة.",
+    "إذا كان المستخدم داخل صفحة روافد، فاعتبر السؤال عن هذه الصفحة أو محتواها أو المقرر المرتبط بها داخل النطاق.",
     "قد يكون السؤال متابعة قصيرة لسؤال سابق («وضّح»، «مثال»، «لماذا؟»)؛ احكم عندئذ بنطاق السؤال السابق لا بظاهر السؤال القصير.",
     'أعد JSON فقط: {"in_scope":true} أو {"in_scope":false}. لا تشرح.',
   ].join("\n");
 
-  const userContent = conversationContext
-    ? `سياق المحادثة:\n${conversationContext}\n\nالسؤال الحالي: ${question}`
-    : question;
+  const pageLine = describePageForScope(pageContext);
+  const userContent = [
+    pageLine ? `الصفحة الحالية: ${pageLine}.` : "",
+    conversationContext ? `سياق المحادثة:\n${conversationContext}` : "",
+    `السؤال الحالي: ${question}`,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 
   try {
     const response = await fetch(DEEPSEEK_API_URL, {
@@ -1949,7 +1968,11 @@ Deno.serve(async (request) => {
             debugTimings ? timings : undefined,
           ),
           checkScope
-            ? isQuestionInScope(question, buildScopeContext(messages))
+            ? isQuestionInScope(
+                question,
+                buildScopeContext(messages),
+                pageContextInput,
+              )
             : Promise.resolve(true),
           resolvePageContext(pageContextInput, requestSiteUrl),
           loadProfiles(requestSiteUrl),
