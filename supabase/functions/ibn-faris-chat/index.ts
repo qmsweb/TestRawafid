@@ -809,6 +809,42 @@ function describePageForScope(page: PageContext | null): string | null {
   return label;
 }
 
+// سؤال عن الصفحة أو المقرر الحالي لا يحتاج نداء تصنيف نطاق؛ هذا يوفّر
+// توكنز وزمنًا ويمنع رفض أسئلة مثل «ما اسم هذا المقرر؟».
+function pageQuestionLooksInScope(
+  question: string,
+  page: PageContext | null,
+): boolean {
+  if (!page) return false;
+  if (
+    !["course", "details", "study-plan", "post", "exam", "tool"].includes(
+      page.type,
+    )
+  ) {
+    return false;
+  }
+
+  const normalized = normalizeArabic(question);
+  const keywords = [
+    "مقرر",
+    "صفحه",
+    "ملف",
+    "درس",
+    "وحده",
+    "خطه",
+    "محتوي",
+    "اختبار",
+    "مقاله",
+    "منهج",
+    "ماده",
+    "موضوع",
+    "هذا",
+    "هذه",
+  ];
+
+  return keywords.some((keyword) => normalized.includes(keyword));
+}
+
 function buildPageContextPrompt(page: PageContext | null): string | null {
   if (!page) return null;
 
@@ -1405,9 +1441,9 @@ async function isQuestionInScope(
     "1) اللغة العربية وعلومها: النحو، الصرف، البلاغة، الأدب، العروض، الإملاء، المعاجم، فقه اللغة، وأي سؤال لغوي بسيط مثل معنى كلمة، مفرد أو جمع، ضد أو مرادف، وزن، حركة، إعراب كلمة، أو مثال.",
     "2) التربية والتعليم: طرائق التدريس، المناهج، التقويم، علم النفس التربوي، شؤون المعلم والطالب.",
     "3) سلطنة عمان: تاريخها، جغرافيتها، ثقافتها، مؤسساتها، تعليمها، وشؤونها العامة.",
-    "4) محتوى منصة روافد: المقررات، عناصرها، ملفاتها، الخطط الدراسية، المقالات، الاختبارات، والأسئلة عن الصفحة الحالية أو المقرر الحالي أو طريقة دراسته.",
+    "4) شؤون منصة روافد الدراسية: أي سؤال عن المقرر الحالي أو صفحته أو عناصره أو ملفاته أو خطته أو طريقة دراسته أو الاختبارات، حتى لو كان قصيرًا مثل «ما اسم هذا المقرر؟» أو «ما موضوعه؟» أو «ماذا في هذه الصفحة؟».",
     "التحيات والأسئلة عن هويتك أو عن منصة روافد مسموحة.",
-    "إذا كان المستخدم داخل صفحة روافد، فاعتبر السؤال عن هذه الصفحة أو محتواها أو المقرر المرتبط بها داخل النطاق.",
+    "إذا كانت صفحة المستخدم الحالية محددة، فاعتبر السؤال عنها أو عن المقرر المرتبط بها داخل النطاق، ما لم يكن صراحة عن مجال خارج النطاق كالسياسة أو الرياضة أو البرمجة.",
     "قد يكون السؤال متابعة قصيرة لسؤال سابق («وضّح»، «مثال»، «لماذا؟»)؛ احكم عندئذ بنطاق السؤال السابق لا بظاهر السؤال القصير.",
     'أعد JSON فقط: {"in_scope":true} أو {"in_scope":false}. لا تشرح.',
   ].join("\n");
@@ -1959,6 +1995,10 @@ Deno.serve(async (request) => {
       const previousQuestion = lastPreviousUserMessage(messages);
       // متابعة قصيرة ترث حكم النطاق من السؤال السابق، فلا نكلّف نداءً مستقلاً.
       const checkScope = !previousQuestion || !needsPreviousQuestion(question);
+      const pageScopeFastPath = pageQuestionLooksInScope(
+        question,
+        pageContextInput,
+      );
 
       const requestSiteUrl = siteUrlForOrigin(origin);
       const [candidates, inScope, page, profiles, materials] =
@@ -1967,7 +2007,7 @@ Deno.serve(async (request) => {
             retrievalQuestion,
             debugTimings ? timings : undefined,
           ),
-          checkScope
+          checkScope && !pageScopeFastPath
             ? isQuestionInScope(
                 question,
                 buildScopeContext(messages),
