@@ -3,7 +3,9 @@
    ============================================================
    • تتصل بدالة Supabase: functions/v1/ibn-faris-chat
    • تستقبل بثّ SSE مبسّطاً: answer / thinking / quota / error
-   • لا تحفظ المحادثات؛ تحتفظ بمسودة الكتابة في sessionStorage فقط.
+   • تحفظ المحادثة الأخيرة محلياً (localStorage) وتستعيدها عند إعادة
+     تحميل الصفحة أو الانتقال إلى صفحة أخرى، وتحتفظ بمسودة الكتابة
+     في sessionStorage.
    • تُركَّب على أي حاوية تحمل #if-app:
        صفحة /ibn-faris/  أو  اللوحة السفلية العائمة في بقية الصفحات.
    ============================================================ */
@@ -19,6 +21,9 @@
     ? SUPABASE_URL + "/functions/v1/" + FUNCTION_NAME
     : "";
   var DRAFT_KEY = "ibnfaris-rawafid-draft";
+  var HISTORY_KEY = "ibnfaris-rawafid-history";
+  var HISTORY_VERSION = 1;
+  var HISTORY_SAVE_DELAY = 300;
 
   function mount(root, options) {
     if (!root) return null;
@@ -56,6 +61,7 @@
       controller: null,
       quota: null,
       raf: null,
+      saveTimer: null,
       stick: true,
       turn: 0,
     };
@@ -159,6 +165,128 @@
         // التخزين قد يكون معطلاً.
       }
     }
+
+    // ----------------------------------------------------------
+    // حفظ المحادثة الأخيرة واستعادتها
+    // ----------------------------------------------------------
+    function validSavedMessage(item) {
+      return (
+        item &&
+        (item.role === "user" || item.role === "assistant") &&
+        typeof item.content === "string" &&
+        item.content.trim().length > 0
+      );
+    }
+
+    function readSavedHistory() {
+      try {
+        var raw = localStorage.getItem(HISTORY_KEY);
+        if (!raw) return [];
+
+        var data = JSON.parse(raw);
+        if (
+          !data ||
+          data.version !== HISTORY_VERSION ||
+          !Array.isArray(data.messages)
+        ) {
+          return [];
+        }
+
+        return data.messages
+          .filter(validSavedMessage)
+          .map(function (message) {
+            return { role: message.role, content: message.content };
+          });
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function writeSavedHistory() {
+      if (state.saveTimer) {
+        window.clearTimeout(state.saveTimer);
+        state.saveTimer = null;
+      }
+
+      try {
+        var messages = state.messages
+          .filter(function (message) {
+            return message.content && message.content.trim();
+          })
+          .map(function (message) {
+            return { role: message.role, content: message.content };
+          });
+
+        if (!messages.length) {
+          localStorage.removeItem(HISTORY_KEY);
+          return;
+        }
+
+        localStorage.setItem(
+          HISTORY_KEY,
+          JSON.stringify({
+            version: HISTORY_VERSION,
+            savedAt: Date.now(),
+            messages: messages,
+          })
+        );
+      } catch (error) {
+        // التخزين قد يكون ممتلئاً أو معطلاً.
+      }
+    }
+
+    function scheduleHistorySave() {
+      if (state.saveTimer) window.clearTimeout(state.saveTimer);
+      state.saveTimer = window.setTimeout(writeSavedHistory, HISTORY_SAVE_DELAY);
+    }
+
+    function clearSavedHistory() {
+      if (state.saveTimer) {
+        window.clearTimeout(state.saveTimer);
+        state.saveTimer = null;
+      }
+
+      try {
+        localStorage.removeItem(HISTORY_KEY);
+      } catch (error) {
+        // التخزين قد يكون معطلاً.
+      }
+    }
+
+    function restoreHistory() {
+      var saved = readSavedHistory();
+      if (!saved.length) return false;
+
+      state.messages = [];
+      state.turn = 0;
+      els.messages.innerHTML = "";
+
+      saved.forEach(function (item) {
+        var message = createMessage(item.role, item.content);
+        if (item.role === "assistant") {
+          message.el.classList.remove("is-streaming");
+          addCopyButton(message);
+        }
+      });
+
+      if (els.empty) els.empty.hidden = true;
+
+      state.stick = true;
+      window.requestAnimationFrame(function () {
+        scrollToBottom(true);
+      });
+
+      return true;
+    }
+
+    function flushHistory() {
+      writeSavedHistory();
+    }
+
+    window.addEventListener("pagehide", flushHistory);
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden") flushHistory();
+    });
 
     els.input.addEventListener("input", function () {
       autoGrow();
@@ -644,6 +772,8 @@
         addCopyButton(message);
       }
 
+      writeSavedHistory();
+
       if (errorText) showAlert(errorText);
     }
 
@@ -678,6 +808,7 @@
       var turn = state.turn;
 
       createMessage("user", text);
+      scheduleHistorySave();
 
       els.input.value = "";
       autoGrow();
@@ -788,6 +919,7 @@
             gotAnswer = true;
             assistant.content += event.text;
             scheduleRender(assistant);
+            scheduleHistorySave();
             continue;
           }
 
@@ -795,6 +927,7 @@
             gotAnswer = true;
             assistant.content = event.text;
             scheduleRender(assistant);
+            scheduleHistorySave();
             continue;
           }
 
@@ -851,6 +984,7 @@
 
       state.messages = [];
       els.messages.innerHTML = "";
+      clearSavedHistory();
 
       if (els.empty) els.empty.hidden = false;
 
@@ -877,6 +1011,11 @@
     // التهيئة
     // ----------------------------------------------------------
     function initialize() {
+      restoreDraft();
+      restoreHistory();
+      autoGrow();
+      setStreaming(false);
+
       if (!ENDPOINT || !ANON_KEY) {
         showAlert(
           "خدمة ابن فارس غير مهيّأة بعد. راجع دليل الإعداد في supabase/README.md."
@@ -885,10 +1024,6 @@
         if (els.send) els.send.disabled = true;
         return;
       }
-
-      restoreDraft();
-      autoGrow();
-      setStreaming(false);
 
       if (settings.focus) {
         window.setTimeout(function () {

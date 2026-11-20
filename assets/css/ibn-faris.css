@@ -20,7 +20,7 @@
   --if-ink: #27251e;
   --if-ink-strong: #000000;
   --if-sand: #8a6e4b;
-  --if-on-sand: #000000;
+  --if-on-sand: #ffffff;
   --if-on-accent: #ffffff;
   --if-danger: #a8452f;
   --if-danger-soft: #fdf1ee;
@@ -54,7 +54,7 @@ html[data-theme="dark"] .if-overlay {
   --if-ink: #f3f0e8;
   --if-ink-strong: #ffffff;
   --if-sand: #d2b48c;
-  --if-on-sand: #000000;
+  --if-on-sand: #ffffff;
   --if-on-accent: #131210;
   --if-danger: #e28b73;
   --if-danger-soft: #2a1f1b;
