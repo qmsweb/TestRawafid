@@ -43,10 +43,22 @@ const PAGE_CONTEXT_ENABLED =
   (Deno.env.get("IBNAFARIS_PAGE_CONTEXT_ENABLED") ?? "true").trim() !== "false";
 const RAWAFID_CONTENT_ENABLED =
   (Deno.env.get("IBNAFARIS_RAWAFID_ENABLED") ?? "true").trim() !== "false";
-const SITE_URL = (
+const PRODUCTION_SITE_URL = "https://rawafid.jassim.one";
+const TEST_SITE_URL = "https://test-rwfd.jassim.one";
+const DEFAULT_SITE_URL = (
   Deno.env.get("IBNAFARIS_SITE_URL")?.trim() ||
-  "https://rawafid.jassim.one"
+  PRODUCTION_SITE_URL
 ).replace(/\/+$/, "");
+
+// الاختبار والنسخة التجريبية على GitHub يقرآن بياناتهما من موقع الاختبار،
+// والإنتاج يقرأ من موقعه. هكذا لا نخلط محتوى البيئتين.
+function siteUrlForOrigin(origin: string | null): string {
+  if (!origin) return DEFAULT_SITE_URL;
+  if (origin === TEST_SITE_URL || origin === "https://qmsweb.github.io") {
+    return TEST_SITE_URL;
+  }
+  return DEFAULT_SITE_URL;
+}
 const PAGE_FETCH_TIMEOUT_MS = 4_000;
 const PAGE_CACHE_TTL_MS = 10 * 60 * 1000;
 const PROFILE_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -429,9 +441,9 @@ function buildScopeContext(messages: ChatMessage[]): string {
 type CacheEntry<T> = { at: number; value: T };
 
 const courseCache = new Map<string, CacheEntry<CourseData | null>>();
-const profilesCache: CacheEntry<Profiles | null> = { at: 0, value: null };
-const postsCache: CacheEntry<PostsIndexItem[] | null> = { at: 0, value: null };
-const materialsCache: CacheEntry<MaterialEntry[] | null> = { at: 0, value: null };
+const profilesCache = new Map<string, CacheEntry<Profiles | null>>();
+const postsCache = new Map<string, CacheEntry<PostsIndexItem[] | null>>();
+const materialsCache = new Map<string, CacheEntry<MaterialEntry[] | null>>();
 
 const ALLOWED_PAGE_TYPES = new Set([
   "home",
@@ -531,34 +543,38 @@ async function fetchJson<T>(
   }
 }
 
-async function fetchCourse(code: string): Promise<CourseData | null> {
-  const cached = courseCache.get(code);
+async function fetchCourse(
+  code: string,
+  siteUrl: string,
+): Promise<CourseData | null> {
+  const cacheKey = `${siteUrl}|${code}`;
+  const cached = courseCache.get(cacheKey);
   if (cached && Date.now() - cached.at < PAGE_CACHE_TTL_MS) {
     return cached.value;
   }
 
   const data = await fetchJson<CourseData>(
-    `${SITE_URL}/assets/data/${encodeURIComponent(code)}.json`,
+    `${siteUrl}/assets/data/${encodeURIComponent(code)}.json`,
   );
   const value = data && typeof data === "object" ? data : null;
 
-  if (courseCache.size > 80) courseCache.clear();
-  courseCache.set(code, { at: Date.now(), value });
+  if (courseCache.size > 160) courseCache.clear();
+  courseCache.set(cacheKey, { at: Date.now(), value });
   return value;
 }
 
-async function loadProfiles(): Promise<Profiles> {
-  if (profilesCache.value && Date.now() - profilesCache.at < PROFILE_CACHE_TTL_MS) {
-    return profilesCache.value;
+async function loadProfiles(siteUrl: string): Promise<Profiles> {
+  const cached = profilesCache.get(siteUrl);
+  if (cached && Date.now() - cached.at < PROFILE_CACHE_TTL_MS) {
+    return cached.value ?? { branches: {}, courses: {} };
   }
 
   const data = await fetchJson<Profiles>(
-    `${SITE_URL}/assets/ibn-faris/profiles.json`,
+    `${siteUrl}/assets/ibn-faris/profiles.json`,
   );
   const value = data && typeof data === "object" ? data : null;
 
-  profilesCache.at = Date.now();
-  profilesCache.value = value;
+  profilesCache.set(siteUrl, { at: Date.now(), value });
   return value ?? { branches: {}, courses: {} };
 }
 
@@ -595,19 +611,19 @@ function mapPostsIndex(data: unknown): PostsIndexItem[] {
   return posts;
 }
 
-async function loadPostsIndex(): Promise<PostsIndexItem[]> {
-  if (postsCache.value && Date.now() - postsCache.at < PAGE_CACHE_TTL_MS) {
-    return postsCache.value;
+async function loadPostsIndex(siteUrl: string): Promise<PostsIndexItem[]> {
+  const cached = postsCache.get(siteUrl);
+  if (cached && Date.now() - cached.at < PAGE_CACHE_TTL_MS) {
+    return cached.value ?? [];
   }
 
   const data = await fetchJson<unknown>(
-    `${SITE_URL}/assets/ibn-faris/posts.json`,
+    `${siteUrl}/assets/ibn-faris/posts.json`,
     5_000,
   );
   const posts = mapPostsIndex(data);
 
-  postsCache.at = Date.now();
-  postsCache.value = posts;
+  postsCache.set(siteUrl, { at: Date.now(), value: posts });
   return posts;
 }
 
@@ -633,21 +649,18 @@ function mapMaterialsIndex(data: unknown): MaterialEntry[] {
   return materials;
 }
 
-async function loadMaterialsIndex(): Promise<MaterialEntry[]> {
-  if (
-    materialsCache.value &&
-    Date.now() - materialsCache.at < PAGE_CACHE_TTL_MS
-  ) {
-    return materialsCache.value;
+async function loadMaterialsIndex(siteUrl: string): Promise<MaterialEntry[]> {
+  const cached = materialsCache.get(siteUrl);
+  if (cached && Date.now() - cached.at < PAGE_CACHE_TTL_MS) {
+    return cached.value ?? [];
   }
 
   const data = await fetchJson<unknown>(
-    `${SITE_URL}/assets/data/materials.json`,
+    `${siteUrl}/assets/data/materials.json`,
   );
   const materials = mapMaterialsIndex(data);
 
-  materialsCache.at = Date.now();
-  materialsCache.value = materials;
+  materialsCache.set(siteUrl, { at: Date.now(), value: materials });
   return materials;
 }
 
@@ -667,13 +680,14 @@ function findCourseItem(
 
 async function resolvePageContext(
   context: PageContext | null,
+  siteUrl: string,
 ): Promise<PageContext | null> {
   if (!context) return null;
 
   const resolved: PageContext = { ...context };
   if (!context.courseCode) return resolved;
 
-  const course = await fetchCourse(context.courseCode);
+  const course = await fetchCourse(context.courseCode, siteUrl);
   if (!course) return resolved;
 
   resolved.courseName = cleanText(course.name, 120);
@@ -945,6 +959,7 @@ async function retrieveRawafidContext(
   page: PageContext | null,
   courseCode: string | null,
   courseData: CourseData | null,
+  siteUrl: string,
 ): Promise<string> {
   if (!RAWAFID_CONTENT_ENABLED) return "";
 
@@ -1004,7 +1019,7 @@ async function retrieveRawafidContext(
     }
   }
 
-  const posts = await loadPostsIndex();
+  const posts = await loadPostsIndex(siteUrl);
   for (const post of posts) {
     const tags = post.tags.join(" ");
     const score = scoreRawafidText(terms, post.title, tags, post.content);
@@ -1926,6 +1941,7 @@ Deno.serve(async (request) => {
       // متابعة قصيرة ترث حكم النطاق من السؤال السابق، فلا نكلّف نداءً مستقلاً.
       const checkScope = !previousQuestion || !needsPreviousQuestion(question);
 
+      const requestSiteUrl = siteUrlForOrigin(origin);
       const [candidates, inScope, page, profiles, materials] =
         await Promise.all([
           retrieveKnowledge(
@@ -1935,9 +1951,9 @@ Deno.serve(async (request) => {
           checkScope
             ? isQuestionInScope(question, buildScopeContext(messages))
             : Promise.resolve(true),
-          resolvePageContext(pageContextInput),
-          loadProfiles(),
-          loadMaterialsIndex(),
+          resolvePageContext(pageContextInput, requestSiteUrl),
+          loadProfiles(requestSiteUrl),
+          loadMaterialsIndex(requestSiteUrl),
         ]);
       mark("retrieval");
 
@@ -1963,7 +1979,9 @@ Deno.serve(async (request) => {
       const courseCode =
         page?.courseCode ??
         detectCourseFromQuestion(question, profiles, materials);
-      const courseData = courseCode ? await fetchCourse(courseCode) : null;
+      const courseData = courseCode
+        ? await fetchCourse(courseCode, requestSiteUrl)
+        : null;
 
       // مقرر جديد بلا ملف تعليمات؟ نشتق تعليمات عامة من بيانات المقرر نفسها،
       // فلا يبقى بلا سياق عند إضافته إلى روافد.
@@ -1993,7 +2011,13 @@ Deno.serve(async (request) => {
 
       const [chunks, rawafidContext] = await Promise.all([
         judgeChunks(retrievalQuestion, candidates),
-        retrieveRawafidContext(question, page, courseCode, courseData),
+        retrieveRawafidContext(
+          question,
+          page,
+          courseCode,
+          courseData,
+          requestSiteUrl,
+        ),
       ]);
       mark("judge");
 
@@ -2033,6 +2057,7 @@ Deno.serve(async (request) => {
           pageType: page?.type ?? null,
           courseCode,
           branchId,
+          siteUrl: requestSiteUrl,
           pageChars: pagePrompt?.length ?? 0,
           profileChars: profilePrompt?.length ?? 0,
           rawafidChars: rawafidContext.length,
