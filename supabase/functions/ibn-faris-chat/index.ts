@@ -897,6 +897,13 @@ function describePageForScope(page: PageContext | null): string | null {
   return label;
 }
 
+function isPageDeicticQuestion(question: string): boolean {
+  const normalized = normalizeArabic(question);
+  return /^(?:ما|ماذا|ما هو|ما هي|وضح|اشرح|بين)?\s*(?:هذا|هذه|ذلك|تلك|هو|هي)$/.test(
+    normalized,
+  );
+}
+
 // سؤال عن الصفحة أو المقرر الحالي لا يحتاج نداء تصنيف نطاق؛ هذا يوفّر
 // توكنز وزمنًا ويمنع رفض أسئلة مثل «ما اسم هذا المقرر؟».
 function pageQuestionLooksInScope(
@@ -911,6 +918,8 @@ function pageQuestionLooksInScope(
   ) {
     return false;
   }
+
+  if (isPageDeicticQuestion(question)) return true;
 
   const normalized = normalizeArabic(question);
   const keywords = [
@@ -978,6 +987,20 @@ function buildPageContextPrompt(page: PageContext | null): string | null {
     lines.push(
       "- المستخدم يعرض عنصرًا محددًا؛ لا تدّع قراءة محتواه كاملًا إن لم يكن ضمن المقتطفات المتاحة.",
     );
+  }
+
+  lines.push(
+    "- إذا كتب المستخدم «ما هذا؟» أو «ما هذه؟» أو «هذا؟» فاعتبره سؤالًا عن الصفحة الحالية أو العنصر/المقال المفتوح، وأجب مباشرة دون طلب توضيح.",
+  );
+
+  if (page.type === "post") {
+    lines.push("- في هذه الصفحة «ما هذا؟» يعني: ما هذا المقال وموضوعه؟");
+  } else if (page.type === "details") {
+    lines.push("- في هذه الصفحة «ما هذا؟» يعني: ما هذا الملف أو العنصر المفتوح؟");
+  } else if (page.type === "course") {
+    lines.push("- في هذه الصفحة «ما هذا؟» يعني: ما هذا المقرر؟");
+  } else if (page.type === "study-plan") {
+    lines.push("- في هذه الصفحة «ما هذا؟» يعني: ما هذه الخطة أو المقرر داخلها؟");
   }
 
   lines.push(
@@ -2182,12 +2205,21 @@ Deno.serve(async (request) => {
         ? profiles.branches?.[branchId] ?? null
         : null;
 
+      // سؤال مثل «ما هذا؟» لا يحمل كلمات بحث؛ نضمّ إليه عنوان الصفحة أو
+      // العنصر المفتوح حتى يسترجع المحتوى الصحيح، مع بقاء السؤال كما هو.
+      const pageAnchor =
+        page?.itemTitle ?? page?.title ?? page?.courseName ?? "";
+      const rawafidQuestion =
+        page && isPageDeicticQuestion(question) && pageAnchor
+          ? `${pageAnchor} ${question}`.trim()
+          : question;
+
       send({ type: "status", text: "أتحقق من المقاطع…" });
 
       const [chunks, rawafidContext] = await Promise.all([
         judgeChunks(retrievalQuestion, candidates),
         retrieveRawafidContext(
-          question,
+          rawafidQuestion,
           page,
           courseCode,
           courseData,
