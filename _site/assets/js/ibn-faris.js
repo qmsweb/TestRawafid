@@ -99,6 +99,7 @@
       }
 
       if (els.quota) {
+        els.quota.classList.remove("is-loading");
         els.quota.classList.toggle("is-empty", remaining <= 0);
         els.quota.setAttribute(
           "aria-label",
@@ -107,6 +108,30 @@
             : "انتهت الحصة اليومية"
         );
       }
+    }
+
+    // نجلب الحصة عند فتح المحادثة حتى لا تظهر الدائرة ممتلئة افتراضيًا.
+    function refreshQuota() {
+      if (!ENDPOINT || !ANON_KEY) return;
+
+      fetch(ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + ANON_KEY,
+          apikey: ANON_KEY,
+        },
+        body: JSON.stringify({ action: "quota" }),
+      })
+        .then(function (response) {
+          return response.ok ? response.json() : null;
+        })
+        .then(function (data) {
+          if (data && data.quota) setQuota(data.quota);
+        })
+        .catch(function () {
+          // الدائرة تبقى محايدة إن تعذّر جلب الحصة.
+        });
     }
 
     // ----------------------------------------------------------
@@ -1034,6 +1059,9 @@
         if (els.send) els.send.disabled = true;
         return;
       }
+
+      if (els.quota) els.quota.classList.add("is-loading");
+      refreshQuota();
 
       if (settings.focus) {
         window.setTimeout(function () {

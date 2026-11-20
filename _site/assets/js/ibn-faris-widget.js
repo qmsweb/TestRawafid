@@ -191,6 +191,7 @@
       height: startHeight,
       base: base,
       max: max,
+      wasExpanded: overlay.classList.contains("is-expanded"),
       handle: event.currentTarget,
     };
 
@@ -219,7 +220,8 @@
     }
 
     var next = drag.startHeight + (drag.startY - event.clientY);
-    next = Math.min(drag.max, Math.max(drag.base, next));
+    // نسمح بالنزول تحت الارتفاع الأساسي حتى يمكن طيّ اللوحة بالكامل.
+    next = Math.min(drag.max, Math.max(0, next));
     drag.height = next;
     state.sheet.style.height = Math.round(next) + "px";
   }
@@ -235,6 +237,8 @@
     var velocity = drag.velocity;
     var base = drag.base;
     var max = drag.max;
+    var wasExpanded = drag.wasExpanded;
+    var dragHeight = drag.height;
 
     drag = null;
 
@@ -244,22 +248,35 @@
       } catch (error) {}
     }
 
-    // اتجاه السحب الأخير يحسم النتيجة، ثم المسافة المقطوعة.
-    var ratio = range > 0 ? extra / range : 0;
-    var shouldExpand;
-    if (ratio > 0.9) {
-      shouldExpand = true;
-    } else if (ratio < 0.1) {
-      shouldExpand = false;
-    } else if (velocity < -0.55) {
-      shouldExpand = false;
-    } else if (velocity > 0.55) {
-      shouldExpand = true;
-    } else {
-      shouldExpand = ratio > 0.35;
-    }
+    // السحب لأسفل بمسافة كافية يطوي اللوحة بالكامل، لا يعيدها فقط.
+    var closeThreshold = Math.max(60, base * 0.45);
+    var shouldClose =
+      dragHeight <= closeThreshold ||
+      (velocity > 0.9 && dragHeight < base - 24);
 
     overlay.classList.remove("is-dragging");
+
+    if (shouldClose) {
+      close();
+      return;
+    }
+
+    var shouldExpand;
+    if (wasExpanded) {
+      // من الوضع المكبّر: السحب لأعلى يبقيه مكبّرًا، وأي سحب واضح
+      // لأسفل يعيد الحجم السابق، والسحب الكبير يطويه بالكامل.
+      shouldExpand = true;
+      if (extra < -16 || velocity > 0.55) shouldExpand = false;
+    } else {
+      var ratio = range > 0 ? extra / range : 0;
+      if (velocity < -0.55) {
+        shouldExpand = true;
+      } else if (velocity > 0.55) {
+        shouldExpand = false;
+      } else {
+        shouldExpand = ratio > 0.35;
+      }
+    }
 
     if (shouldExpand) {
       overlay.classList.add("is-expanded");

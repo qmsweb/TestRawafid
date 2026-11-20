@@ -1283,6 +1283,40 @@ async function releaseQuota(visitorHash: string): Promise<void> {
   }
 }
 
+async function readQuota(visitorHash: string): Promise<QuotaSnapshot> {
+  if (!admin) throw new Error("admin_unavailable");
+
+  const today = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "Asia/Muscat",
+  }).format(new Date());
+
+  const { data, error } = await admin
+    .from("ibnfaris_guest_usage")
+    .select("usage_day, requests_used")
+    .eq("visitor_hash", visitorHash)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  const row = data as { usage_day?: string; requests_used?: number } | null;
+  const used =
+    row && row.usage_day === today
+      ? Math.max(0, Number(row.requests_used) || 0)
+      : 0;
+  const remaining = Math.max(0, VISITOR_DAILY_LIMIT - used);
+
+  return {
+    allowed: remaining > 0,
+    used,
+    limit: VISITOR_DAILY_LIMIT,
+    remaining,
+    reset_on: today,
+  };
+}
+
 async function recordUsage(
   visitorHash: string,
   promptTokens: number,
@@ -1979,7 +2013,24 @@ Deno.serve(async (request) => {
   const body = (await request.json().catch(() => null)) as {
     messages?: unknown;
     context?: unknown;
+    action?: unknown;
   } | null;
+
+  if (body?.action === "quota") {
+    try {
+      const visitorHash = await hashVisitor(clientIp(request));
+      const quota = await readQuota(visitorHash);
+      return jsonResponse({ quota }, 200, origin);
+    } catch (error) {
+      console.error("ibnfaris_quota_read_failed", error);
+      return jsonResponse(
+        { error: "تعذّر قراءة الحصة اليومية. حاول مرة أخرى." },
+        500,
+        origin,
+      );
+    }
+  }
+
   const messages = normalizeMessages(body?.messages);
 
   if (!messages) {

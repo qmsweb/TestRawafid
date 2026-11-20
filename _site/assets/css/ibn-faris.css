@@ -392,12 +392,22 @@ html[data-theme="dark"] .if-overlay {
   transition: stroke-dashoffset 0.35s ease;
 }
 
+.if-quota-ring.is-loading .if-quota-value {
+  opacity: 0;
+}
+
 .if-quota-ring.is-empty {
   color: var(--if-danger);
 }
 
+/* عند نفاد الحصة يبقى المسار الخلفي خافتًا، ولا يظهر كقرص ممتلئ. */
 .if-quota-ring.is-empty .if-quota-track {
   stroke: var(--if-danger);
+  opacity: 0.28;
+}
+
+.if-quota-ring.is-empty .if-quota-value {
+  opacity: 0;
 }
 
 /* ------------------------------------------------------------
