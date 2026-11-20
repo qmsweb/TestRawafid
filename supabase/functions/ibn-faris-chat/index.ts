@@ -1434,16 +1434,23 @@ async function readQuota(visitorHash: string): Promise<QuotaSnapshot> {
   const remaining = Math.max(0, VISITOR_DAILY_LIMIT - used);
 
   let dailyCost = 0;
+  let dailyRequests = 0;
   try {
     const totals = await admin
       .from("ibnfaris_daily_totals")
-      .select("cost_usd")
+      .select("requests_used, cost_usd")
       .eq("usage_day", today)
       .maybeSingle();
-    const totalRow = totals.data as { cost_usd?: number } | null;
+    const totalRow = totals.data as {
+      requests_used?: number;
+      cost_usd?: number;
+    } | null;
+    dailyRequests = totalRow
+      ? Math.max(0, Number(totalRow.requests_used) || 0)
+      : 0;
     dailyCost = totalRow ? Math.max(0, Number(totalRow.cost_usd) || 0) : 0;
   } catch {
-    // عرض الحصة لا يتوقف إذا تعذّر قراءة التكلفة.
+    // عرض الحصة لا يتوقف إذا تعذّرت قراءة الإجماليات.
   }
 
   return {
@@ -1451,6 +1458,8 @@ async function readQuota(visitorHash: string): Promise<QuotaSnapshot> {
     used,
     limit: VISITOR_DAILY_LIMIT,
     remaining,
+    global_used: dailyRequests,
+    global_limit: GLOBAL_DAILY_LIMIT,
     global_cost_usd: dailyCost,
     global_budget_usd: GLOBAL_DAILY_BUDGET_USD,
     global_remaining_usd:
