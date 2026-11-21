@@ -1,13 +1,9 @@
-const STATIC_CACHE = 'rawafid-static-v1';
+const STATIC_CACHE = 'rawafid-static-v2';
 
+// نُخزّن مسبقًا الملفات الصغيرة فقط. ملفات الخطوط الكبيرة تُخزَّن عند أول
+// استخدام فعلي عبر معالج fetch أدناه، حتى لا يدفع الزائر ~1.4MB في أول زيارة.
 const STATIC_ASSETS = [
   '/fonts/fonts.css',
-  '/fonts/thmanyahsans-Regular.otf',
-  '/fonts/thmanyahsans-Light.otf',
-  '/fonts/thmanyahsans-Medium.otf',
-  '/fonts/thmanyahsans-Bold.otf',
-  '/fonts/thmanyahsans-Black.otf',
-  '/fonts/thmanyahseriftext-Black.otf',
   '/images/ibnfaris-icon.png'
 ];
 

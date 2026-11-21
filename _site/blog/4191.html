@@ -850,8 +850,8 @@
 
 <style>
   .if-fab {
-    --if-fab-bg: #8a6e4b;
-    --if-fab-bg-hover: #765c3e;
+    --if-fab-bg: var(--rawafid-primary, #8a6e4b);
+    --if-fab-bg-hover: var(--rawafid-primary-dark, #765c3e);
     --if-fab-fg: #ffffff;
     --if-fab-logo-bg: #ffffff;
     --if-fab-shadow: 0 10px 28px rgba(39, 37, 30, 0.22);
@@ -1007,7 +1007,7 @@
 
 <a
   class="if-fab"
-  href="/ibn-faris/"
+  href="/ibn-faris/?from=%2Fblog%2F4191"
   data-if-open
   aria-haspopup="dialog"
   aria-label="افتح محادثة ابن فارس"
@@ -1022,8 +1022,13 @@
 <template id="if-widget-template">
   <div class="if-overlay" id="if-overlay" hidden aria-hidden="true">
     <div class="if-sheet" role="dialog" aria-modal="true" aria-labelledby="if-title">
-      <div class="if-app" id="if-app" data-icon="/images/ibnfaris-icon.png">
-  <span class="if-sheet-handle" aria-hidden="true"></span>
+      <div class="if-app" id="if-app">
+  <span
+    class="if-sheet-handle"
+    role="button"
+    tabindex="0"
+    aria-label="توسيع أو طي نافذة ابن فارس"
+  ></span>
 
   <h1 class="if-sr-only" id="if-title">ابن فارس</h1>
 
@@ -1043,6 +1048,7 @@
           <circle class="if-quota-track" cx="21" cy="21" r="18" pathLength="100"></circle>
           <circle class="if-quota-value" id="if-quota-value" cx="21" cy="21" r="18" pathLength="100"></circle>
         </svg>
+        <span class="if-quota-count" id="if-quota-count" aria-hidden="true">…</span>
       </div>
 
       <button class="if-circle if-circle--accent" id="if-new" type="button" aria-label="محادثة جديدة" title="محادثة جديدة">
@@ -1058,16 +1064,34 @@
       </button></div>
   </header>
 
-  <main class="if-main" id="if-main">
+  <main class="if-main" id="if-main" tabindex="-1">
     <div class="if-thread" id="if-thread">
       <section class="if-empty" id="if-empty" aria-labelledby="if-empty-title">
         <span class="if-empty-mark" aria-hidden="true">
           <img src="/images/ibnfaris-icon.png" alt="" width="34" height="34" />
         </span>
         <h2 class="if-empty-title" id="if-empty-title">ابدأ بالسؤال</h2>
+        <div class="if-suggestions" id="if-suggestions">
+          <button class="if-suggestion" type="button" data-if-suggest="أعرب: «جاء الطالبُ مجتهدًا»">
+            إعراب مثال
+          </button>
+          <button class="if-suggestion" type="button" data-if-suggest="ما وزن كلمة «استخراج» وما أصلها؟">
+            وزن صرفي
+          </button>
+          <button class="if-suggestion" type="button" data-if-suggest="لخّص درس مهارة الاستماع في مقرر EDUC432">
+            تلخيص درس
+          </button>
+          <button class="if-suggestion" type="button" data-if-suggest="ما متطلبات مقرر النحو 2 وترتيبه في الخطة؟">
+            متطلبات مقرر
+          </button>
+        </div>
+        <p class="if-empty-hint">
+          أسأل عن النحو والصرف والبلاغة والأدب، وعن مقررات روافد وخطتها، وعن التربية والتعليم وسلطنة عمان.
+        </p>
       </section>
 
-      <div class="if-messages" id="if-messages" aria-live="polite"></div>
+      <div class="if-messages" id="if-messages"></div>
+      <div class="if-sr-only" id="if-live" role="status" aria-live="polite" aria-atomic="true"></div>
     </div>
   </main>
 
@@ -1109,6 +1133,10 @@
 
       <p class="if-disclaimer">
         <strong>ابن فارس</strong> قد يخطئ؛ تحقّق من المصادر.
+        <span class="if-disclaimer-sub">
+          تُحفظ المحادثة في هذا التبويب فقط حتى إغلاقه.
+          <a href="/ibn-faris/sources/">المصادر والترخيص</a>
+        </span>
       </p>
     </div>
   </div>

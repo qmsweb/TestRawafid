@@ -134,6 +134,8 @@ begin
   if v_guest.usage_day <> v_today then
     v_guest.usage_day := v_today;
     v_guest.requests_used := 0;
+    v_guest.prompt_tokens := 0;
+    v_guest.completion_tokens := 0;
   end if;
 
   if v_global_limit <= 0 or v_total.requests_used >= v_global_limit then
@@ -154,6 +156,8 @@ begin
   update public.ibnfaris_guest_usage
   set usage_day = v_guest.usage_day,
       requests_used = v_guest.requests_used,
+      prompt_tokens = v_guest.prompt_tokens,
+      completion_tokens = v_guest.completion_tokens,
       updated_at = now()
   where visitor_hash = p_visitor_hash;
 
@@ -309,6 +313,8 @@ begin
   if v_guest.usage_day <> v_today then
     v_guest.usage_day := v_today;
     v_guest.requests_used := 0;
+    v_guest.prompt_tokens := 0;
+    v_guest.completion_tokens := 0;
   end if;
 
   if v_global_limit <= 0 or v_total.requests_used >= v_global_limit then
@@ -333,6 +339,8 @@ begin
   update public.ibnfaris_guest_usage
   set usage_day = v_guest.usage_day,
       requests_used = v_guest.requests_used,
+      prompt_tokens = v_guest.prompt_tokens,
+      completion_tokens = v_guest.completion_tokens,
       updated_at = now()
   where visitor_hash = p_visitor_hash;
 

@@ -1,0 +1,22 @@
+name: Ibn Faris function check
+
+on:
+  push:
+    paths:
+      - "supabase/functions/ibn-faris-chat/**"
+      - ".github/workflows/ibn-faris-check.yml"
+  pull_request:
+    paths:
+      - "supabase/functions/ibn-faris-chat/**"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type check
+        working-directory: supabase/functions/ibn-faris-chat
+        run: deno task check

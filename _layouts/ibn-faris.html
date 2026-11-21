@@ -33,7 +33,7 @@
   <a class="if-skip" href="#if-main">تخطَّ إلى المحادثة</a>
 
   <div class="if-page-stage">
-    <div class="if-sheet if-sheet--page" role="dialog" aria-modal="true" aria-labelledby="if-title">
+    <div class="if-sheet if-sheet--page">
       {% include ibn-faris-app.html mode="page" %}
     </div>
   </div>
@@ -54,5 +54,24 @@
     data-base="{{ '/' | relative_url }}"
   ></script>
   <script src="{{ '/assets/js/ibn-faris.js' | relative_url }}"></script>
+  <script>
+    // إذا وصل المستخدم من الزر العائم، يعيده زر الإغلاق إلى الصفحة السابقة
+    // بدل الصفحة الرئيسية. نرفض المسارات الخارجية (//example.com).
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var from = params.get("from") || "";
+      if (
+        !from ||
+        from.charAt(0) !== "/" ||
+        from.charAt(1) === "/" ||
+        from.indexOf("\\") !== -1
+      ) {
+        return;
+      }
+
+      var close = document.getElementById("if-close");
+      if (close) close.setAttribute("href", from);
+    })();
+  </script>
 </body>
 </html>

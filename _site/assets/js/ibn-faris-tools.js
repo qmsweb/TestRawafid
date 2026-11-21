@@ -20,6 +20,7 @@
   if (BASE.charAt(BASE.length - 1) !== "/") BASE += "/";
 
   var TOOLS = {
+    // المسارات تطابق _data/tools.yml؛ عند تغيير مسار أداة حدّث الملفين.
     gpa: {
       name: "حاسبة المعدل",
       short: "الحاسبة",
@@ -57,6 +58,13 @@
     thesis_unpub: "رسالة غير منشورة",
     conference: "ورقة في مؤتمر",
     newspaper: "مقال في صحيفة",
+  };
+
+  // هذه الأدوات تستبدل حالة المستخدم الحالية، فتحتاج تأكيدًا صريحًا.
+  var DESTRUCTIVE_TOOLS = {
+    gpa: true,
+    tawtheeq: true,
+    wheel: true,
   };
 
   var GRADE_SCALE = {
@@ -452,7 +460,7 @@
       toast.dir = "rtl";
       toast.style.cssText = [
         "position:fixed",
-        "z-index:10000",
+        "z-index:100000",
         "left:50%",
         "bottom:24px",
         "transform:translateX(-50%)",
@@ -507,6 +515,15 @@
     if (!normalized) return "invalid";
 
     if (currentTool() === normalized.tool) {
+      if (DESTRUCTIVE_TOOLS[normalized.tool]) {
+        var confirmed = window.confirm(
+          "سيتم استبدال البيانات الحالية في " +
+            TOOLS[normalized.tool].name +
+            ". هل تريد المتابعة؟"
+        );
+        if (!confirmed) return "cancelled";
+      }
+
       dispatch(normalized);
       showToast("تم تطبيق بيانات ابن فارس على " + TOOLS[normalized.tool].short + ".");
 
@@ -525,44 +542,10 @@
     return "navigating";
   }
 
-  // تُستدعى تلقائياً بعد انتهاء رد ابن فارس الذي يحمل أمر أداة:
-  // تطبّق البيانات على الأداة المفتوحة وتطوي المحادثة، أو تنتقل إلى
-  // الأداة المطلوبة وتحمّل البيانات عند وصول الصفحة.
-  function autoApply(actions) {
-    var list = Array.isArray(actions) ? actions : [actions];
-    var normalized = [];
-
-    list.forEach(function (action) {
-      var item = normalize(action);
-      if (item) normalized.push(item);
-    });
-
-    if (normalized.length === 0) return "invalid";
-
-    var tool = currentTool();
-    if (tool) {
-      var match = normalized.find(function (item) {
-        return item.tool === tool;
-      });
-
-      if (match) {
-        dispatch(match);
-        showToast(
-          "تم تطبيق بيانات ابن فارس على " + TOOLS[match.tool].short + "."
-        );
-        closeChat(450);
-        return "applied";
-      }
-    }
-
-    var action = normalized[0];
-    savePending(action);
-
-    var url = targetUrl(action);
-    if (!url) return "invalid";
-
-    window.location.assign(url);
-    return "navigating";
+  // أُبقيت هذه الدالة للتوافق مع النسخ القديمة من المحرك، لكنها لم تعد
+  // تطبّق أو تنتقل تلقائياً: التطبيق يتطلب ضغطة صريحة من المستخدم.
+  function autoApply() {
+    return "manual";
   }
 
   function consumePending() {
@@ -640,6 +623,16 @@
       note.className = "if-tool-note";
       note.textContent = details.note;
       body.appendChild(note);
+    }
+
+    if (DESTRUCTIVE_TOOLS[normalized.tool]) {
+      var warning = document.createElement("p");
+      warning.className = "if-tool-note";
+      warning.textContent =
+        "سيُستبدل ما في " +
+        info.short +
+        " الحالي بعد تأكيدك، لا يُدمج معه.";
+      body.appendChild(warning);
     }
 
     var actions = document.createElement("div");

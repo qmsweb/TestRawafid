@@ -32,6 +32,7 @@
     ready: null,
     css: null,
     sideMode: null,
+    historyPushed: false,
   };
 
   // ----------------------------------------------------------
@@ -98,13 +99,17 @@
   function loadCss() {
     if (state.css) return state.css;
 
-    state.css = new Promise(function (resolve) {
+    state.css = new Promise(function (resolve, reject) {
       var link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = ASSETS.css;
       link.setAttribute("data-ibnfaris-css", "");
       link.onload = resolve;
-      link.onerror = resolve;
+      link.onerror = function () {
+        // لو تعذّر تحميل التنسيق لا نفتح لوحة بلا شكل؛ نرجع إلى الصفحة الكاملة.
+        state.css = null;
+        reject(new Error("ibnfaris_css_failed"));
+      };
       document.head.appendChild(link);
     });
 
@@ -127,7 +132,7 @@
   }
 
   function prefetch() {
-    loadCss();
+    loadCss().catch(function () {});
   }
 
   function ensureReady() {
@@ -143,10 +148,12 @@
       .then(function () {
         if (!window.IbnFarisChat) throw new Error("ibnfaris_engine_missing");
 
-        // علامات Markdown تحسينية فقط؛ لا نُفشل فتح اللوحة إذا تعذّر تحميلها.
-        // المحرك يعرض النص الخام عند غيابها.
-        loadScript(ASSETS.marked).catch(function () {});
-        loadScript(ASSETS.purify).catch(function () {});
+        // ننتظر مكتبات Markdown حتى لا يظهر أول رد كنص خام ثم يتحول.
+        // فشلها غير قاتل؛ المحرك يعرض النص الخام عند غيابها.
+        return Promise.all([
+          loadScript(ASSETS.marked).catch(function () {}),
+          loadScript(ASSETS.purify).catch(function () {}),
+        ]);
       })
       .catch(function (error) {
         state.ready = null;
@@ -360,6 +367,19 @@
     }, 320);
   }
 
+  function toggleSheetExpanded() {
+    if (!state.isOpen || !state.overlay || !state.sheet) return;
+
+    if (state.overlay.classList.contains("is-expanded")) {
+      state.overlay.classList.remove("is-expanded");
+      state.sheet.style.height = "";
+      return;
+    }
+
+    state.overlay.classList.add("is-expanded");
+    state.sheet.style.height = overlayMaxHeight() + "px";
+  }
+
   function initSheetDrag() {
     var handle =
       state.sheet && state.sheet.querySelector(".if-sheet-handle");
@@ -370,6 +390,24 @@
     handle.addEventListener("pointermove", onHandlePointerMove);
     handle.addEventListener("pointerup", onHandlePointerUp);
     handle.addEventListener("pointercancel", onHandlePointerUp);
+
+    // بديل لوحة المفاتيح: Enter/المسافة تطوي أو توسّع، والسهمان لأعلى/أسفل.
+    handle.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        toggleSheetExpanded();
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        if (!state.overlay.classList.contains("is-expanded")) {
+          toggleSheetExpanded();
+        }
+      } else if (event.key === "ArrowDown") {
+        event.preventDefault();
+        if (state.overlay.classList.contains("is-expanded")) {
+          toggleSheetExpanded();
+        }
+      }
+    });
   }
 
   window.addEventListener("resize", function () {
@@ -389,6 +427,10 @@
     if (state.overlay.classList.contains("is-expanded")) {
       state.sheet.style.height = overlayMaxHeight() + "px";
     }
+  });
+
+  window.addEventListener("popstate", function () {
+    if (state.isOpen) close(true);
   });
 
 
@@ -532,6 +574,16 @@
         state.pending = false;
         syncActivity();
 
+        // نضيف حالة تاريخ حتى يغلق زر الرجوع في الجوال اللوحة بدل مغادرة الصفحة.
+        if (!state.historyPushed && window.history && history.pushState) {
+          try {
+            history.pushState({ ibnfaris: true }, "");
+            state.historyPushed = true;
+          } catch (error) {
+            state.historyPushed = false;
+          }
+        }
+
         window.requestAnimationFrame(function () {
           if (state.instance) {
             state.instance.focus();
@@ -557,8 +609,11 @@
       });
   }
 
-  function close() {
+  function close(fromPopstate) {
     if (!state.isOpen || !state.overlay) return;
+
+    var popHistory = state.historyPushed;
+    state.historyPushed = false;
 
     state.isOpen = false;
     state.overlay.classList.remove("is-open");
@@ -567,6 +622,14 @@
     setPageInert(false);
     state.sideMode = null;
     syncActivity();
+
+    if (!fromPopstate && popHistory) {
+      try {
+        window.history.back();
+      } catch (error) {
+        // المتصفح لا يدعم التاريخ أو الحالة غير متاحة.
+      }
+    }
 
     window.setTimeout(function () {
       if (!state.isOpen && state.overlay) {

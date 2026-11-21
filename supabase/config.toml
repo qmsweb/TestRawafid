@@ -1,0 +1,9 @@
+# إعدادات مشروع Supabase الخاص بابن فارس.
+# لا يحتوي هذا الملف أسرارًا؛ الأسرار تُضبط من لوحة Supabase أو من CLI.
+
+project_id = "veydmfljebzqwrolvuhe"
+
+[functions.ibn-faris-chat]
+# مفاتيح النشر (sb_publishable_...) ليست JWT، فلا يفيد verify_jwt في
+# مصادقة المستدعي. تُعطّل هنا، وتُتحقق الترويسة apikey داخل الدالة نفسها.
+verify_jwt = false

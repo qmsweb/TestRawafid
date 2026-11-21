@@ -468,6 +468,9 @@
         Promise.all(coursePromises).then(function() {
           var q = getQueryParam('q');
           if (q) {
+            if (window.IbnFarisPageContext) {
+              window.IbnFarisPageContext.update({ query: q });
+            }
             searchInput.value = q;
             performSearch(q);
           }
@@ -726,6 +729,9 @@
 
     function performSearch(query) {
       currentQuery = query.trim();
+      if (window.IbnFarisPageContext) {
+        window.IbnFarisPageContext.update({ query: currentQuery });
+      }
       if (!currentQuery) {
         showInitialState();
         return;

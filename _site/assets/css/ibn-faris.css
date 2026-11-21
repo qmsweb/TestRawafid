@@ -54,7 +54,7 @@ html[data-theme="dark"] .if-overlay {
   --if-ink: #f3f0e8;
   --if-ink-strong: #ffffff;
   --if-sand: #d2b48c;
-  --if-on-sand: #ffffff;
+  --if-on-sand: #131210;
   --if-on-accent: #131210;
   --if-danger: #e28b73;
   --if-danger-soft: #2a1f1b;
@@ -239,6 +239,11 @@ html[data-theme="dark"] .if-overlay {
   user-select: none;
 }
 
+.if-overlay .if-sheet-handle:focus-visible {
+  outline: 2px solid var(--if-sand);
+  outline-offset: 4px;
+}
+
 /* توسيع مساحة اللمس حول المقبض دون تغيير شكله */
 .if-overlay .if-sheet-handle::before {
   content: "";
@@ -414,12 +419,25 @@ html[data-theme="dark"] .if-overlay {
 }
 
 .if-quota-ring {
+  position: relative;
   display: grid;
   place-items: center;
   width: 42px;
   height: 42px;
   flex-shrink: 0;
   color: var(--if-sand);
+}
+
+.if-quota-count {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--if-graphite);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .if-quota-ring svg {
@@ -447,6 +465,14 @@ html[data-theme="dark"] .if-overlay {
 }
 
 .if-quota-ring.is-loading .if-quota-value {
+  opacity: 0;
+}
+
+.if-quota-ring.is-unavailable {
+  color: var(--if-graphite);
+}
+
+.if-quota-ring.is-unavailable .if-quota-value {
   opacity: 0;
 }
 
@@ -532,6 +558,60 @@ html[data-theme="dark"] .if-overlay {
   line-height: 1.4;
 }
 
+.if-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 620px;
+  margin-top: 10px;
+}
+
+.if-suggestion {
+  padding: 8px 12px;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-full);
+  background: var(--if-soft-paper);
+  color: var(--if-graphite);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.if-suggestion:hover,
+.if-suggestion:focus-visible {
+  border-color: var(--if-sand);
+  color: var(--if-ink);
+  outline: none;
+}
+
+.if-suggestion:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--if-sand) 30%, transparent);
+}
+
+.if-empty-hint {
+  max-width: 560px;
+  margin: 14px 0 0;
+  color: var(--if-graphite);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+@media (max-width: 560px) {
+  .if-suggestions {
+    gap: 6px;
+  }
+
+  .if-suggestion {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+}
+
 /* ------------------------------------------------------------
    7. الرسائل: السؤال عنوان، والإجابة نصّ
    ------------------------------------------------------------ */
@@ -577,6 +657,81 @@ html[data-theme="dark"] .if-overlay {
   align-items: center;
   gap: 4px;
   margin-top: 12px;
+}
+
+/* مصادر الإجابة: مطوية افتراضيًا حتى لا تزاحم النص. */
+.if-sources-host {
+  margin-top: 10px;
+}
+
+.if-sources {
+  overflow: hidden;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-md);
+  background: var(--if-soft-paper);
+}
+
+.if-sources summary {
+  padding: 9px 12px;
+  color: var(--if-graphite);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.if-sources summary:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--if-sand) 40%, transparent);
+  outline-offset: -2px;
+}
+
+.if-sources ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0 12px 11px;
+  list-style: none;
+}
+
+.if-sources li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.if-source-kind {
+  padding: 1px 7px;
+  border-radius: var(--if-radius-full);
+  background: color-mix(in srgb, var(--if-sand) 14%, transparent);
+  color: var(--if-graphite);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.if-source-title {
+  color: var(--if-ink);
+  font-weight: 500;
+}
+
+.if-source-detail {
+  color: var(--if-graphite);
+}
+
+.if-sources a {
+  color: var(--if-sand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.if-source-note {
+  margin: 8px 0 0;
+  color: var(--if-graphite);
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 .if-copy {
@@ -795,15 +950,19 @@ html[data-theme="dark"] .if-overlay {
 .if-md h6 {
   margin: 24px 0 8px;
   color: var(--if-ink);
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   line-height: 1.5;
+}
+
+.if-md h3 {
+  font-size: 18px;
 }
 
 .if-md h4,
 .if-md h5,
 .if-md h6 {
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .if-md p {
@@ -824,14 +983,14 @@ html[data-theme="dark"] .if-overlay {
 }
 
 .if-md a {
-  color: var(--if-ink);
+  color: var(--if-sand);
   text-decoration: underline;
-  text-decoration-color: var(--if-sand);
+  text-decoration-color: color-mix(in srgb, var(--if-sand) 55%, transparent);
   text-underline-offset: 2px;
 }
 
 .if-md a:hover {
-  color: var(--if-graphite);
+  color: var(--if-ink);
 }
 
 .if-md ul,
@@ -1421,6 +1580,19 @@ html[data-theme="dark"] .if-overlay {
 .if-disclaimer strong {
   color: var(--if-graphite);
   font-weight: 500;
+}
+
+.if-disclaimer-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+.if-disclaimer-sub a {
+  color: var(--if-graphite);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* ------------------------------------------------------------

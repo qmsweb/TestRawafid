@@ -2,10 +2,10 @@
    ابن فارس — واجهة المحادثة
    ============================================================
    • تتصل بدالة Supabase: functions/v1/ibn-faris-chat
-   • تستقبل بثّ SSE مبسّطاً: answer / thinking / quota / error
-   • تحفظ المحادثة الأخيرة محلياً (localStorage) وتستعيدها عند إعادة
-     تحميل الصفحة أو الانتقال إلى صفحة أخرى، وتحتفظ بمسودة الكتابة
-     في sessionStorage.
+   • تستقبل بثّ SSE مبسّطاً: answer / sources / status / quota / error
+   • تحفظ المحادثة الأخيرة في sessionStorage (حتى إغلاق التبويب) وتستعيدها
+     عند إعادة تحميل الصفحة أو الانتقال إلى صفحة أخرى، وتحتفظ بمسودة الكتابة
+     في sessionStorage أيضاً.
    • تُركَّب على أي حاوية تحمل #if-app:
        صفحة /ibn-faris/  أو  اللوحة السفلية العائمة في بقية الصفحات.
    ============================================================ */
@@ -22,8 +22,12 @@
     : "";
   var DRAFT_KEY = "ibnfaris-rawafid-draft";
   var HISTORY_KEY = "ibnfaris-rawafid-history";
-  var HISTORY_VERSION = 1;
-  var HISTORY_SAVE_DELAY = 300;
+  var HISTORY_VERSION = 2;
+  var HISTORY_SAVE_DELAY = 800;
+  // نحفظ المحادثة في sessionStorage (تنتهي بإغلاق التبويب) ونضع سقفًا
+  // للحجم والمدة حتى لا تتحول إلى أرشيف دائم على جهاز المستخدم.
+  var HISTORY_MAX_CHARS = 120_000;
+  var HISTORY_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
   function mount(root, options) {
     if (!root) return null;
@@ -39,6 +43,7 @@
       main: q("#if-main"),
       empty: q("#if-empty"),
       messages: q("#if-messages"),
+      live: q("#if-live"),
       form: q("#if-form"),
       input: q("#if-input"),
       send: q("#if-send"),
@@ -48,19 +53,19 @@
       newChat: q("#if-new"),
       quota: q("#if-quota"),
       quotaValue: q("#if-quota-value"),
+      quotaCount: q("#if-quota-count"),
     };
 
     if (!els.main || !els.form || !els.input || !els.messages) return null;
-
-    var ICON =
-      root.getAttribute("data-icon") || "images/ibnfaris-icon.png";
 
     var state = {
       messages: [],
       streaming: false,
       controller: null,
       quota: null,
-      raf: null,
+      quotaExhausted: false,
+      renderTimer: null,
+      lastRenderAt: 0,
       saveTimer: null,
       stick: true,
       turn: 0,
@@ -80,9 +85,41 @@
       if (els.alert) els.alert.hidden = true;
     }
 
+    // منطقة إعلان منفصلة عن المحتوى المتدفق حتى لا يقرأ قارئ الشاشة
+    // الرسالة كاملة مع كل تحديث أثناء البث.
+    function announce(text) {
+      if (!els.live) return;
+      els.live.textContent = "";
+      window.setTimeout(function () {
+        els.live.textContent = String(text || "");
+      }, 30);
+    }
+
+    // نص مبسّط لقارئ الشاشة: لا نقرأ رموز Markdown نفسها.
+    function naturalText(value) {
+      return String(value || "")
+        .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+        .replace(/[*_`~#>]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
     // ----------------------------------------------------------
     // الحصة اليومية
     // ----------------------------------------------------------
+    function applyQuotaState() {
+      var exhausted = Boolean(state.quotaExhausted);
+
+      els.input.disabled = exhausted;
+      if (els.send) els.send.disabled = exhausted;
+
+      if (els.quota) {
+        els.quota.title = exhausted
+          ? "انتهت الحصة اليومية؛ تتجدد غدًا بتوقيت مسقط"
+          : "";
+      }
+    }
+
     function setQuota(quota) {
       if (!quota || typeof quota !== "object") return;
 
@@ -91,6 +128,7 @@
       if (!isFinite(remaining) || !isFinite(limit) || limit <= 0) return;
 
       state.quota = quota;
+      state.quotaExhausted = remaining <= 0;
 
       var ratio = Math.max(0, Math.min(1, remaining / limit));
 
@@ -98,16 +136,37 @@
         els.quotaValue.style.strokeDashoffset = String(100 - ratio * 100);
       }
 
+      if (els.quotaCount) {
+        els.quotaCount.textContent = String(Math.max(0, remaining));
+      }
+
       if (els.quota) {
-        els.quota.classList.remove("is-loading");
+        els.quota.classList.remove("is-loading", "is-unavailable");
         els.quota.classList.toggle("is-empty", remaining <= 0);
         els.quota.setAttribute(
           "aria-label",
           remaining > 0
             ? "الحصة اليومية المتبقية: " + remaining + " من " + limit
-            : "انتهت الحصة اليومية"
+            : "انتهت الحصة اليومية. تتجدد غدًا بتوقيت مسقط."
         );
       }
+
+      applyQuotaState();
+    }
+
+    function quotaUnavailable() {
+      if (els.quota) {
+        els.quota.classList.remove("is-loading");
+        els.quota.classList.add("is-unavailable");
+        els.quota.setAttribute("aria-label", "تعذّر جلب الحصة اليومية");
+        els.quota.title = "تعذّر جلب الحصة اليومية";
+      }
+
+      if (els.quotaValue) {
+        els.quotaValue.style.strokeDashoffset = "100";
+      }
+
+      if (els.quotaCount) els.quotaCount.textContent = "?";
     }
 
     // نجلب الحصة عند فتح المحادثة حتى لا تظهر الدائرة ممتلئة افتراضيًا.
@@ -118,7 +177,7 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + ANON_KEY,
+          // مفتاح النشر يُرسل في apikey فقط؛ ليس JWT فلا يصح في Authorization.
           apikey: ANON_KEY,
         },
         body: JSON.stringify({ action: "quota" }),
@@ -128,9 +187,10 @@
         })
         .then(function (data) {
           if (data && data.quota) setQuota(data.quota);
+          else quotaUnavailable();
         })
         .catch(function () {
-          // الدائرة تبقى محايدة إن تعذّر جلب الحصة.
+          quotaUnavailable();
         });
     }
 
@@ -203,9 +263,26 @@
       );
     }
 
+    function savedSources(value) {
+      if (!Array.isArray(value)) return [];
+      return value
+        .slice(0, 8)
+        .map(function (source) {
+          return {
+            kind: sourceText(source && source.kind, 20),
+            title: sourceText(source && source.title, 180),
+            detail: sourceText(source && source.detail, 160),
+            url: safeSourceUrl(source && source.url),
+          };
+        })
+        .filter(function (source) {
+          return source.title;
+        });
+    }
+
     function readSavedHistory() {
       try {
-        var raw = localStorage.getItem(HISTORY_KEY);
+        var raw = sessionStorage.getItem(HISTORY_KEY);
         if (!raw) return [];
 
         var data = JSON.parse(raw);
@@ -217,10 +294,23 @@
           return [];
         }
 
+        if (
+          typeof data.savedAt === "number" &&
+          Date.now() - data.savedAt > HISTORY_MAX_AGE_MS
+        ) {
+          sessionStorage.removeItem(HISTORY_KEY);
+          return [];
+        }
+
         return data.messages
           .filter(validSavedMessage)
           .map(function (message) {
-            return { role: message.role, content: message.content };
+            return {
+              role: message.role,
+              content: message.content,
+              sources: savedSources(message.sources),
+              grounding: sourceText(message.grounding, 20),
+            };
           });
       } catch (error) {
         return [];
@@ -239,15 +329,35 @@
             return cleanAnswer(message.content);
           })
           .map(function (message) {
-            return { role: message.role, content: cleanAnswer(message.content) };
+            return {
+              role: message.role,
+              content: cleanAnswer(message.content),
+              sources: savedSources(message.sources),
+              grounding: sourceText(message.grounding, 20),
+            };
           });
 
         if (!messages.length) {
-          localStorage.removeItem(HISTORY_KEY);
+          sessionStorage.removeItem(HISTORY_KEY);
           return;
         }
 
-        localStorage.setItem(
+        var totalChars = messages.reduce(function (sum, message) {
+          return sum + message.content.length;
+        }, 0);
+
+        // نحذف الأقدم أولًا، ونبقي رسالة المستخدم الأخيرة على الأقل.
+        while (messages.length > 2 && totalChars > HISTORY_MAX_CHARS) {
+          var removed = messages.shift();
+          totalChars -= removed ? removed.content.length : 0;
+        }
+
+        while (messages.length > 1 && messages[0].role === "assistant") {
+          totalChars -= messages[0].content.length;
+          messages.shift();
+        }
+
+        sessionStorage.setItem(
           HISTORY_KEY,
           JSON.stringify({
             version: HISTORY_VERSION,
@@ -272,7 +382,7 @@
       }
 
       try {
-        localStorage.removeItem(HISTORY_KEY);
+        sessionStorage.removeItem(HISTORY_KEY);
       } catch (error) {
         // التخزين قد يكون معطلاً.
       }
@@ -288,6 +398,10 @@
 
       saved.forEach(function (item) {
         var message = createMessage(item.role, item.content);
+        message.sources = item.sources || [];
+        message.grounding = item.grounding || "";
+        renderSources(message);
+
         if (item.role === "assistant") {
           message.el.classList.remove("is-streaming");
           addCopyButton(message);
@@ -336,6 +450,16 @@
       send(els.input.value);
     });
 
+    Array.prototype.forEach.call(
+      root.querySelectorAll("[data-if-suggest]"),
+      function (button) {
+        button.addEventListener("click", function () {
+          if (state.streaming) return;
+          send(button.getAttribute("data-if-suggest") || "");
+        });
+      }
+    );
+
     if (els.stop) {
       els.stop.addEventListener("click", function () {
         if (state.controller) state.controller.abort();
@@ -345,6 +469,12 @@
     if (els.newChat) {
       els.newChat.addEventListener("click", function () {
         if (state.streaming) return;
+        if (
+          state.messages.length > 0 &&
+          !window.confirm("سيتم حذف المحادثة الحالية. هل تريد المتابعة؟")
+        ) {
+          return;
+        }
         newChat();
       });
     }
@@ -462,6 +592,109 @@
       });
     }
 
+    var SOURCE_LABELS = {
+      book: "كتاب",
+      rawafid: "محتوى روافد",
+      web: "الويب",
+      page: "سياق الصفحة",
+    };
+
+    function sourceText(value, max) {
+      return String(value == null ? "" : value)
+        .replace(/[\u0000-\u001F\u007F]/g, " ")
+        .replace(/[<>]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, max || 180);
+    }
+
+    function safeSourceUrl(value) {
+      try {
+        var url = new URL(String(value || ""));
+        return url.protocol === "http:" || url.protocol === "https:"
+          ? url.toString()
+          : "";
+      } catch (error) {
+        return "";
+      }
+    }
+
+    function renderSources(message) {
+      var host = message.sourcesEl;
+      if (!host) return;
+
+      host.innerHTML = "";
+      if (message.role !== "assistant") return;
+
+      var sources = Array.isArray(message.sources) ? message.sources : [];
+      var grounding = String(message.grounding || "");
+
+      if (sources.length === 0) {
+        if (grounding === "model") {
+          var note = document.createElement("p");
+          note.className = "if-source-note";
+          note.textContent = "إجابة من المعرفة العامة دون مصدر مسترجع.";
+          host.appendChild(note);
+        } else if (grounding === "page") {
+          var pageNote = document.createElement("p");
+          pageNote.className = "if-source-note";
+          pageNote.textContent = "استنادًا إلى بيانات الصفحة الحالية.";
+          host.appendChild(pageNote);
+        }
+        return;
+      }
+
+      var details = document.createElement("details");
+      details.className = "if-sources";
+
+      var summary = document.createElement("summary");
+      summary.textContent = "المصادر (" + sources.length + ")";
+      details.appendChild(summary);
+
+      var list = document.createElement("ul");
+      sources.slice(0, 8).forEach(function (source) {
+        if (!source || typeof source !== "object") return;
+
+        var title = sourceText(source.title, 180);
+        if (!title) return;
+
+        var item = document.createElement("li");
+        var kind = SOURCE_LABELS[source.kind] || "مصدر";
+        var label = document.createElement("span");
+        label.className = "if-source-kind";
+        label.textContent = kind;
+        item.appendChild(label);
+
+        var titleEl = document.createElement("span");
+        titleEl.className = "if-source-title";
+        titleEl.textContent = title;
+        item.appendChild(titleEl);
+
+        var detail = sourceText(source.detail, 160);
+        if (detail) {
+          var detailEl = document.createElement("span");
+          detailEl.className = "if-source-detail";
+          detailEl.textContent = detail;
+          item.appendChild(detailEl);
+        }
+
+        var url = safeSourceUrl(source.url);
+        if (url) {
+          var link = document.createElement("a");
+          link.href = url;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = "فتح";
+          item.appendChild(link);
+        }
+
+        list.appendChild(item);
+      });
+
+      details.appendChild(list);
+      host.appendChild(details);
+    }
+
     function appendCaret(container) {
       var caret = document.createElement("span");
       caret.className = "if-caret";
@@ -493,6 +726,10 @@
       contentEl.className = "if-md";
       body.appendChild(contentEl);
 
+      var sourcesEl = document.createElement("div");
+      sourcesEl.className = "if-sources-host";
+      body.appendChild(sourcesEl);
+
       var toolsEl = document.createElement("div");
       toolsEl.className = "if-tool-cards";
       body.appendChild(toolsEl);
@@ -510,6 +747,9 @@
         content: content,
         el: article,
         contentEl: contentEl,
+        sourcesEl: sourcesEl,
+        sources: [],
+        grounding: "",
         toolsEl: toolsEl,
         actionsEl: actions,
         turn: state.turn,
@@ -527,6 +767,7 @@
       var displayContent = cleanAnswer(message.content);
 
       el.innerHTML = "";
+      renderSources(message);
 
       if (
         message.role === "assistant" &&
@@ -561,12 +802,26 @@
     }
 
     function scheduleRender(message) {
-      if (state.raf) return;
-      state.raf = window.requestAnimationFrame(function () {
-        state.raf = null;
+      if (state.renderTimer) return;
+
+      // أثناء البث نعيد رسم Markdown بمعدل محدود (4 مرات/ثانية) بدل كل إطار،
+      // ثم نرسم رسمًا نهائيًا فورًا عند اكتمال الرد. هذا يقلل التقطيع
+      // ويحافظ على تحديد النص أثناء القراءة.
+      var elapsed = Date.now() - state.lastRenderAt;
+      var delay = elapsed >= 250 ? 0 : 250 - elapsed;
+
+      state.renderTimer = window.setTimeout(function () {
+        state.renderTimer = null;
+        state.lastRenderAt = Date.now();
         renderMessage(message);
         scrollToBottom(false);
-      });
+      }, delay);
+    }
+
+    function cancelScheduledRender() {
+      if (!state.renderTimer) return;
+      window.clearTimeout(state.renderTimer);
+      state.renderTimer = null;
     }
 
     // ----------------------------------------------------------
@@ -799,6 +1054,19 @@
       container.innerHTML = window.DOMPurify.sanitize(html, {
         USE_PROFILES: { html: true },
         ADD_ATTR: ["target", "rel"],
+        // نمنع الصور والوسائط البعيدة والأنماط المضمّنة: قد تستخدم لتتبع
+        // المستخدم أو لإعادة تنسيق الصفحة، ولا يحتاجها نص الإجابة.
+        FORBID_TAGS: [
+          "style",
+          "form",
+          "input",
+          "button",
+          "iframe",
+          "img",
+          "video",
+          "audio",
+        ],
+        FORBID_ATTR: ["style"],
       });
 
       container.querySelectorAll("a").forEach(function (link) {
@@ -997,9 +1265,17 @@
     // ----------------------------------------------------------
     // إنهاء الدور
     // ----------------------------------------------------------
+    function removeMessage(message) {
+      if (!message) return;
+      if (message.el && message.el.parentNode) message.el.remove();
+      var index = state.messages.indexOf(message);
+      if (index !== -1) state.messages.splice(index, 1);
+    }
+
     function finishTurn(message, errorText) {
       if (!message || message.turn !== state.turn) return;
 
+      cancelScheduledRender();
       setStreaming(false);
       renderMessage(message);
 
@@ -1008,9 +1284,21 @@
       var hasActions = actions.length > 0;
 
       if (!hasText && !hasActions) {
-        message.el.remove();
-        var index = state.messages.indexOf(message);
-        if (index !== -1) state.messages.splice(index, 1);
+        var assistantIndex = state.messages.indexOf(message);
+        var previous =
+          assistantIndex > 0 ? state.messages[assistantIndex - 1] : null;
+
+        removeMessage(message);
+
+        // إن كان الخطأ قبل أي إجابة، نزيل أيضًا سؤال المستخدم المعلّق
+        // حتى لا يظهر سؤال بلا جواب ولا يتكرر عند إعادة الإرسال.
+        if (errorText && previous && previous.role === "user") {
+          removeMessage(previous);
+        }
+
+        if (state.messages.length === 0 && els.empty) {
+          els.empty.hidden = false;
+        }
       } else {
         message.el.classList.remove("is-streaming");
         addCopyButton(message);
@@ -1018,24 +1306,21 @@
 
       writeSavedHistory();
 
-      if (errorText) showAlert(errorText);
-
-      // بعد اكتمال الرد: تُطبَّق بيانات الأداة تلقائياً وتُطوى المحادثة
-      // ليرى المستخدم الأداة والنتيجة، بدلاً من انتظار ضغط زر البطاقة.
-      if (
-        !errorText &&
-        hasActions &&
-        !message.autoApplied &&
-        window.IbnFarisTools &&
-        typeof window.IbnFarisTools.autoApply === "function"
-      ) {
-        message.autoApplied = true;
-        window.setTimeout(function () {
-          if (message.turn !== state.turn) return;
-          if (state.messages.indexOf(message) === -1) return;
-          window.IbnFarisTools.autoApply(actions);
-        }, 650);
+      if (errorText) {
+        showAlert(errorText);
+        announce(errorText);
+      } else {
+        var answerText = naturalText(cleanAnswer(message.content));
+        announce(
+          answerText && answerText.length <= 400
+            ? answerText
+            : "تمت الإجابة."
+        );
       }
+
+      // لا نطبّق أوامر الأدوات تلقائياً بعد الرد: قد تستبدل بيانات المستخدم
+      // في الحاسبة أو التوثيق أو العجلة. تبقى البطاقة ظاهرة، والتطبيق بضغطة
+      // صريحة من المستخدم فقط (مع تأكيد للأدوات التي تستبدل الحالة).
     }
 
     // ----------------------------------------------------------
@@ -1049,7 +1334,12 @@
         (error && error.name === "TypeError") ||
         /failed to fetch|networkerror|load failed/i.test(message)
       ) {
-        return "تعذّر الوصول إلى خدمة ابن فارس. تأكد من نشر دالة ibn-faris-chat على Supabase ومن اتصال الشبكة.";
+        return "تعذّر الوصول إلى خدمة ابن فارس. تحقّق من اتصالك بالشبكة وحاول مجددًا.";
+      }
+
+      // لا نعرض تفاصيل تشغيلية داخلية (DeepSeek/Supabase/أكواد الخادم).
+      if (/deepseek|supabase|service_role|ibn-faris-chat|\(\s*5\d\d\s*\)/i.test(message)) {
+        return "تعذّر إكمال الطلب حاليًا. حاول بعد قليل.";
       }
 
       return message || "تعذّر إرسال الطلب. تحقّق من الاتصال وحاول مجدداً.";
@@ -1058,6 +1348,11 @@
     function send(raw) {
       var text = String(raw || "").trim();
       if (!text || state.streaming || !ENDPOINT || !ANON_KEY) return;
+
+      if (state.quotaExhausted) {
+        showAlert("انتهت حصتك اليومية. تتجدد غدًا بتوقيت مسقط.");
+        return;
+      }
 
       hideAlert();
 
@@ -1077,6 +1372,7 @@
 
       setStreaming(true);
       state.stick = true;
+      announce("جارٍ التفكير…");
 
       var assistant = createMessage("assistant", "");
       assistant.turn = turn;
@@ -1111,7 +1407,6 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + ANON_KEY,
           apikey: ANON_KEY,
         },
         body: JSON.stringify(payload),
@@ -1189,6 +1484,16 @@
             continue;
           }
 
+          if (event.type === "sources") {
+            assistant.sources = Array.isArray(event.sources)
+              ? event.sources
+              : [];
+            assistant.grounding =
+              typeof event.grounding === "string" ? event.grounding : "";
+            renderSources(assistant);
+            continue;
+          }
+
           if (event.type === "answer" && typeof event.text === "string") {
             gotAnswer = true;
             assistant.content += event.text;
@@ -1257,6 +1562,7 @@
       state.turn += 1;
       if (state.controller) state.controller.abort();
       state.controller = null;
+      cancelScheduledRender();
 
       state.messages = [];
       els.messages.innerHTML = "";
@@ -1271,6 +1577,7 @@
       autoGrow();
       saveDraft();
       els.main.scrollTop = 0;
+      announce("محادثة جديدة.");
       return true;
     }
 
@@ -1288,15 +1595,20 @@
     // التهيئة
     // ----------------------------------------------------------
     function initialize() {
+      // إزالة النسخة القديمة من السجل المحلي الدائم إن وُجدت.
+      try {
+        localStorage.removeItem(HISTORY_KEY);
+      } catch (error) {
+        // التخزين قد يكون معطلاً.
+      }
+
       restoreDraft();
       restoreHistory();
       autoGrow();
       setStreaming(false);
 
       if (!ENDPOINT || !ANON_KEY) {
-        showAlert(
-          "خدمة ابن فارس غير مهيّأة بعد. راجع دليل الإعداد في supabase/README.md."
-        );
+        showAlert("خدمة ابن فارس غير متاحة حاليًا. حاول لاحقًا.");
         els.input.disabled = true;
         if (els.send) els.send.disabled = true;
         return;
@@ -1304,8 +1616,13 @@
 
       if (els.quota) els.quota.classList.add("is-loading");
       refreshQuota();
+      window.setInterval(refreshQuota, 5 * 60 * 1000);
 
-      if (settings.focus) {
+      if (
+        settings.focus &&
+        window.matchMedia &&
+        window.matchMedia("(pointer: fine)").matches
+      ) {
         window.setTimeout(function () {
           if (!els.input.value) focus();
         }, 60);

@@ -13,8 +13,8 @@
 {%- unless if_hide_fab -%}
 <style>
   .if-fab {
-    --if-fab-bg: #8a6e4b;
-    --if-fab-bg-hover: #765c3e;
+    --if-fab-bg: var(--rawafid-primary, #8a6e4b);
+    --if-fab-bg-hover: var(--rawafid-primary-dark, #765c3e);
     --if-fab-fg: #ffffff;
     --if-fab-logo-bg: #ffffff;
     --if-fab-shadow: 0 10px 28px rgba(39, 37, 30, 0.22);
@@ -170,7 +170,7 @@
 
 <a
   class="if-fab"
-  href="{{ '/ibn-faris/' | relative_url }}"
+  href="{{ '/ibn-faris/' | relative_url }}?from={{ page.url | default: '/' | url_encode }}"
   data-if-open
   aria-haspopup="dialog"
   aria-label="افتح محادثة ابن فارس"

@@ -78,9 +78,12 @@
   <a class="if-skip" href="#if-main">تخطَّ إلى المحادثة</a>
 
   <div class="if-page-stage">
-    <div class="if-sheet if-sheet--page" role="dialog" aria-modal="true" aria-labelledby="if-title">
-      <div class="if-app" id="if-app" data-icon="/images/ibnfaris-icon.png">
-  <span class="if-sheet-handle" aria-hidden="true"></span>
+    <div class="if-sheet if-sheet--page">
+      <div class="if-app" id="if-app">
+  <span
+    class="if-sheet-handle"
+    aria-hidden="true"
+  ></span>
 
   <h1 class="if-sr-only" id="if-title">ابن فارس</h1>
 
@@ -100,6 +103,7 @@
           <circle class="if-quota-track" cx="21" cy="21" r="18" pathLength="100"></circle>
           <circle class="if-quota-value" id="if-quota-value" cx="21" cy="21" r="18" pathLength="100"></circle>
         </svg>
+        <span class="if-quota-count" id="if-quota-count" aria-hidden="true">…</span>
       </div>
 
       <button class="if-circle if-circle--accent" id="if-new" type="button" aria-label="محادثة جديدة" title="محادثة جديدة">
@@ -107,7 +111,7 @@
           <path d="M12 5v14"></path>
           <path d="M5 12h14"></path>
         </svg>
-      </button><a class="if-circle" href="/" aria-label="إغلاق ابن فارس والعودة إلى روافد" title="إغلاق">
+      </button><a class="if-circle" id="if-close" href="/" aria-label="إغلاق ابن فارس والعودة إلى روافد" title="إغلاق">
         <svg class="if-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M18 6 6 18"></path>
           <path d="m6 6 12 12"></path>
@@ -115,16 +119,34 @@
       </a></div>
   </header>
 
-  <main class="if-main" id="if-main">
+  <main class="if-main" id="if-main" tabindex="-1">
     <div class="if-thread" id="if-thread">
       <section class="if-empty" id="if-empty" aria-labelledby="if-empty-title">
         <span class="if-empty-mark" aria-hidden="true">
           <img src="/images/ibnfaris-icon.png" alt="" width="34" height="34" />
         </span>
         <h2 class="if-empty-title" id="if-empty-title">ابدأ بالسؤال</h2>
+        <div class="if-suggestions" id="if-suggestions">
+          <button class="if-suggestion" type="button" data-if-suggest="أعرب: «جاء الطالبُ مجتهدًا»">
+            إعراب مثال
+          </button>
+          <button class="if-suggestion" type="button" data-if-suggest="ما وزن كلمة «استخراج» وما أصلها؟">
+            وزن صرفي
+          </button>
+          <button class="if-suggestion" type="button" data-if-suggest="لخّص درس مهارة الاستماع في مقرر EDUC432">
+            تلخيص درس
+          </button>
+          <button class="if-suggestion" type="button" data-if-suggest="ما متطلبات مقرر النحو 2 وترتيبه في الخطة؟">
+            متطلبات مقرر
+          </button>
+        </div>
+        <p class="if-empty-hint">
+          أسأل عن النحو والصرف والبلاغة والأدب، وعن مقررات روافد وخطتها، وعن التربية والتعليم وسلطنة عمان.
+        </p>
       </section>
 
-      <div class="if-messages" id="if-messages" aria-live="polite"></div>
+      <div class="if-messages" id="if-messages"></div>
+      <div class="if-sr-only" id="if-live" role="status" aria-live="polite" aria-atomic="true"></div>
     </div>
   </main>
 
@@ -166,6 +188,10 @@
 
       <p class="if-disclaimer">
         <strong>ابن فارس</strong> قد يخطئ؛ تحقّق من المصادر.
+        <span class="if-disclaimer-sub">
+          تُحفظ المحادثة في هذا التبويب فقط حتى إغلاقه.
+          <a href="/ibn-faris/sources/">المصادر والترخيص</a>
+        </span>
       </p>
     </div>
   </div>
@@ -205,5 +231,24 @@
     data-base="/"
   ></script>
   <script src="/assets/js/ibn-faris.js"></script>
+  <script>
+    // إذا وصل المستخدم من الزر العائم، يعيده زر الإغلاق إلى الصفحة السابقة
+    // بدل الصفحة الرئيسية. نرفض المسارات الخارجية (//example.com).
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var from = params.get("from") || "";
+      if (
+        !from ||
+        from.charAt(0) !== "/" ||
+        from.charAt(1) === "/" ||
+        from.indexOf("\\") !== -1
+      ) {
+        return;
+      }
+
+      var close = document.getElementById("if-close");
+      if (close) close.setAttribute("href", from);
+    })();
+  </script>
 </body>
 </html>

@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مصادر ابن فارس والترخيص</title>
+
+  <link rel="stylesheet" href="/fonts/fonts.css" />
+  <link rel="stylesheet" href="/assets/css/design-system.css" />
+  <link rel="icon" href="/images/favicon.png" type="image/png">
+
+  <meta property="og:title" content="مصادر ابن فارس والترخيص">
+  <meta property="og:description" content="مصادر خدمة ابن فارس في منصة روافد: كتب اللغة والتراث، ومحتوى المنصة، ونتائج البحث، وحدود الاستخدام والترخيص.">
+  <meta property="og:image" content="https://rawafid.jassim.one/images/cover.png">
+  <meta property="og:url" content="https://rawafid.jassim.one/ibn-faris/sources/">
+  <meta property="og:type" content="website">
+
+  <script>
+    (function () {
+      var savedTheme = localStorage.getItem('rawafed-theme');
+      document.documentElement.setAttribute(
+        'data-theme',
+        ['light', 'dark'].indexOf(savedTheme) !== -1 ? savedTheme : 'light'
+      );
+    })();
+  </script>
+
+  <style>
+    .page-main {
+      padding-top: var(--space-lg);
+      padding-bottom: var(--space-xl);
+    }
+
+    .page-main h1 {
+      margin-bottom: var(--space-md);
+      color: var(--rawafid-text);
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+    }
+
+    .page-main h2 {
+      margin: var(--space-lg) 0 var(--space-sm);
+      color: var(--rawafid-text);
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+    }
+
+    .page-main p,
+    .page-main li {
+      color: var(--rawafid-text-muted);
+      font-size: var(--text-base);
+      line-height: 1.9;
+    }
+
+    .page-main ul {
+      margin: var(--space-sm) 0 var(--space-md);
+      padding-inline-start: 1.4rem;
+    }
+
+    .page-main a {
+      color: var(--rawafid-primary);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  </style>
+
+  
+
+
+
+
+<link rel="canonical" href="https://rawafid.jassim.one/ibn-faris/sources/">
+<meta name="robots" content="index, follow">
+
+
+<meta name="description" content="مصادر خدمة ابن فارس في منصة روافد: كتب اللغة والتراث، ومحتوى المنصة، ونتائج البحث، وحدود الاستخدام والترخيص.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://rawafid.jassim.one/#organization",
+  "name": "منصة روافد",
+  "url": "https://rawafid.jassim.one/",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://rawafid.jassim.one/images/rawafid-1.png"
+  },
+  "description": "منصة روافد التعليمية",
+  "inLanguage": "ar"
+}
+</script>
+
+
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "الرئيسية", "item": "https://rawafid.jassim.one/" },
+    { "@type": "ListItem", "position": 2, "name": "مصادر ابن فارس والترخيص", "item": "https://rawafid.jassim.one/ibn-faris/sources/" }
+  ]
+}
+</script>
+
+</head>
+<body>
+  <!-- === مكون التحميل الموحد (يغطي المحتوى فقط ويبقي الترويسة مرئية) === -->
+<style>
+  #rawafid-loading-overlay {
+    position: fixed;
+    top: var(--nav-height, 70px);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: var(--rawafid-surface, #ffffff);
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  #rawafid-loading-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .rawafid-loader-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--rawafid-border, #ccd1e0);
+    border-top-color: var(--rawafid-primary, #1a2ac6);
+    border-radius: 50%;
+    animation: rawafid-spin 0.75s linear infinite;
+  }
+
+  .rawafid-loader-text {
+    font-family: var(--font-body, "IBM Plex Sans Arabic", system-ui, sans-serif);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--rawafid-text-muted, #666666);
+  }
+
+  .rawafid-loader-dots {
+    display: inline-flex;
+    gap: 4px;
+    direction: ltr;
+    margin-inline-start: 4px;
+  }
+
+  .rawafid-loader-dots span {
+    width: 5px;
+    height: 5px;
+    background: var(--rawafid-primary, #1a2ac6);
+    border-radius: 50%;
+    animation: rawafid-dot-pulse 1.2s ease-in-out infinite;
+  }
+
+  .rawafid-loader-dots span:nth-child(2) { animation-delay: 0.15s; }
+  .rawafid-loader-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes rawafid-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes rawafid-dot-pulse {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  @media (max-width: 768px) {
+    #rawafid-loading-overlay {
+      top: var(--nav-height, 60px);
+    }
+  }
+</style>
+
+<div id="rawafid-loading-overlay" role="status" aria-live="polite" aria-label="جاري التحميل">
+  <div class="rawafid-loader-spinner"></div>
+  <div class="rawafid-loader-text">
+    جاري التحميل
+    <span class="rawafid-loader-dots">
+      <span></span><span></span><span></span>
+    </span>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var overlay = document.getElementById('rawafid-loading-overlay');
+
+    var hidden = false;        /* هل الشاشة مخفية بالفعل */
+    var pinned = false;        /* بعد إظهارها يدوياً: تخفى فقط بطلب صريح */
+    var loadDone = (document.readyState === 'complete');
+    var pendingFetches = 0;    /* عدد عمليات جلب البيانات الجارية */
+
+    function forceHide() {
+      hidden = true;
+      if (overlay) overlay.classList.add('hidden');
+    }
+
+    /* الإخفاء لا يتم إلا بعد اكتمال حدث load وانتهاء كل عمليات الجلب الجارية */
+    function tryHide() {
+      if (!hidden && !pinned && loadDone && pendingFetches <= 0) forceHide();
+    }
+
+    window.rawafidHideLoader = function () {
+      pinned = false;
+      tryHide();
+    };
+
+    window.rawafidShowLoader = function () {
+      pinned = true;
+      hidden = false;
+      if (overlay) overlay.classList.remove('hidden');
+    };
+
+    if (!loadDone) {
+      window.addEventListener('load', function () {
+        loadDone = true;
+        tryHide();
+      });
+    }
+
+    /* تتبع طلبات fetch الصادرة من الصفحة: تبقى شاشة التحميل ظاهرة حتى تنتهي آخر عملية جلب بيانات */
+    if (typeof window.fetch === 'function') {
+      var originalFetch = window.fetch;
+      window.fetch = function () {
+        var request;
+        pendingFetches += 1;
+        try {
+          request = originalFetch.apply(this, arguments);
+        } catch (err) {
+          pendingFetches -= 1;
+          tryHide();
+          throw err;
+        }
+        if (request && typeof request.then === 'function') {
+          request.then(release, release);
+        } else {
+          release();
+        }
+        return request;
+
+        function release() {
+          pendingFetches -= 1;
+          tryHide();
+        }
+      };
+    }
+
+    /* أمان: إخفاء شاشة التحميل إلزامياً بعد 6 ثوانٍ حتى لو فشل أي سكربت */
+    setTimeout(forceHide, 6000);
+
+    /* إخفاء فوري عند التنقل ذهاباً/إياباً من ذاكرة المتصفح */
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted) forceHide();
+    });
+  })();
+</script>
+
+  <header class="site-header">
+  <nav class="navbar" aria-label="التنقل الرئيسي">
+    <a href="/" class="logo" aria-label="روافد - الصفحة الرئيسية">
+      <img src="/images/Rawafid-white.png" alt="شعار روافد" class="logo-light" width="120" height="36" loading="eager">
+    </a>
+
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/">الرئيسة</a></li>
+      <li><a href="/blog">المدونة</a></li>
+      <li><a href="/tools">الأدوات</a></li>
+      <li><a href="/doc">الأفلام</a></li>
+      <li><a href="/contact">تواصل معنا</a></li>
+      <li><a href="/about">عن روافد</a></li>
+      <li>
+        <button class="theme-toggle-mobile" id="theme-toggle-mobile" aria-label="تبديل المظهر">
+          <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <line x1="12" y1="2" x2="12" y2="4"></line>
+            <line x1="12" y1="20" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+            <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="4" y2="12"></line>
+            <line x1="20" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+            <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+          </svg>
+          <span>المظهر</span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="/search" class="icon-btn search-btn" aria-label="بحث" title="بحث">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </a>
+
+      <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="تبديل المظهر" title="تبديل المظهر">
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="12" y1="2" x2="12" y2="4"></line>
+          <line x1="12" y1="20" x2="12" y2="22"></line>
+          <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+          <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+          <line x1="2" y1="12" x2="4" y2="12"></line>
+          <line x1="20" y1="12" x2="22" y2="12"></line>
+          <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+          <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+        </svg>
+      </button>
+
+      <button class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="القائمة">
+        <svg class="icon-menu" viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+        <svg class="icon-close" viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .if-fab {
+    --if-fab-bg: var(--rawafid-primary, #8a6e4b);
+    --if-fab-bg-hover: var(--rawafid-primary-dark, #765c3e);
+    --if-fab-fg: #ffffff;
+    --if-fab-logo-bg: #ffffff;
+    --if-fab-shadow: 0 10px 28px rgba(39, 37, 30, 0.22);
+
+    position: fixed;
+    right: max(18px, env(safe-area-inset-right));
+    left: auto;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    z-index: 990;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px 7px 13px;
+    border: 1px solid color-mix(in srgb, var(--if-fab-fg) 18%, transparent);
+    border-radius: 9999px;
+    background: var(--if-fab-bg);
+    box-shadow: var(--if-fab-shadow);
+    color: var(--if-fab-fg);
+    font-family: var(--font-body), "Thmanyah Sans", "IBM Plex Sans Arabic",
+      system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.18s ease, background-color 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .if-fab:hover {
+    transform: translateY(-2px);
+    background: var(--if-fab-bg-hover);
+    box-shadow: 0 14px 32px rgba(39, 37, 30, 0.28);
+  }
+
+  .if-fab:focus-visible {
+    outline: 2px solid var(--if-fab-fg);
+    outline-offset: 3px;
+  }
+
+  .if-fab-icon {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--if-fab-logo-bg);
+  }
+
+  .if-fab-icon img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+  }
+
+  .if-fab-label {
+    white-space: nowrap;
+  }
+
+  html[data-theme="dark"] .if-fab {
+    --if-fab-bg: #d2b48c;
+    --if-fab-bg-hover: #e2c8a4;
+    --if-fab-fg: #131210;
+    --if-fab-shadow: 0 10px 28px rgba(0, 0, 0, 0.42);
+  }
+
+  @media (max-width: 480px) {
+    .if-fab {
+      right: max(14px, env(safe-area-inset-right));
+      left: auto;
+      bottom: max(14px, env(safe-area-inset-bottom));
+      padding: 7px 13px 7px 11px;
+      font-size: 13px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .if-fab {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .if-fab {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  /* التقاط النقر قبل تحميل سكربت اللوحة (defer)، خصوصًا على iPad.
+     يمنع انتقال الرابط إلى /ibn-faris/ إذا سبق النقرُ تحميلَ السكربت. */
+  (function () {
+    "use strict";
+
+    function elementFrom(target) {
+      if (!target) return null;
+      if (target.nodeType === 1) return target;
+      return target.parentElement || null;
+    }
+
+    function triggerFrom(target) {
+      var element = elementFrom(target);
+      return element && element.closest
+        ? element.closest("[data-if-open]")
+        : null;
+    }
+
+    document.addEventListener(
+      "click",
+      function (event) {
+        if (event.defaultPrevented) return;
+
+        var trigger = triggerFrom(event.target);
+        if (!trigger) return;
+
+        if (
+          event.button !== 0 ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+
+        if (
+          window.IbnFarisSheet &&
+          typeof window.IbnFarisSheet.open === "function"
+        ) {
+          window.IbnFarisSheet.open(trigger);
+          return;
+        }
+
+        // السكربت لم يجهز بعد: نحتفظ بالطلب ونفتح اللوحة فور جاهزيته.
+        window.__ibnFarisPendingOpen = trigger;
+        window.setTimeout(function () {
+          if (window.__ibnFarisPendingOpen !== trigger) return;
+          window.__ibnFarisPendingOpen = null;
+          var href = trigger.getAttribute("href");
+          if (href) window.location.href = href;
+        }, 8000);
+      },
+      true
+    );
+  })();
+</script>
+
+<a
+  class="if-fab"
+  href="/ibn-faris/?from=%2Fibn-faris%2Fsources%2F"
+  data-if-open
+  aria-haspopup="dialog"
+  aria-label="افتح محادثة ابن فارس"
+  title="ابن فارس"
+>
+  <span class="if-fab-icon" aria-hidden="true">
+    <img src="/images/ibnfaris-icon.png" alt="" width="22" height="22" loading="lazy" decoding="async">
+  </span>
+  <span class="if-fab-label">ابن فارس</span>
+</a>
+
+<template id="if-widget-template">
+  <div class="if-overlay" id="if-overlay" hidden aria-hidden="true">
+    <div class="if-sheet" role="dialog" aria-modal="true" aria-labelledby="if-title">
+      <div class="if-app" id="if-app">
+  <span
+    class="if-sheet-handle"
+    role="button"
+    tabindex="0"
+    aria-label="توسيع أو طي نافذة ابن فارس"
+  ></span>
+
+  <h1 class="if-sr-only" id="if-title">ابن فارس</h1>
+
+  <header class="if-topbar">
+    <div class="if-brand" aria-label="ابن فارس">
+      <span class="if-brand-mark" aria-hidden="true">
+        <img src="/images/ibnfaris-icon.png" alt="" width="28" height="28" />
+      </span>
+      <span class="if-brand-text">
+        <span class="if-brand-name">ابن فارس</span>
+      </span>
+    </div>
+
+    <div class="if-topbar-actions">
+      <div class="if-quota-ring" id="if-quota" role="img" aria-label="الحصة اليومية المتبقية">
+        <svg viewBox="0 0 42 42" aria-hidden="true">
+          <circle class="if-quota-track" cx="21" cy="21" r="18" pathLength="100"></circle>
+          <circle class="if-quota-value" id="if-quota-value" cx="21" cy="21" r="18" pathLength="100"></circle>
+        </svg>
+        <span class="if-quota-count" id="if-quota-count" aria-hidden="true">…</span>
+      </div>
+
+      <button class="if-circle if-circle--accent" id="if-new" type="button" aria-label="محادثة جديدة" title="محادثة جديدة">
+        <svg class="if-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 5v14"></path>
+          <path d="M5 12h14"></path>
+        </svg>
+      </button><button class="if-circle" type="button" data-if-close aria-label="إغلاق نافذة ابن فارس" title="إغلاق">
+        <svg class="if-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 6 6 18"></path>
+          <path d="m6 6 12 12"></path>
+        </svg>
+      </button></div>
+  </header>
+
+  <main class="if-main" id="if-main" tabindex="-1">
+    <div class="if-thread" id="if-thread">
+      <section class="if-empty" id="if-empty" aria-labelledby="if-empty-title">
+        <span class="if-empty-mark" aria-hidden="true">
+          <img src="/images/ibnfaris-icon.png" alt="" width="34" height="34" />
+        </span>
+        <h2 class="if-empty-title" id="if-empty-title">ابدأ بالسؤال</h2>
+        <div class="if-suggestions" id="if-suggestions">
+          <button class="if-suggestion" type="button" data-if-suggest="أعرب: «جاء الطالبُ مجتهدًا»">
+            إعراب مثال
+          </button>
+          <button class="if-suggestion" type="button" data-if-suggest="ما وزن كلمة «استخراج» وما أصلها؟">
+            وزن صرفي
+          </button>
+          <button class="if-suggestion" type="button" data-if-suggest="لخّص درس مهارة الاستماع في مقرر EDUC432">
+            تلخيص درس
+          </button>
+          <button class="if-suggestion" type="button" data-if-suggest="ما متطلبات مقرر النحو 2 وترتيبه في الخطة؟">
+            متطلبات مقرر
+          </button>
+        </div>
+        <p class="if-empty-hint">
+          أسأل عن النحو والصرف والبلاغة والأدب، وعن مقررات روافد وخطتها، وعن التربية والتعليم وسلطنة عمان.
+        </p>
+      </section>
+
+      <div class="if-messages" id="if-messages"></div>
+      <div class="if-sr-only" id="if-live" role="status" aria-live="polite" aria-atomic="true"></div>
+    </div>
+  </main>
+
+  <div class="if-composer-shell">
+    <div class="if-composer-width">
+      <div class="if-alert" id="if-alert" role="alert" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"></circle>
+          <path d="M12 8v5"></path>
+          <path d="M12 16.5h.01"></path>
+        </svg>
+        <span id="if-alert-text"></span>
+      </div>
+
+      <form class="if-composer" id="if-form" autocomplete="off">
+        <label class="if-sr-only" for="if-input">سؤالك إلى ابن فارس</label>
+        <textarea
+          class="if-input"
+          id="if-input"
+          name="message"
+          rows="1"
+          maxlength="4000"
+          placeholder="اسأل"
+        ></textarea>
+
+        <div class="if-composer-actions">
+          <button class="if-stop" id="if-stop" type="button" hidden>
+            <span class="if-stop-square" aria-hidden="true"></span>
+            <span class="if-sr-only">إيقاف</span>
+          </button>
+          <button class="if-send" id="if-send" type="submit" aria-label="إرسال السؤال" title="إرسال">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 19V5"></path>
+              <path d="m5 12 7-7 7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <p class="if-disclaimer">
+        <strong>ابن فارس</strong> قد يخطئ؛ تحقّق من المصادر.
+        <span class="if-disclaimer-sub">
+          تُحفظ المحادثة في هذا التبويب فقط حتى إغلاقه.
+          <a href="/ibn-faris/sources/">المصادر والترخيص</a>
+        </span>
+      </p>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+</template>
+
+<script type="application/json" id="if-page-context">
+{
+  "version": 1,
+  "type": "page",
+  "layout": "page",
+  "title": "مصادر ابن فارس والترخيص",
+  "description": "مصادر خدمة ابن فارس في منصة روافد: كتب اللغة والتراث، ومحتوى المنصة، ونتائج البحث، وحدود الاستخدام والترخيص.",
+  "path": "/ibn-faris/sources/",
+  "courseCode": "",
+  "itemId": "",
+  "examCode": "",
+  "plan": "",
+  "tags": []
+}
+</script>
+
+
+<script src="/assets/js/ibn-faris-context.js" defer></script>
+<script
+  src="/assets/js/ibn-faris-tools.js"
+  data-base="/"
+  defer
+></script>
+<script
+  src="/assets/js/ibn-faris-widget.js"
+  data-base="/"
+  defer
+></script>
+
+
+  <main class="page-main">
+    <div class="container container--narrow">
+      <h1>مصادر ابن فارس والترخيص</h1>
+
+<p>
+  يجيب «ابن فارس» اعتمادًا على ثلاث طبقات: مقاطع من كتب اللغة والتراث، ومحتوى منصة روافد
+  (المقررات والمقالات)، ثم نتائج بحث من الويب عند الحاجة. وقد يجيب من معرفة النموذج العامة
+  عندما لا يجد مصدرًا مناسبًا. تعرض المحادثة قائمة «المصادر» أسفل الإجابة، ويظهر تنبيه
+  صريح عندما تكون الإجابة من المعرفة العامة دون مصدر مسترجع.
+</p>
+
+<h2>كتب اللغة والتراث</h2>
+
+<p>
+  تعتمد قاعدة المعرفة على نصوص رقمية من مشروع
+  <a href="https://openiti.org/" target="_blank" rel="noopener noreferrer">OpenITI</a>،
+  وتشمل:
+</p>
+
+<ul>
+  <li>الكتاب لسيبويه.</li>
+  <li>الخصائص لابن جني.</li>
+  <li>الصاحبي ومعجم مقاييس اللغة لابن فارس.</li>
+  <li>ألفية ابن مالك، وشرح الكافية، وتسهيل الفوائد.</li>
+  <li>أوضح المسالك، ومغني اللبيب، وشرح قطر الندى، وشرح شذور الذهب لابن هشام.</li>
+  <li>شرح ابن عقيل، وشرح الأشموني.</li>
+  <li>همع الهوامع والمزهر للسيوطي.</li>
+</ul>
+
+<p>
+  تُستخدم هذه النصوص بترخيص
+  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a>،
+  وهو يقتضي الإسناد وعدم الاستخدام التجاري. تذكر الإجابات اسم الكتاب والباب عند الاستناد،
+  وتعرض قائمة المصادر تفاصيل المقطع المستخدم كلما أمكن.
+</p>
+
+<h2>محتوى منصة روافد</h2>
+
+<p>
+  قد يعتمد ابن فارس على بيانات المقررات والعناصر والمقالات المنشورة في روافد. هذا المحتوى
+  تعليمي، وبعضه مولّد بمساعدة الذكاء الاصطناعي، ويظهر تنبيه في صفحة المقرر عندما يكون
+  الأمر كذلك. لا يُعد محتوى المقرر مصدرًا تراثيًا، ولا يُنسب إلى كتاب أو باب.
+</p>
+
+<h2>نتائج البحث في الويب</h2>
+
+<p>
+  عند غياب مقطع مناسب من قاعدة المعرفة، قد يستعين ابن فارس بنتائج بحث من الويب. تعرض
+  المحادثة عندئذ اسم الموقع ورابط المصدر، ويبقى التحقق من دقة المعلومة مسؤولية المستخدم،
+  خصوصًا في المعلومات المتغيرة زمنيًا (المواعيد، الدرجات، الأنظمة، الإحصاءات).
+</p>
+
+<h2>حدود الاستخدام</h2>
+
+<ul>
+  <li>ابن فارس مساعد تعليمي وليس مرجعًا نهائيًا؛ قد يخطئ أو يفوّت تفصيلًا.</li>
+  <li>لا تعتمد إجابته وحدها في قرارات أكاديمية أو قانونية أو مالية.</li>
+  <li>الأسئلة خارج نطاق اللغة العربية وعلومها والتربية والتعليم وسلطنة عمان قد تُرفض.</li>
+  <li>لا تُحفظ المحادثات على الخادم، وتُحفظ آخر محادثة في تبويب المتصفح فقط حتى إغلاقه.</li>
+</ul>
+
+<p>
+  لأي ملاحظة أو تصحيح في مصدر، تواصل مع فريق روافد عبر صفحة
+  <a href="/contact.html">تواصل معنا</a>.
+</p>
+
+    </div>
+  </main>
+
+  <style>
+  html:not([data-theme="dark"]) .footer-dev-logo,
+  html[data-theme="light"] .footer-dev-logo {
+    filter: brightness(0) saturate(100%);
+  }
+</style>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+
+      <div class="footer-col">
+        <img src="/images/rawafid-blue.png" alt="شعار روافد" class="footer-logo" width="100" height="27" style="width: 100px;" loading="lazy">
+        <p class="footer-desc">منصة تعليمية مجانية لطلبة اللغة العربية بجامعة الشرقية، حائزة على جائزة أفضل مشروع بحثي عن كلية الآداب والعلوم الإنسانية لعام 2026.</p>
+      </div>
+
+      <nav class="footer-col" aria-label="روابط سريعة">
+        <h3 class="footer-col-title">روابط سريعة</h3>
+        <a href="/">الرئيسة</a>
+        <a href="/blog">المدونة</a>
+        <a href="/doc">الأفلام</a>
+        <a href="/tools">الأدوات</a>
+        <a href="/search">البحث</a>
+      </nav>
+
+      <div class="footer-col">
+        <h3 class="footer-col-title">عن المنصة</h3>
+        <a href="/about">عن روافد</a>
+        <a href="/contact">تواصل معنا</a>
+        <a href="https://whatsapp.com/channel/0029VbBp4c9FMqrbKcP1Fq2m" class="whatsapp-btn" target="_blank" rel="noopener" aria-label="انضم لقناتنا على واتساب">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.463 1.065 2.876 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+          </svg>
+          <span>انضم لقناتنا</span>
+        </a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span>&copy; <span id="footer-year">2026</span> روافد · جميع الحقوق محفوظة</span>
+      <span class="footer-dev">
+        تطوير
+        <img src="/images/jassim-logo.png" alt="شعار جاسم الفارسي" class="footer-dev-logo" width="91" height="26" loading="lazy">
+      </span>
+    </div>
+  </div>
+</footer>
+<script>
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+</script>
+
+  <script src="/assets/js/theme.js" defer></script>
+</body>
+</html>
