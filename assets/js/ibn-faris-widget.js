@@ -347,6 +347,11 @@
     }
   });
 
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", updateSidePanelHeight);
+    window.visualViewport.addEventListener("scroll", updateSidePanelHeight);
+  }
+
   function focusables() {
     if (!state.sheet) return [];
 
@@ -389,6 +394,25 @@
     return window.matchMedia("(min-width: 768px)").matches;
   }
 
+  // على iPad يتغيّر ارتفاع المتصفح عند إخفاء شريط الأدوات أثناء التمرير.
+  // نثبّت ارتفاع اللوحة على المساحة المرئية الفعلية حتى لا تنتهي قبل أسفل الشاشة.
+  function updateSidePanelHeight() {
+    if (!state.overlay) return;
+
+    if (!isSideMode()) {
+      state.overlay.style.height = "";
+      return;
+    }
+
+    var viewport = window.visualViewport;
+    var height = viewport && viewport.height
+      ? viewport.height
+      : window.innerHeight;
+
+    if (!height || !isFinite(height)) return;
+    state.overlay.style.height = Math.round(height) + "px";
+  }
+
   function applyLayoutMode(force) {
     var side = isSideMode();
     if (!force && state.sideMode === side) return;
@@ -397,6 +421,7 @@
     document.body.classList.toggle("if-side-open", side);
     document.body.classList.toggle("if-locked", !side);
     setPageInert(!side);
+    updateSidePanelHeight();
 
     if (state.sheet) {
       state.sheet.setAttribute("aria-modal", side ? "false" : "true");
@@ -518,6 +543,7 @@
     state.overlay.setAttribute("aria-hidden", "true");
     document.body.classList.remove("if-locked", "if-side-open");
     setPageInert(false);
+    state.overlay.style.height = "";
     state.sideMode = null;
 
     window.setTimeout(function () {
