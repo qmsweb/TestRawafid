@@ -325,7 +325,8 @@ html[data-theme="dark"] .ifs-view {
   min-width: 0;
 }
 
-.ifs-chevron {
+.ifs-chevron,
+.ifs-external {
   display: grid;
   place-items: center;
   width: 18px;
@@ -334,7 +335,8 @@ html[data-theme="dark"] .ifs-view {
   color: var(--ifs-ash);
 }
 
-.ifs-chevron svg {
+.ifs-chevron svg,
+.ifs-external svg {
   width: 16px;
   height: 16px;
 }
