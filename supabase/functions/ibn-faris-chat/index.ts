@@ -279,6 +279,7 @@ type PageContextInput = {
   path?: unknown;
   type?: unknown;
   title?: unknown;
+  description?: unknown;
   courseCode?: unknown;
   itemId?: unknown;
   examCode?: unknown;
@@ -292,6 +293,7 @@ type PageContext = {
   type: string;
   path: string;
   title: string | null;
+  description: string | null;
   courseCode: string | null;
   courseName?: string | null;
   courseDescription?: string | null;
@@ -579,6 +581,17 @@ const ALLOWED_PAGE_TYPES = new Set([
   "page",
 ]);
 
+// الصفحات التي لها محتوى مفهرس في روافد يمكن الاعتماد على عنوانها في
+// الاسترجاع. الصفحات الأخرى (مثل الصفحات العامة أو «عن المنصة») لا عنوان
+// مفهرس لها؛ استخدام عنوانها في البحث يجلب مقالات من أقسام أخرى.
+const INDEXED_PAGE_TYPES = new Set([
+  "post",
+  "course",
+  "details",
+  "study-plan",
+  "exam",
+]);
+
 function trimToChars(text: string, max: number): string {
   if (text.length <= max) return text;
   return `${text.slice(0, Math.max(0, max - 1)).trimEnd()}…`;
@@ -637,6 +650,7 @@ function normalizePageContext(input: unknown): PageContext | null {
     type,
     path,
     title: cleanText(raw.title, 160),
+    description: cleanText(raw.description, 300),
     courseCode: normalizeCourseCode(raw.courseCode),
     itemId: normalizeItemId(raw.itemId),
     examCode: cleanText(raw.examCode, 40),
@@ -1020,7 +1034,16 @@ function describePageForScope(page: PageContext | null): string | null {
 
 function isPageDeicticQuestion(question: string): boolean {
   const normalized = normalizeArabic(question);
-  return /^(?:ما|ماذا|ما هو|ما هي|وضح|اشرح|بين)?\s*(?:هذا|هذه|ذلك|تلك|هو|هي)$/.test(
+  if (
+    /^(?:ما|ماذا|وش|ايش|ما هو|ما هي|وضح|اشرح|بين)?\s*(?:هذا|هذه|ذلك|تلك|هو|هي)$/.test(
+      normalized,
+    )
+  ) {
+    return true;
+  }
+
+  // صيغ شائعة تضيف اسم الصفحة: «ما هذه الصفحة؟»، «ما هذا المقال؟».
+  return /^(?:ما|ماذا|وش|ايش|ما هو|ما هي|وضح|اشرح|بين)?\s*(?:هذا|هذه|ذلك|تلك)\s+(?:ال)?(?:صفحه|مقطع|موقع|مقال|مقاله|مقرر|درس|ملف|موضوع|عنصر|اختبار|خطه|اداه|محتوي)$/.test(
     normalized,
   );
 }
@@ -1032,6 +1055,11 @@ function pageQuestionLooksInScope(
   page: PageContext | null,
 ): boolean {
   if (!page) return false;
+
+  // «ما هذا؟» سؤال عن الصفحة الحالية مهما كان نوعها، حتى لو كانت صفحة
+  // عامة لا يعرفها ابن فارس.
+  if (isPageDeicticQuestion(question)) return true;
+
   if (
     !["course", "details", "study-plan", "post", "exam", "tool"].includes(
       page.type,
@@ -1039,8 +1067,6 @@ function pageQuestionLooksInScope(
   ) {
     return false;
   }
-
-  if (isPageDeicticQuestion(question)) return true;
 
   const normalized = normalizeArabic(question);
   const keywords = [
@@ -1070,6 +1096,14 @@ function buildPageContextPrompt(page: PageContext | null): string | null {
     "سياق الصفحة الحالية (استخدمه لفهم السؤال، ولا تذكره حرفيًا في الرد):",
     `- نوع الصفحة: ${PAGE_TYPE_LABELS[page.type] ?? "صفحة"}`,
   ];
+
+  if (page.title && page.type !== "post") {
+    lines.push(`- عنوان الصفحة: ${page.title}`);
+  }
+
+  if (page.description) {
+    lines.push(`- وصف الصفحة: ${page.description}`);
+  }
 
   if (page.courseName || page.courseCode) {
     const course = page.courseName
@@ -1122,7 +1156,19 @@ function buildPageContextPrompt(page: PageContext | null): string | null {
     lines.push("- في هذه الصفحة «ما هذا؟» يعني: ما هذا المقرر؟");
   } else if (page.type === "study-plan") {
     lines.push("- في هذه الصفحة «ما هذا؟» يعني: ما هذه الخطة أو المقرر داخلها؟");
+  } else {
+    lines.push(
+      "- في هذه الصفحة «ما هذا؟» يعني: ما هذه الصفحة وما موضوعها؟ اعتمد على عنوانها ووصفها أعلاه إن كانا متاحين.",
+    );
   }
+
+  lines.push(
+    "- لا تعتبر محتوى مقال أو مقرر أو قسم آخر هو محتوى الصفحة الحالية، ولا تخلط بين أقسام المنصة.",
+  );
+
+  lines.push(
+    "- إذا لم يتوفر عنوان واضح ولا وصف ولا محتوى موثوق يخص هذه الصفحة، فقل بصراحة: «لا أعرف»، ولا تخمّن هويتها أو موضوعها.",
+  );
 
   lines.push(
     "- لا تفترض أن المستخدم يطلب شرح الصفحة كلها؛ أجب عن سؤاله في سياقها.",
@@ -1603,6 +1649,7 @@ async function retrieveKnowledge(
   timings?: Record<string, number>,
 ): Promise<KnowledgeChunk[]> {
   if (!admin || !RAG_ENABLED) return [];
+  if (!question.trim()) return [];
 
   try {
     const embedStarted = performance.now();
@@ -2333,6 +2380,17 @@ Deno.serve(async (request) => {
         question,
         pageContextInput,
       );
+      // صفحة عامة لا يعرفها ابن فارس وسؤال «ما هذا؟»: نجيب من بيانات
+      // الصفحة نفسها فقط، ولا نجلب مقالات أو نتائج ويب من أقسام أخرى.
+      const pageDeicticQuestion = isPageDeicticQuestion(question);
+      const pageHasIndexedContent = Boolean(
+        pageContextInput &&
+          (INDEXED_PAGE_TYPES.has(pageContextInput.type) ||
+            pageContextInput.courseCode),
+      );
+      const skipExternalSources = Boolean(
+        pageContextInput && pageDeicticQuestion && !pageHasIndexedContent,
+      );
 
       if (debugTimings) {
         send({
@@ -2349,7 +2407,7 @@ Deno.serve(async (request) => {
       const [candidates, inScope, pageContext, profiles, materials] =
         await Promise.all([
           retrieveKnowledge(
-            retrievalQuestion,
+            skipExternalSources ? "" : retrievalQuestion,
             debugTimings ? timings : undefined,
           ),
           checkScope && !pageScopeFastPath
@@ -2429,8 +2487,12 @@ Deno.serve(async (request) => {
 
       // سؤال مثل «ما هذا؟» لا يحمل كلمات بحث؛ نضمّ إليه عنوان الصفحة أو
       // العنصر المفتوح حتى يسترجع المحتوى الصحيح، مع بقاء السؤال كما هو.
+      // نقتصر على الصفحات المفهرسة: عنوان صفحة عامة قد يطابق مقالًا من
+      // قسم آخر فيأتي الجواب عن غير الصفحة المفتوحة.
       const pageAnchor =
-        page?.itemTitle ?? page?.title ?? page?.courseName ?? "";
+        pageHasIndexedContent && page
+          ? (page.itemTitle ?? page.title ?? page.courseName ?? "")
+          : "";
       const rawafidQuestion =
         page && isPageDeicticQuestion(question) && pageAnchor
           ? `${pageAnchor} ${question}`.trim()
@@ -2440,20 +2502,24 @@ Deno.serve(async (request) => {
 
       const [chunks, rawafidContext] = await Promise.all([
         judgeChunks(retrievalQuestion, candidates, auxiliaryUsage),
-        retrieveRawafidContext(
-          rawafidQuestion,
-          page,
-          courseCode,
-          courseData,
-          requestSiteUrl,
-        ),
+        skipExternalSources
+          ? Promise.resolve("")
+          : retrieveRawafidContext(
+              rawafidQuestion,
+              page,
+              courseCode,
+              courseData,
+              requestSiteUrl,
+            ),
       ]);
       mark("judge");
 
       let knowledgeContext: string | null = null;
       let webContext: string | null = null;
 
-      if (chunks.length > 0) {
+      if (skipExternalSources) {
+        // بيانات الصفحة نفسها هي المصدر الوحيد هنا.
+      } else if (chunks.length > 0) {
         knowledgeContext = formatKnowledgeContext(chunks);
       } else {
         send({ type: "status", text: "أبحث عن مصادر إضافية…" });

@@ -74,6 +74,7 @@
       path: clean(path, 240),
       type: readType(),
       title: clean(extra.title || seed.title || document.title, 160),
+      description: clean(extra.description || seed.description, 300),
       courseCode: clean(extra.courseCode || seed.courseCode, 20),
       itemId: clean(extra.itemId || seed.itemId, 40),
       examCode: clean(extra.examCode || seed.examCode, 40),
@@ -89,11 +90,14 @@
     });
 
     // حماية أخيرة: لا نرسل سياقًا كبيرًا حتى لو أضافت صفحة حقولًا كثيرة.
+    // نحذف الأقل أهمية أولًا، ونبقي العنوان والوصف لأنهما أساس الإجابة عن
+    // سؤال مثل «ما هذا؟» في الصفحات التي لا يعرفها ابن فارس.
     if (JSON.stringify(context).length > MAX_CONTEXT_CHARS) {
-      delete context.query;
-      delete context.filter;
-      delete context.group;
-      delete context.title;
+      var dropOrder = ["query", "filter", "group", "description", "title"];
+      for (var index = 0; index < dropOrder.length; index += 1) {
+        if (JSON.stringify(context).length <= MAX_CONTEXT_CHARS) break;
+        delete context[dropOrder[index]];
+      }
     }
 
     return context;
