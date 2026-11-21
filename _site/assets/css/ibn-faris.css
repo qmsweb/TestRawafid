@@ -359,6 +359,60 @@ html[data-theme="dark"] .if-overlay {
   background: color-mix(in srgb, var(--if-sand) 10%, transparent);
 }
 
+.if-circle.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.if-circle.is-disabled:hover,
+.if-circle.is-disabled:focus-visible {
+  border-color: var(--if-warm-mist);
+  background: transparent;
+  color: var(--if-graphite);
+  box-shadow: none;
+}
+
+/* أيقونة نشاط تظهر على زر ابن فارس العائم حين تُطوى المحادثة
+   والرد ما زال قيد التفكير أو البث. */
+.if-fab-activity {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--if-fab-bg);
+  border-radius: 50%;
+  background: var(--if-fab-fg);
+  color: var(--if-fab-bg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.if-fab.is-activity .if-fab-activity {
+  display: grid;
+  animation: if-fab-activity-pulse 1.4s ease-in-out infinite;
+}
+
+.if-fab-activity svg {
+  width: 13px;
+  height: 13px;
+}
+
+@keyframes if-fab-activity-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.12);
+    opacity: 0.86;
+  }
+}
+
 .if-quota-ring {
   display: grid;
   place-items: center;
@@ -1162,6 +1216,210 @@ html[data-theme="dark"] .if-overlay {
   }
 }
 
+/* ============================================================
+   الوضع الجانبي: ابن فارس على يمين الشاشة وروافد على اليسار
+   (اللابتوب والكمبيوتر والآيباد)
+   ============================================================ */
+@media (min-width: 768px) {
+  :root {
+    --if-side-width: clamp(360px, 32vw, 440px);
+  }
+
+  body.if-side-open {
+    padding-right: var(--if-side-width);
+  }
+
+  body.if-side-open .site-header {
+    right: var(--if-side-width);
+  }
+
+  body.if-side-open .if-fab {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .if-overlay {
+    inset: 0 0 0 auto;
+    width: var(--if-side-width);
+    height: 100vh;
+    height: 100dvh;
+    padding: 0;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow: hidden;
+    background: transparent;
+    pointer-events: none;
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .if-overlay .if-sheet {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: -12px 0 48px rgba(39, 37, 30, 0.18);
+    transform: translate3d(100%, 0, 0);
+    pointer-events: auto;
+  }
+
+  .if-overlay.is-open .if-sheet {
+    transform: translate3d(0, 0, 0);
+  }
+
+  .if-overlay.is-expanded .if-sheet {
+    border-radius: 0;
+  }
+
+  .if-overlay .if-sheet-handle {
+    display: none;
+  }
+
+  /* مساحة أمان أسفل اللوحة فوق مؤشر iPad المنزلي */
+  body.if-side-open .if-composer-shell {
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
+
+/* عندما يضيق المحتوى بعد فتح اللوحة: قائمة روافد تتحول إلى درج من اليسار
+   حتى لا يزدحم شريط التنقل، مع شبكات بطاقات أنسب للمساحة المتبقية. */
+@media (min-width: 769px) and (max-width: 1100px) {
+  body.if-side-open .menu-toggle {
+    display: flex;
+  }
+
+  body.if-side-open .nav-actions .theme-toggle {
+    display: none;
+  }
+
+  body.if-side-open .nav-links {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: auto;
+    width: min(78%, 290px);
+    height: calc(100vh - var(--nav-height));
+    height: calc(100dvh - var(--nav-height));
+    background-color: var(--rawafid-surface);
+    border-right: 1px solid var(--rawafid-border);
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--space-md) var(--space-sm);
+    gap: var(--space-xs);
+    overflow-y: auto;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.28s ease, visibility 0.28s ease;
+    z-index: 999;
+  }
+
+  body.if-side-open .nav-links.is-open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  html:not([data-theme="dark"]) body.if-side-open .nav-links {
+    background-color: var(--rawafid-primary);
+    border-right-color: var(--rawafid-primary-dark);
+  }
+
+  body.if-side-open .nav-links li {
+    border-bottom: 1px solid var(--rawafid-border);
+  }
+
+  html:not([data-theme="dark"]) body.if-side-open .nav-links li {
+    border-bottom-color: rgba(255, 255, 255, 0.18);
+  }
+
+  body.if-side-open .nav-links li:last-child {
+    border-bottom: none;
+  }
+
+  body.if-side-open .nav-links a {
+    padding: 14px 12px;
+    font-size: var(--text-base);
+    border-bottom: none;
+    border-radius: var(--radius-sm);
+  }
+
+  html:not([data-theme="dark"]) body.if-side-open .nav-links a {
+    color: var(--rawafid-white);
+  }
+
+  body.if-side-open .nav-links a.active,
+  body.if-side-open .nav-links a:hover,
+  body.if-side-open .nav-links a:focus-visible {
+    color: var(--rawafid-primary);
+    background-color: var(--rawafid-primary-soft);
+    border-radius: var(--radius-sm);
+  }
+
+  html:not([data-theme="dark"]) body.if-side-open .nav-links a.active,
+  html:not([data-theme="dark"]) body.if-side-open .nav-links a:hover,
+  html:not([data-theme="dark"]) body.if-side-open .nav-links a:focus-visible {
+    color: var(--rawafid-white);
+    background-color: rgba(255, 255, 255, 0.16);
+  }
+
+  html:not([data-theme="dark"]) body.if-side-open .nav-links .theme-toggle-mobile {
+    color: var(--rawafid-white);
+  }
+
+  html:not([data-theme="dark"]) body.if-side-open .nav-links .theme-toggle-mobile:hover,
+  html:not([data-theme="dark"]) body.if-side-open .nav-links .theme-toggle-mobile:focus-visible {
+    color: var(--rawafid-white);
+    background-color: rgba(255, 255, 255, 0.16);
+  }
+
+  body.if-side-open .nav-links .theme-toggle-mobile {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    padding: 14px 12px;
+    color: var(--rawafid-text);
+    font-family: inherit;
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+    border-radius: var(--radius-sm);
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  body.if-side-open .nav-links .theme-toggle-mobile:hover,
+  body.if-side-open .nav-links .theme-toggle-mobile:focus-visible {
+    color: var(--rawafid-primary);
+    background-color: var(--rawafid-primary-soft);
+  }
+
+  body.if-side-open .nav-links .theme-toggle-mobile .icon-sun {
+    display: none;
+  }
+
+  html[data-theme="dark"] body.if-side-open .nav-links .theme-toggle-mobile .icon-moon {
+    display: none;
+  }
+
+  html[data-theme="dark"] body.if-side-open .nav-links .theme-toggle-mobile .icon-sun {
+    display: block;
+  }
+
+  body.if-side-open .nav-overlay.is-visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  body.if-side-open .courses-container.grid-view {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.if-side-open .blog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 640px) {
   .if-topbar {
     padding: 8px 14px 10px;
@@ -1267,6 +1525,10 @@ html[data-theme="dark"] .if-overlay {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .if-fab.is-activity .if-fab-activity {
+    animation: none;
   }
 }
 

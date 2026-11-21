@@ -344,6 +344,12 @@
 
     if (els.newChat) {
       els.newChat.addEventListener("click", function () {
+        if (state.streaming) {
+          showAlert(
+            "انتظر حتى ينتهي رد ابن فارس أو أوقفه أولًا قبل بدء محادثة جديدة."
+          );
+          return;
+        }
         newChat();
       });
     }
@@ -353,6 +359,26 @@
       if (els.stop) els.stop.hidden = !value;
       if (els.send) els.send.hidden = value;
       els.messages.setAttribute("aria-busy", value ? "true" : "false");
+
+      if (els.newChat) {
+        els.newChat.classList.toggle("is-disabled", value);
+        els.newChat.setAttribute("aria-disabled", value ? "true" : "false");
+        els.newChat.title = value
+          ? "لا يمكن بدء محادثة جديدة أثناء رد ابن فارس"
+          : "محادثة جديدة";
+      }
+
+      // تُستخدم في اللوحة العائمة لإظهار أيقونة رسالة على زر ابن فارس
+      // عندما يطوي المستخدم المحادثة والرد ما زال قيد التفكير أو البث.
+      try {
+        document.dispatchEvent(
+          new CustomEvent("ibnfaris:streaming", {
+            detail: { streaming: value },
+          })
+        );
+      } catch (error) {
+        // CustomEvent غير مدعوم في متصفحات قديمة جدًا.
+      }
     }
 
     // ----------------------------------------------------------
@@ -1079,6 +1105,13 @@
     // محادثة جديدة
     // ----------------------------------------------------------
     function newChat() {
+      if (state.streaming) {
+        showAlert(
+          "لا يمكن بدء محادثة جديدة أثناء رد ابن فارس. انتظر اكتمال الرد أو أوقفه أولًا."
+        );
+        return false;
+      }
+
       state.turn += 1;
       if (state.controller) state.controller.abort();
       state.controller = null;
@@ -1096,6 +1129,7 @@
       autoGrow();
       saveDraft();
       els.main.scrollTop = 0;
+      return true;
     }
 
     function focus() {

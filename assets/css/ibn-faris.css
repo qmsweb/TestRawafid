@@ -359,6 +359,60 @@ html[data-theme="dark"] .if-overlay {
   background: color-mix(in srgb, var(--if-sand) 10%, transparent);
 }
 
+.if-circle.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.if-circle.is-disabled:hover,
+.if-circle.is-disabled:focus-visible {
+  border-color: var(--if-warm-mist);
+  background: transparent;
+  color: var(--if-graphite);
+  box-shadow: none;
+}
+
+/* أيقونة نشاط تظهر على زر ابن فارس العائم حين تُطوى المحادثة
+   والرد ما زال قيد التفكير أو البث. */
+.if-fab-activity {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--if-fab-bg);
+  border-radius: 50%;
+  background: var(--if-fab-fg);
+  color: var(--if-fab-bg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.if-fab.is-activity .if-fab-activity {
+  display: grid;
+  animation: if-fab-activity-pulse 1.4s ease-in-out infinite;
+}
+
+.if-fab-activity svg {
+  width: 13px;
+  height: 13px;
+}
+
+@keyframes if-fab-activity-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.12);
+    opacity: 0.86;
+  }
+}
+
 .if-quota-ring {
   display: grid;
   place-items: center;
@@ -1471,6 +1525,10 @@ html[data-theme="dark"] .if-overlay {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .if-fab.is-activity .if-fab-activity {
+    animation: none;
   }
 }
 

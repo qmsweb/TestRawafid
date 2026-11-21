@@ -31,7 +31,66 @@
     pending: false,
     ready: null,
     css: null,
+    sideMode: null,
   };
+
+  // ----------------------------------------------------------
+  // أيقونة نشاط الزر العائم
+  // ----------------------------------------------------------
+  var ACTIVITY_ICON =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
+  var streamingActivity = false;
+
+  function ensureActivityBadge(button) {
+    if (!button || button.querySelector(".if-fab-activity")) return;
+
+    var badge = document.createElement("span");
+    badge.className = "if-fab-activity";
+    badge.setAttribute("aria-hidden", "true");
+    badge.innerHTML = ACTIVITY_ICON;
+    button.appendChild(badge);
+  }
+
+  function syncActivity() {
+    var active = streamingActivity && !state.isOpen;
+    var buttons = document.querySelectorAll(".if-fab");
+
+    for (var index = 0; index < buttons.length; index += 1) {
+      var button = buttons[index];
+      ensureActivityBadge(button);
+      button.classList.toggle("is-activity", active);
+
+      if (active) {
+        button.setAttribute(
+          "aria-label",
+          "ابن فارس يكتب الآن. افتح المحادثة لعرض الرد."
+        );
+        button.setAttribute("title", "ابن فارس يكتب الآن");
+      } else {
+        button.setAttribute("aria-label", "افتح محادثة ابن فارس");
+        button.setAttribute("title", "ابن فارس");
+      }
+    }
+  }
+
+  document.addEventListener("ibnfaris:streaming", function (event) {
+    streamingActivity = Boolean(event.detail && event.detail.streaming);
+    syncActivity();
+  });
+
+  // Safari قد يجعل هدف النقر عقدة نصية داخل الزر، و`closest` لا تعمل عليها.
+  function elementFrom(target) {
+    if (!target) return null;
+    if (target.nodeType === 1) return target;
+    return target.parentElement || null;
+  }
+
+  function triggerFrom(target) {
+    var element = elementFrom(target);
+    return element && element.closest
+      ? element.closest("[data-if-open]")
+      : null;
+  }
 
   // ----------------------------------------------------------
   // تحميل الموارد
@@ -76,17 +135,18 @@
 
     state.ready = loadCss()
       .then(function () {
-        return Promise.all([
-          loadScript(ASSETS.marked),
-          loadScript(ASSETS.purify),
-          loadScript(ASSETS.config),
-        ]);
+        return loadScript(ASSETS.config);
       })
       .then(function () {
         return loadScript(ASSETS.engine);
       })
       .then(function () {
         if (!window.IbnFarisChat) throw new Error("ibnfaris_engine_missing");
+
+        // علامات Markdown تحسينية فقط؛ لا نُفشل فتح اللوحة إذا تعذّر تحميلها.
+        // المحرك يعرض النص الخام عند غيابها.
+        loadScript(ASSETS.marked).catch(function () {});
+        loadScript(ASSETS.purify).catch(function () {});
       })
       .catch(function (error) {
         state.ready = null;
@@ -117,7 +177,11 @@
     });
 
     state.overlay.addEventListener("click", function (event) {
-      var closer = event.target.closest("[data-if-close]");
+      var element = elementFrom(event.target);
+      var closer =
+        element && element.closest
+          ? element.closest("[data-if-close]")
+          : null;
       if (!closer) return;
       event.preventDefault();
       close();
@@ -309,12 +373,25 @@
   }
 
   window.addEventListener("resize", function () {
-    if (!state.isOpen || drag || !state.overlay) return;
+    if (!state.isOpen || !state.overlay) return;
+
+    applyLayoutMode();
+
+    if (drag) return;
+
+    if (isSideMode()) {
+      if (state.overlay.classList.contains("is-expanded")) {
+        state.sheet.style.height = "";
+      }
+      return;
+    }
 
     if (state.overlay.classList.contains("is-expanded")) {
       state.sheet.style.height = overlayMaxHeight() + "px";
     }
   });
+
+
 
   function focusables() {
     if (!state.sheet) return [];
@@ -353,6 +430,38 @@
     }
   }
 
+  // على اللابتوب والآيباد: لوحة جانبية على اليمين مع إبقاء الصفحة قابلة للاستخدام.
+  function isSideMode() {
+    return window.matchMedia("(min-width: 768px)").matches;
+  }
+
+  function applyLayoutMode(force) {
+    var side = isSideMode();
+    if (!force && state.sideMode === side) return;
+    state.sideMode = side;
+
+    document.body.classList.toggle("if-side-open", side);
+    document.body.classList.toggle("if-locked", !side);
+    setPageInert(!side);
+
+    if (state.sheet) {
+      state.sheet.setAttribute("aria-modal", side ? "false" : "true");
+    }
+
+    if (side) {
+      drag = null;
+      if (state.overlay) {
+        state.overlay.classList.remove("is-dragging", "is-expanded");
+      }
+      if (state.sheet) state.sheet.style.height = "";
+      return;
+    }
+
+    if (state.overlay && state.overlay.classList.contains("is-expanded")) {
+      state.sheet.style.height = overlayMaxHeight() + "px";
+    }
+  }
+
   function onKeydown(event) {
     if (!state.isOpen) return;
 
@@ -362,7 +471,7 @@
       return;
     }
 
-    if (event.key !== "Tab" || !state.sheet) return;
+    if (event.key !== "Tab" || !state.sheet || isSideMode()) return;
 
     var items = focusables();
     if (!items.length) return;
@@ -417,11 +526,11 @@
         // إجبار إعادة التنسيق حتى تعمل حركة الانزلاق.
         void overlay.offsetHeight;
         overlay.classList.add("is-open");
-        document.body.classList.add("if-locked");
-        setPageInert(true);
+        applyLayoutMode(true);
 
         state.isOpen = true;
         state.pending = false;
+        syncActivity();
 
         window.requestAnimationFrame(function () {
           if (state.instance) {
@@ -454,8 +563,10 @@
     state.isOpen = false;
     state.overlay.classList.remove("is-open");
     state.overlay.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("if-locked");
+    document.body.classList.remove("if-locked", "if-side-open");
     setPageInert(false);
+    state.sideMode = null;
+    syncActivity();
 
     window.setTimeout(function () {
       if (!state.isOpen && state.overlay) {
@@ -482,7 +593,7 @@
   document.addEventListener("click", function (event) {
     if (event.defaultPrevented) return;
 
-    var trigger = event.target.closest("[data-if-open]");
+    var trigger = triggerFrom(event.target);
     if (!trigger) return;
 
     if (
@@ -502,7 +613,7 @@
   document.addEventListener(
     "pointerenter",
     function (event) {
-      if (event.target.closest && event.target.closest("[data-if-open]")) {
+      if (triggerFrom(event.target)) {
         prefetch();
       }
     },
@@ -512,7 +623,7 @@
   document.addEventListener(
     "focusin",
     function (event) {
-      if (event.target.closest && event.target.closest("[data-if-open]")) {
+      if (triggerFrom(event.target)) {
         prefetch();
       }
     },
@@ -525,5 +636,14 @@
     window.setTimeout(prefetch, 2500);
   }
 
+  syncActivity();
+
   window.IbnFarisSheet = { open: open, close: close };
+
+  // إن كان المستخدم قد نقر قبل تحميل هذا السكربت، نفتح اللوحة الآن.
+  if (window.__ibnFarisPendingOpen) {
+    var pendingTrigger = window.__ibnFarisPendingOpen;
+    window.__ibnFarisPendingOpen = null;
+    open(pendingTrigger);
+  }
 })();

@@ -34,6 +34,50 @@
     sideMode: null,
   };
 
+  // ----------------------------------------------------------
+  // أيقونة نشاط الزر العائم
+  // ----------------------------------------------------------
+  var ACTIVITY_ICON =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
+  var streamingActivity = false;
+
+  function ensureActivityBadge(button) {
+    if (!button || button.querySelector(".if-fab-activity")) return;
+
+    var badge = document.createElement("span");
+    badge.className = "if-fab-activity";
+    badge.setAttribute("aria-hidden", "true");
+    badge.innerHTML = ACTIVITY_ICON;
+    button.appendChild(badge);
+  }
+
+  function syncActivity() {
+    var active = streamingActivity && !state.isOpen;
+    var buttons = document.querySelectorAll(".if-fab");
+
+    for (var index = 0; index < buttons.length; index += 1) {
+      var button = buttons[index];
+      ensureActivityBadge(button);
+      button.classList.toggle("is-activity", active);
+
+      if (active) {
+        button.setAttribute(
+          "aria-label",
+          "ابن فارس يكتب الآن. افتح المحادثة لعرض الرد."
+        );
+        button.setAttribute("title", "ابن فارس يكتب الآن");
+      } else {
+        button.setAttribute("aria-label", "افتح محادثة ابن فارس");
+        button.setAttribute("title", "ابن فارس");
+      }
+    }
+  }
+
+  document.addEventListener("ibnfaris:streaming", function (event) {
+    streamingActivity = Boolean(event.detail && event.detail.streaming);
+    syncActivity();
+  });
+
   // Safari قد يجعل هدف النقر عقدة نصية داخل الزر، و`closest` لا تعمل عليها.
   function elementFrom(target) {
     if (!target) return null;
@@ -486,6 +530,7 @@
 
         state.isOpen = true;
         state.pending = false;
+        syncActivity();
 
         window.requestAnimationFrame(function () {
           if (state.instance) {
@@ -521,6 +566,7 @@
     document.body.classList.remove("if-locked", "if-side-open");
     setPageInert(false);
     state.sideMode = null;
+    syncActivity();
 
     window.setTimeout(function () {
       if (!state.isOpen && state.overlay) {
@@ -589,6 +635,8 @@
   } else {
     window.setTimeout(prefetch, 2500);
   }
+
+  syncActivity();
 
   window.IbnFarisSheet = { open: open, close: close };
 
