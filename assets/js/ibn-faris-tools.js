@@ -89,7 +89,9 @@
   }
 
   function currentTool() {
-    var path = String(window.location.pathname || "").replace(/\/+$/, "");
+    var path = String(window.location.pathname || "")
+      .replace(/\.html$/i, "")
+      .replace(/\/+$/, "");
 
     if (/\/tools\/gpa$/.test(path)) return "gpa";
     if (/\/tools\/tawtheeq-tool$/.test(path)) return "tawtheeq";
@@ -441,8 +443,7 @@
     }
   }
 
-  function showToast(message) {
-    var toast = document.querySelector(".ibnfaris-tool-toast");
+  function showToast(message) {    var toast = document.querySelector(".ibnfaris-tool-toast");
     if (!toast) {
       toast = document.createElement("div");
       toast.className = "ibnfaris-tool-toast";
@@ -488,6 +489,19 @@
     );
   }
 
+  function closeChat(delay) {
+    if (
+      !window.IbnFarisSheet ||
+      typeof window.IbnFarisSheet.close !== "function"
+    ) {
+      return;
+    }
+
+    window.setTimeout(function () {
+      window.IbnFarisSheet.close();
+    }, typeof delay === "number" ? delay : 0);
+  }
+
   function open(action) {
     var normalized = normalize(action);
     if (!normalized) return "invalid";
@@ -496,17 +510,8 @@
       dispatch(normalized);
       showToast("تم تطبيق بيانات ابن فارس على " + TOOLS[normalized.tool].short + ".");
 
-      // على الجوال تغطي اللوحة الأداة؛ نغلقها بعد التطبيق ليرى المستخدم النتيجة.
-      if (
-        window.matchMedia &&
-        window.matchMedia("(max-width: 767px)").matches &&
-        window.IbnFarisSheet &&
-        typeof window.IbnFarisSheet.close === "function"
-      ) {
-        window.setTimeout(function () {
-          window.IbnFarisSheet.close();
-        }, 450);
-      }
+      // نطوي المحادثة بعد التطبيق ليرى المستخدم الأداة والنتيجة مباشرة.
+      closeChat(450);
 
       return "applied";
     }
@@ -514,6 +519,46 @@
     savePending(normalized);
 
     var url = targetUrl(normalized);
+    if (!url) return "invalid";
+
+    window.location.assign(url);
+    return "navigating";
+  }
+
+  // تُستدعى تلقائياً بعد انتهاء رد ابن فارس الذي يحمل أمر أداة:
+  // تطبّق البيانات على الأداة المفتوحة وتطوي المحادثة، أو تنتقل إلى
+  // الأداة المطلوبة وتحمّل البيانات عند وصول الصفحة.
+  function autoApply(actions) {
+    var list = Array.isArray(actions) ? actions : [actions];
+    var normalized = [];
+
+    list.forEach(function (action) {
+      var item = normalize(action);
+      if (item) normalized.push(item);
+    });
+
+    if (normalized.length === 0) return "invalid";
+
+    var tool = currentTool();
+    if (tool) {
+      var match = normalized.find(function (item) {
+        return item.tool === tool;
+      });
+
+      if (match) {
+        dispatch(match);
+        showToast(
+          "تم تطبيق بيانات ابن فارس على " + TOOLS[match.tool].short + "."
+        );
+        closeChat(450);
+        return "applied";
+      }
+    }
+
+    var action = normalized[0];
+    savePending(action);
+
+    var url = targetUrl(action);
     if (!url) return "invalid";
 
     window.location.assign(url);
@@ -630,6 +675,7 @@
     currentTool: currentTool,
     normalize: normalize,
     open: open,
+    autoApply: autoApply,
     createCard: createCard,
     summary: summary,
     computeGpa: computeGpa,

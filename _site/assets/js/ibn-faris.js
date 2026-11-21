@@ -1003,8 +1003,9 @@
       setStreaming(false);
       renderMessage(message);
 
+      var actions = parseToolActions(message.content);
       var hasText = Boolean(cleanAnswer(message.content));
-      var hasActions = parseToolActions(message.content).length > 0;
+      var hasActions = actions.length > 0;
 
       if (!hasText && !hasActions) {
         message.el.remove();
@@ -1018,6 +1019,23 @@
       writeSavedHistory();
 
       if (errorText) showAlert(errorText);
+
+      // بعد اكتمال الرد: تُطبَّق بيانات الأداة تلقائياً وتُطوى المحادثة
+      // ليرى المستخدم الأداة والنتيجة، بدلاً من انتظار ضغط زر البطاقة.
+      if (
+        !errorText &&
+        hasActions &&
+        !message.autoApplied &&
+        window.IbnFarisTools &&
+        typeof window.IbnFarisTools.autoApply === "function"
+      ) {
+        message.autoApplied = true;
+        window.setTimeout(function () {
+          if (message.turn !== state.turn) return;
+          if (state.messages.indexOf(message) === -1) return;
+          window.IbnFarisTools.autoApply(actions);
+        }, 650);
+      }
     }
 
     // ----------------------------------------------------------
