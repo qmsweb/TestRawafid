@@ -355,7 +355,383 @@ html[data-theme="dark"] .ifs-view {
 }
 
 /* ------------------------------------------------------------
-   5. الاستجابة وتفضيلات الحركة والطباعة
+   5. نافذة القسائم: طبقة فوق الإعدادات بالحجم نفسه
+   ------------------------------------------------------------ */
+.ifs-voucher {
+  z-index: 40;
+  animation: ifv-view-in 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes ifv-view-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ifs-back {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  margin-inline-start: -6px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ifs-graphite);
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.ifs-back:hover,
+.ifs-back:focus-visible {
+  background: var(--ifs-soft-paper);
+  color: var(--ifs-ink);
+  outline: none;
+}
+
+.ifs-back:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ifs-sand) 35%, transparent);
+}
+
+.ifs-back svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ifv-body {
+  gap: 20px;
+}
+
+/* --- المقدّمة: أيقونة القسيمة والعنوان --- */
+.ifv-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 6px;
+  text-align: center;
+}
+
+.ifv-ticket {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  margin-bottom: 2px;
+  border: 1px solid color-mix(in srgb, var(--ifs-sand) 30%, var(--ifs-warm-mist));
+  border-radius: 22px;
+  background: radial-gradient(
+    circle at 50% 20%,
+    color-mix(in srgb, var(--ifs-sand) 20%, transparent),
+    color-mix(in srgb, var(--ifs-sand) 7%, transparent)
+  );
+  color: var(--ifs-sand);
+  transform: rotate(-3deg);
+}
+
+.ifv-ticket svg {
+  width: 30px;
+  height: 30px;
+  transform: rotate(3deg);
+}
+
+.ifv-title {
+  margin: 0;
+  color: var(--ifs-ink);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.ifv-lead {
+  max-width: 32ch;
+  margin: 0;
+  color: var(--ifs-graphite);
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+/* --- الخانات الست --- */
+.ifv-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  margin-inline: auto;
+}
+
+.ifv-label {
+  display: block;
+  margin-bottom: 9px;
+  padding-inline-start: 2px;
+  color: var(--ifs-graphite);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.ifv-inputs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ifv-input {
+  width: 100%;
+  height: 54px;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid var(--ifs-warm-mist);
+  border-radius: 12px;
+  background: var(--ifs-soft-paper);
+  color: var(--ifs-ink);
+  font-family: inherit;
+  font-size: 23px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: center;
+  caret-color: var(--ifs-sand);
+  appearance: none;
+  transition: border-color 0.18s ease, background-color 0.18s ease,
+    box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.ifv-input:hover {
+  border-color: color-mix(in srgb, var(--ifs-sand) 45%, var(--ifs-warm-mist));
+}
+
+.ifv-input:focus {
+  border-color: var(--ifs-sand);
+  background: color-mix(in srgb, var(--ifs-soft-paper) 94%, var(--ifs-sand));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ifs-sand) 22%, transparent);
+  outline: none;
+}
+
+.ifv-input.is-filled {
+  border-color: color-mix(in srgb, var(--ifs-sand) 55%, var(--ifs-warm-mist));
+  background: color-mix(in srgb, var(--ifs-soft-paper) 95%, var(--ifs-sand));
+}
+
+.ifv-input::selection {
+  background: color-mix(in srgb, var(--ifs-sand) 28%, transparent);
+  color: var(--ifs-ink);
+}
+
+.ifv-inputs.is-invalid {
+  animation: ifv-shake 0.36s ease;
+}
+
+.ifv-inputs.is-invalid .ifv-input {
+  border-color: var(--ifs-danger);
+}
+
+.ifv-inputs.is-invalid .ifv-input:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ifs-danger) 20%, transparent);
+}
+
+@keyframes ifv-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+.ifv-status {
+  min-height: 20px;
+  margin: 0;
+  padding-inline-start: 2px;
+  color: var(--ifs-graphite);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.ifv-status.is-error {
+  color: var(--ifs-danger);
+}
+
+/* --- زر التأكيد وحالة التحقق --- */
+.ifv-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: var(--ifs-radius-md);
+  background: var(--ifs-sand);
+  color: var(--ifs-on-sand);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.18s ease, opacity 0.18s ease, transform 0.18s ease;
+}
+
+.ifv-submit:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.ifv-submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.ifv-submit:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ifs-sand) 32%, transparent);
+}
+
+.ifv-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ifv-spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid color-mix(in srgb, var(--ifs-on-sand) 35%, transparent);
+  border-top-color: var(--ifs-on-sand);
+  border-radius: 50%;
+  animation: ifv-spin 0.7s linear infinite;
+}
+
+.ifv-submit.is-loading .ifv-spinner {
+  display: inline-block;
+}
+
+@keyframes ifv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- النجاح --- */
+.ifv-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px 4px;
+  text-align: center;
+  animation: ifv-view-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ifv-success[hidden] {
+  display: none !important;
+}
+
+.ifv-success-icon {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  margin-bottom: 2px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ifs-sand) 15%, transparent);
+  color: var(--ifs-sand);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--ifs-sand) 7%, transparent);
+}
+
+.ifv-success-icon svg {
+  width: 30px;
+  height: 30px;
+}
+
+.ifs-voucher.is-success .ifv-hero,
+.ifs-voucher.is-success .ifv-form {
+  display: none;
+}
+
+.ifs-voucher.is-success .ifv-success {
+  margin-top: auto;
+}
+
+.ifv-again {
+  min-height: 42px;
+  margin-top: 6px;
+  padding: 0 18px;
+  border: 1px solid var(--ifs-warm-mist);
+  border-radius: var(--ifs-radius-md);
+  background: var(--ifs-soft-paper);
+  color: var(--ifs-ink);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.ifv-again:hover,
+.ifv-again:focus-visible {
+  border-color: var(--ifs-sand);
+  background: color-mix(in srgb, var(--ifs-soft-paper) 92%, var(--ifs-sand));
+  outline: none;
+}
+
+.ifv-again:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ifs-sand) 30%, transparent);
+}
+
+/* --- بطاقة المساعدة --- */
+.ifv-help {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  padding: 12px 13px;
+  border: 1px dashed color-mix(in srgb, var(--ifs-sand) 36%, var(--ifs-warm-mist));
+  border-radius: var(--ifs-radius-md);
+  background: color-mix(in srgb, var(--ifs-sand) 5%, transparent);
+  color: var(--ifs-graphite);
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.ifv-help p {
+  margin: 0;
+}
+
+.ifv-help strong {
+  color: var(--ifs-ink);
+  font-weight: 700;
+}
+
+.ifv-help-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--ifs-sand);
+}
+
+.ifv-help-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ------------------------------------------------------------
+   6. الاستجابة وتفضيلات الحركة والطباعة
    ------------------------------------------------------------ */
 @media (max-width: 380px) {
   .ifs-grid {
@@ -368,6 +744,16 @@ html[data-theme="dark"] .ifs-view {
     min-height: 0;
     padding: 11px 12px;
   }
+
+  .ifv-inputs {
+    gap: 6px;
+  }
+
+  .ifv-input {
+    height: 48px;
+    border-radius: 10px;
+    font-size: 20px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -376,9 +762,18 @@ html[data-theme="dark"] .ifs-view {
   }
 
   .ifs-close,
+  .ifs-back,
   .ifs-tile,
-  .ifs-row {
+  .ifs-row,
+  .ifv-input,
+  .ifv-submit,
+  .ifv-again {
     transition: none !important;
+  }
+
+  .ifv-inputs.is-invalid,
+  .ifv-success {
+    animation: none !important;
   }
 }
 

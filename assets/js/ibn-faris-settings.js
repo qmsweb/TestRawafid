@@ -19,7 +19,16 @@
     noteTimer: null,
     observer: null,
     observedOverlay: null,
+    voucher: null,
+    voucherInputs: [],
+    voucherTrigger: null,
+    isVoucherOpen: false,
+    voucherBusy: false,
+    voucherTimer: null,
   };
+
+  var ARABIC_DIGITS = "٠١٢٣٤٥٦٧٨٩";
+  var PERSIAN_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
 
   function elementFrom(target) {
     if (!target) return null;
@@ -42,6 +51,176 @@
     state.app = view.parentElement;
     observeParent();
     return view;
+  }
+
+  function ensureVoucher() {
+    if (state.voucher && document.contains(state.voucher)) return state.voucher;
+
+    var view = document.getElementById("ifs-voucher");
+    if (!view) return null;
+
+    state.voucher = view;
+    state.voucherInputs = Array.prototype.slice.call(
+      view.querySelectorAll("[data-ifv-digit]")
+    );
+    return view;
+  }
+
+  // يقبل الأرقام العربية والفارسية ويحوّلها إلى أرقام لاتينية،
+  // لأن رمز القسيمة يُخزَّن ويُقارَن بالأرقام اللاتينية فقط.
+  function normalizeDigits(value) {
+    var text = String(value == null ? "" : value);
+    var digits = "";
+
+    for (var i = 0; i < text.length; i += 1) {
+      var character = text.charAt(i);
+      var arabic = ARABIC_DIGITS.indexOf(character);
+      var persian = PERSIAN_DIGITS.indexOf(character);
+
+      if (arabic > -1) digits += String(arabic);
+      else if (persian > -1) digits += String(persian);
+      else if (character >= "0" && character <= "9") digits += character;
+    }
+
+    return digits.slice(0, 6);
+  }
+
+  function voucherCode() {
+    var code = "";
+    state.voucherInputs.forEach(function (input) {
+      code += input.value || "";
+    });
+    return code;
+  }
+
+  function focusDigit(input) {
+    if (!input) return;
+    try {
+      input.focus({ preventScroll: true });
+    } catch (error) {
+      input.focus();
+    }
+    if (input.value) input.select();
+  }
+
+  function setVoucherStatus(text, kind) {
+    var status = state.voucher && state.voucher.querySelector("#ifv-status");
+    if (!status) return;
+
+    status.textContent = text || "";
+    status.classList.toggle("is-error", kind === "error");
+  }
+
+  function clearVoucherInvalid() {
+    var inputs = state.voucher && state.voucher.querySelector("#ifv-inputs");
+    if (inputs) inputs.classList.remove("is-invalid");
+  }
+
+  function syncVoucher() {
+    if (!state.voucher) return;
+
+    var count = 0;
+    state.voucherInputs.forEach(function (input) {
+      var filled = input.value.length > 0;
+      input.classList.toggle("is-filled", filled);
+      if (filled) count += 1;
+    });
+
+    var submit = state.voucher.querySelector("#ifv-submit");
+    if (submit) submit.disabled = state.voucherBusy || count < 6;
+
+    return count;
+  }
+
+  function resetVoucher() {
+    var view = ensureVoucher();
+    if (!view) return;
+
+    window.clearTimeout(state.voucherTimer);
+    state.voucherBusy = false;
+
+    view.classList.remove("is-success");
+
+    var success = view.querySelector("#ifv-success");
+    if (success) success.hidden = true;
+
+    var form = view.querySelector("#ifv-form");
+    if (form) form.reset();
+
+    state.voucherInputs.forEach(function (input) {
+      input.value = "";
+      input.classList.remove("is-filled");
+      input.disabled = false;
+    });
+
+    clearVoucherInvalid();
+    setVoucherStatus("", "");
+
+    var submit = view.querySelector("#ifv-submit");
+    if (submit) {
+      submit.classList.remove("is-loading");
+      submit.disabled = true;
+    }
+
+    var label = view.querySelector(".ifv-submit-label");
+    if (label) label.textContent = "تأكيد الرمز";
+  }
+
+  function openVoucher(trigger) {
+    if (state.isVoucherOpen) return;
+
+    var view = ensureVoucher();
+    if (!view) return;
+
+    if (!state.isOpen) open(trigger);
+
+    state.voucherTrigger = trigger || null;
+    if (trigger) trigger.setAttribute("aria-expanded", "true");
+
+    resetVoucher();
+    if (state.view) state.view.setAttribute("inert", "");
+
+    view.hidden = false;
+    view.setAttribute("aria-hidden", "false");
+    state.isVoucherOpen = true;
+
+    var body = view.querySelector(".ifs-body");
+    if (body) body.scrollTop = 0;
+
+    window.requestAnimationFrame(function () {
+      focusDigit(state.voucherInputs[0]);
+    });
+  }
+
+  // fromSettings = أُغلقت نافذة الإعدادات نفسها، فلا نعيد التركيز
+  // إلى عنصر داخلها لأنه سيصبح مخفياً.
+  function closeVoucher(fromSettings) {
+    if (!state.isVoucherOpen) return;
+
+    var view = state.voucher;
+    var trigger = state.voucherTrigger;
+
+    state.isVoucherOpen = false;
+    state.voucherBusy = false;
+    window.clearTimeout(state.voucherTimer);
+
+    if (view) {
+      view.hidden = true;
+      view.setAttribute("aria-hidden", "true");
+    }
+
+    if (state.view) state.view.removeAttribute("inert");
+
+    state.voucherTrigger = null;
+
+    if (trigger) trigger.setAttribute("aria-expanded", "false");
+    if (fromSettings || !trigger) return;
+
+    try {
+      trigger.focus({ preventScroll: true });
+    } catch (error) {
+      trigger.focus();
+    }
   }
 
   // لوحة ابن فارس العائمة تبقى في الـ DOM بعد فتحها. إذا أُغلقت
@@ -95,10 +274,11 @@
   }
 
   function focusables() {
-    if (!state.view) return [];
+    var scope = state.isVoucherOpen ? state.voucher : state.view;
+    if (!scope) return [];
 
     return Array.prototype.filter.call(
-      state.view.querySelectorAll(
+      scope.querySelectorAll(
         'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
       ),
       function (element) {
@@ -167,6 +347,7 @@
   function close(fromParent) {
     if (!state.isOpen || !state.view) return;
 
+    closeVoucher(true);
     state.isOpen = false;
     state.view.hidden = true;
     state.view.setAttribute("aria-hidden", "true");
@@ -191,8 +372,226 @@
     }
   }
 
+  function handleDigitInput(input) {
+    var index = Number(input.getAttribute("data-ifv-index")) || 0;
+    var digits = normalizeDigits(input.value);
+    var inputs = state.voucherInputs;
+
+    if (!digits) {
+      input.value = "";
+      syncVoucher();
+      return;
+    }
+
+    clearVoucherInvalid();
+    setVoucherStatus("", "");
+
+    if (digits.length > 1) {
+      for (var i = 0; i < digits.length && index + i < inputs.length; i += 1) {
+        inputs[index + i].value = digits.charAt(i);
+      }
+      focusDigit(inputs[Math.min(index + digits.length, inputs.length - 1)]);
+    } else {
+      input.value = digits;
+      if (index < inputs.length - 1) focusDigit(inputs[index + 1]);
+    }
+
+    syncVoucher();
+  }
+
+  function handleDigitPaste(input, event) {
+    var clipboard = event.clipboardData || window.clipboardData;
+    if (!clipboard) return;
+
+    var digits = normalizeDigits(clipboard.getData("text"));
+    if (!digits) return;
+
+    event.preventDefault();
+
+    var index = Number(input.getAttribute("data-ifv-index")) || 0;
+    var start = digits.length >= state.voucherInputs.length ? 0 : index;
+
+    for (
+      var i = 0;
+      i < digits.length && start + i < state.voucherInputs.length;
+      i += 1
+    ) {
+      state.voucherInputs[start + i].value = digits.charAt(i);
+    }
+
+    clearVoucherInvalid();
+    setVoucherStatus("", "");
+    focusDigit(
+      state.voucherInputs[
+        Math.min(start + digits.length, state.voucherInputs.length - 1)
+      ]
+    );
+    syncVoucher();
+  }
+
+  function handleDigitKeydown(input, event) {
+    var index = Number(input.getAttribute("data-ifv-index")) || 0;
+    var inputs = state.voucherInputs;
+
+    if (event.key === "Backspace" && !input.value && index > 0) {
+      event.preventDefault();
+      inputs[index - 1].value = "";
+      inputs[index - 1].classList.remove("is-filled");
+      focusDigit(inputs[index - 1]);
+      syncVoucher();
+      return;
+    }
+
+    if (event.key === "ArrowLeft" && index > 0) {
+      event.preventDefault();
+      focusDigit(inputs[index - 1]);
+    } else if (event.key === "ArrowRight" && index < inputs.length - 1) {
+      event.preventDefault();
+      focusDigit(inputs[index + 1]);
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      focusDigit(inputs[0]);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      focusDigit(inputs[inputs.length - 1]);
+    }
+
+    if (event.key === "Backspace" || event.key === "Delete") {
+      clearVoucherInvalid();
+      setVoucherStatus("", "");
+    }
+  }
+
+  function showVoucherError() {
+    var view = state.voucher;
+    if (!view) return;
+
+    var inputs = view.querySelector("#ifv-inputs");
+    if (inputs) {
+      inputs.classList.remove("is-invalid");
+      void inputs.offsetWidth;
+      inputs.classList.add("is-invalid");
+    }
+
+    setVoucherStatus(
+      "الرمز غير صحيح أو منتهي الصلاحية. تحقّق منه وحاول مرة أخرى.",
+      "error"
+    );
+
+    focusDigit(state.voucherInputs[0]);
+  }
+
+  function showVoucherSuccess() {
+    var view = ensureVoucher();
+    if (!view) return;
+
+    var success = view.querySelector("#ifv-success");
+    var again = view.querySelector("[data-ifv-again]");
+
+    setVoucherStatus("", "");
+    view.classList.add("is-success");
+    if (success) success.hidden = false;
+
+    state.voucherInputs.forEach(function (input) {
+      input.disabled = true;
+    });
+
+    if (again) {
+      try {
+        again.focus({ preventScroll: true });
+      } catch (error) {
+        again.focus();
+      }
+    }
+  }
+
+  function submitVoucher() {
+    var view = ensureVoucher();
+    if (!view || state.voucherBusy) return;
+
+    var code = voucherCode();
+    if (code.length !== 6) {
+      setVoucherStatus("أدخل الخانات الست كاملة قبل التأكيد.", "error");
+      syncVoucher();
+      focusDigit(state.voucherInputs[0]);
+      return;
+    }
+
+    state.voucherBusy = true;
+    clearVoucherInvalid();
+    setVoucherStatus("جارٍ التحقق من الرمز…", "");
+
+    var submit = view.querySelector("#ifv-submit");
+    var label = view.querySelector(".ifv-submit-label");
+    if (submit) submit.classList.add("is-loading");
+    if (label) label.textContent = "جارٍ التحقق…";
+    syncVoucher();
+
+    // الواجهة جاهزة لربط خدمة القسائم لاحقاً. حالياً أي رمز صحيح
+    // الشكل يُظهر حالة النجاح، والرمز 000000 يعاين حالة الخطأ.
+    state.voucherTimer = window.setTimeout(function () {
+      state.voucherBusy = false;
+      if (submit) submit.classList.remove("is-loading");
+      if (label) label.textContent = "تأكيد الرمز";
+      syncVoucher();
+
+      if (code === "000000") {
+        showVoucherError();
+      } else {
+        showVoucherSuccess();
+      }
+    }, 900);
+  }
+
+  document.addEventListener("input", function (event) {
+    if (!state.isVoucherOpen) return;
+    var input = closestFrom(event.target, "[data-ifv-digit]");
+    if (input) handleDigitInput(input);
+  });
+
+  document.addEventListener("paste", function (event) {
+    if (!state.isVoucherOpen) return;
+    var input = closestFrom(event.target, "[data-ifv-digit]");
+    if (input) handleDigitPaste(input, event);
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (!state.isVoucherOpen) return;
+    var input = closestFrom(event.target, "[data-ifv-digit]");
+    if (input) handleDigitKeydown(input, event);
+  });
+
+  document.addEventListener("submit", function (event) {
+    var form = closestFrom(event.target, "#ifv-form");
+    if (!form) return;
+    event.preventDefault();
+    submitVoucher();
+  });
+
   document.addEventListener("click", function (event) {
     if (event.defaultPrevented) return;
+
+    var voucherTrigger = closestFrom(event.target, "[data-ifs-voucher]");
+    if (voucherTrigger) {
+      event.preventDefault();
+      openVoucher(voucherTrigger);
+      return;
+    }
+
+    var voucherCloser = closestFrom(event.target, "[data-ifv-close]");
+    if (voucherCloser) {
+      event.preventDefault();
+      closeVoucher();
+      return;
+    }
+
+    var voucherAgain = closestFrom(event.target, "[data-ifv-again]");
+    if (voucherAgain) {
+      event.preventDefault();
+      resetVoucher();
+      focusDigit(state.voucherInputs[0]);
+      return;
+    }
 
     var trigger = closestFrom(event.target, "[data-ifs-open]");
     if (trigger) {
@@ -234,7 +633,8 @@
       if (event.key === "Escape" || event.key === "Esc") {
         event.preventDefault();
         event.stopImmediatePropagation();
-        close();
+        if (state.isVoucherOpen) closeVoucher();
+        else close();
         return;
       }
 
@@ -257,5 +657,10 @@
     true
   );
 
-  window.IbnFarisSettings = { open: open, close: close };
+  window.IbnFarisSettings = {
+    open: open,
+    close: close,
+    openVoucher: openVoucher,
+    closeVoucher: closeVoucher,
+  };
 })();
