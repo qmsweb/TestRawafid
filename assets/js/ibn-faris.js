@@ -561,7 +561,22 @@
 
     function pushMarkdown(segments, lines) {
       if (lines.length === 0) return;
-      segments.push({ kind: "markdown", content: lines.join("\n") });
+      var content = lines.join("\n");
+      if (!content.trim()) return;
+      segments.push({ kind: "markdown", content: content });
+    }
+
+    // الأبيات المتتالية التي لا يفصلها شرح تُجمع في جدول شعري واحد.
+    function pushPoetry(segments, verses) {
+      if (!verses || verses.length === 0) return;
+
+      var previous = segments[segments.length - 1];
+      if (previous && previous.kind === "poetry") {
+        previous.verses = previous.verses.concat(verses);
+        return;
+      }
+
+      segments.push({ kind: "poetry", verses: verses });
     }
 
     function parsePoetrySegments(content) {
@@ -588,7 +603,7 @@
 
           var verses = parseFencedVerses(verseLines);
           if (verses.length > 0) {
-            segments.push({ kind: "poetry", verses: verses });
+            pushPoetry(segments, verses);
           } else {
             markdownLines.push("```");
             markdownLines = markdownLines.concat(verseLines);
@@ -624,16 +639,16 @@
           if (autoLines.length >= 2 || (strong && autoLines.length === 1)) {
             pushMarkdown(segments, markdownLines);
             markdownLines = [];
-            segments.push({
-              kind: "poetry",
-              verses: autoLines
+            pushPoetry(
+              segments,
+              autoLines
                 .map(function (verseLine) {
                   return parseVerseLine(verseLine, AUTO_SEPARATOR);
                 })
                 .filter(function (verse) {
                   return verse !== null;
-                }),
-            });
+                })
+            );
             index = nextIndex;
             continue;
           }
@@ -710,6 +725,34 @@
       return container;
     }
 
+    // يضيف عنوان العمود إلى كل خلية ليعرضها التصميم المتجاوب على الجوال.
+    function labelTableCells(table) {
+      var headerCells = table.querySelectorAll("thead th");
+      if (headerCells.length === 0) {
+        var firstRow = table.querySelector("tr");
+        if (!firstRow) return;
+        headerCells = firstRow.querySelectorAll("th");
+      }
+      if (headerCells.length === 0) return;
+
+      var labels = Array.prototype.map.call(headerCells, function (cell) {
+        return (cell.textContent || "").replace(/\s+/g, " ").trim();
+      });
+
+      var rows = table.querySelectorAll("tbody tr");
+      if (rows.length === 0) rows = table.querySelectorAll("tr");
+
+      Array.prototype.forEach.call(rows, function (row) {
+        if (row.querySelector("th")) return;
+
+        Array.prototype.forEach.call(row.children, function (cell, index) {
+          if (cell.tagName !== "TD") return;
+          var label = labels[index];
+          if (label) cell.setAttribute("data-label", label);
+        });
+      });
+    }
+
     function decorateTables(container) {
       var tables = Array.prototype.slice.call(
         container.querySelectorAll("table")
@@ -722,6 +765,8 @@
 
       tables.forEach(function (table) {
         if (!table.parentNode) return;
+
+        labelTableCells(table);
 
         var figure = document.createElement("figure");
         figure.className = "if-table";
