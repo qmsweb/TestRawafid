@@ -391,19 +391,6 @@ html[data-theme="dark"] .if-overlay {
   box-shadow: none;
 }
 
-/* مبدّل السمة في صفحة ابن فارس: قمر في الوضع الفاتح وشمس في الداكن. */
-.if-theme-sun {
-  display: none;
-}
-
-html[data-theme="dark"] .if-theme-sun {
-  display: block;
-}
-
-html[data-theme="dark"] .if-theme-moon {
-  display: none;
-}
-
 /* أيقونة نشاط تظهر على زر ابن فارس العائم حين تُطوى المحادثة
    والرد ما زال قيد التفكير أو البث. */
 .if-fab-activity {

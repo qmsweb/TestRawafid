@@ -31,6 +31,7 @@
 
 
 
+<link rel="stylesheet" href="/assets/css/ibn-faris-settings.css">
 <link rel="canonical" href="https://rawafid.jassim.one/ibn-faris/">
 <meta name="robots" content="index, follow">
 
@@ -116,23 +117,7 @@
           <path d="M18 6 6 18"></path>
           <path d="m6 6 12 12"></path>
         </svg>
-      </a>
-      <button class="if-circle if-theme" id="if-theme" type="button" aria-label="التبديل إلى الوضع الليلي" title="الوضع الليلي" aria-pressed="false">
-        <svg class="if-icon if-theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 12.8A8.6 8.6 0 1 1 11.2 3a6.8 6.8 0 0 0 9.8 9.8z"></path>
-        </svg>
-        <svg class="if-icon if-theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="4"></circle>
-          <path d="M12 2v2"></path>
-          <path d="M12 20v2"></path>
-          <path d="M4.9 4.9l1.4 1.4"></path>
-          <path d="M17.7 17.7l1.4 1.4"></path>
-          <path d="M2 12h2"></path>
-          <path d="M20 12h2"></path>
-          <path d="M4.9 19.1l1.4-1.4"></path>
-          <path d="M17.7 6.3l1.4-1.4"></path>
-        </svg>
-      </button></div>
+      </a></div>
   </header>
 
   <main class="if-main" id="if-main" tabindex="-1">
@@ -280,35 +265,6 @@
 
       var close = document.getElementById("if-close");
       if (close) close.setAttribute("href", from);
-    })();
-
-    // مبدّل السمة داخل صفحة ابن فارس (الصفحة المستقلة بلا ترويسة الموقع).
-    (function () {
-      var button = document.getElementById("if-theme");
-      if (!button) return;
-
-      var root = document.documentElement;
-
-      function sync() {
-        var dark = root.getAttribute("data-theme") === "dark";
-        var label = dark ? "التبديل إلى الوضع النهاري" : "التبديل إلى الوضع الليلي";
-        button.setAttribute("aria-label", label);
-        button.setAttribute("title", dark ? "الوضع النهاري" : "الوضع الليلي");
-        button.setAttribute("aria-pressed", dark ? "true" : "false");
-      }
-
-      button.addEventListener("click", function () {
-        var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        root.setAttribute("data-theme", next);
-        try {
-          localStorage.setItem("rawafed-theme", next);
-        } catch (error) {
-          // التخزين قد يكون معطلاً؛ التبديل يبقى سارياً في هذه الصفحة.
-        }
-        sync();
-      });
-
-      sync();
     })();
   </script>
 </body>

@@ -72,35 +72,6 @@
       var close = document.getElementById("if-close");
       if (close) close.setAttribute("href", from);
     })();
-
-    // مبدّل السمة داخل صفحة ابن فارس (الصفحة المستقلة بلا ترويسة الموقع).
-    (function () {
-      var button = document.getElementById("if-theme");
-      if (!button) return;
-
-      var root = document.documentElement;
-
-      function sync() {
-        var dark = root.getAttribute("data-theme") === "dark";
-        var label = dark ? "التبديل إلى الوضع النهاري" : "التبديل إلى الوضع الليلي";
-        button.setAttribute("aria-label", label);
-        button.setAttribute("title", dark ? "الوضع النهاري" : "الوضع الليلي");
-        button.setAttribute("aria-pressed", dark ? "true" : "false");
-      }
-
-      button.addEventListener("click", function () {
-        var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        root.setAttribute("data-theme", next);
-        try {
-          localStorage.setItem("rawafed-theme", next);
-        } catch (error) {
-          // التخزين قد يكون معطلاً؛ التبديل يبقى سارياً في هذه الصفحة.
-        }
-        sync();
-      });
-
-      sync();
-    })();
   </script>
 </body>
 </html>
