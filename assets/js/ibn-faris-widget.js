@@ -611,9 +611,10 @@
       });
   }
 
-  function close(fromPopstate) {
+  function close(fromPopstate, options) {
     if (!state.isOpen || !state.overlay) return;
 
+    var skipHistory = !!(options && options.skipHistory);
     var popHistory = state.historyPushed;
     state.historyPushed = false;
 
@@ -625,7 +626,7 @@
     state.sideMode = null;
     syncActivity();
 
-    if (!fromPopstate && popHistory) {
+    if (!fromPopstate && popHistory && !skipHistory) {
       try {
         window.history.back();
       } catch (error) {

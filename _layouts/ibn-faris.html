@@ -54,24 +54,7 @@
     data-base="{{ '/' | relative_url }}"
   ></script>
   <script src="{{ '/assets/js/ibn-faris.js' | relative_url }}"></script>
-  <script>
-    // إذا وصل المستخدم من الزر العائم، يعيده زر الإغلاق إلى الصفحة السابقة
-    // بدل الصفحة الرئيسية. نرفض المسارات الخارجية (//example.com).
-    (function () {
-      var params = new URLSearchParams(window.location.search);
-      var from = params.get("from") || "";
-      if (
-        !from ||
-        from.charAt(0) !== "/" ||
-        from.charAt(1) === "/" ||
-        from.indexOf("\\") !== -1
-      ) {
-        return;
-      }
-
-      var close = document.getElementById("if-close");
-      if (close) close.setAttribute("href", from);
-    })();
-  </script>
+  {% include ibn-faris-settings.html %}
+  <script src="{{ '/assets/js/ibn-faris-settings.js' | relative_url }}"></script>
 </body>
 </html>

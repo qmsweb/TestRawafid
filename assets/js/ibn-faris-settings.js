@@ -1,8 +1,7 @@
 /* ============================================================
    ابن فارس — لوحة الإعدادات
    ============================================================
-   • تُفتح من درج التنقّل على الجوال، ومن زر الترس في يسار التوب بار
-     على الشاشات الكبيرة.
+   • تُفتح من زر الترس داخل شريط ابن فارس العلوي (مكان زر الإغلاق).
    • نفس آلية نافذة ابن فارس العائمة:
        - الجوال (<768px): ورقة سفلية مع قفل تمرير الصفحة.
        - الشاشات الكبيرة: لوحة جانبية يمين تدفع المحتوى.
@@ -19,6 +18,7 @@
     sideMode: null,
     lastFocus: null,
     historyPushed: false,
+    borrowedHistory: false,
     drag: null,
     noteTimer: null,
   };
@@ -121,22 +121,22 @@
     note.classList.remove("is-active");
   }
 
-  // زر الإعدادات على الجوال داخل درج التنقّل: نغلق الدرج أولاً حتى لا
-  // يبقى مفتوحاً تحت اللوحة، ونعيد التركيز إلى زر القائمة عند الإغلاق.
-  function closeMobileMenu() {
-    var toggle = document.getElementById("menu-toggle");
-    if (toggle && toggle.getAttribute("aria-expanded") === "true") {
-      toggle.click();
-    }
-  }
-
-  function isInsideNav(element) {
-    return !!(element && element.closest && element.closest("#nav-links"));
+  // هل نافذة ابن فارس العائمة مفتوحة الآن؟ نغلقها قبل فتح الإعدادات
+  // حتى لا تتراكم لوحتان فوق بعضهما.
+  function isIbnFarisOpen() {
+    var overlay = document.getElementById("if-overlay");
+    return !!(
+      overlay &&
+      !overlay.hidden &&
+      overlay.classList.contains("is-open")
+    );
   }
 
   function focusReturnTarget(trigger) {
-    if (isInsideNav(trigger)) {
-      return document.getElementById("menu-toggle") || trigger;
+    // زر الترس داخل النافذة العائمة: بعد إغلاقها نعيد التركيز إلى
+    // الزر العائم الظاهر بدل عنصر مخفي.
+    if (trigger && trigger.closest && trigger.closest("#if-overlay")) {
+      return document.querySelector(".if-fab") || trigger;
     }
     return (
       trigger ||
@@ -164,8 +164,16 @@
     var overlay = ensureOverlay();
     if (!overlay || !state.sheet) return;
 
-    closeMobileMenu();
+    var fromIbnFaris = isIbnFarisOpen();
     state.lastFocus = focusReturnTarget(trigger);
+
+    if (
+      fromIbnFaris &&
+      window.IbnFarisSheet &&
+      typeof window.IbnFarisSheet.close === "function"
+    ) {
+      window.IbnFarisSheet.close(false, { skipHistory: true });
+    }
 
     clearNote();
     overlay.hidden = false;
@@ -177,8 +185,16 @@
     applyLayoutMode(true);
 
     state.isOpen = true;
+    // إذا فُتحت من نافذة ابن فارس فسجل التاريخ موجود أصلاً؛ نستخدمه
+    // بدل إضافة سجل جديد حتى يعمل زر الرجوع في الجوال.
+    state.borrowedHistory = fromIbnFaris;
 
-    if (!state.historyPushed && window.history && history.pushState) {
+    if (
+      !state.borrowedHistory &&
+      !state.historyPushed &&
+      window.history &&
+      history.pushState
+    ) {
       try {
         history.pushState({ ibnfarisSettings: true }, "");
         state.historyPushed = true;
@@ -203,6 +219,7 @@
 
     var popHistory = state.historyPushed;
     state.historyPushed = false;
+    state.borrowedHistory = false;
 
     state.isOpen = false;
     state.overlay.classList.remove("is-open", "is-dragging");
