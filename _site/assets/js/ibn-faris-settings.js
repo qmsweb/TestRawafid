@@ -1,26 +1,24 @@
 /* ============================================================
-   ابن فارس — لوحة الإعدادات
+   ابن فارس — تبويب الإعدادات
    ============================================================
-   • تُفتح من زر الترس داخل شريط ابن فارس العلوي (مكان زر الإغلاق).
-   • نفس آلية نافذة ابن فارس العائمة:
-       - الجوال (<768px): ورقة سفلية مع قفل تمرير الصفحة.
-       - الشاشات الكبيرة: لوحة جانبية يمين تدفع المحتوى.
-   • تعمل كتحسين تدريجي: بدون JavaScript يبقى زر الإعدادات ظاهراً
-     لكن اللوحة لا تُفتح.
+   • يُفتح من زر الترس داخل شريط ابن فارس العلوي.
+   • يظهر فوق المحادثة داخل اللوحة نفسها ولا يغلقها؛ عند الإغلاق
+     تعود المحادثة كما كانت (نفس الرسائل ونفس موضع اللوحة).
+   • يأخذ مقاس لوحة ابن فارس نفسه تلقائياً لأنه داخل الـ DOM الخاص
+     بها، وليس لوحة أو نافذة منفصلة.
    ============================================================ */
 (function () {
   "use strict";
 
   var state = {
-    overlay: null,
-    sheet: null,
+    view: null,
+    app: null,
+    trigger: null,
     isOpen: false,
-    sideMode: null,
     lastFocus: null,
-    historyPushed: false,
-    borrowedHistory: false,
-    drag: null,
     noteTimer: null,
+    observer: null,
+    observedOverlay: null,
   };
 
   function elementFrom(target) {
@@ -34,34 +32,73 @@
     return element && element.closest ? element.closest(selector) : null;
   }
 
-  function isSideMode() {
-    return window.matchMedia("(min-width: 768px)").matches;
+  function ensureView() {
+    if (state.view && document.contains(state.view)) return state.view;
+
+    var view = document.getElementById("ifs-view");
+    if (!view) return null;
+
+    state.view = view;
+    state.app = view.parentElement;
+    observeParent();
+    return view;
   }
 
-  function ensureOverlay() {
-    if (state.overlay) return state.overlay;
+  // لوحة ابن فارس العائمة تبقى في الـ DOM بعد فتحها. إذا أُغلقت
+  // (بالسحب أو النقر خارجها) نعيد تبويب الإعدادات إلى حالته الأولى
+  // حتى تظهر المحادثة عند فتح اللوحة مرة أخرى.
+  function observeParent() {
+    var overlay = document.getElementById("if-overlay");
+    if (!overlay || state.observedOverlay === overlay) return;
+    if (!window.MutationObserver) return;
 
-    var overlay = document.getElementById("ifs-overlay");
-    if (!overlay) return null;
+    state.observedOverlay = overlay;
+    if (state.observer) state.observer.disconnect();
 
-    state.overlay = overlay;
-    state.sheet = overlay.querySelector(".ifs-sheet");
-
-    overlay.addEventListener("click", function (event) {
-      if (event.target === overlay) close();
+    state.observer = new MutationObserver(function () {
+      if (
+        !state.isOpen ||
+        (!overlay.classList.contains("is-open") || overlay.hidden)
+      ) {
+        close(true);
+      }
     });
 
-    var handle = overlay.querySelector(".ifs-handle");
-    if (handle) initDrag(handle);
+    state.observer.observe(overlay, {
+      attributes: true,
+      attributeFilter: ["class", "hidden"],
+    });
+  }
 
-    return overlay;
+  function chatParts() {
+    if (!state.app) return [];
+
+    return Array.prototype.filter.call(state.app.children, function (element) {
+      return (
+        element.classList.contains("if-topbar") ||
+        element.classList.contains("if-main") ||
+        element.classList.contains("if-composer-shell")
+      );
+    });
+  }
+
+  function setChatInert(enabled) {
+    chatParts().forEach(function (element) {
+      if (enabled) {
+        element.setAttribute("inert", "");
+        element.setAttribute("data-ifs-inert", "");
+      } else if (element.hasAttribute("data-ifs-inert")) {
+        element.removeAttribute("inert");
+        element.removeAttribute("data-ifs-inert");
+      }
+    });
   }
 
   function focusables() {
-    if (!state.sheet) return [];
+    if (!state.view) return [];
 
     return Array.prototype.filter.call(
-      state.sheet.querySelectorAll(
+      state.view.querySelectorAll(
         'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
       ),
       function (element) {
@@ -74,74 +111,11 @@
     );
   }
 
-  function setPageInert(enabled) {
-    var children = document.body.children;
-
-    for (var index = 0; index < children.length; index += 1) {
-      var element = children[index];
-      if (element === state.overlay) continue;
-      if (/^(SCRIPT|STYLE|TEMPLATE|LINK)$/.test(element.tagName)) continue;
-
-      if (enabled) {
-        if (!element.hasAttribute("inert")) {
-          element.setAttribute("inert", "");
-          element.setAttribute("data-ifs-inert", "");
-        }
-      } else if (element.hasAttribute("data-ifs-inert")) {
-        element.removeAttribute("inert");
-        element.removeAttribute("data-ifs-inert");
-      }
-    }
-  }
-
-  function applyLayoutMode(force) {
-    var side = isSideMode();
-    if (!force && state.sideMode === side) return;
-    state.sideMode = side;
-
-    document.body.classList.toggle("ifs-side-open", side);
-    document.body.classList.toggle("ifs-locked", !side);
-    setPageInert(!side);
-
-    if (state.sheet) {
-      state.sheet.setAttribute("aria-modal", side ? "false" : "true");
-    }
-
-    if (side) {
-      state.drag = null;
-      if (state.overlay) state.overlay.classList.remove("is-dragging");
-      if (state.sheet) state.sheet.style.transform = "";
-    }
-  }
-
   function clearNote() {
     var note = document.getElementById("ifs-note");
     if (!note) return;
     note.textContent = "";
     note.classList.remove("is-active");
-  }
-
-  // هل نافذة ابن فارس العائمة مفتوحة الآن؟ نغلقها قبل فتح الإعدادات
-  // حتى لا تتراكم لوحتان فوق بعضهما.
-  function isIbnFarisOpen() {
-    var overlay = document.getElementById("if-overlay");
-    return !!(
-      overlay &&
-      !overlay.hidden &&
-      overlay.classList.contains("is-open")
-    );
-  }
-
-  function focusReturnTarget(trigger) {
-    // زر الترس داخل النافذة العائمة: بعد إغلاقها نعيد التركيز إلى
-    // الزر العائم الظاهر بدل عنصر مخفي.
-    if (trigger && trigger.closest && trigger.closest("#if-overlay")) {
-      return document.querySelector(".if-fab") || trigger;
-    }
-    return (
-      trigger ||
-      (document.activeElement !== document.body ? document.activeElement : null)
-    );
   }
 
   function showNote(text) {
@@ -161,50 +135,24 @@
   function open(trigger) {
     if (state.isOpen) return;
 
-    var overlay = ensureOverlay();
-    if (!overlay || !state.sheet) return;
+    var view = ensureView();
+    if (!view) return;
 
-    var fromIbnFaris = isIbnFarisOpen();
-    state.lastFocus = focusReturnTarget(trigger);
+    state.trigger = trigger;
+    state.lastFocus =
+      trigger ||
+      (document.activeElement !== document.body ? document.activeElement : null);
 
-    if (
-      fromIbnFaris &&
-      window.IbnFarisSheet &&
-      typeof window.IbnFarisSheet.close === "function"
-    ) {
-      window.IbnFarisSheet.close(false, { skipHistory: true });
-    }
+    if (trigger) trigger.setAttribute("aria-expanded", "true");
 
     clearNote();
-    overlay.hidden = false;
-    overlay.setAttribute("aria-hidden", "false");
-
-    // إجبار إعادة التنسيق حتى تعمل حركة الانزلاق.
-    void overlay.offsetHeight;
-    overlay.classList.add("is-open");
-    applyLayoutMode(true);
-
+    view.hidden = false;
+    view.setAttribute("aria-hidden", "false");
+    setChatInert(true);
     state.isOpen = true;
-    // إذا فُتحت من نافذة ابن فارس فسجل التاريخ موجود أصلاً؛ نستخدمه
-    // بدل إضافة سجل جديد حتى يعمل زر الرجوع في الجوال.
-    state.borrowedHistory = fromIbnFaris;
-
-    if (
-      !state.borrowedHistory &&
-      !state.historyPushed &&
-      window.history &&
-      history.pushState
-    ) {
-      try {
-        history.pushState({ ibnfarisSettings: true }, "");
-        state.historyPushed = true;
-      } catch (error) {
-        state.historyPushed = false;
-      }
-    }
 
     window.requestAnimationFrame(function () {
-      var closeButton = state.sheet.querySelector("[data-ifs-close]");
+      var closeButton = view.querySelector("[data-ifs-close]");
       if (!closeButton) return;
       try {
         closeButton.focus({ preventScroll: true });
@@ -214,38 +162,25 @@
     });
   }
 
-  function close(fromPopstate) {
-    if (!state.isOpen || !state.overlay) return;
-
-    var popHistory = state.historyPushed;
-    state.historyPushed = false;
-    state.borrowedHistory = false;
+  // fromParent = أُغلقت لوحة ابن فارس نفسها، فلا نعيد التركيز لعنصر
+  // داخلها. عند الإغلاق العادي يعود التركيز إلى زر الترس في المحادثة.
+  function close(fromParent) {
+    if (!state.isOpen || !state.view) return;
 
     state.isOpen = false;
-    state.overlay.classList.remove("is-open", "is-dragging");
-    state.overlay.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("ifs-locked", "ifs-side-open");
-    setPageInert(false);
-    state.sideMode = null;
-    state.drag = null;
-    if (state.sheet) state.sheet.style.transform = "";
+    state.view.hidden = true;
+    state.view.setAttribute("aria-hidden", "true");
+    setChatInert(false);
 
-    if (!fromPopstate && popHistory) {
-      try {
-        window.history.back();
-      } catch (error) {
-        // المتصفح لا يدعم التاريخ أو الحالة غير متاحة.
-      }
+    if (state.trigger) {
+      state.trigger.setAttribute("aria-expanded", "false");
+      state.trigger = null;
     }
-
-    window.setTimeout(function () {
-      if (!state.isOpen && state.overlay) {
-        state.overlay.hidden = true;
-      }
-    }, 320);
 
     var target = state.lastFocus;
     state.lastFocus = null;
+
+    if (fromParent) return;
 
     if (target && typeof target.focus === "function") {
       try {
@@ -256,78 +191,6 @@
     }
   }
 
-  // ----------------------------------------------------------
-  // سحب الورقة السفلية لأسفل لإغلاقها (الجوال فقط)
-  // ----------------------------------------------------------
-  function initDrag(handle) {
-    handle.addEventListener("pointerdown", function (event) {
-      if (!state.isOpen || isSideMode()) return;
-      if (event.pointerType === "mouse" && event.button !== 0) return;
-
-      state.drag = {
-        pointerId: event.pointerId,
-        startY: event.clientY,
-        lastY: event.clientY,
-        distance: 0,
-      };
-
-      if (state.overlay) state.overlay.classList.add("is-dragging");
-
-      if (event.cancelable) event.preventDefault();
-
-      if (handle.setPointerCapture) {
-        try {
-          handle.setPointerCapture(event.pointerId);
-        } catch (error) {}
-      }
-    });
-
-    handle.addEventListener("pointermove", function (event) {
-      if (!state.drag || event.pointerId !== state.drag.pointerId) return;
-      if (!state.sheet) return;
-      if (event.cancelable) event.preventDefault();
-
-      var distance = Math.max(0, event.clientY - state.drag.startY);
-      state.drag.distance = distance;
-      state.sheet.style.transform =
-        "translate3d(0, " + Math.round(distance) + "px, 0)";
-    });
-
-    function endDrag(event) {
-      if (!state.drag || event.pointerId !== state.drag.pointerId) return;
-
-      var distance = state.drag.distance;
-      state.drag = null;
-
-      if (handle.releasePointerCapture) {
-        try {
-          handle.releasePointerCapture(event.pointerId);
-        } catch (error) {}
-      }
-
-      if (state.overlay) state.overlay.classList.remove("is-dragging");
-
-      if (distance > 90) {
-        close();
-        return;
-      }
-
-      if (state.sheet) {
-        window.requestAnimationFrame(function () {
-          if (state.sheet && !state.drag) {
-            state.sheet.style.transform = "";
-          }
-        });
-      }
-    }
-
-    handle.addEventListener("pointerup", endDrag);
-    handle.addEventListener("pointercancel", endDrag);
-  }
-
-  // ----------------------------------------------------------
-  // الأحداث
-  // ----------------------------------------------------------
   document.addEventListener("click", function (event) {
     if (event.defaultPrevented) return;
 
@@ -361,39 +224,38 @@
     }
   });
 
-  document.addEventListener("keydown", function (event) {
-    if (!state.isOpen) return;
+  // في مرحلة الالتقاط كي لا يغلق Escape لوحة ابن فارس كلها؛
+  // نغلقه فقط ونعيد المستخدم إلى المحادثة.
+  document.addEventListener(
+    "keydown",
+    function (event) {
+      if (!state.isOpen) return;
 
-    if (event.key === "Escape" || event.key === "Esc") {
-      event.preventDefault();
-      close();
-      return;
-    }
+      if (event.key === "Escape" || event.key === "Esc") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        close();
+        return;
+      }
 
-    if (event.key !== "Tab" || !state.sheet || isSideMode()) return;
+      if (event.key !== "Tab") return;
 
-    var items = focusables();
-    if (!items.length) return;
+      var items = focusables();
+      if (!items.length) return;
 
-    var first = items[0];
-    var last = items[items.length - 1];
+      var first = items[0];
+      var last = items[items.length - 1];
 
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  });
-
-  window.addEventListener("resize", function () {
-    if (state.isOpen) applyLayoutMode();
-  });
-
-  window.addEventListener("popstate", function () {
-    if (state.isOpen) close(true);
-  });
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    },
+    true
+  );
 
   window.IbnFarisSettings = { open: open, close: close };
 })();

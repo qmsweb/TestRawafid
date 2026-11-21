@@ -1,97 +1,92 @@
 {%- comment -%}
-  لوحة إعدادات «ابن فارس».
-  تُفتح من زر الترس داخل شريط ابن فارس العلوي (مكان زر الإغلاق)،
-  بنفس آلية نافذة ابن فارس: ورقة سفلية على الجوال، ولوحة جانبية
-  يمين على الشاشات ≥768px.
-  تُستدعى من _includes/ibn-faris-button.html ومن _layouts/ibn-faris.html.
+  تبويب «إعدادات ابن فارس» داخل لوحة المحادثة نفسها.
+  يُعرض فوق المحادثة دون إغلاقها أو فقدانها، ويأخذ مقاس اللوحة نفسه
+  (ورقة سفلية على الجوال، ولوحة جانبية على الشاشات ≥768px).
+  يُستدعى من _includes/ibn-faris-app.html.
   التنسيق في assets/css/ibn-faris-settings.css والسلوك في
   assets/js/ibn-faris-settings.js.
 {%- endcomment -%}
 
-<div class="ifs-overlay" id="ifs-overlay" hidden aria-hidden="true">
-  <section class="ifs-sheet" role="dialog" aria-modal="true" aria-labelledby="ifs-title">
-    <span class="ifs-handle" aria-hidden="true"></span>
-
-    <header class="ifs-topbar">
-      <div class="ifs-brand">
-        <span class="ifs-brand-mark" aria-hidden="true">
-          <img src="{{ '/images/ibnfaris-icon.png' | relative_url }}" alt="" width="26" height="26" loading="lazy" decoding="async">
-        </span>
-        <h2 class="ifs-brand-name" id="ifs-title">إعدادات ابن فارس</h2>
-      </div>
-      <button class="ifs-close" type="button" data-ifs-close aria-label="إغلاق الإعدادات" title="إغلاق">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M18 6 6 18"></path>
-          <path d="m6 6 12 12"></path>
-        </svg>
-      </button>
-    </header>
-
-    <div class="ifs-body">
-      <div class="ifs-group">
-        <p class="ifs-group-label">عام</p>
-
-        <div class="ifs-grid">
-          <button class="ifs-tile" type="button" data-ifs-soon="إعدادات الحساب">
-            <span class="ifs-tile-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="8" r="4"></circle>
-                <path d="M4 20a8 8 0 0 1 16 0"></path>
-              </svg>
-            </span>
-            <span class="ifs-tile-name">إعدادات الحساب</span>
-          </button>
-
-          <button class="ifs-tile" type="button" data-ifs-soon="القسائم">
-            <span class="ifs-tile-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
-                <path d="M9 9h.01"></path>
-                <path d="m15 9-6 6"></path>
-                <path d="M15 15h.01"></path>
-              </svg>
-            </span>
-            <span class="ifs-tile-name">القسائم</span>
-          </button>
-        </div>
-
-        <div class="ifs-list">
-          <button class="ifs-row" type="button" data-ifs-soon="حول ابن فارس">
-            <span class="ifs-row-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="9"></circle>
-                <path d="M12 11v5"></path>
-                <path d="M12 8h.01"></path>
-              </svg>
-            </span>
-            <span class="ifs-row-name">حول ابن فارس</span>
-            <span class="ifs-chevron" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m15 18-6-6 6-6"></path>
-              </svg>
-            </span>
-          </button>
-
-          <a class="ifs-row" href="{{ '/ibn-faris/sources/' | relative_url }}">
-            <span class="ifs-row-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 3h9l4 4v14H6z"></path>
-                <path d="M15 3v4h4"></path>
-                <path d="M9 12h6"></path>
-                <path d="M9 16h6"></path>
-              </svg>
-            </span>
-            <span class="ifs-row-name">التراخيص</span>
-            <span class="ifs-chevron" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m15 18-6-6 6-6"></path>
-              </svg>
-            </span>
-          </a>
-        </div>
-      </div>
-
-      <p class="ifs-note" id="ifs-note" role="status" aria-live="polite"></p>
+<section class="ifs-view" id="ifs-view" hidden aria-hidden="true" aria-labelledby="ifs-title">
+  <header class="ifs-topbar">
+    <div class="ifs-brand">
+      <span class="ifs-brand-mark" aria-hidden="true">
+        <img src="{{ '/images/ibnfaris-icon.png' | relative_url }}" alt="" width="26" height="26" loading="lazy" decoding="async">
+      </span>
+      <h2 class="ifs-brand-name" id="ifs-title">إعدادات ابن فارس</h2>
     </div>
-  </section>
-</div>
+    <button class="ifs-close" type="button" data-ifs-close aria-label="العودة إلى المحادثة" title="العودة إلى المحادثة">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 6 6 18"></path>
+        <path d="m6 6 12 12"></path>
+      </svg>
+    </button>
+  </header>
+
+  <div class="ifs-body">
+    <div class="ifs-group">
+      <p class="ifs-group-label">عام</p>
+
+      <div class="ifs-grid">
+        <button class="ifs-tile" type="button" data-ifs-soon="إعدادات الحساب">
+          <span class="ifs-tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4 20a8 8 0 0 1 16 0"></path>
+            </svg>
+          </span>
+          <span class="ifs-tile-name">إعدادات الحساب</span>
+        </button>
+
+        <button class="ifs-tile" type="button" data-ifs-soon="القسائم">
+          <span class="ifs-tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+              <path d="M9 9h.01"></path>
+              <path d="m15 9-6 6"></path>
+              <path d="M15 15h.01"></path>
+            </svg>
+          </span>
+          <span class="ifs-tile-name">القسائم</span>
+        </button>
+      </div>
+
+      <div class="ifs-list">
+        <button class="ifs-row" type="button" data-ifs-soon="حول ابن فارس">
+          <span class="ifs-row-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M12 11v5"></path>
+              <path d="M12 8h.01"></path>
+            </svg>
+          </span>
+          <span class="ifs-row-name">حول ابن فارس</span>
+          <span class="ifs-chevron" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6"></path>
+            </svg>
+          </span>
+        </button>
+
+        <a class="ifs-row" href="{{ '/ibn-faris/sources/' | relative_url }}">
+          <span class="ifs-row-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 3h9l4 4v14H6z"></path>
+              <path d="M15 3v4h4"></path>
+              <path d="M9 12h6"></path>
+              <path d="M9 16h6"></path>
+            </svg>
+          </span>
+          <span class="ifs-row-name">التراخيص</span>
+          <span class="ifs-chevron" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6"></path>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <p class="ifs-note" id="ifs-note" role="status" aria-live="polite"></p>
+  </div>
+</section>

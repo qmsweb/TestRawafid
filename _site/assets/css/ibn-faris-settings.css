@@ -1,16 +1,17 @@
 /* ============================================================
-   ابن فارس — قائمة الإعدادات
+   ابن فارس — تبويب الإعدادات داخل لوحة المحادثة
    ============================================================
-   • الوصول: زر الترس داخل شريط ابن فارس العلوي (مكان زر الإغلاق).
-   • اللوحة بنفس آلية نافذة ابن فارس:
-       - الجوال: ورقة سفلية (Bottom Sheet).
-       - الشاشات ≥768px: لوحة جانبية على اليمين تدفع الصفحة.
+   • يُفتح من زر الترس في شريط ابن فارس العلوي.
+   • يعرض فوق المحادثة داخل اللوحة نفسها، فلا تُغلق المحادثة
+     ولا تُفقد، ويأخذ مقاس اللوحة نفسه تماماً:
+       - الجوال: الورقة السفلية كما هي.
+       - الشاشات ≥768px: اللوحة الجانبية كما هي.
    ============================================================ */
 
 /* ------------------------------------------------------------
-   1. رموز هوية اللوحة (فاتح + داكن)
+   1. رموز هوية التبويب (فاتح + داكن)
    ------------------------------------------------------------ */
-.ifs-overlay {
+.ifs-view {
   --ifs-parchment: #faf8f5;
   --ifs-soft-paper: #fdfbfa;
   --ifs-ink: #27251e;
@@ -20,18 +21,15 @@
   --ifs-on-sand: #ffffff;
   --ifs-logo-bg: #ffffff;
   --ifs-warm-mist: #d1d1cd;
-  --ifs-scrim: rgba(39, 37, 30, 0.42);
   --ifs-danger: #a8452f;
   --ifs-radius-sm: 8px;
   --ifs-radius-md: 14px;
   --ifs-radius-lg: 20px;
-  --ifs-sheet-radius: 26px;
-  --ifs-shadow-sheet: 0 -8px 48px rgba(39, 37, 30, 0.18);
   --ifs-font: var(--font-body), "Thmanyah Sans", "IBM Plex Sans Arabic",
     system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
 }
 
-html[data-theme="dark"] .ifs-overlay {
+html[data-theme="dark"] .ifs-view {
   --ifs-parchment: #191815;
   --ifs-soft-paper: #23211d;
   --ifs-ink: #f3f0e8;
@@ -41,97 +39,71 @@ html[data-theme="dark"] .ifs-overlay {
   --ifs-on-sand: #131210;
   --ifs-logo-bg: #ffffff;
   --ifs-warm-mist: #3a3731;
-  --ifs-scrim: rgba(0, 0, 0, 0.62);
   --ifs-danger: #e28b73;
-  --ifs-shadow-sheet: 0 -8px 48px rgba(0, 0, 0, 0.5);
 }
 
 /* ------------------------------------------------------------
-   3. اللوحة: ورقة سفلية على الجوال
+   2. التبويب: يملأ لوحة ابن فارس من الداخل
    ------------------------------------------------------------ */
-.ifs-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100000;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 0;
-  background: var(--ifs-scrim);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.26s ease, visibility 0s linear 0.26s;
+.if-app {
+  position: relative;
 }
 
-.ifs-overlay[hidden] {
-  display: none !important;
-}
-
-.ifs-overlay.is-open {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.26s ease, visibility 0s linear 0s;
-}
-
-.ifs-sheet {
+.ifs-view {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  max-height: min(88dvh, 780px);
   min-height: 0;
   overflow: hidden;
   background: var(--ifs-parchment);
-  border-radius: var(--ifs-sheet-radius) var(--ifs-sheet-radius) 0 0;
-  box-shadow: var(--ifs-shadow-sheet),
-    0 0 0 1px color-mix(in srgb, var(--ifs-warm-mist) 75%, transparent);
   color: var(--ifs-ink);
   font-family: var(--ifs-font);
   font-size: 16px;
   line-height: 1.5;
   text-align: start;
-  transform: translate3d(0, 100%, 0);
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
+  animation: ifs-view-in 0.24s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.ifs-overlay.is-open .ifs-sheet {
-  transform: translate3d(0, 0, 0);
+.ifs-view[hidden] {
+  display: none !important;
 }
 
-.ifs-overlay.is-dragging .ifs-sheet {
-  transition: none;
+/* الورقة السفلية على الجوال: نترك مقبض السحب ظاهراً فوق التبويب. */
+@media (max-width: 767px) {
+  .ifs-view {
+    top: 13px;
+  }
+
+  /* صفحة ابن فارس المستقلة بلا مقبض سحب */
+  .if-sheet--page .ifs-view {
+    top: 0;
+  }
 }
 
-.ifs-sheet *,
-.ifs-sheet *::before,
-.ifs-sheet *::after {
+.ifs-view *,
+.ifs-view *::before,
+.ifs-view *::after {
   box-sizing: border-box;
 }
 
-.ifs-handle {
-  width: 46px;
-  height: 4px;
-  margin: 9px auto 0;
-  flex-shrink: 0;
-  border-radius: 9999px;
-  background: var(--ifs-warm-mist);
-  cursor: grab;
-  touch-action: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.ifs-overlay.is-dragging .ifs-handle {
-  cursor: grabbing;
-}
-
-.ifs-handle:focus-visible {
-  outline: 2px solid var(--ifs-sand);
-  outline-offset: 4px;
+@keyframes ifs-view-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ------------------------------------------------------------
-   4. ترويسة اللوحة
+   3. ترويسة التبويب
    ------------------------------------------------------------ */
 .ifs-topbar {
   flex-shrink: 0;
@@ -139,7 +111,7 @@ html[data-theme="dark"] .ifs-overlay {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 18px 12px;
+  padding: 10px clamp(14px, 4vw, 22px) 12px;
   border-bottom: 1px solid var(--ifs-warm-mist);
   background: var(--ifs-parchment);
 }
@@ -213,7 +185,7 @@ html[data-theme="dark"] .ifs-overlay {
 }
 
 /* ------------------------------------------------------------
-   5. المحتوى: «عام» والأزرار المختصرة
+   4. المحتوى: «عام» والأزرار المختصرة
    ------------------------------------------------------------ */
 .ifs-body {
   flex: 1;
@@ -381,75 +353,7 @@ html[data-theme="dark"] .ifs-overlay {
 }
 
 /* ------------------------------------------------------------
-   6. الشاشات الكبيرة: لوحة جانبية على اليمين
-   ------------------------------------------------------------ */
-@media (min-width: 768px) {
-  :root {
-    --ifs-side-width: clamp(320px, 32vw, 440px);
-  }
-
-  body.ifs-side-open {
-    padding-right: var(--ifs-side-width);
-  }
-
-  body.ifs-side-open .site-header {
-    right: var(--ifs-side-width);
-  }
-
-  body.ifs-side-open .if-fab {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  .ifs-overlay {
-    inset: 0 0 0 auto;
-    width: var(--ifs-side-width);
-    height: 100vh;
-    height: 100dvh;
-    padding: 0;
-    align-items: stretch;
-    justify-content: flex-start;
-    overflow: hidden;
-    background: transparent;
-    pointer-events: none;
-    transform: translateZ(0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-  }
-
-  .ifs-sheet {
-    width: 100%;
-    height: 100%;
-    min-height: 100%;
-    max-height: none;
-    border-radius: 0;
-    box-shadow: -12px 0 48px rgba(39, 37, 30, 0.18),
-      0 0 0 1px color-mix(in srgb, var(--ifs-warm-mist) 75%, transparent);
-    transform: translate3d(100%, 0, 0);
-    pointer-events: auto;
-  }
-
-  .ifs-overlay.is-open .ifs-sheet {
-    transform: translate3d(0, 0, 0);
-  }
-
-  .ifs-handle {
-    display: none;
-  }
-
-  .ifs-body {
-    padding-bottom: max(24px, env(safe-area-inset-bottom));
-  }
-}
-
-/* قفل تمرير الصفحة على الجوال فقط (اللوحة الجانبية تدفع المحتوى ولا تقفله) */
-body.ifs-locked {
-  overflow: hidden !important;
-}
-
-/* ------------------------------------------------------------
-   7. الاستجابة وتفضيلات الحركة والطباعة
+   5. الاستجابة وتفضيلات الحركة والطباعة
    ------------------------------------------------------------ */
 @media (max-width: 380px) {
   .ifs-grid {
@@ -465,8 +369,10 @@ body.ifs-locked {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ifs-overlay,
-  .ifs-overlay .ifs-sheet,
+  .ifs-view {
+    animation: none !important;
+  }
+
   .ifs-close,
   .ifs-tile,
   .ifs-row {
@@ -475,7 +381,7 @@ body.ifs-locked {
 }
 
 @media print {
-  .ifs-overlay {
+  .ifs-view {
     display: none !important;
   }
 }
