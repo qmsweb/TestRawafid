@@ -357,7 +357,8 @@ html[data-theme="dark"] .ifs-view {
 /* ------------------------------------------------------------
    5. نافذة القسائم: طبقة فوق الإعدادات بالحجم نفسه
    ------------------------------------------------------------ */
-.ifs-voucher {
+.ifs-voucher,
+.ifs-account {
   z-index: 40;
   animation: ifv-view-in 0.26s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -443,7 +444,8 @@ html[data-theme="dark"] .ifs-view {
   transform: rotate(3deg);
 }
 
-.ifv-title {
+.ifv-title,
+.ifu-title {
   margin: 0;
   color: var(--ifs-ink);
   font-size: 19px;
@@ -451,7 +453,8 @@ html[data-theme="dark"] .ifs-view {
   line-height: 1.45;
 }
 
-.ifv-lead {
+.ifv-lead,
+.ifu-lead {
   max-width: 32ch;
   margin: 0;
   color: var(--ifs-graphite);
@@ -469,7 +472,8 @@ html[data-theme="dark"] .ifs-view {
   margin-inline: auto;
 }
 
-.ifv-label {
+.ifv-label,
+.ifu-label {
   display: block;
   margin-bottom: 9px;
   padding-inline-start: 2px;
@@ -558,7 +562,8 @@ html[data-theme="dark"] .ifs-view {
   }
 }
 
-.ifv-status {
+.ifv-status,
+.ifu-status {
   min-height: 20px;
   margin: 0;
   padding-inline-start: 2px;
@@ -567,12 +572,20 @@ html[data-theme="dark"] .ifs-view {
   line-height: 1.6;
 }
 
-.ifv-status.is-error {
+.ifv-status.is-error,
+.ifu-status.is-error {
   color: var(--ifs-danger);
 }
 
+.ifv-status.is-success,
+.ifu-status.is-success {
+  color: var(--ifs-sand);
+  font-weight: 600;
+}
+
 /* --- زر التأكيد وحالة التحقق --- */
-.ifv-submit {
+.ifv-submit,
+.ifu-submit {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -591,25 +604,30 @@ html[data-theme="dark"] .ifs-view {
   transition: filter 0.18s ease, opacity 0.18s ease, transform 0.18s ease;
 }
 
-.ifv-submit:hover:not(:disabled) {
+.ifv-submit:hover:not(:disabled),
+.ifu-submit:hover:not(:disabled) {
   filter: brightness(1.06);
 }
 
-.ifv-submit:active:not(:disabled) {
+.ifv-submit:active:not(:disabled),
+.ifu-submit:active:not(:disabled) {
   transform: translateY(1px);
 }
 
-.ifv-submit:focus-visible {
+.ifv-submit:focus-visible,
+.ifu-submit:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--ifs-sand) 32%, transparent);
 }
 
-.ifv-submit:disabled {
+.ifv-submit:disabled,
+.ifu-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.ifv-spinner {
+.ifv-spinner,
+.ifu-spinner {
   display: none;
   width: 16px;
   height: 16px;
@@ -619,7 +637,8 @@ html[data-theme="dark"] .ifs-view {
   animation: ifv-spin 0.7s linear infinite;
 }
 
-.ifv-submit.is-loading .ifv-spinner {
+.ifv-submit.is-loading .ifv-spinner,
+.ifu-submit.is-loading .ifu-spinner {
   display: inline-block;
 }
 
@@ -731,7 +750,184 @@ html[data-theme="dark"] .ifs-view {
 }
 
 /* ------------------------------------------------------------
-   6. الاستجابة وتفضيلات الحركة والطباعة
+   6. نافذة إعدادات الحساب: الاسم وصورته الرمزية
+   ------------------------------------------------------------ */
+.ifu-body {
+  gap: 20px;
+}
+
+.ifu-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+  text-align: center;
+}
+
+.ifu-avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 4px;
+  border: 1px solid color-mix(in srgb, var(--ifs-sand) 32%, var(--ifs-warm-mist));
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 18%,
+    color-mix(in srgb, var(--ifs-sand) 20%, transparent),
+    color-mix(in srgb, var(--ifs-sand) 6%, transparent)
+  );
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--ifs-sand) 6%, transparent);
+  color: var(--ifs-sand);
+  transition: border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.ifu-avatar.is-saved {
+  border-color: var(--ifs-sand);
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--ifs-sand) 11%, transparent);
+}
+
+.ifu-avatar-glyph {
+  display: grid;
+  place-items: center;
+}
+
+.ifu-avatar-glyph[hidden],
+.ifu-avatar-initial[hidden] {
+  display: none !important;
+}
+
+.ifu-avatar-glyph svg {
+  width: 34px;
+  height: 34px;
+}
+
+.ifu-avatar-initial {
+  display: block;
+  max-width: 70px;
+  overflow: hidden;
+  color: var(--ifs-sand);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ifu-avatar-badge {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border: 2px solid var(--ifs-parchment);
+  border-radius: 50%;
+  background: var(--ifs-sand);
+  color: var(--ifs-on-sand);
+}
+
+.ifu-avatar-badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+.ifu-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  margin-inline: auto;
+}
+
+.ifu-input-wrap {
+  position: relative;
+}
+
+.ifu-input {
+  width: 100%;
+  height: 54px;
+  padding: 0 14px;
+  padding-inline-end: 66px;
+  border: 1px solid var(--ifs-warm-mist);
+  border-radius: 12px;
+  background: var(--ifs-soft-paper);
+  color: var(--ifs-ink);
+  font-family: inherit;
+  font-size: 16.5px;
+  font-weight: 600;
+  text-align: start;
+  caret-color: var(--ifs-sand);
+  appearance: none;
+  transition: border-color 0.18s ease, background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.ifu-input::placeholder {
+  color: var(--ifs-ash);
+  font-weight: 400;
+}
+
+.ifu-input::selection {
+  background: color-mix(in srgb, var(--ifs-sand) 28%, transparent);
+  color: var(--ifs-ink);
+}
+
+.ifu-input:hover {
+  border-color: color-mix(in srgb, var(--ifs-sand) 45%, var(--ifs-warm-mist));
+}
+
+.ifu-input:focus {
+  border-color: var(--ifs-sand);
+  background: color-mix(in srgb, var(--ifs-soft-paper) 94%, var(--ifs-sand));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ifs-sand) 22%, transparent);
+  outline: none;
+}
+
+.ifu-input.is-invalid {
+  border-color: var(--ifs-danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ifs-danger) 18%, transparent);
+}
+
+.ifu-count {
+  position: absolute;
+  top: 50%;
+  left: 13px;
+  color: var(--ifs-ash);
+  direction: ltr;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  transform: translateY(-50%);
+  unicode-bidi: isolate;
+}
+
+.ifu-hint {
+  display: flex;
+  gap: 7px;
+  margin: 9px 2px 0;
+  color: var(--ifs-graphite);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.ifu-hint-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--ifs-sand);
+}
+
+.ifu-hint-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ------------------------------------------------------------
+   7. الاستجابة وتفضيلات الحركة والطباعة
    ------------------------------------------------------------ */
 @media (max-width: 380px) {
   .ifs-grid {
@@ -754,6 +950,16 @@ html[data-theme="dark"] .ifs-view {
     border-radius: 10px;
     font-size: 20px;
   }
+
+  .ifu-avatar {
+    width: 76px;
+    height: 76px;
+  }
+
+  .ifu-input {
+    height: 50px;
+    font-size: 16px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -767,7 +973,10 @@ html[data-theme="dark"] .ifs-view {
   .ifs-row,
   .ifv-input,
   .ifv-submit,
-  .ifv-again {
+  .ifv-again,
+  .ifu-input,
+  .ifu-submit,
+  .ifu-avatar {
     transition: none !important;
   }
 

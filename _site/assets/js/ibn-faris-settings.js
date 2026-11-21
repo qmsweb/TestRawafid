@@ -25,10 +25,27 @@
     isVoucherOpen: false,
     voucherBusy: false,
     voucherTimer: null,
+    account: null,
+    accountInput: null,
+    accountTrigger: null,
+    isAccountOpen: false,
+    accountBusy: false,
+    accountTimer: null,
   };
 
   var ARABIC_DIGITS = "٠١٢٣٤٥٦٧٨٩";
   var PERSIAN_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
+  var NAME_MAX = 40;
+  var NAME_STORAGE_KEY = "rawafed-ibn-faris-name";
+
+  // الحروف العربية (بما فيها أشكال العرض) والتشكيل والإيموجي فقط.
+  var ARABIC_LETTER =
+    /[\u0620-\u064A\u066E-\u06D3\u06FA-\u06FC\u06FF\u0750-\u077F\u08A0-\u08C9\uFB50-\uFDFF\uFE70-\uFEFC]/;
+  var ARABIC_MARK =
+    /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u08D3-\u08E1\u08E3-\u08FF]/;
+  var EMOJI_CHAR =
+    /[\u200D\u20E3\uFE0F\u{1F000}-\u{1FAFF}\u{1F1E6}-\u{1F1FF}\u{1F3FB}-\u{1F3FF}\u{2190}-\u{21FF}\u{2300}-\u{23FF}\u{25A0}-\u{27BF}\u{2900}-\u{297F}\u{2B00}-\u{2BFF}\u{3030}\u{303D}\u{3297}\u{3299}]/u;
+  var graphemeSegmenter = null;
 
   function elementFrom(target) {
     if (!target) return null;
@@ -64,6 +81,94 @@
       view.querySelectorAll("[data-ifv-digit]")
     );
     return view;
+  }
+
+  function ensureAccount() {
+    if (state.account && document.contains(state.account)) return state.account;
+
+    var view = document.getElementById("ifs-account");
+    if (!view) return null;
+
+    state.account = view;
+    state.accountInput = view.querySelector("#ifu-name");
+    return view;
+  }
+
+  function graphemeList(value) {
+    var text = String(value == null ? "" : value);
+    if (!text) return [];
+
+    if (window.Intl && typeof window.Intl.Segmenter === "function") {
+      try {
+        if (!graphemeSegmenter) {
+          graphemeSegmenter = new window.Intl.Segmenter("ar", {
+            granularity: "grapheme",
+          });
+        }
+
+        var segments = [];
+        var iterator = graphemeSegmenter.segment(text)[Symbol.iterator]();
+        var step = iterator.next();
+
+        while (!step.done) {
+          segments.push(step.value.segment);
+          step = iterator.next();
+        }
+
+        return segments;
+      } catch (error) {
+        // نعود إلى تقسيم نقاط الترميز إن لم يتوفر المقطع النصي.
+      }
+    }
+
+    return Array.from(text);
+  }
+
+  function isAllowedAccountCharacter(character) {
+    return (
+      character === " " ||
+      ARABIC_LETTER.test(character) ||
+      ARABIC_MARK.test(character) ||
+      EMOJI_CHAR.test(character)
+    );
+  }
+
+  function validateAccountName(value) {
+    var cleaned = String(value == null ? "" : value)
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!cleaned) return { valid: false, reason: "empty", value: "" };
+
+    var characters = Array.from(cleaned);
+
+    for (var i = 0; i < characters.length; i += 1) {
+      if (!isAllowedAccountCharacter(characters[i])) {
+        return { valid: false, reason: "letters", value: cleaned };
+      }
+    }
+
+    if (graphemeList(cleaned).length > NAME_MAX) {
+      return { valid: false, reason: "long", value: cleaned };
+    }
+
+    return { valid: true, value: cleaned };
+  }
+
+  function readSavedName() {
+    try {
+      return window.localStorage.getItem(NAME_STORAGE_KEY) || "";
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function writeSavedName(name) {
+    try {
+      window.localStorage.setItem(NAME_STORAGE_KEY, name);
+    } catch (error) {
+      // الحفظ المحلي قد يكون معطلاً؛ لا نعطّل الواجهة بسببه.
+    }
   }
 
   // يقبل الأرقام العربية والفارسية ويحوّلها إلى أرقام لاتينية،
@@ -173,6 +278,7 @@
     if (!view) return;
 
     if (!state.isOpen) open(trigger);
+    closeAccount(true);
 
     state.voucherTrigger = trigger || null;
     if (trigger) trigger.setAttribute("aria-expanded", "true");
@@ -209,7 +315,9 @@
       view.setAttribute("aria-hidden", "true");
     }
 
-    if (state.view) state.view.removeAttribute("inert");
+    if (state.view && !state.isAccountOpen) {
+      state.view.removeAttribute("inert");
+    }
 
     state.voucherTrigger = null;
 
@@ -221,6 +329,225 @@
     } catch (error) {
       trigger.focus();
     }
+  }
+
+  function setAccountStatus(text, kind) {
+    var status = state.account && state.account.querySelector("#ifu-status");
+    if (!status) return;
+
+    status.textContent = text || "";
+    status.classList.toggle("is-error", kind === "error");
+    status.classList.toggle("is-success", kind === "success");
+  }
+
+  function syncAccount() {
+    var view = ensureAccount();
+    if (!view || !state.accountInput) return;
+
+    var input = state.accountInput;
+    var value = input.value;
+    var trimmed = value.trim();
+    var initial = graphemeList(trimmed)[0] || "";
+
+    if (initial && !Array.from(initial).every(isAllowedAccountCharacter)) {
+      initial = "";
+    }
+
+    var initialElement = view.querySelector("#ifu-initial");
+    var glyph = view.querySelector("#ifu-avatar-glyph");
+    var count = view.querySelector("#ifu-count");
+    var submit = view.querySelector("#ifu-submit");
+    var result = validateAccountName(value);
+
+    if (initialElement) {
+      initialElement.textContent = initial;
+      initialElement.hidden = !initial;
+    }
+
+    if (glyph) glyph.hidden = !!initial;
+
+    if (count) {
+      count.textContent = graphemeList(value).length + " / " + NAME_MAX;
+    }
+
+    input.classList.toggle("is-invalid", !!trimmed && !result.valid);
+
+    if (!trimmed) {
+      setAccountStatus("", "");
+    } else if (!result.valid) {
+      setAccountStatus(
+        result.reason === "long"
+          ? "الاسم أطول من " + NAME_MAX + " حرفاً."
+          : "استخدم الحروف العربية والتشكيل والإيموجي فقط.",
+        "error"
+      );
+    } else {
+      setAccountStatus("", "");
+    }
+
+    if (submit) submit.disabled = state.accountBusy || !result.valid;
+  }
+
+  function resetAccount() {
+    var view = ensureAccount();
+    if (!view) return;
+
+    window.clearTimeout(state.accountTimer);
+    state.accountBusy = false;
+
+    var input = state.accountInput;
+    if (input) {
+      input.value = readSavedName();
+      input.classList.remove("is-invalid");
+      input.disabled = false;
+    }
+
+    var avatar = view.querySelector("#ifu-avatar");
+    if (avatar) avatar.classList.remove("is-saved");
+
+    var submit = view.querySelector("#ifu-submit");
+    if (submit) {
+      submit.classList.remove("is-loading");
+      submit.disabled = true;
+    }
+
+    var label = view.querySelector(".ifu-submit-label");
+    if (label) label.textContent = "حفظ الاسم";
+
+    setAccountStatus("", "");
+    syncAccount();
+  }
+
+  function openAccount(trigger) {
+    if (state.isAccountOpen) return;
+
+    var view = ensureAccount();
+    if (!view) return;
+
+    if (!state.isOpen) open(trigger);
+    closeVoucher(true);
+
+    state.accountTrigger = trigger || null;
+    if (trigger) trigger.setAttribute("aria-expanded", "true");
+
+    resetAccount();
+    if (state.view) state.view.setAttribute("inert", "");
+
+    view.hidden = false;
+    view.setAttribute("aria-hidden", "false");
+    state.isAccountOpen = true;
+
+    var body = view.querySelector(".ifs-body");
+    if (body) body.scrollTop = 0;
+
+    window.requestAnimationFrame(function () {
+      if (!state.accountInput) return;
+      try {
+        state.accountInput.focus({ preventScroll: true });
+      } catch (error) {
+        state.accountInput.focus();
+      }
+      state.accountInput.select();
+    });
+  }
+
+  // fromSettings = أُغلقت نافذة الإعدادات نفسها، فلا نعيد التركيز
+  // إلى عنصر داخلها لأنه سيصبح مخفياً.
+  function closeAccount(fromSettings) {
+    if (!state.isAccountOpen) return;
+
+    var view = state.account;
+    var trigger = state.accountTrigger;
+
+    state.isAccountOpen = false;
+    state.accountBusy = false;
+    window.clearTimeout(state.accountTimer);
+
+    if (view) {
+      view.hidden = true;
+      view.setAttribute("aria-hidden", "true");
+    }
+
+    if (state.view && !state.isVoucherOpen) {
+      state.view.removeAttribute("inert");
+    }
+
+    state.accountTrigger = null;
+
+    if (trigger) trigger.setAttribute("aria-expanded", "false");
+    if (fromSettings || !trigger) return;
+
+    try {
+      trigger.focus({ preventScroll: true });
+    } catch (error) {
+      trigger.focus();
+    }
+  }
+
+  function handleAccountInput() {
+    var view = ensureAccount();
+    if (!view || !state.accountInput) return;
+
+    var input = state.accountInput;
+    var graphemes = graphemeList(input.value);
+
+    if (graphemes.length > NAME_MAX) {
+      input.value = graphemes.slice(0, NAME_MAX).join("");
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
+
+    var avatar = view.querySelector("#ifu-avatar");
+    if (avatar) avatar.classList.remove("is-saved");
+
+    syncAccount();
+  }
+
+  function submitAccount() {
+    var view = ensureAccount();
+    if (!view || !state.accountInput || state.accountBusy) return;
+
+    var input = state.accountInput;
+    var result = validateAccountName(input.value);
+
+    if (!result.valid) {
+      setAccountStatus(
+        result.reason === "empty"
+          ? "اكتب اسمك أولاً."
+          : result.reason === "long"
+            ? "الاسم أطول من " + NAME_MAX + " حرفاً."
+            : "استخدم الحروف العربية والتشكيل والإيموجي فقط.",
+        "error"
+      );
+      input.focus();
+      return;
+    }
+
+    var submit = view.querySelector("#ifu-submit");
+    var label = view.querySelector(".ifu-submit-label");
+
+    state.accountBusy = true;
+    if (submit) {
+      submit.classList.add("is-loading");
+      submit.disabled = true;
+    }
+    if (label) label.textContent = "جارٍ الحفظ…";
+    setAccountStatus("", "");
+
+    // الحفظ محلي فقط في هذه المرحلة، إلى أن يُربط حساب المستخدم.
+    state.accountTimer = window.setTimeout(function () {
+      state.accountBusy = false;
+
+      if (submit) submit.classList.remove("is-loading");
+      if (label) label.textContent = "حفظ الاسم";
+
+      input.value = result.value;
+      writeSavedName(result.value);
+      syncAccount();
+      setAccountStatus("تم حفظ الاسم بنجاح.", "success");
+
+      var avatar = view.querySelector("#ifu-avatar");
+      if (avatar) avatar.classList.add("is-saved");
+    }, 700);
   }
 
   // لوحة ابن فارس العائمة تبقى في الـ DOM بعد فتحها. إذا أُغلقت
@@ -274,7 +601,11 @@
   }
 
   function focusables() {
-    var scope = state.isVoucherOpen ? state.voucher : state.view;
+    var scope = state.isAccountOpen
+      ? state.account
+      : state.isVoucherOpen
+        ? state.voucher
+        : state.view;
     if (!scope) return [];
 
     return Array.prototype.filter.call(
@@ -347,6 +678,7 @@
   function close(fromParent) {
     if (!state.isOpen || !state.view) return;
 
+    closeAccount(true);
     closeVoucher(true);
     state.isOpen = false;
     state.view.hidden = true;
@@ -544,6 +876,11 @@
   }
 
   document.addEventListener("input", function (event) {
+    if (state.isAccountOpen && closestFrom(event.target, "#ifu-name")) {
+      handleAccountInput();
+      return;
+    }
+
     if (!state.isVoucherOpen) return;
     var input = closestFrom(event.target, "[data-ifv-digit]");
     if (input) handleDigitInput(input);
@@ -562,6 +899,12 @@
   });
 
   document.addEventListener("submit", function (event) {
+    if (closestFrom(event.target, "#ifu-form")) {
+      event.preventDefault();
+      submitAccount();
+      return;
+    }
+
     var form = closestFrom(event.target, "#ifv-form");
     if (!form) return;
     event.preventDefault();
@@ -570,6 +913,20 @@
 
   document.addEventListener("click", function (event) {
     if (event.defaultPrevented) return;
+
+    var accountTrigger = closestFrom(event.target, "[data-ifs-account]");
+    if (accountTrigger) {
+      event.preventDefault();
+      openAccount(accountTrigger);
+      return;
+    }
+
+    var accountCloser = closestFrom(event.target, "[data-ifu-close]");
+    if (accountCloser) {
+      event.preventDefault();
+      closeAccount();
+      return;
+    }
 
     var voucherTrigger = closestFrom(event.target, "[data-ifs-voucher]");
     if (voucherTrigger) {
@@ -633,7 +990,8 @@
       if (event.key === "Escape" || event.key === "Esc") {
         event.preventDefault();
         event.stopImmediatePropagation();
-        if (state.isVoucherOpen) closeVoucher();
+        if (state.isAccountOpen) closeAccount();
+        else if (state.isVoucherOpen) closeVoucher();
         else close();
         return;
       }
@@ -662,5 +1020,7 @@
     close: close,
     openVoucher: openVoucher,
     closeVoucher: closeVoucher,
+    openAccount: openAccount,
+    closeAccount: closeAccount,
   };
 })();
