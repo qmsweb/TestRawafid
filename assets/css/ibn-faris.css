@@ -86,6 +86,7 @@ html[data-theme="dark"] .if-overlay {
   padding: 0;
   height: 100vh;
   height: 100dvh;
+  height: var(--if-vv-h, 100dvh);
   overflow: hidden;
   background: var(--if-page-backdrop);
   color: var(--if-ink);
@@ -103,6 +104,7 @@ html[data-theme="dark"] .if-overlay {
   justify-content: center;
   height: 100vh;
   height: 100dvh;
+  height: var(--if-vv-h, 100dvh);
 }
 
 /* اللوحة: تُستخدم في صفحة ابن فارس وفي النافذة العائمة */
@@ -116,14 +118,19 @@ html[data-theme="dark"] .if-overlay {
   overflow: hidden;
   background: var(--if-parchment);
   border-radius: var(--if-sheet-radius) var(--if-sheet-radius) 0 0;
-  box-shadow: var(--if-shadow-sheet);
+  box-shadow: var(--if-shadow-sheet),
+    0 0 0 1px color-mix(in srgb, var(--if-warm-mist) 75%, transparent);
   color: var(--if-ink);
   font-family: var(--if-font);
 }
 
+/* صفحة ابن فارس المستقلة: ملء الشاشة على الجوال واللوحي،
+   وتصبح بطاقة عائمة من 900px فما فوق. */
 .if-sheet--page {
   height: 100vh;
   height: 100dvh;
+  height: var(--if-vv-h, 100dvh);
+  border-radius: 0;
 }
 
 .if-app {
@@ -145,6 +152,11 @@ html[data-theme="dark"] .if-overlay {
   border-radius: var(--if-radius-full);
   background: var(--if-warm-mist);
   flex-shrink: 0;
+}
+
+/* المقبض خاص باللوحة العائمة القابلة للسحب؛ صفحة ابن فارس ليست ورقة. */
+.if-sheet--page .if-sheet-handle {
+  display: none;
 }
 
 .if-sr-only {
@@ -313,7 +325,7 @@ html[data-theme="dark"] .if-overlay {
 .if-topbar-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-shrink: 0;
 }
 
@@ -352,9 +364,11 @@ html[data-theme="dark"] .if-overlay {
   flex-shrink: 0;
 }
 
+/* زر المحادثة الجديدة محايد في حالته الساكنة حتى لا ينافس زر الإغلاق،
+   ويتلوّن بالرملي عند المرور أو التركيز فقط. */
 .if-circle--accent {
-  border-color: color-mix(in srgb, var(--if-sand) 55%, var(--if-warm-mist));
-  color: var(--if-sand);
+  border-color: var(--if-warm-mist);
+  color: var(--if-graphite);
 }
 
 .if-circle--accent:hover,
@@ -375,6 +389,19 @@ html[data-theme="dark"] .if-overlay {
   background: transparent;
   color: var(--if-graphite);
   box-shadow: none;
+}
+
+/* مبدّل السمة في صفحة ابن فارس: قمر في الوضع الفاتح وشمس في الداكن. */
+.if-theme-sun {
+  display: none;
+}
+
+html[data-theme="dark"] .if-theme-sun {
+  display: block;
+}
+
+html[data-theme="dark"] .if-theme-moon {
+  display: none;
 }
 
 /* أيقونة نشاط تظهر على زر ابن فارس العائم حين تُطوى المحادثة
@@ -434,7 +461,7 @@ html[data-theme="dark"] .if-overlay {
   display: grid;
   place-items: center;
   color: var(--if-graphite);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   line-height: 1;
   pointer-events: none;
@@ -510,7 +537,7 @@ html[data-theme="dark"] .if-overlay {
   width: 100%;
   max-width: 760px;
   margin: 0 auto;
-  padding: 22px clamp(16px, 4vw, 28px) 12px;
+  padding: 22px clamp(16px, 4vw, 28px) 18px;
 }
 
 .if-messages {
@@ -607,8 +634,9 @@ html[data-theme="dark"] .if-overlay {
   }
 
   .if-suggestion {
-    padding: 7px 10px;
-    font-size: 12px;
+    min-height: 40px;
+    padding: 9px 12px;
+    font-size: 13px;
   }
 }
 
@@ -645,9 +673,9 @@ html[data-theme="dark"] .if-overlay {
 }
 
 .if-answer-label {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   color: var(--if-graphite);
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 500;
   line-height: 1.4;
 }
@@ -699,7 +727,7 @@ html[data-theme="dark"] .if-overlay {
   flex-wrap: wrap;
   align-items: baseline;
   gap: 6px;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.7;
 }
 
@@ -708,7 +736,7 @@ html[data-theme="dark"] .if-overlay {
   border-radius: var(--if-radius-full);
   background: color-mix(in srgb, var(--if-sand) 14%, transparent);
   color: var(--if-graphite);
-  font-size: 10px;
+  font-size: 11px;
   white-space: nowrap;
 }
 
@@ -809,7 +837,7 @@ html[data-theme="dark"] .if-overlay {
 
 .if-tool-label {
   color: var(--if-graphite);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
 }
 
@@ -1089,7 +1117,7 @@ html[data-theme="dark"] .if-overlay {
 
 .if-table-label {
   color: var(--if-graphite);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
 }
 
@@ -1147,8 +1175,8 @@ html[data-theme="dark"] .if-overlay {
 .if-md .if-table th {
   padding: 0 12px 8px;
   border-bottom: 1px solid var(--if-warm-mist);
-  font-size: 11px;
-  font-weight: 400;
+  font-size: 12px;
+  font-weight: 500;
   text-align: start;
   white-space: normal;
   overflow-wrap: anywhere;
@@ -1203,36 +1231,42 @@ html[data-theme="dark"] .if-overlay {
   }
 
   .if-md .if-table tbody tr {
-    padding: 10px 12px;
+    padding: 8px 12px;
     border: 1px solid var(--if-warm-mist);
     border-radius: var(--if-radius-sm);
-    background: var(--if-white);
+    background: var(--if-soft-paper);
   }
 
   .if-md .if-table tbody tr + tr {
-    margin-top: 8px;
+    margin-top: 6px;
   }
 
+  /* الخلية سطر واحد: عنوان العمود بجانب القيمة بدل سطرين متباعدين،
+     حتى لا يستهلك الجدول الصغير مئات البكسلات على الجوال. */
   .if-md .if-table td {
-    padding: 6px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 4px 0;
     border-bottom: 0;
-    font-size: 14px;
+    font-size: 13px;
+    line-height: 1.6;
   }
 
   .if-md .if-table td + td {
-    margin-top: 2px;
-    padding-top: 8px;
-    border-top: 1px dashed var(--if-warm-mist);
+    margin-top: 0;
+    padding-top: 4px;
+    border-top: 0;
   }
 
   .if-md .if-table td[data-label]::before {
     content: attr(data-label);
-    display: block;
-    margin-bottom: 2px;
+    flex: 0 0 34%;
+    margin: 0;
     color: var(--if-graphite);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
-    line-height: 1.4;
+    line-height: 1.6;
   }
 
   .if-poetry-body {
@@ -1294,7 +1328,7 @@ html[data-theme="dark"] .if-overlay {
   padding: 8px 16px;
   border-bottom: 1px solid var(--if-warm-mist);
   color: var(--if-graphite);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
 }
 
@@ -1406,9 +1440,133 @@ html[data-theme="dark"] .if-overlay {
    10. شريط الكتابة
    ------------------------------------------------------------ */
 .if-composer-shell {
+  position: relative;
   flex-shrink: 0;
   padding: 8px clamp(14px, 4vw, 24px) max(14px, env(safe-area-inset-bottom));
   background: var(--if-parchment);
+}
+
+/* تلاشٍ خفيف أعلى شريط الإدخال حتى لا يُقصّ آخر سطر من الرد بحدّ حاد. */
+.if-composer-shell::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 100%;
+  height: 18px;
+  background: linear-gradient(to top, var(--if-parchment) 30%, transparent);
+  pointer-events: none;
+}
+
+/* زر العودة إلى آخر الرد: يظهر عند الابتعاد عن نهاية المحادثة. */
+.if-jump {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 6px 14px;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-full);
+  background: var(--if-soft-paper);
+  color: var(--if-graphite);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  box-shadow: var(--if-shadow-fab);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, 6px);
+  transition: opacity 0.18s ease, transform 0.18s ease,
+    visibility 0s linear 0.18s;
+}
+
+.if-jump.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s;
+}
+
+.if-jump svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.if-jump:hover,
+.if-jump:focus-visible {
+  border-color: var(--if-sand);
+  color: var(--if-ink);
+}
+
+/* تأكيد «محادثة جديدة» داخل اللغة البصرية للوحة. */
+.if-confirm {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 7;
+  width: min(360px, calc(100% - 24px));
+  padding: 14px;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-lg);
+  background: var(--if-soft-paper);
+  box-shadow: var(--if-shadow-fab);
+  transform: translateX(-50%);
+  text-align: start;
+}
+
+.if-confirm-text {
+  margin: 0 0 12px;
+  color: var(--if-ink);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.if-confirm-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.if-confirm-cancel,
+.if-confirm-ok {
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: var(--if-radius-full);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.if-confirm-cancel {
+  border: 1px solid var(--if-warm-mist);
+  background: transparent;
+  color: var(--if-graphite);
+}
+
+.if-confirm-cancel:hover {
+  border-color: var(--if-graphite);
+  color: var(--if-ink);
+}
+
+.if-confirm-ok {
+  border: 1px solid transparent;
+  background: var(--if-danger);
+  color: var(--if-parchment);
+}
+
+.if-confirm-ok:hover {
+  background: color-mix(in srgb, var(--if-danger) 88%, var(--if-ink));
 }
 
 .if-composer-width {
@@ -1571,10 +1729,11 @@ html[data-theme="dark"] .if-overlay {
 .if-disclaimer {
   margin: 8px 2px 0;
   color: var(--if-graphite);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
   line-height: 1.6;
   text-align: center;
+  text-wrap: balance;
 }
 
 .if-disclaimer strong {
@@ -1585,7 +1744,7 @@ html[data-theme="dark"] .if-overlay {
 .if-disclaimer-sub {
   display: block;
   margin-top: 2px;
-  font-size: 11px;
+  font-size: 12px;
   opacity: 0.9;
 }
 
@@ -1654,7 +1813,7 @@ html[data-theme="dark"] .if-overlay {
    ============================================================ */
 @media (min-width: 768px) {
   :root {
-    --if-side-width: clamp(360px, 32vw, 440px);
+    --if-side-width: clamp(320px, 32vw, 440px);
   }
 
   body.if-side-open {
@@ -1693,7 +1852,8 @@ html[data-theme="dark"] .if-overlay {
     min-height: 100%;
     max-height: none;
     border-radius: 0;
-    box-shadow: -12px 0 48px rgba(39, 37, 30, 0.18);
+    box-shadow: -12px 0 48px rgba(39, 37, 30, 0.18),
+      0 0 0 1px color-mix(in srgb, var(--if-warm-mist) 75%, transparent);
     transform: translate3d(100%, 0, 0);
     pointer-events: auto;
   }
@@ -1718,7 +1878,7 @@ html[data-theme="dark"] .if-overlay {
 
 /* عندما يضيق المحتوى بعد فتح اللوحة: قائمة روافد تتحول إلى درج من اليسار
    حتى لا يزدحم شريط التنقل، مع شبكات بطاقات أنسب للمساحة المتبقية. */
-@media (min-width: 769px) and (max-width: 1100px) {
+@media (min-width: 768px) and (max-width: 1100px) {
   body.if-side-open .menu-toggle {
     display: flex;
   }
@@ -1862,8 +2022,8 @@ html[data-theme="dark"] .if-overlay {
   }
 
   .if-circle {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
   }
 
   .if-quota-ring,
@@ -1873,11 +2033,11 @@ html[data-theme="dark"] .if-overlay {
   }
 
   .if-topbar-actions {
-    gap: 6px;
+    gap: 8px;
   }
 
   .if-thread {
-    padding: 20px 16px 10px;
+    padding: 20px 16px 14px;
   }
 
   .if-empty {
@@ -1905,12 +2065,59 @@ html[data-theme="dark"] .if-overlay {
     font-size: 15px;
   }
 
+  /* أهداف لمس مريحة على الجوال */
+  .if-copy {
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+
+  .if-sources summary {
+    min-height: 44px;
+    padding: 12px;
+  }
+
+  .if-table-copy {
+    min-height: 38px;
+    padding: 6px 10px;
+  }
+
+  .if-jump {
+    min-height: 40px;
+  }
+
   .if-composer-shell {
     padding: 6px 12px max(10px, env(safe-area-inset-bottom));
   }
 
   .if-disclaimer {
-    font-size: 10px;
+    margin-top: 6px;
+    font-size: 12px;
+  }
+}
+
+/* شاشات ضيقة جداً (320–400px): نضغط الترويسة حتى تبقى أزرارها كاملة. */
+@media (max-width: 400px) {
+  .if-circle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .if-brand-mark {
+    width: 30px;
+    height: 30px;
+  }
+
+  .if-brand-mark img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .if-brand-name {
+    font-size: 16px;
+  }
+
+  .if-topbar-actions {
+    gap: 4px;
   }
 }
 
@@ -1936,6 +2143,44 @@ html[data-theme="dark"] .if-overlay {
   }
 }
 
+/* الشاشات الأفقية القصيرة (جوال مُدار): نقلّل الهيكل حتى تبقى المحادثة مقروءة. */
+@media (max-height: 520px) {
+  .if-sheet-handle {
+    display: none;
+  }
+
+  .if-disclaimer-sub {
+    display: none;
+  }
+
+  .if-disclaimer {
+    margin-top: 4px;
+  }
+
+  .if-topbar {
+    padding-top: 4px;
+    padding-bottom: 6px;
+  }
+
+  .if-composer-shell {
+    padding-top: 4px;
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+  }
+
+  .if-circle {
+    width: 38px;
+    height: 38px;
+  }
+
+  .if-input {
+    max-height: min(168px, 28dvh);
+  }
+
+  .if-msg {
+    padding-bottom: 18px;
+  }
+}
+
 @media (max-width: 380px) {
   .if-quota-ring,
   .if-quota-ring svg {
@@ -1945,7 +2190,30 @@ html[data-theme="dark"] .if-overlay {
 }
 
 /* ------------------------------------------------------------
-   12. تقليل الحركة والطباعة
+   12. حلقة التركيز ولوحة المفاتيح
+   ------------------------------------------------------------ */
+/* أزرار بلا حدود مرئية تحتاج حلقة تركيز واضحة (2.4.7). */
+.if-send:focus-visible,
+.if-stop:focus-visible,
+.if-copy:focus-visible,
+.if-jump:focus-visible,
+.if-confirm-cancel:focus-visible,
+.if-confirm-ok:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--if-sand) 70%, transparent);
+  outline-offset: 2px;
+}
+
+/* لوحة المفاتيح على الجوال: نرفع اللوحة فوقها بدل أن تغطي شريط الإدخال. */
+.if-overlay.is-keyboard {
+  padding-bottom: var(--if-kb, 0px);
+}
+
+.if-overlay.is-keyboard .if-sheet {
+  max-height: calc(var(--if-vv-h, 88dvh) - 12px);
+}
+
+/* ------------------------------------------------------------
+   13. تقليل الحركة والطباعة
    ------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
   .if-page *,

@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
   <title>ابن فارس</title>
 
   <link rel="stylesheet" href="/fonts/fonts.css" />
@@ -116,7 +116,23 @@
           <path d="M18 6 6 18"></path>
           <path d="m6 6 12 12"></path>
         </svg>
-      </a></div>
+      </a>
+      <button class="if-circle if-theme" id="if-theme" type="button" aria-label="التبديل إلى الوضع الليلي" title="الوضع الليلي" aria-pressed="false">
+        <svg class="if-icon if-theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.8A8.6 8.6 0 1 1 11.2 3a6.8 6.8 0 0 0 9.8 9.8z"></path>
+        </svg>
+        <svg class="if-icon if-theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="M4.9 4.9l1.4 1.4"></path>
+          <path d="M17.7 17.7l1.4 1.4"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="M4.9 19.1l1.4-1.4"></path>
+          <path d="M17.7 6.3l1.4-1.4"></path>
+        </svg>
+      </button></div>
   </header>
 
   <main class="if-main" id="if-main" tabindex="-1">
@@ -151,6 +167,22 @@
   </main>
 
   <div class="if-composer-shell">
+    <button class="if-jump" id="if-jump" type="button" tabindex="-1" aria-label="العودة إلى آخر الرد">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 5v14"></path>
+        <path d="m19 12-7 7-7-7"></path>
+      </svg>
+      <span>آخر الرد</span>
+    </button>
+
+    <div class="if-confirm" id="if-confirm" role="alertdialog" aria-modal="false" aria-labelledby="if-confirm-text" hidden>
+      <p class="if-confirm-text" id="if-confirm-text">سيتم حذف المحادثة الحالية. هل تريد المتابعة؟</p>
+      <div class="if-confirm-actions">
+        <button class="if-confirm-cancel" id="if-confirm-cancel" type="button">إلغاء</button>
+        <button class="if-confirm-ok" id="if-confirm-ok" type="button">حذف المحادثة</button>
+      </div>
+    </div>
+
     <div class="if-composer-width">
       <div class="if-alert" id="if-alert" role="alert" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -248,6 +280,35 @@
 
       var close = document.getElementById("if-close");
       if (close) close.setAttribute("href", from);
+    })();
+
+    // مبدّل السمة داخل صفحة ابن فارس (الصفحة المستقلة بلا ترويسة الموقع).
+    (function () {
+      var button = document.getElementById("if-theme");
+      if (!button) return;
+
+      var root = document.documentElement;
+
+      function sync() {
+        var dark = root.getAttribute("data-theme") === "dark";
+        var label = dark ? "التبديل إلى الوضع النهاري" : "التبديل إلى الوضع الليلي";
+        button.setAttribute("aria-label", label);
+        button.setAttribute("title", dark ? "الوضع النهاري" : "الوضع الليلي");
+        button.setAttribute("aria-pressed", dark ? "true" : "false");
+      }
+
+      button.addEventListener("click", function () {
+        var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try {
+          localStorage.setItem("rawafed-theme", next);
+        } catch (error) {
+          // التخزين قد يكون معطلاً؛ التبديل يبقى سارياً في هذه الصفحة.
+        }
+        sync();
+      });
+
+      sync();
     })();
   </script>
 </body>

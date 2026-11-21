@@ -1096,6 +1096,22 @@
   </main>
 
   <div class="if-composer-shell">
+    <button class="if-jump" id="if-jump" type="button" tabindex="-1" aria-label="العودة إلى آخر الرد">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 5v14"></path>
+        <path d="m19 12-7 7-7-7"></path>
+      </svg>
+      <span>آخر الرد</span>
+    </button>
+
+    <div class="if-confirm" id="if-confirm" role="alertdialog" aria-modal="false" aria-labelledby="if-confirm-text" hidden>
+      <p class="if-confirm-text" id="if-confirm-text">سيتم حذف المحادثة الحالية. هل تريد المتابعة؟</p>
+      <div class="if-confirm-actions">
+        <button class="if-confirm-cancel" id="if-confirm-cancel" type="button">إلغاء</button>
+        <button class="if-confirm-ok" id="if-confirm-ok" type="button">حذف المحادثة</button>
+      </div>
+    </div>
+
     <div class="if-composer-width">
       <div class="if-alert" id="if-alert" role="alert" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

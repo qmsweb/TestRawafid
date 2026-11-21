@@ -139,6 +139,15 @@
     if (state.ready) return state.ready;
 
     state.ready = loadCss()
+      // مكتبات Markdown تُحمَّل قبل المحرّك: المحرّك يرسم المحادثة المحفوظة
+      // فور تحميله، فإن تأخّرت المكتبات ظهر السجل كـ Markdown خام.
+      // فشلها غير قاتل؛ المحرك يعرض النص الخام عند غيابها.
+      .then(function () {
+        return Promise.all([
+          loadScript(ASSETS.marked).catch(function () {}),
+          loadScript(ASSETS.purify).catch(function () {}),
+        ]);
+      })
       .then(function () {
         return loadScript(ASSETS.config);
       })
@@ -147,13 +156,6 @@
       })
       .then(function () {
         if (!window.IbnFarisChat) throw new Error("ibnfaris_engine_missing");
-
-        // ننتظر مكتبات Markdown حتى لا يظهر أول رد كنص خام ثم يتحول.
-        // فشلها غير قاتل؛ المحرك يعرض النص الخام عند غيابها.
-        return Promise.all([
-          loadScript(ASSETS.marked).catch(function () {}),
-          loadScript(ASSETS.purify).catch(function () {}),
-        ]);
       })
       .catch(function (error) {
         state.ready = null;

@@ -29,6 +29,34 @@
   var HISTORY_MAX_CHARS = 120_000;
   var HISTORY_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
+  // ----------------------------------------------------------
+  // قياس المساحة المرئية فعلياً (يتغيّر مع لوحة المفاتيح على الجوال)
+  // نضبط متغيّرات CSS حتى يبقى شريط الإدخال فوق لوحة المفاتيح.
+  // ----------------------------------------------------------
+  function syncViewport() {
+    var viewport = window.visualViewport;
+    if (!viewport) return;
+
+    var root = document.documentElement;
+    var keyboard = Math.max(
+      0,
+      window.innerHeight - viewport.height - viewport.offsetTop
+    );
+
+    root.style.setProperty("--if-vv-h", Math.round(viewport.height) + "px");
+    root.style.setProperty("--if-kb", Math.round(keyboard) + "px");
+
+    var overlay = document.getElementById("if-overlay");
+    if (overlay) overlay.classList.toggle("is-keyboard", keyboard > 80);
+  }
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", syncViewport);
+    window.visualViewport.addEventListener("scroll", syncViewport);
+    window.addEventListener("orientationchange", syncViewport);
+    syncViewport();
+  }
+
   function mount(root, options) {
     if (!root) return null;
     if (root.getAttribute("data-ibnfaris-mounted") === "true") return null;
@@ -54,6 +82,10 @@
       quota: q("#if-quota"),
       quotaValue: q("#if-quota-value"),
       quotaCount: q("#if-quota-count"),
+      jump: q("#if-jump"),
+      confirm: q("#if-confirm"),
+      confirmCancel: q("#if-confirm-cancel"),
+      confirmOk: q("#if-confirm-ok"),
     };
 
     if (!els.main || !els.form || !els.input || !els.messages) return null;
@@ -111,13 +143,22 @@
       var exhausted = Boolean(state.quotaExhausted);
 
       els.input.disabled = exhausted;
-      if (els.send) els.send.disabled = exhausted;
+      updateSendState();
 
       if (els.quota) {
         els.quota.title = exhausted
           ? "انتهت الحصة اليومية؛ تتجدد غدًا بتوقيت مسقط"
           : "";
       }
+    }
+
+    // زر الإرسال يبقى معطّلاً ما دام الحقل فارغاً، أو أثناء البث،
+    // أو عند نفاد الحصة، حتى لا يبدو قابلاً للنقر بلا نتيجة.
+    function updateSendState() {
+      if (!els.send) return;
+      var empty = !String(els.input.value || "").trim();
+      els.send.disabled =
+        empty || Boolean(state.quotaExhausted) || Boolean(state.streaming);
     }
 
     function setQuota(quota) {
@@ -203,10 +244,27 @@
       );
     }
 
+    // زر «العودة إلى آخر الرد» يظهر حين يبتعد القارئ عن نهاية المحادثة.
+    function syncJump() {
+      if (!els.jump) return;
+      var away =
+        els.main.scrollHeight - els.main.scrollTop - els.main.clientHeight > 160;
+      els.jump.classList.toggle("is-visible", away);
+      els.jump.tabIndex = away ? 0 : -1;
+    }
+
+    if (els.jump) {
+      els.jump.addEventListener("click", function () {
+        scrollToBottom(true);
+        syncJump();
+      });
+    }
+
     els.main.addEventListener(
       "scroll",
       function () {
         state.stick = nearBottom();
+        syncJump();
       },
       { passive: true }
     );
@@ -216,6 +274,7 @@
       if (state.stick) {
         els.main.scrollTop = els.main.scrollHeight;
       }
+      syncJump();
     }
 
     function autoGrow() {
@@ -430,6 +489,7 @@
     els.input.addEventListener("input", function () {
       autoGrow();
       saveDraft();
+      updateSendState();
     });
 
     els.input.addEventListener("keydown", function (event) {
@@ -466,15 +526,101 @@
       });
     }
 
+    // ----------------------------------------------------------
+    // تأكيد المحادثة الجديدة (بديل window.confirm)
+    // ----------------------------------------------------------
+    var confirmOpen = false;
+
+    function openConfirm() {
+      if (!els.confirm) return;
+
+      confirmOpen = true;
+      els.confirm.hidden = false;
+
+      if (els.jump) els.jump.classList.remove("is-visible");
+
+      window.requestAnimationFrame(function () {
+        if (els.confirmCancel) {
+          try {
+            els.confirmCancel.focus({ preventScroll: true });
+          } catch (error) {
+            els.confirmCancel.focus();
+          }
+        }
+      });
+    }
+
+    function closeConfirm(restoreFocus) {
+      if (!els.confirm || !confirmOpen) return;
+
+      confirmOpen = false;
+      els.confirm.hidden = true;
+      syncJump();
+
+      if (restoreFocus && els.newChat) {
+        try {
+          els.newChat.focus({ preventScroll: true });
+        } catch (error) {
+          els.newChat.focus();
+        }
+      }
+    }
+
+    if (els.confirmCancel) {
+      els.confirmCancel.addEventListener("click", function () {
+        closeConfirm(true);
+      });
+    }
+
+    if (els.confirmOk) {
+      els.confirmOk.addEventListener("click", function () {
+        closeConfirm(false);
+        newChat();
+      });
+    }
+
+    // Escape يغلق التأكيد وحده ولا يغلق اللوحة العائمة.
+    document.addEventListener(
+      "keydown",
+      function (event) {
+        if (!confirmOpen) return;
+        if (event.key !== "Escape" && event.key !== "Esc") return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        closeConfirm(true);
+      },
+      true
+    );
+
+    root.addEventListener("click", function (event) {
+      if (!confirmOpen) return;
+
+      var target = elementFromTarget(event.target);
+      if (target && target.closest && target.closest("#if-new")) return;
+      if (target && target.closest && target.closest(".if-confirm")) return;
+
+      closeConfirm(false);
+    });
+
+    function elementFromTarget(target) {
+      if (!target) return null;
+      if (target.nodeType === 1) return target;
+      return target.parentElement || null;
+    }
+
     if (els.newChat) {
       els.newChat.addEventListener("click", function () {
         if (state.streaming) return;
-        if (
-          state.messages.length > 0 &&
-          !window.confirm("سيتم حذف المحادثة الحالية. هل تريد المتابعة؟")
-        ) {
+
+        if (state.messages.length > 0) {
+          if (els.confirm) openConfirm();
+          else if (window.confirm("سيتم حذف المحادثة الحالية. هل تريد المتابعة؟")) {
+            newChat();
+          }
           return;
         }
+
         newChat();
       });
     }
@@ -483,6 +629,7 @@
       state.streaming = value;
       if (els.stop) els.stop.hidden = !value;
       if (els.send) els.send.hidden = value;
+      updateSendState();
       els.messages.setAttribute("aria-busy", value ? "true" : "false");
 
       if (els.newChat) {
@@ -1369,6 +1516,7 @@
       els.input.value = "";
       autoGrow();
       saveDraft();
+      updateSendState();
 
       setStreaming(true);
       state.stick = true;
@@ -1576,7 +1724,9 @@
       els.input.value = "";
       autoGrow();
       saveDraft();
+      updateSendState();
       els.main.scrollTop = 0;
+      syncJump();
       announce("محادثة جديدة.");
       return true;
     }
@@ -1606,6 +1756,8 @@
       restoreHistory();
       autoGrow();
       setStreaming(false);
+      updateSendState();
+      syncJump();
 
       if (!ENDPOINT || !ANON_KEY) {
         showAlert("خدمة ابن فارس غير متاحة حاليًا. حاول لاحقًا.");
@@ -1649,8 +1801,10 @@
 
   function autoMount() {
     var root = document.getElementById("if-app");
-    if (!root) return;
-    mount(root, { focus: !root.closest(".if-overlay") });
+    // نسخة اللوحة العائمة تُركَّب من السكربت بعد جهوزية كل الموارد،
+    // فلا نركّبها هنا حتى لا تُرسم قبل تحميل مكتبات Markdown.
+    if (!root || root.closest(".if-overlay")) return;
+    mount(root, { focus: true });
   }
 
   if (document.readyState === "loading") {
