@@ -606,6 +606,153 @@ html[data-theme="dark"] .if-overlay {
   color: var(--if-ink);
 }
 
+/* بطاقة أداة روافد الجاهزة داخل الرد */
+.if-tool-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.if-tool-card {
+  overflow: hidden;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-md);
+  background: var(--if-soft-paper);
+}
+
+.if-tool-head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--if-warm-mist) 60%, transparent);
+}
+
+.if-tool-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: var(--if-radius-sm);
+  background: color-mix(in srgb, var(--if-sand) 14%, transparent);
+  color: var(--if-sand);
+}
+
+.if-tool-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.if-tool-heads {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.if-tool-label {
+  color: var(--if-graphite);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.if-tool-title {
+  color: var(--if-ink);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.if-tool-body {
+  padding: 11px 14px 2px;
+}
+
+.if-tool-meta,
+.if-tool-note,
+.if-tool-result {
+  margin: 0 0 7px;
+  color: var(--if-graphite);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.if-tool-meta {
+  overflow-wrap: anywhere;
+}
+
+.if-tool-result {
+  color: var(--if-ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.if-tool-note {
+  color: var(--if-graphite);
+  font-size: 12px;
+}
+
+.if-tool-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px 14px;
+}
+
+.if-tool-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: var(--if-radius-full);
+  background: var(--if-sand);
+  color: var(--if-on-sand);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.if-tool-button:hover {
+  opacity: 0.9;
+}
+
+.if-tool-button:active {
+  transform: scale(0.98);
+}
+
+.if-tool-button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--if-sand) 45%, transparent);
+  outline-offset: 2px;
+}
+
+.if-tool-button:disabled {
+  opacity: 0.62;
+  cursor: default;
+  transform: none;
+}
+
+@media (max-width: 560px) {
+  .if-tool-body {
+    padding: 10px 12px 1px;
+  }
+
+  .if-tool-head,
+  .if-tool-actions {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .if-tool-button {
+    width: 100%;
+  }
+}
+
 /* ------------------------------------------------------------
    8. تنسيق Markdown
    ------------------------------------------------------------ */

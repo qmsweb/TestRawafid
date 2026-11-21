@@ -617,7 +617,8 @@
     --if-fab-shadow: 0 10px 28px rgba(39, 37, 30, 0.22);
 
     position: fixed;
-    left: max(18px, env(safe-area-inset-left));
+    right: max(18px, env(safe-area-inset-right));
+    left: auto;
     bottom: max(18px, env(safe-area-inset-bottom));
     z-index: 990;
     display: inline-flex;
@@ -636,6 +637,8 @@
     line-height: 1;
     text-decoration: none;
     cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     transition: transform 0.18s ease, background-color 0.18s ease,
       box-shadow 0.18s ease;
   }
@@ -680,7 +683,8 @@
 
   @media (max-width: 480px) {
     .if-fab {
-      left: max(14px, env(safe-area-inset-left));
+      right: max(14px, env(safe-area-inset-right));
+      left: auto;
       bottom: max(14px, env(safe-area-inset-bottom));
       padding: 7px 13px 7px 11px;
       font-size: 13px;
@@ -699,6 +703,67 @@
     }
   }
 </style>
+
+<script>
+  /* التقاط النقر قبل تحميل سكربت اللوحة (defer)، خصوصًا على iPad.
+     يمنع انتقال الرابط إلى /ibn-faris/ إذا سبق النقرُ تحميلَ السكربت. */
+  (function () {
+    "use strict";
+
+    function elementFrom(target) {
+      if (!target) return null;
+      if (target.nodeType === 1) return target;
+      return target.parentElement || null;
+    }
+
+    function triggerFrom(target) {
+      var element = elementFrom(target);
+      return element && element.closest
+        ? element.closest("[data-if-open]")
+        : null;
+    }
+
+    document.addEventListener(
+      "click",
+      function (event) {
+        if (event.defaultPrevented) return;
+
+        var trigger = triggerFrom(event.target);
+        if (!trigger) return;
+
+        if (
+          event.button !== 0 ||
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+
+        if (
+          window.IbnFarisSheet &&
+          typeof window.IbnFarisSheet.open === "function"
+        ) {
+          window.IbnFarisSheet.open(trigger);
+          return;
+        }
+
+        // السكربت لم يجهز بعد: نحتفظ بالطلب ونفتح اللوحة فور جاهزيته.
+        window.__ibnFarisPendingOpen = trigger;
+        window.setTimeout(function () {
+          if (window.__ibnFarisPendingOpen !== trigger) return;
+          window.__ibnFarisPendingOpen = null;
+          var href = trigger.getAttribute("href");
+          if (href) window.location.href = href;
+        }, 8000);
+      },
+      true
+    );
+  })();
+</script>
 
 <a
   class="if-fab"
@@ -831,6 +896,11 @@
 
 
 <script src="/assets/js/ibn-faris-context.js" defer></script>
+<script
+  src="/assets/js/ibn-faris-tools.js"
+  data-base="/"
+  defer
+></script>
 <script
   src="/assets/js/ibn-faris-widget.js"
   data-base="/"
@@ -1129,6 +1199,26 @@
 
   namesInput.addEventListener('input', () => {
       if (!isSpinning) drawWheel();
+  });
+
+  /* === تطبيق بيانات ابن فارس على العجلة الدوارة === */
+  document.addEventListener('ibnfaris:apply-tool', function (event) {
+      const action = event.detail;
+      if (!action || action.tool !== 'wheel' || !action.data) return;
+
+      const data = action.data;
+      const list = Array.isArray(data.names) ? data.names : [];
+      if (list.length === 0) return;
+
+      namesInput.value = list.join('\n');
+      removeWinnerCB.checked = Boolean(data.removeWinner);
+      drawWheel();
+
+      if (data.spin && list.length >= 2 && !isSpinning) {
+          window.setTimeout(function () {
+              startSpin();
+          }, 420);
+      }
   });
 
 </script>

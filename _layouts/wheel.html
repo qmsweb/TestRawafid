@@ -575,6 +575,26 @@
       if (!isSpinning) drawWheel();
   });
 
+  /* === تطبيق بيانات ابن فارس على العجلة الدوارة === */
+  document.addEventListener('ibnfaris:apply-tool', function (event) {
+      const action = event.detail;
+      if (!action || action.tool !== 'wheel' || !action.data) return;
+
+      const data = action.data;
+      const list = Array.isArray(data.names) ? data.names : [];
+      if (list.length === 0) return;
+
+      namesInput.value = list.join('\n');
+      removeWinnerCB.checked = Boolean(data.removeWinner);
+      drawWheel();
+
+      if (data.spin && list.length >= 2 && !isSpinning) {
+          window.setTimeout(function () {
+              startSpin();
+          }, 420);
+      }
+  });
+
 </script>
 
   <script src="{{ '/assets/js/theme.js' | relative_url }}" defer></script>

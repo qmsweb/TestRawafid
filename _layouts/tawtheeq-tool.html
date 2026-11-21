@@ -592,6 +592,50 @@
       updateFormFields();
       rawafidHideLoader();
   });
+
+  /* === تطبيق بيانات ابن فارس على أداة التوثيق === */
+  document.addEventListener('ibnfaris:apply-tool', function (event) {
+      const action = event.detail;
+      if (!action || action.tool !== 'tawtheeq' || !action.data) return;
+
+      const data = action.data;
+      const allowedTypes = ['book', 'journal', 'thesis_pub', 'thesis_unpub', 'conference', 'newspaper'];
+      const type = allowedTypes.indexOf(data.type) !== -1 ? data.type : 'book';
+
+      const select = document.getElementById('sourceType');
+      select.value = type;
+      updateFormFields();
+      clearForm();
+
+      const fields = data.fields || {};
+      const map = {
+          authors: 'authors',
+          year: 'year',
+          title: 'title',
+          sourceName: 'sourceName',
+          volume: 'volume',
+          issue: 'issue',
+          pages: 'pages',
+          publisher: 'publisher',
+          location: 'location',
+          url: 'url',
+          fullDate: 'fullDate',
+          bracketInfo: 'bracketInfo'
+      };
+
+      Object.keys(map).forEach(function (key) {
+          const field = document.getElementById(map[key]);
+          if (field && fields[key] != null && fields[key] !== '') {
+              field.value = fields[key];
+          }
+      });
+
+      generateCitation();
+
+      if (data.copy) {
+          copyToClipboard();
+      }
+  });
 </script>
 
   <script src="{{ '/assets/js/theme.js' | relative_url }}" defer></script>

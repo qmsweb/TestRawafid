@@ -69,6 +69,17 @@ const RAWAFID_CONTEXT_CHARS = 2_200;
 const MAX_PAGE_PROMPT_CHARS = 800;
 const MAX_PROFILE_PROMPT_CHARS = 1_800;
 
+// الخطة الدراسية: نقرأ ملفات الخطط الرسمية عند الحاجة فقط، ونحدّ حجم
+// السياق المرسل إلى النموذج حتى لا يتضخم الطلب.
+const STUDY_PLAN_ENABLED =
+  (Deno.env.get("IBNAFARIS_STUDY_PLAN_ENABLED") ?? "true").trim() !== "false";
+const PLAN_IDS = ["edu", "aadab"] as const;
+const MAX_STUDY_PLAN_PROMPT_CHARS = 5_400;
+const PLAN_LABELS: Record<string, string> = {
+  edu: "التربية في اللغة العربية",
+  aadab: "اللغة العربية وآدابها",
+};
+
 // ميزانية DeepSeek اليومية بالدولار. صفر = بلا حد دولاري.
 const GLOBAL_DAILY_BUDGET_USD = readFloatEnv(
   "IBNAFARIS_GLOBAL_DAILY_BUDGET_USD",
@@ -346,6 +357,25 @@ type MaterialEntry = {
   type: string | null;
 };
 
+type PlanCourse = {
+  id: string;
+  name: string;
+  hours: number;
+  cat: string | null;
+  prereq: string | null;
+  coreq: string | null;
+  year: string | null;
+  semester: string | null;
+  summary: string | null;
+  hidden: boolean;
+  postreq: string[];
+};
+
+type StudyPlan = {
+  id: string;
+  courses: PlanCourse[];
+};
+
 type PostsIndexItem = {
   title: string;
   slug: string;
@@ -567,6 +597,7 @@ const courseCache = new Map<string, CacheEntry<CourseData | null>>();
 const profilesCache = new Map<string, CacheEntry<Profiles | null>>();
 const postsCache = new Map<string, CacheEntry<PostsIndexItem[] | null>>();
 const materialsCache = new Map<string, CacheEntry<MaterialEntry[] | null>>();
+const studyPlansCache = new Map<string, CacheEntry<StudyPlan | null>>();
 
 const ALLOWED_PAGE_TYPES = new Set([
   "home",
@@ -797,6 +828,294 @@ async function loadMaterialsIndex(siteUrl: string): Promise<MaterialEntry[]> {
 
   materialsCache.set(siteUrl, { at: Date.now(), value: materials });
   return materials;
+}
+
+// ============================================================
+// 2.45 الخطة الدراسية: بيانات رسمية للإرشاد الأكاديمي
+// ============================================================
+
+const PLAN_CATEGORY_LABELS: Record<string, string> = {
+  spec: "متطلب تخصص",
+  edu: "متطلب تربوي",
+  uni: "متطلب جامعي",
+  found: "متطلب البرنامج التأسيسي",
+  elective: "مقرر اختياري",
+};
+
+const PLAN_INTENT_PATTERN =
+  /(?:خطه|خطتي|ادرس|ادرس|ماذا اخذ|ماذا ادرس|اتسجل|اسجل|متطلب|ساعات|فصل|سنه|تخرج|معدل|معدلي|درجه|درجات|تقدير|حصلت|اخذت|اخدت|جبت|نلت|نجحت|رسبت|علامتي|ماده|مواد|تخصص|مقرر|مقررات|جدول|انسب|اسهل|اصعب|اختار|اختيار|ترتيب)/;
+const GRADE_TOKEN_PATTERN =
+  /(?:^|\s)(?:A-?|B\+?|B-?|C\+?|C-?|D\+?|D|F)(?=\s|$)/i;
+
+function mapPlanCourses(planId: string, data: unknown): StudyPlan | null {
+  if (!Array.isArray(data)) return null;
+
+  const courses: PlanCourse[] = [];
+  const seen = new Set<string>();
+
+  for (const item of data) {
+    if (!item || typeof item !== "object") continue;
+
+    const row = item as Record<string, unknown>;
+    const id = normalizeCourseCode(row.id);
+    const name = cleanText(row.name, 160);
+    if (!id || !name || seen.has(id)) continue;
+
+    const hoursValue = Number(row.hours);
+    const hours =
+      Number.isFinite(hoursValue) && hoursValue >= 0
+        ? Math.round(hoursValue)
+        : 0;
+
+    seen.add(id);
+    courses.push({
+      id,
+      name,
+      hours,
+      cat: cleanText(row.cat, 30),
+      prereq: cleanText(row.prereq, 120),
+      coreq: cleanText(row.coreq, 120),
+      year: cleanText(row.year, 80),
+      semester: cleanText(row.semester, 40),
+      summary: cleanText(row.summary, 260),
+      hidden: row.hidden === true,
+      postreq: [],
+    });
+  }
+
+  for (const course of courses) {
+    const opens: string[] = [];
+    for (const other of courses) {
+      if (!other.prereq || other.prereq === "null") continue;
+      const prereqs = other.prereq
+        .split(",")
+        .map((value) => value.trim().toUpperCase());
+      if (prereqs.includes(course.id)) opens.push(other.id);
+    }
+    course.postreq = opens.slice(0, 6);
+  }
+
+  return { id: planId, courses };
+}
+
+async function loadStudyPlan(
+  planId: string,
+  siteUrl: string,
+): Promise<StudyPlan | null> {
+  if (!PLAN_IDS.includes(planId as (typeof PLAN_IDS)[number])) return null;
+
+  const cacheKey = `${siteUrl}|${planId}`;
+  const cached = studyPlansCache.get(cacheKey);
+  if (cached && Date.now() - cached.at < PAGE_CACHE_TTL_MS) {
+    return cached.value;
+  }
+
+  const data = await fetchJson<unknown>(
+    `${siteUrl}/assets/plans/${encodeURIComponent(planId)}.json`,
+  );
+  const plan = mapPlanCourses(planId, data);
+
+  if (studyPlansCache.size > 40) studyPlansCache.clear();
+  studyPlansCache.set(cacheKey, { at: Date.now(), value: plan });
+  return plan;
+}
+
+function detectPlanIds(
+  question: string,
+  page: PageContext | null,
+): string[] {
+  const ids: string[] = [];
+
+  if (page?.plan && PLAN_IDS.includes(page.plan as (typeof PLAN_IDS)[number])) {
+    ids.push(page.plan);
+  }
+
+  const normalized = normalizeArabic(question);
+
+  if (
+    /(?:تربيه|تعليم|طرائق|مناهج|طفوله|ارشاد|نفسي|معلم|مدرسه)/.test(
+      normalized,
+    )
+  ) {
+    ids.push("edu");
+  }
+
+  if (
+    /(?:ادب|نقد|بلاغه|عروض|لسانيات|معجم|نحو|صرف|املاء|خط|مقاله|شعر|لغه عربيه)/.test(
+      normalized,
+    )
+  ) {
+    ids.push("aadab");
+  }
+
+  return [...new Set(ids)];
+}
+
+function findMentionedPlanCourses(
+  question: string,
+  plans: StudyPlan[],
+): Array<{ plan: StudyPlan; course: PlanCourse }> {
+  const normalized = normalizeArabic(question);
+  if (!normalized) return [];
+
+  const matches: Array<{ plan: StudyPlan; course: PlanCourse; score: number }> =
+    [];
+
+  for (const plan of plans) {
+    for (const course of plan.courses) {
+      if (course.hidden) continue;
+
+      let score = 0;
+      const normalizedId = normalizeArabic(course.id);
+      const normalizedName = normalizeArabic(course.name);
+
+      if (normalizedId.length >= 4 && normalized.includes(normalizedId)) {
+        score = 120;
+      } else if (
+        normalizedName.length >= 4 &&
+        normalized.includes(normalizedName)
+      ) {
+        score = 90 + normalizedName.length;
+      } else {
+        const words = normalizedName
+          .split(" ")
+          .filter((word) => word.length >= 3);
+        if (words.length >= 2) {
+          const found = words.filter((word) => normalized.includes(word));
+          if (found.length >= Math.ceil(words.length * 0.75)) {
+            score = 50 + found.length * 5;
+          }
+        }
+      }
+
+      if (score > 0) matches.push({ plan, course, score });
+    }
+  }
+
+  matches.sort((a, b) => b.score - a.score);
+
+  const seen = new Set<string>();
+  return matches
+    .filter((match) => {
+      const key = `${match.plan.id}|${match.course.id}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 8)
+    .map((match) => ({ plan: match.plan, course: match.course }));
+}
+
+function describePlanCourse(course: PlanCourse): string {
+  const parts = [`${course.id} — ${course.name}`];
+
+  if (course.hours > 0) parts.push(`${course.hours} ساعات`);
+
+  const time = [course.year, course.semester].filter(Boolean).join(" / ");
+  if (time) parts.push(time);
+
+  if (course.prereq && course.prereq !== "null") {
+    parts.push(`سابق: ${course.prereq}`);
+  } else {
+    parts.push("سابق: لا يوجد");
+  }
+
+  if (course.postreq.length > 0) {
+    parts.push(`يفتح: ${course.postreq.join(", ")}`);
+  }
+
+  if (course.coreq && course.coreq !== "null") {
+    parts.push(`مرافق: ${course.coreq}`);
+  }
+
+  if (course.cat) {
+    parts.push(PLAN_CATEGORY_LABELS[course.cat] ?? course.cat);
+  }
+
+  if (course.summary) parts.push(course.summary);
+
+  return `- ${parts.join(" | ")}`;
+}
+
+async function buildStudyPlanPrompt(
+  question: string,
+  page: PageContext | null,
+  siteUrl: string,
+): Promise<string | null> {
+  if (!STUDY_PLAN_ENABLED) return null;
+
+  const normalizedQuestion = normalizeArabic(question);
+  const hasPlanIntent =
+    PLAN_INTENT_PATTERN.test(normalizedQuestion) ||
+    GRADE_TOKEN_PATTERN.test(question) ||
+    page?.type === "study-plan" ||
+    Boolean(page?.plan);
+
+  if (!hasPlanIntent) return null;
+
+  const preferred = detectPlanIds(question, page);
+  const ids = preferred.length > 0 ? preferred : [...PLAN_IDS];
+  const loaded = (
+    await Promise.all(ids.map((id) => loadStudyPlan(id, siteUrl)))
+  ).filter((plan): plan is StudyPlan => Boolean(plan));
+
+  if (loaded.length === 0) return null;
+
+  const mentioned = findMentionedPlanCourses(question, loaded);
+  const mentionedPlanIds = new Set(mentioned.map((item) => item.plan.id));
+  let targetPlans = loaded;
+
+  // إذا ذُكر مقرر من خطة معينة فبيانات تلك الخطة هي الأهم.
+  if (mentionedPlanIds.size > 0) {
+    targetPlans = loaded.filter((plan) => mentionedPlanIds.has(plan.id));
+  }
+
+  const ordered: Array<{ plan: StudyPlan; course: PlanCourse }> = [];
+  const seen = new Set<string>();
+
+  for (const item of mentioned) {
+    const key = `${item.plan.id}|${item.course.id}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    ordered.push(item);
+  }
+
+  for (const plan of targetPlans) {
+    for (const course of plan.courses) {
+      if (course.hidden) continue;
+      const key = `${plan.id}|${course.id}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      ordered.push({ plan, course });
+    }
+  }
+
+  const lines = [
+    "بيانات الخطط الدراسية الرسمية في روافد:",
+    "- هذه بيانات المقررات والسنوات والفصول والمتطلبات؛ اعتمد عليها ولا تخترع متطلباً أو ساعة أو فصلاً.",
+  ];
+
+  let currentPlanId = "";
+  let used = lines.join("\n").length;
+
+  for (const item of ordered) {
+    const header =
+      item.plan.id !== currentPlanId
+        ? `\nالبرنامج: ${PLAN_LABELS[item.plan.id] ?? item.plan.id} (${item.plan.id})`
+        : "";
+
+    const block = `${header}\n${describePlanCourse(item.course)}`;
+    if (used + block.length > MAX_STUDY_PLAN_PROMPT_CHARS) break;
+
+    if (header) {
+      lines.push(header.trim());
+      currentPlanId = item.plan.id;
+    }
+    lines.push(describePlanCourse(item.course));
+    used += block.length;
+  }
+
+  return lines.length > 2 ? lines.join("\n") : null;
 }
 
 function findCourseItem(
@@ -1796,6 +2115,7 @@ async function isQuestionInScope(
     "2) التربية والتعليم: طرائق التدريس، المناهج، التقويم، علم النفس التربوي، شؤون المعلم والطالب.",
     "3) سلطنة عمان: تاريخها، جغرافيتها، ثقافتها، مؤسساتها، تعليمها، وشؤونها العامة.",
     "4) شؤون منصة روافد الدراسية: أي سؤال عن المقرر الحالي أو صفحته أو عناصره أو ملفاته أو خطته أو طريقة دراسته أو الاختبارات، حتى لو كان قصيرًا مثل «ما اسم هذا المقرر؟» أو «ما موضوعه؟» أو «ماذا في هذه الصفحة؟».",
+    "5) أدوات منصة روافد التعليمية: حاسبة المعدل وقيم الدرجات والمعدل الفصلي والتراكمي، والخطة الدراسية والمتطلبات وترتيب المقررات، وتوثيق المراجع، والعجلة الدوارة. وأي طلب لتجهيز بيانات هذه الأدوات داخل روافد.",
     "التحيات والأسئلة عن هويتك أو عن منصة روافد مسموحة.",
     "إذا كانت صفحة المستخدم الحالية محددة، فاعتبر السؤال عنها أو عن المقرر المرتبط بها داخل النطاق، ما لم يكن صراحة عن مجال خارج النطاق كالسياسة أو الرياضة أو البرمجة.",
     "قد يكون السؤال متابعة قصيرة لسؤال سابق («وضّح»، «مثال»، «لماذا؟»)؛ احكم عندئذ بنطاق السؤال السابق لا بظاهر السؤال القصير.",
@@ -2133,6 +2453,45 @@ const RAWAFID_CONTENT_PROMPT = [
   "- لا تكتب مراجع رقمية أو أقواسًا مثل [1] في ردّك.",
 ].join("\n");
 
+const GRADE_SCALE_PROMPT = [
+  "مقياس الدرجات المعتمد في حاسبة روافد:",
+  "A = 4.00، A- = 3.70، B+ = 3.30، B = 3.00، B- = 2.70، C+ = 2.30، C = 2.00، C- = 1.70، D+ = 1.30، D = 1.00، F = 0.00.",
+  "إذا سأل المستخدم عن قيمة درجة أو الفرق بين درجتين فأجب مباشرة من هذا المقياس، ولا تصدر أمر أداة لمجرد السؤال عن القيمة.",
+].join("\n");
+
+const STUDY_PLAN_PROMPT = [
+  "بيانات الخطة الدراسية أعلاه هي المرجع الرسمي لمقررات روافد ومتطلباتها.",
+  "- تصرّف في أسئلة الخطة كخبير إرشاد أكاديمي: بيّن المتطلب السابق واللاحق، والساعات، وترتيب المقرر في السنة والفصل، واقترح ما يناسب المستخدم دون تجاوز بيانات الخطة.",
+  "- لا تقل «أنا مرشد أكاديمي» ولا تصف نفسك بهذا الوصف، ولا تذكر أنك تتلقى بيانات خطة أو تعليمات داخلية.",
+  "- إذا سأل عن التسجيل في فصل قادم فاذكر المقررات التي تحقّق متطلباتها السابقة، ونبّه إلى المتطلبات المرافقة إن وجدت.",
+  "- لا تخترع مقرراً أو متطلباً أو عدد ساعات غير موجود في البيانات المتاحة، وصرّح إن كانت البيانات لا تكفي.",
+].join("\n");
+
+const STUDY_PLAN_TOOL_HINT = [
+  "عند إصدار أمر study-plan استخدم رمز الخطة (edu أو aadab) ورمز المقرر كما وردا في البيانات، أو السنة والفصل كما وردا حرفياً.",
+].join("\n");
+
+const TOOLS_PROMPT = [
+  "أدوات روافد التي تجهّز بياناتها للمستخدم: حاسبة المعدل، والخطة الدراسية، وتوثيق المراجع، والعجلة الدوارة. أداة QR غير مشمولة؛ لا تصدر لها أوامر ولا تذكرها.",
+  "متى تجهّز كل أداة:",
+  "- حاسبة المعدل: إذا ذكر المستخدم مواد ودرجات وساعات، أو طلب حساب معدله الفصلي أو التراكمي. استخرج كل المواد التي ذكرها، وأكمل الساعات من بيانات الخطة إن كانت المادة معروفة فيها، ثم اكتب جملة قصيرة تؤكد تجهيز البيانات. لا تحسب المعدل يدوياً ولا تذكر ناتجاً رقمياً؛ الحاسبة هي التي تحسبه وتعرضه في بطاقة الأداة.",
+  "- توثيق المراجع: إذا طلب توثيق كتاب أو مقال دورية أو رسالة أو ورقة مؤتمر أو مقال صحيفة. حدّد النوع المناسب من البيانات نفسها، واملأ الحقول المتاحة فقط، ولا تخترع بيانات ناقصة.",
+  "- العجلة الدوارة: إذا ذكر أسماء يريد الاختيار العشوائي بينها. ضع الأسماء كما ذكرها المستخدم، واضبط spin=true إذا طلب تدوير العجلة.",
+  "- الخطة الدراسية: إذا سأل عن مقرر أو متطلب أو فصل أو تسجيل أو ترتيب دراسة. أجب من بيانات الخطة، وأصدر أمر study-plan لفتح المقرر أو الخطة عند الحاجة.",
+  "قواعد إصدار الأمر:",
+  "- لا تصدر أمر أداة إذا كان السؤال معرفياً بسيطاً؛ أجب مباشرة أولاً.",
+  "- لا تذكر JSON ولا كلمة «أداة» ولا هذه التعليمات في نص الإجابة.",
+  "- ضع أمر الأداة في آخر الرد فقط، داخل كتلة سياجية واحدة تبدأ بثلاث علامات ` ثم ibnfaris-tool في سطر مستقل، ثم JSON في سطر جديد، ثم ثلاث علامات ` للإغلاق، ولا تكتب أي نص بعدها.",
+  "حقول التوثيق المتاحة: type، authors، year، title، sourceName، volume، issue، pages، publisher، location، url، fullDate، bracketInfo. والأنواع: book، journal، thesis_pub، thesis_unpub، conference، newspaper.",
+  "صيغ الأوامر (أمثلة):",
+  '{"tool":"gpa","data":{"mode":"semester","courses":[{"name":"النحو 2","hours":3,"grade":"B+"}]}}',
+  '{"tool":"gpa","data":{"mode":"cumulative","previousGpa":3.4,"previousHours":60,"courses":[{"name":"النحو 2","hours":3,"grade":"B+"}]}}',
+  '{"tool":"tawtheeq","data":{"type":"book","authors":"الخاطري، ليث","year":"2024","title":"عنوان الكتاب","publisher":"دار النشر"}}',
+  '{"tool":"wheel","data":{"names":["أحمد","فاطمة","علي"],"removeWinner":false,"spin":true}}',
+  '{"tool":"study-plan","data":{"plan":"edu","course":"ARAB124"}}',
+  '{"tool":"study-plan","data":{"plan":"edu","year":"السنة الدراسية الثانية","semester":"الخريف"}}',
+].join("\n");
+
 const WEB_SEARCH_PROMPT = [
   "لديك معلومات مرجعية موثوقة لهذا السؤال، اعتمد عليها:",
   "- أجب بدقة ووضوح، ولا تذكر أنك استعنت بالإنترنت أو بمعلومات خارجية.",
@@ -2155,16 +2514,27 @@ const MODEL_KNOWLEDGE_PROMPT = [
 function buildSystemPrompt(options: {
   pagePrompt?: string | null;
   profilePrompt?: string | null;
+  studyPlanPrompt?: string | null;
   rawafidContext?: string | null;
   knowledgeContext?: string | null;
   webContext?: string | null;
+  toolsEnabled?: boolean;
 }): string {
   // نضع التعليمات الثابتة أولًا حتى يستفيد مزوّد النموذج من تخزين البادئة
   // إن كان يدعمه، ثم يأتي السياق المتغير بعده.
   const sections = [IBNAFARIS_IDENTITY_PROMPT, BALANCED_ANSWER_PROMPT];
 
+  if (options.toolsEnabled) {
+    sections.push(TOOLS_PROMPT, GRADE_SCALE_PROMPT);
+  }
+
   if (options.pagePrompt) sections.push(options.pagePrompt);
   if (options.profilePrompt) sections.push(options.profilePrompt);
+
+  if (options.studyPlanPrompt) {
+    sections.push(STUDY_PLAN_PROMPT, options.studyPlanPrompt);
+    if (options.toolsEnabled) sections.push(STUDY_PLAN_TOOL_HINT);
+  }
 
   if (options.rawafidContext) {
     sections.push(RAWAFID_CONTENT_PROMPT, options.rawafidContext);
@@ -2226,6 +2596,7 @@ Deno.serve(async (request) => {
     messages?: unknown;
     context?: unknown;
     action?: unknown;
+    capabilities?: unknown;
   } | null;
 
   if (body?.action === "quota") {
@@ -2255,6 +2626,16 @@ Deno.serve(async (request) => {
       origin,
     );
   }
+
+  // الواجهات القديمة لا تعرف أوامر الأدوات؛ لا نرسل لها تعليماتها حتى لا
+  // يظهر JSON خام في الإجابة. الواجهة الحديثة تعلن دعمها صراحةً.
+  const capabilities = body?.capabilities;
+  const clientToolsEnabled = Boolean(
+    capabilities &&
+      typeof capabilities === "object" &&
+      !Array.isArray(capabilities) &&
+      (capabilities as Record<string, unknown>).tools === true,
+  );
 
   const visitorHash = await hashVisitor(clientIp(request));
   const reservedCostUsd = estimateRequestCost(messages);
@@ -2500,7 +2881,7 @@ Deno.serve(async (request) => {
 
       send({ type: "status", text: "أتحقق من المقاطع…" });
 
-      const [chunks, rawafidContext] = await Promise.all([
+      const [chunks, rawafidContext, studyPlanPrompt] = await Promise.all([
         judgeChunks(retrievalQuestion, candidates, auxiliaryUsage),
         skipExternalSources
           ? Promise.resolve("")
@@ -2511,6 +2892,7 @@ Deno.serve(async (request) => {
               courseData,
               requestSiteUrl,
             ),
+        buildStudyPlanPrompt(question, page, requestSiteUrl),
       ]);
       mark("judge");
 
@@ -2541,9 +2923,11 @@ Deno.serve(async (request) => {
       const systemPrompt = buildSystemPrompt({
         pagePrompt,
         profilePrompt,
+        studyPlanPrompt,
         rawafidContext,
         knowledgeContext,
         webContext,
+        toolsEnabled: clientToolsEnabled,
       });
 
       if (debugTimings) {
@@ -2555,6 +2939,7 @@ Deno.serve(async (request) => {
           siteUrl: requestSiteUrl,
           pageChars: pagePrompt?.length ?? 0,
           profileChars: profilePrompt?.length ?? 0,
+          studyPlanChars: studyPlanPrompt?.length ?? 0,
           rawafidChars: rawafidContext.length,
           knowledgeChars: knowledgeContext?.length ?? 0,
           webChars: webContext?.length ?? 0,

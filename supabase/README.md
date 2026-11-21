@@ -31,6 +31,7 @@ DeepSeek API
 | `_includes/ibn-faris-app.html` | واجهة المحادثة المشتركة (صفحة + لوحة عائمة) |
 | `assets/css/ibn-faris.css` | هوية ابن فارس البصرية وتنسيق اللوحة السفلية |
 | `assets/js/ibn-faris.js` | المحادثة والبثّ وMarkdown (قابل للتركيب على أي حاوية) |
+| `assets/js/ibn-faris-tools.js` | جسر أدوات روافد: يقرأ أوامر الأدوات من الرد ويعبّئ الحاسبة/الخطة/التوثيق/العجلة |
 | `assets/js/ibn-faris-widget.js` | فتح اللوحة السفلية فوق أي صفحة وتحميل الموارد عند الطلب |
 | `assets/js/ibn-faris-config.js` | رابط Supabase والمفتاح العام |
 | `_includes/ibn-faris-button.html` | الزر العائم + قالب اللوحة السفلية |
@@ -39,6 +40,19 @@ DeepSeek API
 | `supabase/functions/ibn-faris-chat/index.ts` | وسيط DeepSeek |
 
 > المجلد `supabase/` مستبعد من نشر Jekyll في `_config.yml`، فلا يظهر في الموقع.
+
+### ربط ابن فارس بأدوات روافد
+
+عندما يطلب المستخدم حسابات أو تجهيز بيانات، يضع ابن فارس في آخر رده كتلة JSON واحدة بلغة `ibnfaris-tool`، ثم يقرأها `assets/js/ibn-faris-tools.js` ويعرض بطاقة «أداة جاهزة». عند الضغط عليها تُطبَّق البيانات على الأداة مباشرة إن كانت مفتوحة، وإلا تُحفظ في `localStorage` ثم تُفتح الأداة وتُطبَّق تلقائياً.
+
+| الأداة | الأمر | ما يطبَّق |
+|---|---|---|
+| حاسبة المعدل | `{"tool":"gpa","data":{...}}` | نوع المعدل، المواد والساعات والدرجات، المعدل السابق، ثم الحساب تلقائياً |
+| توثيق المراجع | `{"tool":"tawtheeq","data":{...}}` | نوع المرجع وحقوله، ثم توليد التوثيق |
+| العجلة الدوارة | `{"tool":"wheel","data":{...}}` | الأسماء، وحذف الفائز، والتدوير عند الطلب |
+| الخطة الدراسية | `{"tool":"study-plan","data":{...}}` | فتح الخطة/المقرر أو تصفية السنة والفصل |
+
+أداة QR غير مشمولة. تعليمات الأوامر موجودة في `TOOLS_PROMPT` داخل `supabase/functions/ibn-faris-chat/index.ts`، ويجب إعادة نشر دالة Supabase بعد تعديلها.
 
 ---
 
@@ -79,6 +93,7 @@ DeepSeek API
 | `IBNAFARIS_RAG_ENABLED` | `true` | الاستعانة بقاعدة معرفة `knowledge_chunks` إن وُجدت |
 | `IBNAFARIS_PAGE_CONTEXT_ENABLED` | `true` | تفعيل سياق الصفحة القادم من روافد |
 | `IBNAFARIS_RAWAFID_ENABLED` | `true` | تفعيل استرجاع محتوى المقررات والمقالات |
+| `IBNAFARIS_STUDY_PLAN_ENABLED` | `true` | تفعيل قراءة الخطط الدراسية الرسمية وإرشاد المقررات |
 | `IBNAFARIS_SITE_URL` | `https://rawafid.jassim.one` | مصدر بيانات روافد الذي تقرأه الدالة |
 | `EMBEDDING_API_KEY` | فارغ | لتفعيل البحث المتجهي في RAG |
 | `IBNAFARIS_ALLOWED_ORIGINS` | نطاقات روافد | مصادر CORS المسموحة، مفصولة بفاصلة |

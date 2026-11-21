@@ -1028,6 +1028,51 @@
       document.addEventListener('input', saveState);
       document.addEventListener('change', saveState);
   });
+
+  /* === تطبيق بيانات ابن فارس على الحاسبة === */
+  document.addEventListener('ibnfaris:apply-tool', function (event) {
+      const action = event.detail;
+      if (!action || action.tool !== 'gpa' || !action.data) return;
+
+      const data = action.data;
+      const container = document.getElementById('courses-container');
+      if (!container) return;
+
+      const cumulative = data.mode === 'cumulative';
+      document.getElementById('cumulative-mode').checked = cumulative;
+      document.getElementById('semester-mode').checked = !cumulative;
+      toggleCalcMode();
+
+      const prevGpa = parseFloat(data.previousGpa);
+      const prevHours = parseFloat(data.previousHours);
+      document.getElementById('prev-gpa').value = isFinite(prevGpa) ? prevGpa : '';
+      document.getElementById('prev-hours').value = isFinite(prevHours) ? prevHours : '';
+
+      const rows = Array.isArray(data.courses) ? data.courses : [];
+      container.innerHTML = '';
+
+      if (rows.length === 0) {
+          for (let i = 0; i < 5; i++) addCourseRow();
+      } else {
+          rows.forEach(function (course) {
+              const div = document.createElement('div');
+              div.innerHTML = createRowHTML();
+              const row = div.firstElementChild;
+              row.querySelector('.course-name').value = course.name || '';
+
+              const hours = parseFloat(course.hours);
+              row.querySelector('.course-hours').value =
+                  isFinite(hours) && hours > 0 ? hours : '';
+              row.querySelector('.course-grade').value = course.grade || '';
+
+              container.appendChild(row);
+          });
+      }
+
+      updateCount();
+      saveState();
+      calculateGPA();
+  });
 </script>
 
   <script src="{{ '/assets/js/theme.js' | relative_url }}" defer></script>

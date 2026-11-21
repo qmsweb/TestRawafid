@@ -1300,6 +1300,82 @@
           if (doScroll) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
   }
+
+  /* === تطبيق بيانات ابن فارس على الخطة الدراسية === */
+  function ibnFarisNormalizeLabel(value) {
+      return String(value || '')
+          .replace(/السنة الدراسية/g, 'السنة')
+          .replace(/\s+/g, ' ')
+          .trim();
+  }
+
+  function ibnFarisResolveOption(values, wanted) {
+      const target = ibnFarisNormalizeLabel(wanted);
+      if (!target) return '';
+
+      const exact = values.find(value => ibnFarisNormalizeLabel(value) === target);
+      if (exact) return exact;
+
+      return values.find(value => {
+          const current = ibnFarisNormalizeLabel(value);
+          return current.indexOf(target) !== -1 || target.indexOf(current) !== -1;
+      }) || '';
+  }
+
+  async function ibnFarisOpenPlanCourse(plan, code) {
+      if (PAGE_CODE && PAGE_CODE === code && PAGE_PLAN === plan) return true;
+      return await fetchSingleCourse(plan, code, { historyAction: 'replace' });
+  }
+
+  document.addEventListener('ibnfaris:apply-tool', async function (event) {
+      const action = event.detail;
+      if (!action || action.tool !== 'study-plan' || !action.data) return;
+
+      const data = action.data;
+      const select = document.getElementById('planSelector');
+      const plan = data.plan || PAGE_PLAN || (select ? select.value : '') || 'edu';
+
+      if (data.course) {
+          const code = String(data.course).toUpperCase();
+          let opened = await ibnFarisOpenPlanCourse(plan, code);
+
+          if (!opened) {
+              const other = plan === 'edu' ? 'aadab' : 'edu';
+              opened = await ibnFarisOpenPlanCourse(other, code);
+          }
+
+          return;
+      }
+
+      if (PAGE_CODE) {
+          window.history.replaceState({}, '', PLAN_TOOL_BASE);
+      }
+
+      if (!fullPlanLoaded || (data.plan && currentPlan !== data.plan)) {
+          if (data.plan && select) select.value = data.plan;
+          await fetchPlanData();
+      }
+
+      if (data.year) {
+          const years = getDistinctYears();
+          const year = ibnFarisResolveOption(years, data.year);
+          if (year) onYearClick(year);
+      }
+
+      if (data.semester) {
+          const semesters = selectedYear
+              ? getDistinctSemestersForYear(selectedYear)
+              : Array.from(new Set(currentCoursesDB.map(course => course.semester).filter(Boolean)));
+          const semester = ibnFarisResolveOption(semesters, data.semester);
+          if (semester) onSemesterClick(semester);
+      }
+
+      if (data.category) {
+          const wanted = ibnFarisNormalizeLabel(data.category);
+          const match = CATS.find(cat => cat.key === wanted || cat.text === wanted);
+          if (match) onCatClick(match.key);
+      }
+  });
 </script>
 
   <script src="{{ '/assets/js/theme.js' | relative_url }}" defer></script>

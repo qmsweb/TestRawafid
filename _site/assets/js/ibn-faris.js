@@ -236,10 +236,10 @@
       try {
         var messages = state.messages
           .filter(function (message) {
-            return message.content && message.content.trim();
+            return cleanAnswer(message.content);
           })
           .map(function (message) {
-            return { role: message.role, content: message.content };
+            return { role: message.role, content: cleanAnswer(message.content) };
           });
 
         if (!messages.length) {
@@ -395,6 +395,73 @@
       return status;
     }
 
+    // ----------------------------------------------------------
+    // أوامر أدوات روافد داخل الرد
+    // ----------------------------------------------------------
+    // يصدر ابن فارس أمراً واحداً أو أكثر في نهاية الرد على هيئة كتلة
+    // سياجية بلغة ibnfaris-tool، ثم يعرض الجسر بطاقة أداة جاهزة.
+    var TOOL_BLOCK =
+      /```(?:ibnfaris-tool|ibn-faris-tool|tool-json)[ \t]*(?:\r?\n)?([\s\S]*?)```/gi;
+    var TOOL_BLOCK_OPEN =
+      /```(?:ibnfaris-tool|ibn-faris-tool|tool-json)[\s\S]*$/i;
+
+    function parseToolActions(content) {
+      var raw = String(content || "");
+      var actions = [];
+      var max =
+        window.IbnFarisTools && window.IbnFarisTools.maxActions
+          ? window.IbnFarisTools.maxActions
+          : 3;
+      var match;
+
+      TOOL_BLOCK.lastIndex = 0;
+      while ((match = TOOL_BLOCK.exec(raw)) !== null && actions.length < max) {
+        var body = String(match[1] || "").trim();
+        if (!body) continue;
+
+        var parsed = null;
+        try {
+          parsed = JSON.parse(body);
+        } catch (error) {
+          var json = body.match(/\{[\s\S]*\}/);
+          if (json) {
+            try {
+              parsed = JSON.parse(json[0]);
+            } catch (nestedError) {
+              parsed = null;
+            }
+          }
+        }
+
+        if (parsed) actions.push(parsed);
+      }
+
+      return actions;
+    }
+
+    function cleanAnswer(content) {
+      var text = String(content || "");
+      TOOL_BLOCK.lastIndex = 0;
+      text = text.replace(TOOL_BLOCK, "");
+      text = text.replace(TOOL_BLOCK_OPEN, "");
+      return text.replace(/\n{3,}/g, "\n\n").trim();
+    }
+
+    function renderToolCards(message) {
+      var host = message.toolsEl;
+      if (!host) return;
+
+      host.innerHTML = "";
+
+      if (!window.IbnFarisTools || !window.IbnFarisTools.createCard) return;
+
+      var actions = parseToolActions(message.content);
+      actions.forEach(function (action) {
+        var card = window.IbnFarisTools.createCard(action);
+        if (card) host.appendChild(card);
+      });
+    }
+
     function appendCaret(container) {
       var caret = document.createElement("span");
       caret.className = "if-caret";
@@ -426,6 +493,10 @@
       contentEl.className = "if-md";
       body.appendChild(contentEl);
 
+      var toolsEl = document.createElement("div");
+      toolsEl.className = "if-tool-cards";
+      body.appendChild(toolsEl);
+
       var actions = document.createElement("div");
       actions.className = "if-msg-actions";
       actions.hidden = true;
@@ -439,6 +510,7 @@
         content: content,
         el: article,
         contentEl: contentEl,
+        toolsEl: toolsEl,
         actionsEl: actions,
         turn: state.turn,
       };
@@ -452,18 +524,32 @@
       var el = message.contentEl;
       if (!el) return;
 
+      var displayContent = cleanAnswer(message.content);
+
       el.innerHTML = "";
 
-      if (message.role === "assistant" && !message.content && state.streaming) {
+      if (
+        message.role === "assistant" &&
+        !displayContent &&
+        state.streaming
+      ) {
         el.appendChild(
           message.status ? makeStatus(message.status) : makeTyping(),
         );
         return;
       }
 
-      if (!message.content) return;
+      if (!displayContent) {
+        if (message.role === "assistant") renderToolCards(message);
+        else if (message.toolsEl) message.toolsEl.innerHTML = "";
+        return;
+      }
 
-      el.appendChild(renderMarkdown(message.content));
+      el.appendChild(renderMarkdown(displayContent));
+
+      if (message.role === "assistant") {
+        renderToolCards(message);
+      }
 
       if (
         message.role === "assistant" &&
@@ -888,7 +974,7 @@
       var label = button.querySelector("span");
 
       button.addEventListener("click", function () {
-        copyText(message.content)
+        copyText(cleanAnswer(message.content))
           .then(function () {
             button.classList.add("is-copied");
             button.setAttribute("aria-label", "تم نسخ إجابة ابن فارس");
@@ -917,7 +1003,10 @@
       setStreaming(false);
       renderMessage(message);
 
-      if (!message.content.trim()) {
+      var hasText = Boolean(cleanAnswer(message.content));
+      var hasActions = parseToolActions(message.content).length > 0;
+
+      if (!hasText && !hasActions) {
         message.el.remove();
         var index = state.messages.indexOf(message);
         if (index !== -1) state.messages.splice(index, 1);
@@ -981,13 +1070,16 @@
         .slice(0, -1)
         .slice(-MAX_HISTORY)
         .map(function (message) {
-          return { role: message.role, content: message.content };
+          return { role: message.role, content: cleanAnswer(message.content) };
+        })
+        .filter(function (message) {
+          return message.content;
         });
 
       var controller = new AbortController();
       state.controller = controller;
 
-      var payload = { messages: history };
+      var payload = { messages: history, capabilities: { tools: true } };
       if (window.IbnFarisPageContext && window.IbnFarisPageContext.get) {
         try {
           var pageContext = window.IbnFarisPageContext.get();
