@@ -48,12 +48,16 @@ DeepSeek API
 | `_includes/header.html` | يستدعي الزر في صفحات روافد |
 | `sources.html` + `_layouts/page.html` | صفحة المصادر والترخيص على `/ibn-faris/sources/` |
 | `supabase/ibn-faris-guest-quota.sql` | جداول ودوال الحصص والسقوف المخصصة والقسائم |
+| `supabase/ibn-faris-admin.sql` | إعدادات السقف العام + تصفير استهلاك حساب (لوحة التحكم) |
 | `supabase/ibn-faris-observability.sql` | عرض يومي لمراقبة الطلبات والتكلفة |
 | `supabase/ibn-faris-reset-limits.sql` | إرجاع الجميع للسقف الافتراضي وإنشاء قسيمتي 40 |
 | `supabase/knowledge-schema.example.sql` | مخطط مرجعي لقاعدة المعرفة |
-| `supabase/config.toml` | إعداد `verify_jwt = false` للدالة |
+| `supabase/config.toml` | إعداد `verify_jwt = false` للدالتين |
 | `supabase/functions/ibn-faris-chat/index.ts` | وسيط DeepSeek |
-| `.github/workflows/ibn-faris-check.yml` | فحص أنواع Deno عند تعديل الدالة |
+| `supabase/functions/ibn-faris-admin/index.ts` | دالة لوحة التحكم الإدارية |
+| `admin/index.html` + `_layouts/admin.html` | صفحة `/admin/` الخاصة (غير مفهرسة) |
+| `assets/css/admin.css` + `assets/js/admin.js` | واجهة اللوحة ومنطقها |
+| `.github/workflows/ibn-faris-check.yml` | فحص أنواع Deno عند تعديل الدالتين |
 
 > المجلد `supabase/` مستبعد من نشر Jekyll في `_config.yml`، فلا يظهر في الموقع.
 
@@ -113,6 +117,7 @@ DeepSeek API
 | `IBNAFARIS_SITE_URL` | `https://rawafid.jassim.one` | مصدر بيانات روافد الذي تقرأه الدالة |
 | `EMBEDDING_API_KEY` | فارغ | لتفعيل البحث المتجهي في RAG |
 | `IBNAFARIS_ALLOWED_ORIGINS` | نطاقات روافد | مصادر CORS المسموحة، مفصولة بفاصلة |
+| `IBNAFARIS_ADMIN_EMAILS` | `askdeepmind@gmail.com` | بريد/بريدات حسابات اللوحة، مفصولة بفاصلة |
 
 > `SUPABASE_URL` و`SUPABASE_SERVICE_ROLE_KEY` يوفّرهما Supabase للدالة تلقائياً في
 > المشاريع الحديثة. إن لم يظهرا، أضفهما يدوياً من `Project Settings → API` بنفس
@@ -490,6 +495,59 @@ delete from public.ibnfaris_visitor_limits;
 أو استخدم الملف الجاهز `supabase/ibn-faris-reset-limits.sql`، وهو يحذف التخصيصات
 ثم ينشئ قسيمتي `+25` (15 ← 40) بلا تاريخ انتهاء. القسائم غير المستخدمة في
 `ibnfaris_vouchers` لا تتأثر بالحذف.
+
+## لوحة التحكم الإدارية `/admin/`
+
+لوحة خاصة بإدارة خدمة ابن فارس، لا تظهر في القوائم ولا في محركات البحث
+(`noindex` + `Disallow: /admin` في `robots.txt` + `sitemap: false`). الدخول
+محصور بحساب `askdeepmind@gmail.com` (أو أي بريد يُضاف إلى
+`IBNAFARIS_ADMIN_EMAILS`)، والتحقق من الصلاحية يجري داخل دالة
+`ibn-faris-admin` على الخادم وليس في المتصفح.
+
+من اللوحة يمكن:
+
+- رفع/خفض **السقف العام** اليومي لكل طلبات ابن فارس (عدد الطلبات).
+- ضبط **ميزانية يومية بالدولار** لكل طلبات الذكاء الاصطناعي (`0` = بلا حد).
+- إرجاع السقف العام إلى قيم أسرار الدالة.
+- البحث في الحسابات ورؤية استهلاك كل حساب اليوم: الطلبات، المتبقي، التوكنات،
+  والتكلفة.
+- تعديل سقف حساب واحد، ومنحه صفة «مشترك»، أو إزالة تخصيصه.
+- تصفير استهلاك حساب واحد في اليوم الحالي (يُخصم من إجمالي اليوم أيضاً).
+- رؤية إجمالي آخر ١٤ يوماً.
+
+### تهيئة اللوحة (مرة واحدة)
+
+1. شغّل `supabase/ibn-faris-admin.sql` في SQL Editor.
+2. أعد نشر `ibn-faris-chat` لأنه صار يقرأ السقف العام من جدول
+   `ibnfaris_settings` بدل الاعتماد على الأسرار وحدها.
+3. انشر الدالة الجديدة:
+
+   ```powershell
+   supabase functions deploy ibn-faris-admin --project-ref veydmfljebzqwrolvuhe
+   ```
+
+   أو من لوحة Supabase: **Edge Functions → Create a new function** بالاسم
+   `ibn-faris-admin`، مع تعطيل **Verify JWT**، ولصق محتوى
+   `supabase/functions/ibn-faris-admin/index.ts`.
+
+4. اختيارياً: أضف `IBNAFARIS_ADMIN_EMAILS` في أسرار دالة `ibn-faris-admin`
+   لتغيير البريد المسموح (عدة بريدات مفصولة بفاصلة).
+
+> جدول `ibnfaris_settings` صف واحد (`id = 1`). القيمة `null` تعني «استخدم
+> القيمة الافتراضية من الأسرار»، و`0` في الميزانية تعني بلا حد دولاري.
+> تقرأ دالة المحادثة الإعدادات مرة كل ٣٠ ثانية، لذا يسري التعديل خلال نصف
+> دقيقة على الأكثر. كل قراءات اللوحة وكتاباتها تمر بمفتاح `service_role`
+> داخل الدالة فقط ولا يصل أي منه إلى المتصفح.
+
+### استكشاف أخطاء اللوحة
+
+| العَرَض | السبب المحتمل | الحل |
+|---|---|---|
+| «هذا الحساب لا يملك صلاحية» | البريد ليس ضمن `IBNAFARIS_ADMIN_EMAILS` | سجّل الدخول بالحساب الإداري أو أضف البريد |
+| «لوحة التحكم غير مهيّأة» | الدالة بلا `SUPABASE_SERVICE_ROLE_KEY` | تأكد من توفر مفاتيح Supabase للدالة |
+| خطأ عند قراءة البيانات | لم يُشغَّل `ibn-faris-admin.sql` | شغّله ثم أعد المحاولة |
+| التعديل لا يسري فوراً | ذاكرة مؤقتة ٣٠ ثانية في دالة المحادثة | انتظر نصف دقيقة أو أعد نشر الدالة |
+| البوابة لا تفتح بعد الدخول | عنوان `/admin/` غير مسجّل في Redirect URLs | أضفه في **Authentication → URL Configuration** |
 
 ## الحصص والخصوصية
 

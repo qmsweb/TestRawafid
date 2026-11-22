@@ -1,0 +1,835 @@
+/* ============================================================
+   لوحة تحكم ابن فارس — أنماط خاصة بالصفحة
+   ============================================================
+   تعتمد على متغيّرات design-system.css فقط (فاتح/داكن)،
+   ولا تعدّل أي نمط عام في الموقع.
+   ============================================================ */
+
+.ad-page {
+  min-height: 100dvh;
+  margin: 0;
+  background: var(--rawafid-bg);
+  color: var(--rawafid-text);
+  font-family: var(--font-body);
+  -webkit-text-size-adjust: 100%;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+.ad-page *,
+.ad-page *::before,
+.ad-page *::after {
+  box-sizing: border-box;
+}
+
+/* سمات hidden يجب أن تتقدّم على display في الأصناف */
+.ad-page [hidden] {
+  display: none !important;
+}
+
+.ad-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.ad-sr-only {
+  position: absolute;
+  top: 0;
+  inset-inline-start: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------------------------------------
+   الشريط العلوي
+   ------------------------------------------------------------ */
+.ad-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  padding: 12px clamp(16px, 4vw, 32px);
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  background: var(--rawafid-surface);
+  border-bottom: 1px solid var(--rawafid-border);
+}
+
+.ad-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ad-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--rawafid-border);
+  background: var(--rawafid-surface);
+}
+
+.ad-brand-mark img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.ad-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+  min-width: 0;
+}
+
+.ad-brand-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--rawafid-text);
+}
+
+.ad-brand-sub {
+  font-size: 0.72rem;
+  color: var(--rawafid-text-muted);
+}
+
+.ad-topbar-side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ad-account-email {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  color: var(--rawafid-text-muted);
+}
+
+/* ------------------------------------------------------------
+   بوابة الدخول
+   ------------------------------------------------------------ */
+.ad-gate {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 8vh, 72px) clamp(16px, 5vw, 32px);
+}
+
+.ad-gate-card {
+  width: min(460px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: clamp(24px, 5vw, 40px);
+  text-align: center;
+  background: var(--rawafid-surface);
+  border: 1px solid var(--rawafid-border);
+  border-radius: var(--radius-md);
+}
+
+.ad-gate-mark {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  border: 1px solid var(--rawafid-border);
+  background: var(--rawafid-bg);
+}
+
+.ad-gate-mark img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.ad-gate-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(1.35rem, 3vw, 1.6rem);
+  font-weight: 700;
+  color: var(--rawafid-text);
+}
+
+.ad-gate-text {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.8;
+  color: var(--rawafid-text-muted);
+}
+
+.ad-gate-status {
+  min-height: 22px;
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--rawafid-text-muted);
+}
+
+.ad-gate-status.is-error {
+  color: var(--rawafid-error);
+}
+
+.ad-gate-status.is-ok {
+  color: var(--rawafid-success);
+}
+
+/* منع ظهور زر الدخول قبل معرفة حالة الجلسة */
+.ad-app[data-state="loading"] .ad-btn--google,
+.ad-app[data-state="checking"] .ad-btn--google {
+  display: none;
+}
+
+/* ------------------------------------------------------------
+   الأزرار والحقول
+   ------------------------------------------------------------ */
+.ad-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 10px 20px;
+  border: 1px solid var(--rawafid-border);
+  border-radius: 50px;
+  background: var(--rawafid-surface);
+  color: var(--rawafid-text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 0.18s ease, border-color 0.18s ease,
+    color 0.18s ease, opacity 0.18s ease;
+}
+
+.ad-btn:hover:not(:disabled) {
+  border-color: var(--rawafid-primary);
+  color: var(--rawafid-primary);
+}
+
+.ad-btn:focus-visible {
+  outline: 3px solid
+    color-mix(in srgb, var(--rawafid-primary) 35%, transparent);
+  outline-offset: 2px;
+}
+
+.ad-btn:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+.ad-btn--primary {
+  background: var(--rawafid-primary);
+  border-color: var(--rawafid-primary);
+  color: var(--rawafid-white);
+}
+
+.ad-btn--primary:hover:not(:disabled) {
+  background: var(--rawafid-primary-dark);
+  border-color: var(--rawafid-primary-dark);
+  color: var(--rawafid-white);
+}
+
+.ad-btn--ghost {
+  background: transparent;
+}
+
+.ad-btn--danger {
+  color: var(--rawafid-error);
+  border-color: color-mix(in srgb, var(--rawafid-error) 45%, var(--rawafid-border));
+  background: transparent;
+}
+
+.ad-btn--danger:hover:not(:disabled) {
+  background: var(--rawafid-error);
+  border-color: var(--rawafid-error);
+  color: var(--rawafid-white);
+}
+
+.ad-btn--sm {
+  min-height: 38px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+}
+
+.ad-btn--google {
+  width: 100%;
+  max-width: 320px;
+  margin-top: 8px;
+  background: var(--rawafid-surface);
+  color: var(--rawafid-text);
+  font-weight: 600;
+}
+
+.ad-btn--google:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--rawafid-primary) 6%, var(--rawafid-surface));
+}
+
+.ad-google-icon {
+  --ad-google-blue: #4285f4;
+  --ad-google-green: #34a853;
+  --ad-google-yellow: #fbbc05;
+  --ad-google-red: #ea4335;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.ad-google-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ad-google-icon .g-blue {
+  fill: var(--ad-google-blue);
+}
+
+.ad-google-icon .g-green {
+  fill: var(--ad-google-green);
+}
+
+.ad-google-icon .g-yellow {
+  fill: var(--ad-google-yellow);
+}
+
+.ad-google-icon .g-red {
+  fill: var(--ad-google-red);
+}
+
+.ad-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--rawafid-border);
+  border-radius: var(--radius-sm);
+  background: var(--rawafid-bg);
+  color: var(--rawafid-text);
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.ad-input:focus {
+  outline: none;
+  border-color: var(--rawafid-primary);
+  background: var(--rawafid-surface);
+}
+
+.ad-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ad-field-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--rawafid-text);
+}
+
+.ad-field-hint {
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--rawafid-text-muted);
+}
+
+.ad-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.ad-check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--rawafid-primary);
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------
+   المساحة الرئيسية
+   ------------------------------------------------------------ */
+.ad-main {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(16px, 3vw, 32px) clamp(16px, 4vw, 32px)
+    calc(40px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2.5vw, 22px);
+}
+
+.ad-card {
+  background: var(--rawafid-surface);
+  border: 1px solid var(--rawafid-border);
+  border-radius: var(--radius-md);
+}
+
+.ad-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, 2vw, 18px);
+}
+
+@media (max-width: 980px) {
+  .ad-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 540px) {
+  .ad-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ad-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 20px;
+}
+
+.ad-stat-label {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--rawafid-text-muted);
+}
+
+.ad-stat-value {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 1.9rem);
+  font-weight: 700;
+  color: var(--rawafid-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.ad-stat-sub {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--rawafid-text-muted);
+}
+
+.ad-panel {
+  padding: clamp(16px, 3vw, 24px);
+}
+
+.ad-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: 16px;
+}
+
+.ad-panel-head--wrap {
+  flex-wrap: wrap;
+}
+
+.ad-panel-title {
+  margin: 0 0 4px;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--rawafid-text);
+}
+
+.ad-panel-sub {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: var(--rawafid-text-muted);
+  max-width: 62ch;
+}
+
+.ad-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--rawafid-primary-soft);
+  color: var(--rawafid-primary);
+  border: 1px solid
+    color-mix(in srgb, var(--rawafid-primary) 25%, transparent);
+  white-space: nowrap;
+}
+
+html[data-theme="dark"] .ad-badge {
+  color: var(--rawafid-text);
+}
+
+.ad-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+.ad-form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ad-panel-foot {
+  margin: 14px 0 0;
+  font-size: 0.75rem;
+  color: var(--rawafid-text-muted);
+}
+
+.ad-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ad-search {
+  min-width: 220px;
+  flex: 1;
+}
+
+.ad-search .ad-input {
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------
+   الجداول
+   ------------------------------------------------------------ */
+.ad-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--rawafid-border);
+  border-radius: var(--radius-sm);
+}
+
+.ad-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.ad-table--compact {
+  min-width: 420px;
+}
+
+.ad-table thead th {
+  padding: 11px 14px;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--rawafid-text-muted);
+  background: color-mix(in srgb, var(--rawafid-primary) 6%, var(--rawafid-surface));
+  border-bottom: 1px solid var(--rawafid-border);
+  white-space: nowrap;
+}
+
+.ad-table tbody td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--rawafid-border);
+  vertical-align: middle;
+}
+
+.ad-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.ad-table tbody tr:hover {
+  background: color-mix(in srgb, var(--rawafid-primary) 4%, var(--rawafid-surface));
+}
+
+.ad-user-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 180px;
+}
+
+.ad-user-email {
+  direction: ltr;
+  text-align: left;
+  font-weight: 600;
+  color: var(--rawafid-text);
+  overflow-wrap: anywhere;
+}
+
+.ad-user-name {
+  font-size: 0.72rem;
+  color: var(--rawafid-text-muted);
+}
+
+.ad-num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ad-remaining {
+  font-weight: 700;
+  color: var(--rawafid-primary);
+}
+
+.ad-remaining.is-empty {
+  color: var(--rawafid-error);
+}
+
+html[data-theme="dark"] .ad-remaining {
+  color: var(--rawafid-text);
+}
+
+.ad-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ad-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 50px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border: 1px solid var(--rawafid-border);
+  background: var(--rawafid-bg);
+  color: var(--rawafid-text-muted);
+  white-space: nowrap;
+}
+
+.ad-chip--custom {
+  border-color: color-mix(in srgb, var(--rawafid-primary) 40%, transparent);
+  background: var(--rawafid-primary-soft);
+  color: var(--rawafid-primary);
+}
+
+html[data-theme="dark"] .ad-chip--custom {
+  color: var(--rawafid-text);
+}
+
+.ad-chip--subscriber {
+  border-color: color-mix(in srgb, var(--rawafid-success) 45%, transparent);
+  color: var(--rawafid-success);
+}
+
+.ad-row-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.ad-row-actions .ad-btn {
+  min-height: 34px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+}
+
+.ad-empty {
+  margin: 18px 0 0;
+  padding: 18px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--rawafid-text-muted);
+  border: 1px dashed var(--rawafid-border);
+  border-radius: var(--radius-sm);
+}
+
+.ad-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.ad-pager-label {
+  font-size: 0.8rem;
+  color: var(--rawafid-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------
+   نافذة تعديل السقف
+   ------------------------------------------------------------ */
+.ad-dialog {
+  width: min(500px, calc(100vw - 24px));
+  padding: 0;
+  border: 1px solid var(--rawafid-border);
+  border-radius: var(--radius-md);
+  background: var(--rawafid-surface);
+  color: var(--rawafid-text);
+}
+
+.ad-dialog::backdrop {
+  background: color-mix(in srgb, var(--rawafid-text) 55%, transparent);
+}
+
+.ad-dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(18px, 3vw, 26px);
+}
+
+.ad-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ad-dialog-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.ad-dialog-close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--rawafid-text-muted);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ad-dialog-close:hover,
+.ad-dialog-close:focus-visible {
+  background: var(--rawafid-bg);
+  color: var(--rawafid-text);
+}
+
+.ad-dialog-user {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--rawafid-bg);
+  border: 1px solid var(--rawafid-border);
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.ad-dialog-hint {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--rawafid-text-muted);
+}
+
+.ad-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* ------------------------------------------------------------
+   التنبيه العائم
+   ------------------------------------------------------------ */
+.ad-toast {
+  position: fixed;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  max-width: calc(100vw - 32px);
+  padding: 12px 22px;
+  border-radius: 50px;
+  background: var(--rawafid-text);
+  color: var(--rawafid-bg);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 12px 30px
+    color-mix(in srgb, var(--rawafid-text) 30%, transparent);
+}
+
+.ad-toast.is-error {
+  background: var(--rawafid-error);
+  color: var(--rawafid-white);
+}
+
+.ad-noscript {
+  margin: 0;
+  padding: 24px;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------
+   الاستجابة
+   ------------------------------------------------------------ */
+@media (max-width: 720px) {
+  .ad-topbar {
+    align-items: flex-start;
+  }
+
+  .ad-account-email {
+    max-width: 150px;
+  }
+
+  .ad-panel-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ad-tools {
+    width: 100%;
+  }
+
+  .ad-search {
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+
+  .ad-form-actions .ad-btn {
+    flex: 1 1 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-btn {
+    transition: none;
+  }
+}

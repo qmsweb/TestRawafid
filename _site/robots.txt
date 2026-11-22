@@ -8,4 +8,7 @@ Disallow: /404
 Disallow: /links/
 Disallow: /c/
 
+# لوحة تحكم ابن فارس — خاصة وغير مفهرسة
+Disallow: /admin
+
 Sitemap: https://rawafid.jassim.one/sitemap.xml

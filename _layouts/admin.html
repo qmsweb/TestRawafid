@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>{{ page.title | default: "لوحة تحكم ابن فارس" }}</title>
+
+  {%- comment -%}
+    صفحة إدارية خاصة: مستبعدة من الفهرسة بثلاث طبقات (هذا الوسم،
+    robots.txt، وsitemap: false في مقدمة الصفحة).
+  {%- endcomment -%}
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+  <meta name="googlebot" content="noindex, nofollow" />
+  <meta name="bingbot" content="noindex, nofollow" />
+
+  <link rel="icon" href="{{ '/images/favicon.png' | relative_url }}" type="image/png" />
+  <link rel="stylesheet" href="{{ '/fonts/fonts.css' | relative_url }}" />
+  <link rel="stylesheet" href="{{ '/assets/css/design-system.css' | relative_url }}" />
+  <link rel="stylesheet" href="{{ '/assets/css/admin.css' | relative_url }}" />
+
+  <script>
+    (function () {
+      var savedTheme = localStorage.getItem("rawafed-theme");
+      document.documentElement.setAttribute(
+        "data-theme",
+        ["light", "dark"].indexOf(savedTheme) !== -1 ? savedTheme : "light"
+      );
+    })();
+  </script>
+</head>
+<body class="ad-page">
+  {{ content }}
+
+  <noscript>
+    <p class="ad-noscript">تحتاج إلى تفعيل JavaScript لاستخدام لوحة التحكم.</p>
+  </noscript>
+
+  <script src="{{ '/assets/js/ibn-faris-config.js' | relative_url }}"></script>
+  <script src="{{ '/assets/js/vendor/supabase.min.js' | relative_url }}"></script>
+  <script src="{{ '/assets/js/rawafid-auth.js' | relative_url }}"></script>
+  <script src="{{ '/assets/js/admin.js' | relative_url }}"></script>
+</body>
+</html>

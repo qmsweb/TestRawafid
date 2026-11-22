@@ -161,6 +161,72 @@ const admin =
       })
     : null;
 
+// ------------------------------------------------------------
+// السقف العام المعدّل من لوحة /admin/
+// ------------------------------------------------------------
+// اللوحة تكتب في جدول ibnfaris_settings. نقرأه كل 30 ثانية على الأكثر حتى
+// يبقى التعديل شبه فوري دون استعلام في كل طلب. غياب الجدول أو تعذّر
+// القراءة يعيدنا إلى قيم الأسرار تلقائياً، فلا يتعطّل شيء قبل تشغيل SQL.
+const RUNTIME_SETTINGS_TTL_MS = 30_000;
+type RuntimeGlobalSettings = {
+  globalLimit: number;
+  globalBudgetUsd: number;
+  source: "dashboard" | "env";
+};
+let runtimeSettings:
+  | { at: number; value: RuntimeGlobalSettings }
+  | null = null;
+
+async function readGlobalSettings(): Promise<RuntimeGlobalSettings> {
+  const fallback: RuntimeGlobalSettings = {
+    globalLimit: GLOBAL_DAILY_LIMIT,
+    globalBudgetUsd: GLOBAL_DAILY_BUDGET_USD,
+    source: "env",
+  };
+  if (!admin) return fallback;
+
+  if (
+    runtimeSettings &&
+    Date.now() - runtimeSettings.at < RUNTIME_SETTINGS_TTL_MS
+  ) {
+    return runtimeSettings.value;
+  }
+
+  try {
+    const { data, error } = await admin
+      .from("ibnfaris_settings")
+      .select("global_daily_limit, global_daily_budget_usd")
+      .eq("id", 1)
+      .maybeSingle();
+    if (error) return fallback;
+
+    const row = data as {
+      global_daily_limit?: number | null;
+      global_daily_budget_usd?: number | string | null;
+    } | null;
+
+    const hasLimit =
+      row?.global_daily_limit !== null && row?.global_daily_limit !== undefined;
+    const hasBudget =
+      row?.global_daily_budget_usd !== null &&
+      row?.global_daily_budget_usd !== undefined;
+
+    const value: RuntimeGlobalSettings = {
+      globalLimit: hasLimit
+        ? Math.max(0, Math.round(Number(row?.global_daily_limit)))
+        : GLOBAL_DAILY_LIMIT,
+      globalBudgetUsd: hasBudget
+        ? Math.max(0, Number(row?.global_daily_budget_usd))
+        : GLOBAL_DAILY_BUDGET_USD,
+      source: hasLimit || hasBudget ? "dashboard" : "env",
+    };
+    runtimeSettings = { at: Date.now(), value };
+    return value;
+  } catch {
+    return fallback;
+  }
+}
+
 type ChatRole = "user" | "assistant";
 
 type ChatMessage = {
@@ -1992,18 +2058,20 @@ async function readQuota(quotaKey: string): Promise<QuotaSnapshot> {
     // عرض الحصة لا يتوقف إذا تعذّرت قراءة الإجماليات.
   }
 
+  const settings = await readGlobalSettings();
+
   return {
     allowed: remaining > 0,
     used,
     limit,
     remaining,
     global_used: dailyRequests,
-    global_limit: GLOBAL_DAILY_LIMIT,
+    global_limit: settings.globalLimit,
     global_cost_usd: dailyCost,
-    global_budget_usd: GLOBAL_DAILY_BUDGET_USD,
+    global_budget_usd: settings.globalBudgetUsd,
     global_remaining_usd:
-      GLOBAL_DAILY_BUDGET_USD > 0
-        ? Math.max(0, GLOBAL_DAILY_BUDGET_USD - dailyCost)
+      settings.globalBudgetUsd > 0
+        ? Math.max(0, settings.globalBudgetUsd - dailyCost)
         : 0,
     reset_on: today,
     subscriber,
@@ -2995,14 +3063,15 @@ Deno.serve(async (request) => {
   );
 
   const reservedCostUsd = estimateRequestCost(messages);
+  const globalSettings = await readGlobalSettings();
 
   let quota: QuotaSnapshot | null = null;
   try {
     const { data, error } = await admin.rpc("ibnfaris_reserve_request_v2", {
       p_visitor_hash: quotaKey,
       p_visitor_limit: USER_DAILY_LIMIT,
-      p_global_limit: GLOBAL_DAILY_LIMIT,
-      p_global_budget_usd: GLOBAL_DAILY_BUDGET_USD,
+      p_global_limit: globalSettings.globalLimit,
+      p_global_budget_usd: globalSettings.globalBudgetUsd,
       p_estimated_cost_usd: reservedCostUsd,
     });
 

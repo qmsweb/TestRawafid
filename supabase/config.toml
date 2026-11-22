@@ -7,3 +7,8 @@ project_id = "veydmfljebzqwrolvuhe"
 # مفاتيح النشر (sb_publishable_...) ليست JWT، فلا يفيد verify_jwt في
 # مصادقة المستدعي. تُعطّل هنا، وتُتحقق الترويسة apikey داخل الدالة نفسها.
 verify_jwt = false
+
+[functions.ibn-faris-admin]
+# لوحة /admin/: تُتحقق ترويسة apikey ثم جلسة Google ثم البريد الإداري
+# داخل الدالة، لذا لا حاجة إلى verify_jwt.
+verify_jwt = false

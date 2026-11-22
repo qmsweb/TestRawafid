@@ -1,0 +1,217 @@
+---
+layout: admin
+title: لوحة تحكم ابن فارس
+sitemap: false
+---
+<div class="ad-app" id="ad-app" data-state="loading">
+  <header class="ad-topbar">
+    <div class="ad-brand">
+      <span class="ad-brand-mark" aria-hidden="true">
+        <img src="{{ '/images/ibnfaris-icon.png' | relative_url }}" alt="" width="32" height="32" />
+      </span>
+      <span class="ad-brand-text">
+        <span class="ad-brand-title">لوحة تحكم ابن فارس</span>
+        <span class="ad-brand-sub">السقوف والاستهلاك</span>
+      </span>
+    </div>
+
+    <div class="ad-topbar-side" id="ad-account" hidden>
+      <span class="ad-account-email" id="ad-account-email" dir="ltr"></span>
+      <button class="ad-btn ad-btn--ghost ad-btn--sm" id="ad-signout" type="button">خروج</button>
+    </div>
+  </header>
+
+  <section class="ad-gate" id="ad-gate" aria-labelledby="ad-gate-title">
+    <div class="ad-gate-card">
+      <span class="ad-gate-mark" aria-hidden="true">
+        <img src="{{ '/images/ibnfaris-icon.png' | relative_url }}" alt="" width="52" height="52" />
+      </span>
+      <h1 class="ad-gate-title" id="ad-gate-title">لوحة تحكم ابن فارس</h1>
+      <p class="ad-gate-text">
+        صفحة إدارية مخصّصة لضبط سقوف خدمة ابن فارس ومتابعة استهلاك الحسابات.
+        سجّل الدخول بحساب الإدارة للمتابعة.
+      </p>
+
+      <button class="ad-btn ad-btn--google" id="ad-signin" type="button">
+        <span class="ad-google-icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48" focusable="false">
+            <path class="g-blue" d="M45.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.8-2.1 5.1-4.4 6.7v5.6h7.1c4.2-3.8 6.6-9.5 6.6-16.3z"></path>
+            <path class="g-green" d="M24 46c6 0 11-2 14.6-5.3l-7.1-5.6c-2 1.3-4.5 2.1-7.5 2.1-5.8 0-10.7-3.9-12.4-9.2H4.3v5.8C7.9 41 15.4 46 24 46z"></path>
+            <path class="g-yellow" d="M11.6 27.9c-.4-1.3-.7-2.6-.7-3.9s.2-2.7.7-3.9v-5.8H4.3C2.8 17.4 2 20.6 2 24s.8 6.6 2.3 9.7l7.3-5.8z"></path>
+            <path class="g-red" d="M24 10.7c3.3 0 6.2 1.1 8.5 3.3l6.3-6.3C35 4.1 30 2 24 2 15.4 2 7.9 7 4.3 14.3l7.3 5.8c1.7-5.4 6.6-9.4 12.4-9.4z"></path>
+          </svg>
+        </span>
+        <span>الدخول باستخدام جوجل</span>
+      </button>
+
+      <button class="ad-btn ad-btn--ghost" id="ad-gate-signout" type="button" hidden>
+        الخروج من هذا الحساب
+      </button>
+
+      <p class="ad-gate-status" id="ad-gate-status" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <main class="ad-main" id="ad-main" hidden>
+    <section class="ad-stats" aria-label="ملخص اليوم">
+      <article class="ad-card ad-stat">
+        <p class="ad-stat-label">المتبقي من السقف العام</p>
+        <p class="ad-stat-value" id="ad-stat-requests">—</p>
+        <p class="ad-stat-sub" id="ad-stat-requests-sub">—</p>
+      </article>
+
+      <article class="ad-card ad-stat">
+        <p class="ad-stat-label">المتبقي من ميزانية اليوم</p>
+        <p class="ad-stat-value" id="ad-stat-budget">—</p>
+        <p class="ad-stat-sub" id="ad-stat-budget-sub">—</p>
+      </article>
+
+      <article class="ad-card ad-stat">
+        <p class="ad-stat-label">الحسابات النشطة اليوم</p>
+        <p class="ad-stat-value" id="ad-stat-users">—</p>
+        <p class="ad-stat-sub" id="ad-stat-users-sub">—</p>
+      </article>
+
+      <article class="ad-card ad-stat">
+        <p class="ad-stat-label">السقوف المخصّصة</p>
+        <p class="ad-stat-value" id="ad-stat-custom">—</p>
+        <p class="ad-stat-sub" id="ad-stat-custom-sub">—</p>
+      </article>
+    </section>
+
+    <section class="ad-card ad-panel" aria-labelledby="ad-global-title">
+      <header class="ad-panel-head">
+        <div>
+          <h2 class="ad-panel-title" id="ad-global-title">السقف العام لكل الطلبات</h2>
+          <p class="ad-panel-sub">
+            يطبَّق على كل رسائل ابن فارس اليومية. التعديلات تسري على الطلبات الجديدة
+            خلال ٣٠ ثانية.
+          </p>
+        </div>
+        <span class="ad-badge" id="ad-global-source">—</span>
+      </header>
+
+      <form class="ad-form" id="ad-global-form" novalidate>
+        <label class="ad-field" for="ad-global-limit">
+          <span class="ad-field-label">السقف العام اليومي (عدد الطلبات)</span>
+          <input class="ad-input" id="ad-global-limit" type="number" inputmode="numeric" min="0" max="100000" step="1" required />
+          <span class="ad-field-hint">٠ يعني إيقاف الخدمة مؤقتاً. القيمة الافتراضية من أسرار الدالة: <span id="ad-global-limit-env">—</span></span>
+        </label>
+
+        <label class="ad-field" for="ad-global-budget">
+          <span class="ad-field-label">الميزانية اليومية (دولار)</span>
+          <input class="ad-input" id="ad-global-budget" type="number" inputmode="decimal" min="0" max="10000" step="0.01" required />
+          <span class="ad-field-hint">٠ تعني بلا حد دولاري. القيمة الافتراضية: <span id="ad-global-budget-env">—</span></span>
+        </label>
+
+        <div class="ad-form-actions">
+          <button class="ad-btn ad-btn--primary" id="ad-global-save" type="submit">حفظ السقف العام</button>
+          <button class="ad-btn ad-btn--ghost" id="ad-global-reset" type="button">إرجاع القيم الافتراضية</button>
+        </div>
+      </form>
+
+      <p class="ad-panel-foot" id="ad-global-meta"></p>
+    </section>
+
+    <section class="ad-card ad-panel" aria-labelledby="ad-users-title">
+      <header class="ad-panel-head ad-panel-head--wrap">
+        <div>
+          <h2 class="ad-panel-title" id="ad-users-title">استهلاك الحسابات</h2>
+          <p class="ad-panel-sub" id="ad-users-meta">—</p>
+        </div>
+        <div class="ad-tools">
+          <label class="ad-search">
+            <span class="ad-sr-only">ابحث عن حساب</span>
+            <input class="ad-input" id="ad-search" type="search" placeholder="ابحث بالبريد أو الاسم…" autocomplete="off" />
+          </label>
+          <button class="ad-btn ad-btn--ghost ad-btn--sm" id="ad-refresh" type="button">تحديث</button>
+        </div>
+      </header>
+
+      <div class="ad-table-wrap">
+        <table class="ad-table">
+          <thead>
+            <tr>
+              <th scope="col">الحساب</th>
+              <th scope="col">السقف</th>
+              <th scope="col">استُخدم اليوم</th>
+              <th scope="col">المتبقي</th>
+              <th scope="col">التوكنات (إدخال / إخراج)</th>
+              <th scope="col">تكلفة اليوم</th>
+              <th scope="col">الحالة</th>
+              <th scope="col"><span class="ad-sr-only">إجراءات</span></th>
+            </tr>
+          </thead>
+          <tbody id="ad-users-body"></tbody>
+        </table>
+      </div>
+
+      <p class="ad-empty" id="ad-users-empty" hidden>لا توجد حسابات مطابقة.</p>
+
+      <div class="ad-pager">
+        <button class="ad-btn ad-btn--ghost ad-btn--sm" id="ad-prev" type="button">السابق</button>
+        <span class="ad-pager-label" id="ad-page-label">—</span>
+        <button class="ad-btn ad-btn--ghost ad-btn--sm" id="ad-next" type="button">التالي</button>
+      </div>
+    </section>
+
+    <section class="ad-card ad-panel" aria-labelledby="ad-recent-title">
+      <header class="ad-panel-head">
+        <div>
+          <h2 class="ad-panel-title" id="ad-recent-title">آخر ١٤ يوماً</h2>
+          <p class="ad-panel-sub">إجمالي طلبات الخدمة وتكلفتها يومياً (توقيت مسقط).</p>
+        </div>
+      </header>
+
+      <div class="ad-table-wrap">
+        <table class="ad-table ad-table--compact">
+          <thead>
+            <tr>
+              <th scope="col">اليوم</th>
+              <th scope="col">الطلبات</th>
+              <th scope="col">التكلفة</th>
+            </tr>
+          </thead>
+          <tbody id="ad-recent-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog class="ad-dialog" id="ad-dialog" aria-labelledby="ad-dialog-title">
+  <form method="dialog" class="ad-dialog-form">
+    <header class="ad-dialog-head">
+      <h2 class="ad-dialog-title" id="ad-dialog-title">تعديل سقف الحساب</h2>
+      <button class="ad-dialog-close" type="button" id="ad-dialog-close" aria-label="إغلاق">×</button>
+    </header>
+
+    <p class="ad-dialog-user" id="ad-dialog-user" dir="ltr"></p>
+
+    <label class="ad-field" for="ad-dialog-limit">
+      <span class="ad-field-label">السقف اليومي (عدد الرسائل)</span>
+      <input class="ad-input" id="ad-dialog-limit" type="number" inputmode="numeric" min="0" max="100000" step="1" required />
+    </label>
+
+    <label class="ad-check">
+      <input id="ad-dialog-subscriber" type="checkbox" />
+      <span>حساب مشترك (تظهر له صفة «مشترك»)</span>
+    </label>
+
+    <label class="ad-field" for="ad-dialog-note">
+      <span class="ad-field-label">ملاحظة إدارية (اختياري)</span>
+      <input class="ad-input" id="ad-dialog-note" type="text" maxlength="200" autocomplete="off" />
+    </label>
+
+    <p class="ad-dialog-hint">٠ يوقف الحساب عن الاستخدام. إزالة التخصيص تعيد الحساب إلى السقف الافتراضي.</p>
+
+    <div class="ad-dialog-actions">
+      <button class="ad-btn ad-btn--primary" id="ad-dialog-save" type="button">حفظ</button>
+      <button class="ad-btn ad-btn--ghost" id="ad-dialog-reset-usage" type="button">تصفير استهلاك اليوم</button>
+      <button class="ad-btn ad-btn--danger" id="ad-dialog-clear" type="button">إزالة التخصيص</button>
+      <button class="ad-btn ad-btn--ghost" id="ad-dialog-cancel" type="button">إلغاء</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="ad-toast" id="ad-toast" role="status" aria-live="polite" hidden></div>
