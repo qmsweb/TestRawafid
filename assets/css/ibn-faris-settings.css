@@ -905,22 +905,6 @@ html[data-theme="dark"] .ifs-view {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--ifs-danger) 26%, transparent);
 }
 
-/* الدخول اختياري: زر تسجيل الدخول بلون الهوية لا بلون التحذير. */
-.ifu-signin {
-  margin-block-end: 10px;
-  color: var(--ifs-sand);
-  border-color: color-mix(in srgb, var(--ifs-sand) 35%, var(--ifs-warm-mist));
-}
-
-.ifu-signin:hover {
-  border-color: color-mix(in srgb, var(--ifs-sand) 55%, var(--ifs-warm-mist));
-  background: color-mix(in srgb, var(--ifs-sand) 10%, transparent);
-}
-
-.ifu-signin:focus-visible {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ifs-sand) 26%, transparent);
-}
-
 .ifu-avatar-badge {
   position: absolute;
   inset-block-end: 0;

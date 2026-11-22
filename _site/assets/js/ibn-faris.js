@@ -20,8 +20,7 @@
   var ENDPOINT = SUPABASE_URL
     ? SUPABASE_URL + "/functions/v1/" + FUNCTION_NAME
     : "";
-  // الدخول عبر Google اختياري: تُرسل جلسة المستخدم إن وُجدت، وإلا يعتمد
-  // الخادم على بصمة الجهاز للحصة اليومية. لا يُمنع السؤال بلا جلسة.
+  // جلسة Google تُدار في rawafid-auth.js، ويُطلب رمز الدخول عند كل طلب.
   var AUTH = window.RawafidAuth || null;
   var DRAFT_KEY = "ibnfaris-rawafid-draft";
   var HISTORY_KEY = "ibnfaris-rawafid-history";
@@ -91,6 +90,9 @@
       quota: q("#if-quota"),
       quotaValue: q("#if-quota-value"),
       quotaCount: q("#if-quota-count"),
+      authButton: q("#if-auth-google"),
+      authButtonLabel: q("#if-auth-google-label"),
+      authStatus: q("#if-auth-status"),
       jump: q("#if-jump"),
       confirm: q("#if-confirm"),
       confirmCancel: q("#if-confirm-cancel"),
@@ -149,30 +151,86 @@
     }
 
     // ----------------------------------------------------------
-    // حالة الدخول (اختيارية)
+    // بوابة تسجيل الدخول
     // ----------------------------------------------------------
-    // المحادثة متاحة للجميع. جلسة Google إن وُجدت تربط الحصة بالحساب
-    // بدل الجهاز؛ وانتهاؤها لا يمنع السؤال بل يعود للسياق المحلي.
+    function setAuthStatus(text, tone) {
+      if (!els.authStatus) return;
+      els.authStatus.textContent = String(text || "");
+      els.authStatus.classList.toggle("is-error", tone === "error");
+    }
+
+    function setAuthBusy(busy) {
+      if (els.authButton) els.authButton.disabled = Boolean(busy);
+      if (els.authButtonLabel) {
+        els.authButtonLabel.textContent = busy
+          ? "جارٍ فتح صفحة جوجل…"
+          : "المتابعة باستخدام جوجل";
+      }
+    }
+
+    // تظهر البوابة إذا رفض الخادم الجلسة (401) أو انتهت صلاحيتها.
+    function showAuthGate(message) {
+      state.signedIn = false;
+      root.setAttribute("data-auth", "out");
+      setAuthBusy(false);
+      setAuthStatus(message || "", "error");
+      quotaUnavailable();
+      updateSendState();
+    }
+
     function applyAuth(snapshot) {
       var wasSignedIn = state.signedIn;
-      var isResolved = Boolean(snapshot && snapshot.resolved);
+      var previousError = snapshot && snapshot.error;
 
-      state.authResolved = isResolved;
+      state.authResolved = Boolean(snapshot && snapshot.resolved);
       state.signedIn = Boolean(snapshot && snapshot.signedIn);
 
-      if (!isResolved) return;
-
-      if (!wasSignedIn && settings.focus) {
-        window.setTimeout(function () {
-          if (!els.input.value) focus();
-        }, 80);
+      if (!state.authResolved) {
+        root.setAttribute("data-auth", "checking");
+        if (els.authButton) els.authButton.disabled = true;
+        if (els.authButtonLabel) {
+          els.authButtonLabel.textContent = "جارٍ التحقق…";
+        }
+        setAuthStatus(
+          previousError === "unavailable"
+            ? "تعذّر تجهيز تسجيل الدخول. أعد تحميل الصفحة."
+            : "جارٍ التحقق من تسجيل الدخول…",
+          previousError === "unavailable" ? "error" : ""
+        );
+        return;
       }
 
-      if (els.quota) els.quota.classList.add("is-loading");
-      refreshQuota();
+      root.setAttribute("data-auth", state.signedIn ? "in" : "out");
+      setAuthBusy(false);
+
+      if (state.signedIn) {
+        setAuthStatus("", "");
+        if (els.quota) els.quota.classList.add("is-loading");
+        refreshQuota();
+
+        if (!wasSignedIn && settings.focus) {
+          window.setTimeout(function () {
+            if (!els.input.value) focus();
+          }, 80);
+        }
+        return;
+      }
+
+      quotaUnavailable();
+
+      if (previousError === "cancelled") {
+        setAuthStatus("لم يكتمل تسجيل الدخول. حاول مرة أخرى.", "error");
+      } else if (previousError === "unavailable") {
+        setAuthStatus(
+          "تعذّر تجهيز تسجيل الدخول. أعد تحميل الصفحة.",
+          "error"
+        );
+      } else {
+        setAuthStatus("", "");
+      }
 
       // عند تسجيل الخروج نمسح محادثة التبويب حتى لا تظهر لحساب آخر.
-      if (wasSignedIn && !state.signedIn) {
+      if (wasSignedIn) {
         if (state.controller) state.controller.abort();
         state.controller = null;
         state.turn += 1;
@@ -203,7 +261,10 @@
       if (!els.send) return;
       var empty = !String(els.input.value || "").trim();
       els.send.disabled =
-        empty || Boolean(state.quotaExhausted) || Boolean(state.streaming);
+        empty ||
+        !state.signedIn ||
+        Boolean(state.quotaExhausted) ||
+        Boolean(state.streaming);
     }
 
     function setQuota(quota) {
@@ -258,28 +319,31 @@
       if (els.quotaCount) els.quotaCount.textContent = "?";
     }
 
-    // تُرسل جلسة المستخدم إن وُجدت فقط؛ الحصة تعمل بلا دخول أيضاً.
-    function authHeaders(extra) {
-      var headers = extra || {};
-      var token = authToken();
-      if (token) headers.Authorization = "Bearer " + token;
-      return headers;
-    }
-
     // نجلب الحصة عند فتح المحادثة حتى لا تظهر الدائرة ممتلئة افتراضيًا.
     function refreshQuota() {
       if (!ENDPOINT || !ANON_KEY) return;
 
+      var token = authToken();
+      if (!token) {
+        quotaUnavailable();
+        return;
+      }
+
       fetch(ENDPOINT, {
         method: "POST",
-        headers: authHeaders({
+        headers: {
           "Content-Type": "application/json",
           // مفتاح النشر يُرسل في apikey فقط؛ رمز جلسة المستخدم في Authorization.
           apikey: ANON_KEY,
-        }),
+          Authorization: "Bearer " + token,
+        },
         body: JSON.stringify({ action: "quota" }),
       })
         .then(function (response) {
+          if (response.status === 401) {
+            showAuthGate("انتهت جلسة الدخول. سجّل الدخول من جديد.");
+            return null;
+          }
           return response.ok ? response.json() : null;
         })
         .then(function (data) {
@@ -1552,6 +1616,12 @@
       var text = String(raw || "").trim();
       if (!text || state.streaming || !ENDPOINT || !ANON_KEY) return;
 
+      var token = authToken();
+      if (!token) {
+        showAuthGate("سجّل الدخول بحساب جوجل للمتابعة.");
+        return;
+      }
+
       if (state.quotaExhausted) {
         showAlert(
           "انتهت حصتك اليومية. تتجدد غدًا بتوقيت مسقط، أو ارفع حدّك بقسيمة من الإعدادات."
@@ -1611,10 +1681,11 @@
 
       fetch(ENDPOINT, {
         method: "POST",
-        headers: authHeaders({
+        headers: {
           "Content-Type": "application/json",
           apikey: ANON_KEY,
-        }),
+          Authorization: "Bearer " + token,
+        },
         body: JSON.stringify(payload),
         signal: controller.signal,
       })
@@ -1626,6 +1697,11 @@
                 return null;
               })
               .then(function (data) {
+                if (response.status === 401) {
+                  showAuthGate(
+                    "انتهت جلسة الدخول. سجّل الدخول من جديد للمتابعة."
+                  );
+                }
                 if (data && data.quota) setQuota(data.quota);
                 var message =
                   data && typeof data.error === "string"
@@ -1819,19 +1895,39 @@
 
       if (!ENDPOINT || !ANON_KEY) {
         showAlert("خدمة ابن فارس غير متاحة حاليًا. حاول لاحقًا.");
+        setAuthStatus("خدمة ابن فارس غير متاحة حاليًا.", "error");
         els.input.disabled = true;
         if (els.send) els.send.disabled = true;
         return;
       }
 
+      root.setAttribute("data-auth", "checking");
       if (els.quota) els.quota.classList.add("is-loading");
 
+      if (els.authButton) {
+        els.authButton.addEventListener("click", function () {
+          if (!AUTH || typeof AUTH.signInWithGoogle !== "function") {
+            setAuthStatus(
+              "تعذّر تجهيز تسجيل الدخول. أعد تحميل الصفحة.",
+              "error"
+            );
+            return;
+          }
+
+          setAuthBusy(true);
+          setAuthStatus("جارٍ فتح صفحة جوجل…", "");
+          AUTH.signInWithGoogle().catch(function () {
+            setAuthBusy(false);
+            setAuthStatus("تعذّر بدء تسجيل الدخول. حاول مرة أخرى.", "error");
+          });
+        });
+      }
+
       // onChange يستدعي applyAuth فوراً بالحالة الحالية ثم عند كل تغيّر.
-      // غياب سكربت الدخول لا يمنع المحادثة؛ نكتفي بجلب الحصة مباشرة.
       if (AUTH && typeof AUTH.onChange === "function") {
         state.authUnsub = AUTH.onChange(applyAuth);
       } else {
-        refreshQuota();
+        applyAuth({ resolved: true, signedIn: false, error: "unavailable" });
       }
 
       window.setInterval(refreshQuota, 5 * 60 * 1000);
@@ -1842,7 +1938,7 @@
         window.matchMedia("(pointer: fine)").matches
       ) {
         window.setTimeout(function () {
-          if (!els.input.value) focus();
+          if (state.signedIn && !els.input.value) focus();
         }, 60);
       }
     }
