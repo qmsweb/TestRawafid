@@ -180,6 +180,7 @@ type QuotaSnapshot = {
   global_budget_usd?: number;
   global_remaining_usd?: number;
   reset_on?: string;
+  subscriber?: boolean;
 };
 
 type KnowledgeChunk = {
@@ -1949,15 +1950,21 @@ async function readQuota(quotaKey: string): Promise<QuotaSnapshot> {
 
   // السقف المخصص من Table Editor (أو المرفوع بقسيمة) يتقدّم على الافتراضي.
   let limit = USER_DAILY_LIMIT;
+  let subscriber = false;
   try {
     const limits = await admin
       .from("ibnfaris_visitor_limits")
-      .select("daily_limit")
+      .select("daily_limit, is_subscriber")
       .eq("visitor_hash", quotaKey)
       .maybeSingle();
-    const limitRow = limits.data as { daily_limit?: number } | null;
+    const limitRow = limits.data as {
+      daily_limit?: number;
+      is_subscriber?: boolean;
+    } | null;
     if (!limits.error && limitRow) {
       limit = Math.max(0, Number(limitRow.daily_limit) || 0);
+      // صفة الاشتراك لا تُشترط لها قسيمة سابقة؛ يكفي وجود الصف بهذه القيمة.
+      subscriber = limitRow.is_subscriber === true;
     }
   } catch {
     // إن لم يُشغَّل ملف SQL المحدّث بعد نبقى على الحد الافتراضي.
@@ -1999,6 +2006,7 @@ async function readQuota(quotaKey: string): Promise<QuotaSnapshot> {
         ? Math.max(0, GLOBAL_DAILY_BUDGET_USD - dailyCost)
         : 0,
     reset_on: today,
+    subscriber,
   };
 }
 
@@ -2904,6 +2912,7 @@ Deno.serve(async (request) => {
         reason?: string;
         bonus?: number;
         limit?: number;
+        subscriber?: boolean;
       } | null;
 
       if (!result?.ok) {
@@ -2931,6 +2940,7 @@ Deno.serve(async (request) => {
           ok: true,
           bonus: result.bonus,
           limit: result.limit,
+          subscriber: result.subscriber === true,
           quota,
         },
         200,

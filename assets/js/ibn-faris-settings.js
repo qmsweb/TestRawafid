@@ -31,6 +31,7 @@
     isAccountOpen: false,
     accountBusy: false,
     accountTimer: null,
+    subscriberRequestId: 0,
   };
 
   var ARABIC_DIGITS = "٠١٢٣٤٥٦٧٨٩";
@@ -90,6 +91,52 @@
     } catch (error) {
       // المتصفحات القديمة قد لا تدعم CustomEvent، والعدّاد يتحدث تلقائياً.
     }
+  }
+
+  // صفة «مشترك» محفوظة على الخادم فقط (عمود is_subscriber)، فلا يمكن
+  // معرفتها من الجلسة. نطلب الحصة عند فتح الإعدادات لعرضها أو إخفاءها.
+  function renderSubscriber(subscribed) {
+    var ids = ["ifu-subscriber", "ifs-subscriber-badge"];
+    for (var i = 0; i < ids.length; i += 1) {
+      var element = document.getElementById(ids[i]);
+      if (element) element.hidden = !subscribed;
+    }
+  }
+
+  function loadSubscriberState() {
+    var endpoint = chatEndpoint();
+    var key = chatKey();
+    var token = authToken();
+
+    if (!endpoint || !key || !token) {
+      renderSubscriber(false);
+      return;
+    }
+
+    var requestId = ++state.subscriberRequestId;
+
+    fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: key,
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({ action: "quota" }),
+    })
+      .then(function (response) {
+        return response.ok ? response.json() : null;
+      })
+      .then(function (data) {
+        if (requestId !== state.subscriberRequestId) return;
+        var quota = data && data.quota ? data.quota : null;
+        if (!quota) return;
+        window.IBNAFARIS_QUOTA = quota;
+        renderSubscriber(quota.subscriber === true);
+      })
+      .catch(function () {
+        // نُبقي آخر حالة معروفة بدل إخفاء الشارة عند تعذّر الشبكة.
+      });
   }
 
   // الحروف العربية (بما فيها أشكال العرض) والتشكيل والإيموجي فقط.
@@ -191,6 +238,9 @@
       email.textContent = label;
       email.hidden = !label;
     }
+
+    var cachedQuota = window.IBNAFARIS_QUOTA;
+    renderSubscriber(Boolean(cachedQuota && cachedQuota.subscriber === true));
 
     if (signout) {
       signout.hidden = !user;
@@ -777,6 +827,10 @@
     setChatInert(true);
     state.isOpen = true;
 
+    var cachedQuota = window.IBNAFARIS_QUOTA;
+    if (cachedQuota) renderSubscriber(cachedQuota.subscriber === true);
+    loadSubscriberState();
+
     window.requestAnimationFrame(function () {
       var closeButton = view.querySelector("[data-ifs-close]");
       if (!closeButton) return;
@@ -934,23 +988,14 @@
 
     var success = view.querySelector("#ifv-success");
     var again = view.querySelector("[data-ifv-again]");
-    var text = view.querySelector("#ifv-success .ifv-lead");
 
-    var bonus = Number(result && result.bonus);
-    var limit = Number(result && result.limit);
-
-    if (text) {
-      if (isFinite(bonus) && bonus > 0 && isFinite(limit) && limit > 0) {
-        text.textContent =
-          "أُضيفت " +
-          bonus +
-          " رسالة إلى سقفك اليومي، وأصبح الحد " +
-          limit +
-          " رسالة.";
-      } else {
-        text.textContent =
-          "أُضيف رصيد القسيمة إلى حسابك، ويمكنك متابعة أسئلتك الآن.";
-      }
+    // لا نعرض عدد الرسائل ولا السقف؛ رسالة ثابتة تكفي. وحالة «مشترك»
+    // تُحدَّث من استجابة الخادم كي تظهر الشارة في الإعدادات فوراً.
+    if (result && result.quota) {
+      window.IBNAFARIS_QUOTA = result.quota;
+      renderSubscriber(result.quota.subscriber === true);
+    } else if (result && result.subscriber === true) {
+      renderSubscriber(true);
     }
 
     setVoucherStatus("", "");
@@ -1232,9 +1277,16 @@
   // تسجيل الخروج من تبويب آخر أو انتهاء الجلسة يغلق الإعدادات ويعيد
   // المستخدم إلى بوابة الدخول في المحادثة.
   document.addEventListener("rawafid:auth", function (event) {
+    var detail = event && event.detail ? event.detail : null;
+
+    // جلسة أخرى قد تكون لمشترك سابق؛ لا نورّث الشارة لحساب جديد.
+    if (!detail || !detail.signedIn) {
+      window.IBNAFARIS_QUOTA = null;
+      renderSubscriber(false);
+    }
+
     renderAccountIdentity();
 
-    var detail = event && event.detail ? event.detail : null;
     if (detail && detail.signedIn) return;
 
     if (state.isAccountOpen) closeAccount(true);

@@ -277,6 +277,9 @@
       state.quota = quota;
       state.quotaExhausted = remaining <= 0;
 
+      // تُشارَك الحصة مع سكربت الإعدادات ليظهر «مشترك» بلا طلب إضافي.
+      window.IBNAFARIS_QUOTA = quota;
+
       var ratio = limit > 0 ? Math.max(0, Math.min(1, remaining / limit)) : 0;
 
       if (els.quotaValue) {

@@ -108,6 +108,19 @@ comment on table public.ibnfaris_vouchers is
 comment on column public.ibnfaris_vouchers.expires_at is
   'آخر موعد لاستخدام القسيمة؛ null تعني بلا انتهاء.';
 
+-- نوع القسيمة: زيادة السقف فقط (الافتراضي)، أو زيادة + صفة «مشترك».
+alter table public.ibnfaris_vouchers
+  add column if not exists grants_subscription boolean not null default false;
+
+comment on column public.ibnfaris_vouchers.grants_subscription is
+  'true = القسيمة تمنح صاحبها صفة «مشترك» إضافة إلى رفع السقف اليومي.';
+
+alter table public.ibnfaris_visitor_limits
+  add column if not exists is_subscriber boolean not null default false;
+
+comment on column public.ibnfaris_visitor_limits.is_subscriber is
+  'true = المستخدم مشترك، وتظهر كلمة «مشترك» في إعداداته.';
+
 create index if not exists ibnfaris_vouchers_used_by_idx
   on public.ibnfaris_vouchers (used_by, used_at desc);
 
@@ -530,18 +543,24 @@ comment on function public.ibnfaris_record_usage_v2(text, text, integer, integer
 -- ------------------------------------------------------------
 
 -- إنشاء دفعة قسائم من SQL Editor:
---   select * from public.ibnfaris_create_vouchers(10, 20);
--- p_count: عدد القسائم، p_bonus_limit: عدد الرسائل المضافة لكل قسيمة.
+--   العادية:      select * from public.ibnfaris_create_vouchers(10, 20);
+--   مع اشتراك:    select * from public.ibnfaris_create_vouchers(10, 25, null, 'مشتركون', true);
+-- p_count: عدد القسائم، p_bonus_limit: عدد الرسائل المضافة لكل قسيمة،
+-- p_grants_subscription: true تمنح صاحبها صفة «مشترك» أيضاً.
+drop function if exists public.ibnfaris_create_vouchers(integer, integer, timestamptz, text);
+
 create or replace function public.ibnfaris_create_vouchers(
   p_count integer,
   p_bonus_limit integer,
   p_expires_at timestamptz default null,
-  p_note text default null
+  p_note text default null,
+  p_grants_subscription boolean default false
 )
 returns table (
   voucher_code text,
   voucher_bonus integer,
-  voucher_expires_at timestamptz
+  voucher_expires_at timestamptz,
+  voucher_subscriber boolean
 )
 language plpgsql
 security definer
@@ -550,6 +569,7 @@ as $$
 declare
   v_count integer := least(greatest(coalesce(p_count, 1), 1), 500);
   v_bonus integer := greatest(coalesce(p_bonus_limit, 1), 1);
+  v_subscriber boolean := coalesce(p_grants_subscription, false);
   v_code text;
   i integer;
 begin
@@ -561,19 +581,26 @@ begin
       );
     end loop;
 
-    insert into public.ibnfaris_vouchers (code, bonus_limit, note, expires_at)
-    values (v_code, v_bonus, p_note, p_expires_at);
+    insert into public.ibnfaris_vouchers (
+      code,
+      bonus_limit,
+      note,
+      expires_at,
+      grants_subscription
+    )
+    values (v_code, v_bonus, p_note, p_expires_at, v_subscriber);
 
     voucher_code := v_code;
     voucher_bonus := v_bonus;
     voucher_expires_at := p_expires_at;
+    voucher_subscriber := v_subscriber;
     return next;
   end loop;
 end;
 $$;
 
-comment on function public.ibnfaris_create_vouchers(integer, integer, timestamptz, text) is
-  'يولّد قسائم عشوائية من ست خانات ويرفع كل واحدة سقف صاحبها زيادة دائمة.';
+comment on function public.ibnfaris_create_vouchers(integer, integer, timestamptz, text, boolean) is
+  'يولّد قسائم عشوائية من ست خانات ترفع السقف، وتمنح صفة «مشترك» عند طلب ذلك.';
 
 -- استبدال قسيمة بشكل ذري: تُعلَّم مستخدمة، ويُرفع السقف، مع حد لمحاولات
 -- التخمين اليومية. يعيد jsonb حتى تعرض الواجهة سبب الفشل بدقة.
@@ -598,6 +625,7 @@ declare
   v_max_attempts constant integer := 15;
   v_voucher public.ibnfaris_vouchers%rowtype;
   v_new_limit integer;
+  v_subscriber boolean := false;
 begin
   if p_visitor_hash is null or char_length(p_visitor_hash) < 32 then
     return jsonb_build_object('ok', false, 'reason', 'invalid_request');
@@ -648,16 +676,23 @@ begin
       used_at = now()
   where code = v_voucher.code;
 
-  insert into public.ibnfaris_visitor_limits (visitor_hash, daily_limit)
+  insert into public.ibnfaris_visitor_limits (
+    visitor_hash,
+    daily_limit,
+    is_subscriber
+  )
   values (
     p_visitor_hash,
-    greatest(coalesce(p_default_limit, 0), 0) + v_voucher.bonus_limit
+    greatest(coalesce(p_default_limit, 0), 0) + v_voucher.bonus_limit,
+    v_voucher.grants_subscription
   )
   on conflict (visitor_hash) do update
     set daily_limit = greatest(ibnfaris_visitor_limits.daily_limit, 0)
       + v_voucher.bonus_limit,
+        is_subscriber = ibnfaris_visitor_limits.is_subscriber
+          or excluded.is_subscriber,
         updated_at = now()
-  returning daily_limit into v_new_limit;
+  returning daily_limit, is_subscriber into v_new_limit, v_subscriber;
 
   -- نجاح الاستبدال يصفّر عدّاد المحاولات حتى لا يمنع قسائم أخرى مشروعة.
   update public.ibnfaris_voucher_attempts
@@ -670,13 +705,14 @@ begin
     'ok', true,
     'bonus', v_voucher.bonus_limit,
     'limit', v_new_limit,
+    'subscriber', v_subscriber,
     'reset_on', to_char(v_today, 'YYYY-MM-DD')
   );
 end;
 $$;
 
 comment on function public.ibnfaris_redeem_voucher(text, text, integer) is
-  'يستبدل قسيمة مرة واحدة ويرفع السقف اليومي للمستخدم زيادة دائمة، مع حد للمحاولات.';
+  'يستبدل قسيمة مرة واحدة ويرفع السقف اليومي زيادة دائمة، وقد يمنح صفة «مشترك»، مع حد للمحاولات.';
 
 -- عرض مساعد للإدارة: آخر استخدام ومعه السقف المخصص إن وُجد.
 create or replace view public.ibnfaris_visitor_overview as
@@ -686,7 +722,8 @@ select
   g.requests_used as requests_used_today,
   g.updated_at as last_seen_at,
   l.daily_limit as custom_daily_limit,
-  l.note as admin_note
+  l.note as admin_note,
+  coalesce(l.is_subscriber, false) as is_subscriber
 from public.ibnfaris_guest_usage g
 left join public.ibnfaris_visitor_limits l using (visitor_hash);
 
@@ -708,7 +745,8 @@ select
   end as requests_used_today,
   g.updated_at as last_seen_at,
   l.daily_limit as custom_daily_limit,
-  l.note as admin_note
+  l.note as admin_note,
+  coalesce(l.is_subscriber, false) as is_subscriber
 from auth.users u
 left join public.ibnfaris_guest_usage g on g.visitor_hash = u.id::text
 left join public.ibnfaris_visitor_limits l on l.visitor_hash = u.id::text;
@@ -732,7 +770,7 @@ revoke all on function public.ibnfaris_release_request_v2(text, numeric)
   from public, anon, authenticated;
 revoke all on function public.ibnfaris_record_usage_v2(text, text, integer, integer, numeric, numeric)
   from public, anon, authenticated;
-revoke all on function public.ibnfaris_create_vouchers(integer, integer, timestamptz, text)
+revoke all on function public.ibnfaris_create_vouchers(integer, integer, timestamptz, text, boolean)
   from public, anon, authenticated;
 revoke all on function public.ibnfaris_redeem_voucher(text, text, integer)
   from public, anon, authenticated;
@@ -753,7 +791,7 @@ grant execute on function public.ibnfaris_release_request_v2(text, numeric)
   to service_role;
 grant execute on function public.ibnfaris_record_usage_v2(text, text, integer, integer, numeric, numeric)
   to service_role;
-grant execute on function public.ibnfaris_create_vouchers(integer, integer, timestamptz, text)
+grant execute on function public.ibnfaris_create_vouchers(integer, integer, timestamptz, text, boolean)
   to service_role;
 grant execute on function public.ibnfaris_redeem_voucher(text, text, integer)
   to service_role;
