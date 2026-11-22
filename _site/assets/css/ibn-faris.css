@@ -762,14 +762,6 @@ html[data-theme="dark"] .if-overlay {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--if-sand) 30%, transparent);
 }
 
-.if-empty-hint {
-  max-width: 560px;
-  margin: 14px 0 0;
-  color: var(--if-graphite);
-  font-size: 13px;
-  line-height: 1.7;
-}
-
 @media (max-width: 560px) {
   .if-suggestions {
     gap: 6px;
