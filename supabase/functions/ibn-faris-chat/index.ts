@@ -3,9 +3,9 @@
 // ============================================================
 // • يعمل على Supabase Edge Functions (Deno).
 // • يحتفظ بمفتاح DeepSeek على الخادم ولا يرسله إلى المتصفح أبداً.
-// • لا يعمل إلا لمستخدم مسجّل عبر Supabase Auth (Google): يتحقق من JWT
-//   في ترويسة Authorization، ويعرّف المستخدم بمعرّفه الدائم.
-// • يطبّق حداً يومياً لكل مستخدم + سقفاً عاماً عبر دوال Postgres الذرية.
+// • الدخول اختياري: إن وُجد JWT صالح من Supabase Auth (Google) عُرّف المستخدم
+//   بمعرّفه الدائم، وإلا عُرّف ببصمة جهازه (IP مجزّأ) بلا أي جلسة.
+// • يطبّق حداً يومياً لكل مستخدم/جهاز + سقفاً عاماً عبر دوال Postgres الذرية.
 // • لا يحفظ المحادثات؛ يسجّل عدد التوكنات فقط.
 // • يعيد بثّ الرد على هيئة SSE مبسّطة: answer / thinking / quota / error.
 //
@@ -13,7 +13,7 @@
 //   DEEPSEEK_API_KEY
 // والمتغيرات الاختيارية:
 //   DEEPSEEK_API_URL, DEEPSEEK_MODEL,
-//   IBNAFARIS_ALLOWED_ORIGINS,
+//   IBNAFARIS_IP_SALT, IBNAFARIS_ALLOWED_ORIGINS,
 //   IBNAFARIS_USER_DAILY_LIMIT, IBNAFARIS_GLOBAL_DAILY_LIMIT,
 //   IBNAFARIS_RAG_ENABLED, EMBEDDING_API_KEY, EMBEDDING_API_URL, EMBEDDING_MODEL
 // ============================================================
@@ -118,6 +118,12 @@ const DEEPSEEK_MODEL =
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")?.trim() ?? "";
 const SUPABASE_SERVICE_ROLE_KEY =
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim() || readSecretKey();
+
+// يُستخدم لتجزئة عنوان الجهاز للزوار غير المسجّلين؛ لا يُخزَّن العنوان نفسه.
+const IP_SALT =
+  Deno.env.get("IBNAFARIS_IP_SALT")?.trim() ||
+  SUPABASE_SERVICE_ROLE_KEY ||
+  "rawafid-ibn-faris";
 
 const ALLOWED_ORIGINS = new Set(
   (
@@ -569,8 +575,28 @@ type AuthenticatedUser = {
   email: string | null;
 };
 
-// لا يُقبل أي طلب بلا جلسة Supabase صالحة. نتحقق من رمز الوصول لدى خدمة
-// Auth نفسها (وليس محلياً فقط) حتى تُلغى الجلسات المسحوبة فوراً.
+function clientIp(request: Request): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0]?.trim() || "unknown";
+
+  return (
+    request.headers.get("x-real-ip")?.trim() ||
+    request.headers.get("cf-connecting-ip")?.trim() ||
+    "unknown"
+  );
+}
+
+// بصمة الجهاز للزوار: تجزئة IP بملح سرّي، فلا يُحفظ العنوان في القاعدة.
+async function hashVisitor(ip: string): Promise<string> {
+  const data = new TextEncoder().encode(`${IP_SALT}|${ip}`);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+// الدخول اختياري: نتحقق من رمز الوصول إن أُرسل، ولا نعتمد عليه إن كان
+// غير صالح (فلا يُنتحل حساب)، وغيابه لا يمنع الطلب.
 async function authenticate(request: Request): Promise<AuthenticatedUser | null> {
   if (!admin) return null;
 
@@ -2914,21 +2940,9 @@ Deno.serve(async (request) => {
     );
   }
 
-  // بوابة الدخول: لا حصة ولا محادثة ولا قسائم لغير المسجّلين.
+  // الدخول اختياري: المسجّل يُعرَّف بمعرّفه الدائم، والزائر ببصمة جهازه.
   const user = await authenticate(request);
-  if (!user) {
-    return jsonResponse(
-      {
-        error: "سجّل الدخول بحساب Google لاستخدام ابن فارس.",
-        reason: "auth_required",
-      },
-      401,
-      origin,
-    );
-  }
-
-  // معرّف Supabase Auth هو مفتاح الحصة الدائم؛ لا IP ولا بصمة جهاز.
-  const quotaKey = user.id;
+  const quotaKey = user?.id ?? (await hashVisitor(clientIp(request)));
 
   const body = (await request.json().catch(() => null)) as {
     messages?: unknown;

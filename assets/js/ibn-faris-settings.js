@@ -103,12 +103,19 @@
     }
   }
 
+  // الدخول اختياري: نرسل الجلسة إن وُجدت، وإلا يجيب الخادم بحصة الجهاز.
+  function requestHeaders(key) {
+    var headers = { "Content-Type": "application/json", apikey: key };
+    var token = authToken();
+    if (token) headers.Authorization = "Bearer " + token;
+    return headers;
+  }
+
   function loadSubscriberState() {
     var endpoint = chatEndpoint();
     var key = chatKey();
-    var token = authToken();
 
-    if (!endpoint || !key || !token) {
+    if (!endpoint || !key) {
       renderSubscriber(false);
       return;
     }
@@ -117,11 +124,7 @@
 
     fetch(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: key,
-        Authorization: "Bearer " + token,
-      },
+      headers: requestHeaders(key),
       body: JSON.stringify({ action: "quota" }),
     })
       .then(function (response) {
@@ -219,6 +222,7 @@
     var avatarBox = view.querySelector("#ifu-avatar");
     var email = view.querySelector("#ifu-email");
     var signout = view.querySelector("#ifu-signout");
+    var signin = view.querySelector("#ifu-signin");
 
     if (photo) {
       if (user && avatar) {
@@ -248,6 +252,16 @@
       var signoutLabel = signout.querySelector("span");
       if (signoutLabel) {
         signoutLabel.textContent = "تسجيل الخروج من حساب Google";
+      }
+    }
+
+    // الدخول اختياري: يظهر زر Google للزائر، ويُخفى للمسجّل.
+    if (signin) {
+      signin.hidden = Boolean(user);
+      signin.disabled = false;
+      var signinLabel = signin.querySelector("span");
+      if (signinLabel) {
+        signinLabel.textContent = "تسجيل الدخول بحساب Google";
       }
     }
   }
@@ -1049,12 +1063,6 @@
       return;
     }
 
-    var token = authToken();
-    if (!token) {
-      showVoucherError("سجّل الدخول بحساب Google أولاً لاستبدال القسيمة.");
-      return;
-    }
-
     clearVoucherInvalid();
     setVoucherStatus("جارٍ التحقق من الرمز…", "");
     setVoucherLoading(true);
@@ -1063,11 +1071,7 @@
 
     fetch(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: key,
-        Authorization: "Bearer " + token,
-      },
+      headers: requestHeaders(key),
       body: JSON.stringify({ action: "redeem-voucher", code: code }),
     })
       .then(function (response) {
@@ -1180,6 +1184,32 @@
       return;
     }
 
+    var signin = closestFrom(event.target, "#ifu-signin");
+    if (signin) {
+      event.preventDefault();
+      if (
+        !window.RawafidAuth ||
+        typeof window.RawafidAuth.signInWithGoogle !== "function"
+      ) {
+        setAccountStatus("تعذّر تجهيز تسجيل الدخول. أعد تحميل الصفحة.", "error");
+        return;
+      }
+
+      signin.disabled = true;
+      var signinLabel = signin.querySelector("span");
+      if (signinLabel) signinLabel.textContent = "جارٍ فتح صفحة جوجل…";
+
+      // جوجل تعيد تحميل الصفحة، فلا حاجة لاستعادة الزر هنا.
+      window.RawafidAuth.signInWithGoogle().catch(function () {
+        signin.disabled = false;
+        if (signinLabel) {
+          signinLabel.textContent = "تسجيل الدخول بحساب Google";
+        }
+        setAccountStatus("تعذّر بدء تسجيل الدخول. حاول مرة أخرى.", "error");
+      });
+      return;
+    }
+
     var accountCloser = closestFrom(event.target, "[data-ifu-close]");
     if (accountCloser) {
       event.preventDefault();
@@ -1274,8 +1304,8 @@
     true
   );
 
-  // تسجيل الخروج من تبويب آخر أو انتهاء الجلسة يغلق الإعدادات ويعيد
-  // المستخدم إلى بوابة الدخول في المحادثة.
+  // تغيّر حالة الدخول (اختياري) يحدّث هوية نافذة الحساب والشارة فقط؛
+  // المحادثة لا تُغلق لأنها تعمل بلا تسجيل دخول.
   document.addEventListener("rawafid:auth", function (event) {
     var detail = event && event.detail ? event.detail : null;
 
@@ -1286,12 +1316,6 @@
     }
 
     renderAccountIdentity();
-
-    if (detail && detail.signedIn) return;
-
-    if (state.isAccountOpen) closeAccount(true);
-    if (state.isVoucherOpen) closeVoucher(true);
-    if (state.isOpen) close();
   });
 
   window.IbnFarisSettings = {
