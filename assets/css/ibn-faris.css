@@ -506,6 +506,179 @@ html[data-theme="dark"] .if-overlay {
 }
 
 /* ------------------------------------------------------------
+   4.1 بوابة تسجيل الدخول بحساب Google
+   ابن فارس لا يعمل إلا بعد التحقق من جلسة المستخدم، وتبقى البوابة
+   بديلاً عن المحادثة ومربّع الكتابة حتى تكتمل الجلسة.
+   ------------------------------------------------------------ */
+.if-app[data-auth="in"] .if-auth {
+  display: none;
+}
+
+.if-app:not([data-auth="in"]) .if-main,
+.if-app:not([data-auth="in"]) .if-composer-shell {
+  display: none;
+}
+
+.if-app:not([data-auth="in"]) .if-topbar-actions {
+  visibility: hidden;
+}
+
+.if-auth {
+  --if-google-blue: #4285f4;
+  --if-google-green: #34a853;
+  --if-google-yellow: #fbbc05;
+  --if-google-red: #ea4335;
+
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: clamp(24px, 6vh, 56px) clamp(18px, 5vw, 32px);
+  overflow-y: auto;
+  background: var(--if-parchment);
+}
+
+.if-auth-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(420px, 100%);
+  padding: clamp(24px, 4vw, 36px);
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-lg);
+  background: var(--if-soft-paper);
+  box-shadow: var(--if-shadow-subtle);
+  text-align: center;
+}
+
+.if-auth-mark {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: var(--if-logo-bg);
+  box-shadow: 0 0 0 1px var(--if-warm-mist),
+    0 8px 22px color-mix(in srgb, var(--if-ink) 12%, transparent);
+}
+
+.if-auth-mark img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.if-auth-kicker {
+  margin: 0 0 6px;
+  color: var(--if-sand);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.if-auth-title {
+  margin: 0;
+  color: var(--if-ink);
+  font-size: clamp(20px, 4.4vw, 25px);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.if-auth-lead {
+  margin: 10px 0 22px;
+  color: var(--if-graphite);
+  font-size: 14.5px;
+  line-height: 1.75;
+}
+
+.if-auth-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 50px;
+  padding: 0 18px;
+  border: 1px solid var(--if-warm-mist);
+  border-radius: var(--if-radius-full);
+  background: var(--if-white);
+  color: var(--if-ink);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease,
+    transform 0.18s ease, opacity 0.18s ease;
+}
+
+.if-auth-google:hover:not(:disabled) {
+  border-color: var(--if-sand);
+  background: color-mix(in srgb, var(--if-sand) 7%, var(--if-white));
+}
+
+.if-auth-google:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.if-auth-google:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--if-sand) 34%, transparent);
+}
+
+.if-auth-google:disabled {
+  opacity: 0.62;
+  cursor: progress;
+}
+
+.if-auth-google-icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.if-auth-google-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.if-auth-status {
+  min-height: 20px;
+  margin: 14px 0 0;
+  color: var(--if-graphite);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.if-auth-status.is-error {
+  color: var(--if-danger);
+}
+
+.if-auth-note {
+  margin: 16px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--if-warm-mist);
+  color: var(--if-ash);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+@media (max-width: 480px) {
+  .if-auth {
+    padding: 20px 16px 28px;
+  }
+
+  .if-auth-card {
+    padding: 22px 18px;
+  }
+}
+
+/* ------------------------------------------------------------
    5. منطقة المحادثة
    ------------------------------------------------------------ */
 .if-main {

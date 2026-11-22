@@ -19,6 +19,8 @@
     marked: BASE + "assets/js/vendor/marked.min.js",
     purify: BASE + "assets/js/vendor/purify.min.js",
     config: BASE + "assets/js/ibn-faris-config.js",
+    supabase: BASE + "assets/js/vendor/supabase.min.js",
+    auth: BASE + "assets/js/rawafid-auth.js",
     engine: BASE + "assets/js/ibn-faris.js",
   };
 
@@ -150,6 +152,14 @@
       })
       .then(function () {
         return loadScript(ASSETS.config);
+      })
+      // مكتبة Supabase وسكربت الجلسة يحتاجان إلى الإعدادات أعلاه.
+      // فشلهما لا يمنع فتح اللوحة؛ البوابة تعرض رسالة واضحة.
+      .then(function () {
+        return loadScript(ASSETS.supabase).catch(function () {});
+      })
+      .then(function () {
+        return loadScript(ASSETS.auth).catch(function () {});
       })
       .then(function () {
         return loadScript(ASSETS.engine);
@@ -541,9 +551,10 @@
     window.location.href = href || BASE + "ibn-faris/";
   }
 
-  function open(trigger) {
+  function open(trigger, options) {
     if (state.isOpen || state.pending) return;
 
+    var skipHistory = Boolean(options && options.skipHistory);
     state.pending = true;
     state.lastFocus =
       trigger || (document.activeElement !== document.body
@@ -577,7 +588,7 @@
         syncActivity();
 
         // نضيف حالة تاريخ حتى يغلق زر الرجوع في الجوال اللوحة بدل مغادرة الصفحة.
-        if (!state.historyPushed && window.history && history.pushState) {
+        if (!skipHistory && !state.historyPushed && window.history && history.pushState) {
           try {
             history.pushState({ ibnfaris: true }, "");
             state.historyPushed = true;
@@ -711,5 +722,32 @@
     var pendingTrigger = window.__ibnFarisPendingOpen;
     window.__ibnFarisPendingOpen = null;
     open(pendingTrigger);
+  }
+
+  // العودة من تسجيل الدخول عبر Google: نفتح اللوحة تلقائياً لأن الجلسة
+  // بدأت من الزر العائم، فتظهر المحادثة مباشرة بعد التحقق.
+  function resumeAfterAuth() {
+    if (!document.querySelector(".if-fab")) return;
+
+    var marker = null;
+    try {
+      var raw = window.sessionStorage.getItem("rawafid-auth-return");
+      marker = raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      marker = null;
+    }
+
+    if (!marker) return;
+    if (Date.now() - Number(marker.at || 0) > 10 * 60 * 1000) return;
+
+    // لا نضيف حالة تاريخ هنا: Supabase سينظّف رابط ?code بعد تبادل الرمز،
+    // وإضافة حالة إضافية قد تعيد المستخدم إلى رابط المعاودة عند الرجوع.
+    open(null, { skipHistory: true });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", resumeAfterAuth);
+  } else {
+    resumeAfterAuth();
   }
 })();

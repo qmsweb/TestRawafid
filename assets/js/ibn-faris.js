@@ -20,6 +20,8 @@
   var ENDPOINT = SUPABASE_URL
     ? SUPABASE_URL + "/functions/v1/" + FUNCTION_NAME
     : "";
+  // جلسة Google تُدار في rawafid-auth.js، ويُطلب رمز الدخول عند كل طلب.
+  var AUTH = window.RawafidAuth || null;
   var DRAFT_KEY = "ibnfaris-rawafid-draft";
   var HISTORY_KEY = "ibnfaris-rawafid-history";
   var HISTORY_VERSION = 2;
@@ -28,6 +30,12 @@
   // للحجم والمدة حتى لا تتحول إلى أرشيف دائم على جهاز المستخدم.
   var HISTORY_MAX_CHARS = 120_000;
   var HISTORY_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+  function authToken() {
+    return AUTH && typeof AUTH.getAccessToken === "function"
+      ? AUTH.getAccessToken()
+      : null;
+  }
 
   // ----------------------------------------------------------
   // قياس المساحة المرئية فعلياً (يتغيّر مع لوحة المفاتيح على الجوال)
@@ -82,6 +90,9 @@
       quota: q("#if-quota"),
       quotaValue: q("#if-quota-value"),
       quotaCount: q("#if-quota-count"),
+      authButton: q("#if-auth-google"),
+      authButtonLabel: q("#if-auth-google-label"),
+      authStatus: q("#if-auth-status"),
       jump: q("#if-jump"),
       confirm: q("#if-confirm"),
       confirmCancel: q("#if-confirm-cancel"),
@@ -96,6 +107,9 @@
       controller: null,
       quota: null,
       quotaExhausted: false,
+      authResolved: false,
+      signedIn: false,
+      authUnsub: null,
       renderTimer: null,
       lastRenderAt: 0,
       saveTimer: null,
@@ -137,6 +151,95 @@
     }
 
     // ----------------------------------------------------------
+    // بوابة تسجيل الدخول
+    // ----------------------------------------------------------
+    function setAuthStatus(text, tone) {
+      if (!els.authStatus) return;
+      els.authStatus.textContent = String(text || "");
+      els.authStatus.classList.toggle("is-error", tone === "error");
+    }
+
+    function setAuthBusy(busy) {
+      if (els.authButton) els.authButton.disabled = Boolean(busy);
+      if (els.authButtonLabel) {
+        els.authButtonLabel.textContent = busy
+          ? "جارٍ فتح صفحة Google…"
+          : "المتابعة باستخدام Google";
+      }
+    }
+
+    // تظهر البوابة إذا رفض الخادم الجلسة (401) أو انتهت صلاحيتها.
+    function showAuthGate(message) {
+      state.signedIn = false;
+      root.setAttribute("data-auth", "out");
+      setAuthBusy(false);
+      setAuthStatus(message || "", "error");
+      quotaUnavailable();
+      updateSendState();
+    }
+
+    function applyAuth(snapshot) {
+      var wasSignedIn = state.signedIn;
+      var previousError = snapshot && snapshot.error;
+
+      state.authResolved = Boolean(snapshot && snapshot.resolved);
+      state.signedIn = Boolean(snapshot && snapshot.signedIn);
+
+      if (!state.authResolved) {
+        root.setAttribute("data-auth", "checking");
+        if (els.authButton) els.authButton.disabled = true;
+        if (els.authButtonLabel) {
+          els.authButtonLabel.textContent = "جارٍ التحقق…";
+        }
+        setAuthStatus(
+          previousError === "unavailable"
+            ? "تعذّر تجهيز تسجيل الدخول. أعد تحميل الصفحة."
+            : "جارٍ التحقق من تسجيل الدخول…",
+          previousError === "unavailable" ? "error" : ""
+        );
+        return;
+      }
+
+      root.setAttribute("data-auth", state.signedIn ? "in" : "out");
+      setAuthBusy(false);
+
+      if (state.signedIn) {
+        setAuthStatus("", "");
+        if (els.quota) els.quota.classList.add("is-loading");
+        refreshQuota();
+
+        if (!wasSignedIn && settings.focus) {
+          window.setTimeout(function () {
+            if (!els.input.value) focus();
+          }, 80);
+        }
+        return;
+      }
+
+      quotaUnavailable();
+
+      if (previousError === "cancelled") {
+        setAuthStatus("لم يكتمل تسجيل الدخول. حاول مرة أخرى.", "error");
+      } else if (previousError === "unavailable") {
+        setAuthStatus(
+          "تعذّر تجهيز تسجيل الدخول. أعد تحميل الصفحة.",
+          "error"
+        );
+      } else {
+        setAuthStatus("", "");
+      }
+
+      // عند تسجيل الخروج نمسح محادثة التبويب حتى لا تظهر لحساب آخر.
+      if (wasSignedIn) {
+        if (state.controller) state.controller.abort();
+        state.controller = null;
+        state.turn += 1;
+        setStreaming(false);
+        newChat();
+      }
+    }
+
+    // ----------------------------------------------------------
     // الحصة اليومية
     // ----------------------------------------------------------
     function applyQuotaState() {
@@ -147,7 +250,7 @@
 
       if (els.quota) {
         els.quota.title = exhausted
-          ? "انتهت الحصة اليومية؛ تتجدد غدًا بتوقيت مسقط"
+          ? "انتهت الحصة اليومية؛ تتجدد غدًا بتوقيت مسقط. يمكنك رفع الحد بقسيمة من الإعدادات."
           : "";
       }
     }
@@ -158,7 +261,10 @@
       if (!els.send) return;
       var empty = !String(els.input.value || "").trim();
       els.send.disabled =
-        empty || Boolean(state.quotaExhausted) || Boolean(state.streaming);
+        empty ||
+        !state.signedIn ||
+        Boolean(state.quotaExhausted) ||
+        Boolean(state.streaming);
     }
 
     function setQuota(quota) {
@@ -166,12 +272,12 @@
 
       var remaining = Number(quota.remaining);
       var limit = Number(quota.limit);
-      if (!isFinite(remaining) || !isFinite(limit) || limit <= 0) return;
+      if (!isFinite(remaining) || !isFinite(limit)) return;
 
       state.quota = quota;
       state.quotaExhausted = remaining <= 0;
 
-      var ratio = Math.max(0, Math.min(1, remaining / limit));
+      var ratio = limit > 0 ? Math.max(0, Math.min(1, remaining / limit)) : 0;
 
       if (els.quotaValue) {
         els.quotaValue.style.strokeDashoffset = String(100 - ratio * 100);
@@ -188,7 +294,7 @@
           "aria-label",
           remaining > 0
             ? "الحصة اليومية المتبقية: " + remaining + " من " + limit
-            : "انتهت الحصة اليومية. تتجدد غدًا بتوقيت مسقط."
+            : "انتهت الحصة اليومية. تتجدد غدًا بتوقيت مسقط. استخدم قسيمة من الإعدادات لرفع الحد."
         );
       }
 
@@ -214,16 +320,27 @@
     function refreshQuota() {
       if (!ENDPOINT || !ANON_KEY) return;
 
+      var token = authToken();
+      if (!token) {
+        quotaUnavailable();
+        return;
+      }
+
       fetch(ENDPOINT, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // مفتاح النشر يُرسل في apikey فقط؛ ليس JWT فلا يصح في Authorization.
+          // مفتاح النشر يُرسل في apikey فقط؛ رمز جلسة المستخدم في Authorization.
           apikey: ANON_KEY,
+          Authorization: "Bearer " + token,
         },
         body: JSON.stringify({ action: "quota" }),
       })
         .then(function (response) {
+          if (response.status === 401) {
+            showAuthGate("انتهت جلسة الدخول. سجّل الدخول من جديد.");
+            return null;
+          }
           return response.ok ? response.json() : null;
         })
         .then(function (data) {
@@ -1496,8 +1613,16 @@
       var text = String(raw || "").trim();
       if (!text || state.streaming || !ENDPOINT || !ANON_KEY) return;
 
+      var token = authToken();
+      if (!token) {
+        showAuthGate("سجّل الدخول بحساب Google للمتابعة.");
+        return;
+      }
+
       if (state.quotaExhausted) {
-        showAlert("انتهت حصتك اليومية. تتجدد غدًا بتوقيت مسقط.");
+        showAlert(
+          "انتهت حصتك اليومية. تتجدد غدًا بتوقيت مسقط، أو ارفع حدّك بقسيمة من الإعدادات."
+        );
         return;
       }
 
@@ -1556,6 +1681,7 @@
         headers: {
           "Content-Type": "application/json",
           apikey: ANON_KEY,
+          Authorization: "Bearer " + token,
         },
         body: JSON.stringify(payload),
         signal: controller.signal,
@@ -1568,6 +1694,11 @@
                 return null;
               })
               .then(function (data) {
+                if (response.status === 401) {
+                  showAuthGate(
+                    "انتهت جلسة الدخول. سجّل الدخول من جديد للمتابعة."
+                  );
+                }
                 if (data && data.quota) setQuota(data.quota);
                 var message =
                   data && typeof data.error === "string"
@@ -1761,13 +1892,41 @@
 
       if (!ENDPOINT || !ANON_KEY) {
         showAlert("خدمة ابن فارس غير متاحة حاليًا. حاول لاحقًا.");
+        setAuthStatus("خدمة ابن فارس غير متاحة حاليًا.", "error");
         els.input.disabled = true;
         if (els.send) els.send.disabled = true;
         return;
       }
 
+      root.setAttribute("data-auth", "checking");
       if (els.quota) els.quota.classList.add("is-loading");
-      refreshQuota();
+
+      if (els.authButton) {
+        els.authButton.addEventListener("click", function () {
+          if (!AUTH || typeof AUTH.signInWithGoogle !== "function") {
+            setAuthStatus(
+              "تعذّر تجهيز تسجيل الدخول. أعد تحميل الصفحة.",
+              "error"
+            );
+            return;
+          }
+
+          setAuthBusy(true);
+          setAuthStatus("جارٍ فتح صفحة Google…", "");
+          AUTH.signInWithGoogle().catch(function () {
+            setAuthBusy(false);
+            setAuthStatus("تعذّر بدء تسجيل الدخول. حاول مرة أخرى.", "error");
+          });
+        });
+      }
+
+      // onChange يستدعي applyAuth فوراً بالحالة الحالية ثم عند كل تغيّر.
+      if (AUTH && typeof AUTH.onChange === "function") {
+        state.authUnsub = AUTH.onChange(applyAuth);
+      } else {
+        applyAuth({ resolved: true, signedIn: false, error: "unavailable" });
+      }
+
       window.setInterval(refreshQuota, 5 * 60 * 1000);
 
       if (
@@ -1776,17 +1935,21 @@
         window.matchMedia("(pointer: fine)").matches
       ) {
         window.setTimeout(function () {
-          if (!els.input.value) focus();
+          if (state.signedIn && !els.input.value) focus();
         }, 60);
       }
     }
 
     initialize();
 
+    // ترفع نافذة القسائم السقف اليومي، فتُحدَّث الحصة فوراً بعد الاستبدال.
+    window.addEventListener("ibn-faris:quota-refresh", refreshQuota);
+
     var api = {
       root: root,
       focus: focus,
       reset: newChat,
+      refreshQuota: refreshQuota,
       isStreaming: function () {
         return state.streaming;
       },

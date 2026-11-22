@@ -24,7 +24,7 @@
     voucherTrigger: null,
     isVoucherOpen: false,
     voucherBusy: false,
-    voucherTimer: null,
+    voucherRequestId: 0,
     account: null,
     accountInput: null,
     accountTrigger: null,
@@ -37,6 +37,60 @@
   var PERSIAN_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
   var NAME_MAX = 40;
   var NAME_STORAGE_KEY = "rawafed-ibn-faris-name";
+
+  // تُقرأ الإعدادات وقت الاستبدال لأن سكربت الإعدادات في الصفحات العادية
+  // يُحمَّل قبل أن يجلب ودجت ابن فارس ملف الإعدادات عند أول فتح.
+  function chatConfig() {
+    return window.IBNAFARIS_CONFIG || {};
+  }
+
+  function chatEndpoint() {
+    var config = chatConfig();
+    var url = String(config.supabaseUrl || "").replace(/\/+$/, "");
+    var name = String(config.functionName || "ibn-faris-chat");
+    return url ? url + "/functions/v1/" + name : "";
+  }
+
+  function chatKey() {
+    return String(chatConfig().supabaseAnonKey || "");
+  }
+
+  function authToken() {
+    return window.RawafidAuth &&
+      typeof window.RawafidAuth.getAccessToken === "function"
+      ? window.RawafidAuth.getAccessToken()
+      : null;
+  }
+
+  function currentUser() {
+    return window.RawafidAuth &&
+      typeof window.RawafidAuth.getUser === "function"
+      ? window.RawafidAuth.getUser()
+      : null;
+  }
+
+  function voucherReasonText(reason) {
+    switch (reason) {
+      case "already_used":
+        return "هذه القسيمة استُخدمت من قبل. كل قسيمة تُستخدم مرة واحدة فقط.";
+      case "expired":
+        return "انتهت صلاحية هذه القسيمة.";
+      case "rate_limited":
+        return "محاولات كثيرة في وقت قصير. حاول مرة أخرى غداً.";
+      case "invalid_code":
+        return "الرمز غير صحيح. تحقّق من الخانات الست وحاول مرة أخرى.";
+      default:
+        return "تعذّر تفعيل القسيمة. حاول مرة أخرى.";
+    }
+  }
+
+  function refreshChatQuota() {
+    try {
+      window.dispatchEvent(new CustomEvent("ibn-faris:quota-refresh"));
+    } catch (error) {
+      // المتصفحات القديمة قد لا تدعم CustomEvent، والعدّاد يتحدث تلقائياً.
+    }
+  }
 
   // الحروف العربية (بما فيها أشكال العرض) والتشكيل والإيموجي فقط.
   var ARABIC_LETTER =
@@ -91,7 +145,61 @@
 
     state.account = view;
     state.accountInput = view.querySelector("#ifu-name");
+
+    var photo = view.querySelector("#ifu-photo");
+    if (photo) {
+      photo.addEventListener("error", function () {
+        photo.hidden = true;
+        var box = view.querySelector("#ifu-avatar");
+        if (box) box.classList.remove("has-photo");
+      });
+    }
+
     return view;
+  }
+
+  // يعرض صورة حساب Google وبريده داخل نافذة إعدادات الحساب.
+  function renderAccountIdentity() {
+    var view = ensureAccount();
+    if (!view) return;
+
+    var user = currentUser();
+    var meta = user && user.user_metadata ? user.user_metadata : {};
+    var avatar = String(meta.avatar_url || meta.picture || "");
+    var displayName = String(meta.full_name || meta.name || "");
+
+    var photo = view.querySelector("#ifu-photo");
+    var avatarBox = view.querySelector("#ifu-avatar");
+    var email = view.querySelector("#ifu-email");
+    var signout = view.querySelector("#ifu-signout");
+
+    if (photo) {
+      if (user && avatar) {
+        if (photo.getAttribute("src") !== avatar) photo.src = avatar;
+        photo.alt = displayName ? "صورة " + displayName : "";
+        photo.hidden = false;
+        if (avatarBox) avatarBox.classList.add("has-photo");
+      } else {
+        photo.hidden = true;
+        photo.removeAttribute("src");
+        if (avatarBox) avatarBox.classList.remove("has-photo");
+      }
+    }
+
+    if (email) {
+      var label = user && user.email ? String(user.email) : "";
+      email.textContent = label;
+      email.hidden = !label;
+    }
+
+    if (signout) {
+      signout.hidden = !user;
+      signout.disabled = false;
+      var signoutLabel = signout.querySelector("span");
+      if (signoutLabel) {
+        signoutLabel.textContent = "تسجيل الخروج من حساب Google";
+      }
+    }
   }
 
   function graphemeList(value) {
@@ -241,13 +349,19 @@
     var view = ensureVoucher();
     if (!view) return;
 
-    window.clearTimeout(state.voucherTimer);
     state.voucherBusy = false;
+    state.voucherRequestId += 1;
 
     view.classList.remove("is-success");
 
     var success = view.querySelector("#ifv-success");
     if (success) success.hidden = true;
+
+    var successText = view.querySelector("#ifv-success .ifv-lead");
+    if (successText) {
+      successText.textContent =
+        "أُضيف رصيد القسيمة إلى حسابك، ويمكنك متابعة أسئلتك الآن.";
+    }
 
     var form = view.querySelector("#ifv-form");
     if (form) form.reset();
@@ -308,7 +422,7 @@
 
     state.isVoucherOpen = false;
     state.voucherBusy = false;
-    window.clearTimeout(state.voucherTimer);
+    state.voucherRequestId += 1;
 
     if (view) {
       view.hidden = true;
@@ -431,6 +545,7 @@
     if (trigger) trigger.setAttribute("aria-expanded", "true");
 
     resetAccount();
+    renderAccountIdentity();
     if (state.view) state.view.setAttribute("inert", "");
 
     view.hidden = false;
@@ -794,7 +909,7 @@
     }
   }
 
-  function showVoucherError() {
+  function showVoucherError(message) {
     var view = state.voucher;
     if (!view) return;
 
@@ -806,19 +921,37 @@
     }
 
     setVoucherStatus(
-      "الرمز غير صحيح أو منتهي الصلاحية. تحقّق منه وحاول مرة أخرى.",
+      message || "الرمز غير صحيح أو منتهي الصلاحية. تحقّق منه وحاول مرة أخرى.",
       "error"
     );
 
     focusDigit(state.voucherInputs[0]);
   }
 
-  function showVoucherSuccess() {
+  function showVoucherSuccess(result) {
     var view = ensureVoucher();
     if (!view) return;
 
     var success = view.querySelector("#ifv-success");
     var again = view.querySelector("[data-ifv-again]");
+    var text = view.querySelector("#ifv-success .ifv-lead");
+
+    var bonus = Number(result && result.bonus);
+    var limit = Number(result && result.limit);
+
+    if (text) {
+      if (isFinite(bonus) && bonus > 0 && isFinite(limit) && limit > 0) {
+        text.textContent =
+          "أُضيفت " +
+          bonus +
+          " رسالة إلى سقفك اليومي، وأصبح الحد " +
+          limit +
+          " رسالة.";
+      } else {
+        text.textContent =
+          "أُضيف رصيد القسيمة إلى حسابك، ويمكنك متابعة أسئلتك الآن.";
+      }
+    }
 
     setVoucherStatus("", "");
     view.classList.add("is-success");
@@ -837,6 +970,21 @@
     }
   }
 
+  function setVoucherLoading(loading) {
+    state.voucherBusy = loading;
+
+    var view = state.voucher;
+    if (!view) return;
+
+    var submit = view.querySelector("#ifv-submit");
+    var label = view.querySelector(".ifv-submit-label");
+
+    if (submit) submit.classList.toggle("is-loading", loading);
+    if (label) label.textContent = loading ? "جارٍ التحقق…" : "تأكيد الرمز";
+
+    syncVoucher();
+  }
+
   function submitVoucher() {
     var view = ensureVoucher();
     if (!view || state.voucherBusy) return;
@@ -849,30 +997,72 @@
       return;
     }
 
-    state.voucherBusy = true;
+    var endpoint = chatEndpoint();
+    var key = chatKey();
+    if (!endpoint || !key) {
+      showVoucherError("خدمة القسائم غير متاحة حاليًا. حاول لاحقًا.");
+      return;
+    }
+
+    var token = authToken();
+    if (!token) {
+      showVoucherError("سجّل الدخول بحساب Google أولاً لاستبدال القسيمة.");
+      return;
+    }
+
     clearVoucherInvalid();
     setVoucherStatus("جارٍ التحقق من الرمز…", "");
+    setVoucherLoading(true);
 
-    var submit = view.querySelector("#ifv-submit");
-    var label = view.querySelector(".ifv-submit-label");
-    if (submit) submit.classList.add("is-loading");
-    if (label) label.textContent = "جارٍ التحقق…";
-    syncVoucher();
+    var requestId = ++state.voucherRequestId;
 
-    // الواجهة جاهزة لربط خدمة القسائم لاحقاً. حالياً أي رمز صحيح
-    // الشكل يُظهر حالة النجاح، والرمز 000000 يعاين حالة الخطأ.
-    state.voucherTimer = window.setTimeout(function () {
-      state.voucherBusy = false;
-      if (submit) submit.classList.remove("is-loading");
-      if (label) label.textContent = "تأكيد الرمز";
-      syncVoucher();
+    fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: key,
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({ action: "redeem-voucher", code: code }),
+    })
+      .then(function (response) {
+        return response
+          .json()
+          .catch(function () {
+            return null;
+          })
+          .then(function (data) {
+            return { ok: response.ok, data: data };
+          });
+      })
+      .then(function (result) {
+        var data = result && result.data;
+        var succeeded = Boolean(result && result.ok && data && data.ok);
 
-      if (code === "000000") {
-        showVoucherError();
-      } else {
-        showVoucherSuccess();
-      }
-    }, 900);
+        // قد ينجح الاستبدال بعد إغلاق النافذة؛ نحدّث الحصة على أي حال.
+        if (succeeded) refreshChatQuota();
+
+        if (requestId !== state.voucherRequestId) return;
+
+        setVoucherLoading(false);
+
+        if (succeeded) {
+          showVoucherSuccess(data);
+          return;
+        }
+
+        showVoucherError(
+          (data && typeof data.error === "string" && data.error) ||
+            voucherReasonText(data && data.reason)
+        );
+      })
+      .catch(function () {
+        if (requestId !== state.voucherRequestId) return;
+        setVoucherLoading(false);
+        showVoucherError(
+          "تعذّر الاتصال بخدمة القسائم. تحقّق من الشبكة وحاول مرة أخرى."
+        );
+      });
   }
 
   document.addEventListener("input", function (event) {
@@ -918,6 +1108,30 @@
     if (accountTrigger) {
       event.preventDefault();
       openAccount(accountTrigger);
+      return;
+    }
+
+    var signout = closestFrom(event.target, "#ifu-signout");
+    if (signout) {
+      event.preventDefault();
+      if (!window.RawafidAuth) return;
+
+      signout.disabled = true;
+      var signoutLabel = signout.querySelector("span");
+      if (signoutLabel) signoutLabel.textContent = "جارٍ تسجيل الخروج…";
+
+      window.RawafidAuth.signOut()
+        .then(function () {
+          closeAccount(true);
+          close();
+        })
+        .catch(function () {
+          signout.disabled = false;
+          if (signoutLabel) {
+            signoutLabel.textContent = "تسجيل الخروج من حساب Google";
+          }
+          setAccountStatus("تعذّر تسجيل الخروج. حاول مرة أخرى.", "error");
+        });
       return;
     }
 
@@ -1014,6 +1228,19 @@
     },
     true
   );
+
+  // تسجيل الخروج من تبويب آخر أو انتهاء الجلسة يغلق الإعدادات ويعيد
+  // المستخدم إلى بوابة الدخول في المحادثة.
+  document.addEventListener("rawafid:auth", function (event) {
+    renderAccountIdentity();
+
+    var detail = event && event.detail ? event.detail : null;
+    if (detail && detail.signedIn) return;
+
+    if (state.isAccountOpen) closeAccount(true);
+    if (state.isVoucherOpen) closeVoucher(true);
+    if (state.isOpen) close();
+  });
 
   window.IbnFarisSettings = {
     open: open,
