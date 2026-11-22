@@ -163,8 +163,8 @@
       if (els.authButton) els.authButton.disabled = Boolean(busy);
       if (els.authButtonLabel) {
         els.authButtonLabel.textContent = busy
-          ? "جارٍ فتح صفحة Google…"
-          : "المتابعة باستخدام Google";
+          ? "جارٍ فتح صفحة جوجل…"
+          : "المتابعة باستخدام جوجل";
       }
     }
 
@@ -1618,7 +1618,7 @@
 
       var token = authToken();
       if (!token) {
-        showAuthGate("سجّل الدخول بحساب Google للمتابعة.");
+        showAuthGate("سجّل الدخول بحساب جوجل للمتابعة.");
         return;
       }
 
@@ -1915,7 +1915,7 @@
           }
 
           setAuthBusy(true);
-          setAuthStatus("جارٍ فتح صفحة Google…", "");
+          setAuthStatus("جارٍ فتح صفحة جوجل…", "");
           AUTH.signInWithGoogle().catch(function () {
             setAuthBusy(false);
             setAuthStatus("تعذّر بدء تسجيل الدخول. حاول مرة أخرى.", "error");

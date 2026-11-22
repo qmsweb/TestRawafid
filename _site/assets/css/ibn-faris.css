@@ -560,23 +560,13 @@ html[data-theme="dark"] .if-overlay {
   margin-bottom: 14px;
   border-radius: 50%;
   background: var(--if-logo-bg);
-  box-shadow: 0 0 0 1px var(--if-warm-mist),
-    0 8px 22px color-mix(in srgb, var(--if-ink) 12%, transparent);
+  box-shadow: 0 0 0 1px var(--if-warm-mist);
 }
 
 .if-auth-mark img {
   width: 44px;
   height: 44px;
   object-fit: contain;
-}
-
-.if-auth-kicker {
-  margin: 0 0 6px;
-  color: var(--if-sand);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .if-auth-title {
@@ -657,15 +647,6 @@ html[data-theme="dark"] .if-overlay {
 
 .if-auth-status.is-error {
   color: var(--if-danger);
-}
-
-.if-auth-note {
-  margin: 16px 0 0;
-  padding-top: 16px;
-  border-top: 1px solid var(--if-warm-mist);
-  color: var(--if-ash);
-  font-size: 12px;
-  line-height: 1.7;
 }
 
 @media (max-width: 480px) {
