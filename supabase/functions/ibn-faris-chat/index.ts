@@ -136,10 +136,11 @@ const DEFAULT_PUBLISHABLE_KEY =
   "sb_publishable_oXDBwGE8QOVhj1sNsjK_rQ_hBva9IPm";
 const PUBLISHABLE_KEY = readPublishableKey() || DEFAULT_PUBLISHABLE_KEY;
 
+// السقف الافتراضي لكل المستخدمين 15 رسالة في اليوم، وقسيمة +25 ترفعه إلى 40.
 const USER_DAILY_LIMIT = readIntEnv(
   "IBNAFARIS_USER_DAILY_LIMIT",
   // الاسم القديم يبقى مدعوماً حتى لا تتعطّل الخدمة قبل تحديث الأسرار.
-  readIntEnv("IBNAFARIS_VISITOR_DAILY_LIMIT", 40),
+  readIntEnv("IBNAFARIS_VISITOR_DAILY_LIMIT", 15),
 );
 const GLOBAL_DAILY_LIMIT = readIntEnv("IBNAFARIS_GLOBAL_DAILY_LIMIT", 400);
 const RAG_ENABLED =
