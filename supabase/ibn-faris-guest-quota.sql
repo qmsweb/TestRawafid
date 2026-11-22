@@ -6,6 +6,9 @@
 -- وتُخزَّن في عمود visitor_hash التاريخي (36 حرفاً) دون أي بيانات شخصية
 -- إضافية. لا يُستخدم عنوان IP ولا بصمة جهاز.
 --
+-- والقاعدة نفسها ترفض الحجز والقسائم لأي مفتاح ليس مستخدم Google مسجّلاً
+-- عبر ibnfaris_require_google_user، فلا تكفي إزالة الفحص من دالة الحافة.
+--
 -- اليوم يُحسب بتوقيت مسقط (Asia/Muscat)، ويُصفَّر العدّاد تلقائياً
 -- عند تغيّر التاريخ دون الحاجة إلى مهمة مجدولة.
 --
@@ -163,6 +166,47 @@ grant select, insert, update, delete on public.ibnfaris_voucher_attempts to serv
 grant usage, select on sequence public.ibnfaris_usage_log_id_seq to service_role;
 
 -- ------------------------------------------------------------
+-- 2.1 بوابة قاعدة البيانات: لا حجز ولا قسائم إلا لمستخدم Google
+-- ------------------------------------------------------------
+-- الدالة تتحقق من أن المفتاح معرّف مستخدم حقيقي في auth.users، وأن مزوّده
+-- Google. هذا حاجز ثانٍ بعد تحقق دالة الحافة: لو استُدعيت دوال الحجز
+-- بمفتاح غير مسجّل (أو بمفتاح قديم لبصمة جهاز) رُفض الطلب في القاعدة نفسها.
+create or replace function public.ibnfaris_require_google_user(p_user_id text)
+returns uuid
+language plpgsql
+stable
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid;
+begin
+  begin
+    v_user_id := p_user_id::uuid;
+  exception when others then
+    raise exception 'google_sign_in_required' using errcode = '28000';
+  end;
+
+  if not exists (
+    select 1
+    from auth.users u
+    where u.id = v_user_id
+      and (
+        coalesce(u.raw_app_meta_data ->> 'provider', '') = 'google'
+        or (u.raw_app_meta_data -> 'providers') ? 'google'
+      )
+  ) then
+    raise exception 'google_sign_in_required' using errcode = '28000';
+  end if;
+
+  return v_user_id;
+end;
+$$;
+
+comment on function public.ibnfaris_require_google_user(text) is
+  'يرفض أي مفتاح ليس معرّف مستخدم مسجّل في Supabase Auth عبر Google، ويُستخدم قبل حجز الحصة.';
+
+-- ------------------------------------------------------------
 -- 3. حجز طلب بشكل ذري قبل استدعاء DeepSeek
 -- ------------------------------------------------------------
 
@@ -188,6 +232,9 @@ begin
   if p_visitor_hash is null or char_length(p_visitor_hash) < 32 then
     raise exception 'invalid visitor hash';
   end if;
+
+  -- بوابة القاعدة: المفتاح يجب أن يكون مستخدم Google مسجّلاً.
+  perform public.ibnfaris_require_google_user(p_visitor_hash);
 
   insert into public.ibnfaris_daily_totals (usage_day)
   values (v_today)
@@ -368,6 +415,9 @@ begin
   if p_visitor_hash is null or char_length(p_visitor_hash) < 32 then
     raise exception 'invalid visitor hash';
   end if;
+
+  -- بوابة القاعدة: المفتاح يجب أن يكون مستخدم Google مسجّلاً.
+  perform public.ibnfaris_require_google_user(p_visitor_hash);
 
   insert into public.ibnfaris_daily_totals (usage_day)
   values (v_today)
@@ -631,6 +681,9 @@ begin
     return jsonb_build_object('ok', false, 'reason', 'invalid_request');
   end if;
 
+  -- القسائم مرتبطة بحساب Google مسجّل أيضاً، لا ببصمة جهاز.
+  perform public.ibnfaris_require_google_user(p_visitor_hash);
+
   if v_code !~ '^[0-9]{6}$' then
     return jsonb_build_object('ok', false, 'reason', 'invalid_code');
   end if;
@@ -758,6 +811,8 @@ comment on view public.ibnfaris_user_overview is
 -- 6. الصلاحيات: الخادم فقط
 -- ------------------------------------------------------------
 
+revoke all on function public.ibnfaris_require_google_user(text)
+  from public, anon, authenticated;
 revoke all on function public.ibnfaris_reserve_request(text, integer, integer)
   from public, anon, authenticated;
 revoke all on function public.ibnfaris_release_request(text)
@@ -779,6 +834,8 @@ grant select on table public.ibnfaris_visitor_overview to service_role;
 revoke all on table public.ibnfaris_user_overview from public, anon, authenticated;
 grant select on table public.ibnfaris_user_overview to service_role;
 
+grant execute on function public.ibnfaris_require_google_user(text)
+  to service_role;
 grant execute on function public.ibnfaris_reserve_request(text, integer, integer)
   to service_role;
 grant execute on function public.ibnfaris_release_request(text)

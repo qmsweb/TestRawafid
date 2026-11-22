@@ -600,6 +600,17 @@ async function authenticate(request: Request): Promise<AuthenticatedUser | null>
   }
 }
 
+// ترفض قاعدة البيانات (ibnfaris_require_google_user) أي مفتاح ليس مستخدم
+// Google مسجّلاً، حتى لو تجاوز الطلب تحقق الدالة. نُعيد 401 واضحاً هنا.
+function isGoogleSignInRequired(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const details = error as { code?: string; message?: string };
+  return (
+    details.code === "28000" ||
+    /google_sign_in_required/i.test(details.message ?? "")
+  );
+}
+
 const SEARCH_STOPWORDS = new Set([
   "ما",
   "ماذا",
@@ -3015,6 +3026,18 @@ Deno.serve(async (request) => {
         origin,
       );
     } catch (error) {
+      if (isGoogleSignInRequired(error)) {
+        return jsonResponse(
+          {
+            ok: false,
+            reason: "auth_required",
+            error: "سجّل الدخول بحساب Google أولاً لاستبدال القسيمة.",
+          },
+          401,
+          origin,
+        );
+      }
+
       console.error("ibnfaris_redeem_voucher_failed", error);
       return jsonResponse(
         {
@@ -3078,6 +3101,18 @@ Deno.serve(async (request) => {
     if (error) throw error;
     quota = data as QuotaSnapshot;
   } catch (error) {
+    // القاعدة نفسها رفضت المفتاح: ليس مستخدم Google مسجّلاً.
+    if (isGoogleSignInRequired(error)) {
+      return jsonResponse(
+        {
+          error: "سجّل الدخول بحساب Google لاستخدام ابن فارس.",
+          reason: "auth_required",
+        },
+        401,
+        origin,
+      );
+    }
+
     console.error("ibnfaris_reserve_request_v2 failed", error);
     return jsonResponse(
       { error: "تعذّر التحقق من حدّ الاستخدام. حاول مرة أخرى." },
