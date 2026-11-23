@@ -754,8 +754,12 @@
         <span class="if-auth-google-label" id="if-auth-google-label">المتابعة باستخدام جوجل</span>
       </button>
 
-      <p class="if-auth-status" id="if-auth-status" role="status" aria-live="polite">
-        جارٍ التحقق من تسجيل الدخول…
+      <p class="if-auth-status is-loading" id="if-auth-status" role="status" aria-live="polite" aria-busy="true">
+        <span class="if-typing if-auth-typing" id="if-auth-typing" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+        <span class="if-auth-status-text" id="if-auth-status-text"></span>
+        <span class="if-sr-only if-auth-status-hint">جارٍ التحقق من تسجيل الدخول…</span>
       </p>
     </div>
   </section>

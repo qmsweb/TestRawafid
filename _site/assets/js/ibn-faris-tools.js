@@ -510,12 +510,14 @@
     }, typeof delay === "number" ? delay : 0);
   }
 
-  function open(action) {
+  function open(action, options) {
     var normalized = normalize(action);
     if (!normalized) return "invalid";
 
+    var auto = Boolean(options && options.auto);
+
     if (currentTool() === normalized.tool) {
-      if (DESTRUCTIVE_TOOLS[normalized.tool]) {
+      if (!auto && DESTRUCTIVE_TOOLS[normalized.tool]) {
         var confirmed = window.confirm(
           "سيتم استبدال البيانات الحالية في " +
             TOOLS[normalized.tool].name +
@@ -528,7 +530,7 @@
       showToast("تم تطبيق بيانات ابن فارس على " + TOOLS[normalized.tool].short + ".");
 
       // نطوي المحادثة بعد التطبيق ليرى المستخدم الأداة والنتيجة مباشرة.
-      closeChat(450);
+      closeChat(auto ? 0 : 450);
 
       return "applied";
     }
@@ -537,6 +539,17 @@
 
     var url = targetUrl(normalized);
     if (!url) return "invalid";
+
+    if (auto) {
+      // طلب حساب صريح: نطوي المحادثة/الودجة ثم ننتقل إلى الأداة، التي
+      // تستهلك البيانات المحفوظة وتطبّقها تلقائياً عند تحميلها.
+      showToast("أفتح " + TOOLS[normalized.tool].short + " وأطبّق البيانات…");
+      closeChat(0);
+      window.setTimeout(function () {
+        window.location.assign(url);
+      }, 180);
+      return "navigating";
+    }
 
     window.location.assign(url);
     return "navigating";

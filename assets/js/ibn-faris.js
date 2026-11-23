@@ -93,6 +93,7 @@
       authButton: q("#if-auth-google"),
       authButtonLabel: q("#if-auth-google-label"),
       authStatus: q("#if-auth-status"),
+      authStatusText: q("#if-auth-status-text"),
       jump: q("#if-jump"),
       confirm: q("#if-confirm"),
       confirmCancel: q("#if-confirm-cancel"),
@@ -155,8 +156,18 @@
     // ----------------------------------------------------------
     function setAuthStatus(text, tone) {
       if (!els.authStatus) return;
-      els.authStatus.textContent = String(text || "");
+      if (els.authStatusText) {
+        els.authStatusText.textContent = String(text || "");
+      }
       els.authStatus.classList.toggle("is-error", tone === "error");
+    }
+
+    // أثناء التحقق التلقائي من الجلسة نعرض نقاط تحميل بدل نص الحالة؛
+    // النص يبقى محفوظاً لقارئ الشاشة فقط.
+    function setAuthLoading(loading) {
+      if (!els.authStatus) return;
+      els.authStatus.classList.toggle("is-loading", Boolean(loading));
+      els.authStatus.setAttribute("aria-busy", loading ? "true" : "false");
     }
 
     function setAuthBusy(busy) {
@@ -173,6 +184,7 @@
       state.signedIn = false;
       root.setAttribute("data-auth", "out");
       setAuthBusy(false);
+      setAuthLoading(false);
       setAuthStatus(message || "", "error");
       quotaUnavailable();
       updateSendState();
@@ -186,21 +198,20 @@
       state.signedIn = Boolean(snapshot && snapshot.signedIn);
 
       if (!state.authResolved) {
+        var unavailable = previousError === "unavailable";
+
         root.setAttribute("data-auth", "checking");
         if (els.authButton) els.authButton.disabled = true;
-        if (els.authButtonLabel) {
-          els.authButtonLabel.textContent = "جارٍ التحقق…";
-        }
+        setAuthLoading(!unavailable);
         setAuthStatus(
-          previousError === "unavailable"
-            ? "تعذّر تجهيز تسجيل الدخول. أعد تحميل الصفحة."
-            : "جارٍ التحقق من تسجيل الدخول…",
-          previousError === "unavailable" ? "error" : ""
+          unavailable ? "تعذّر تجهيز تسجيل الدخول. أعد تحميل الصفحة." : "",
+          unavailable ? "error" : ""
         );
         return;
       }
 
       root.setAttribute("data-auth", state.signedIn ? "in" : "out");
+      setAuthLoading(false);
       setAuthBusy(false);
 
       if (state.signedIn) {
@@ -1539,7 +1550,55 @@
       if (index !== -1) state.messages.splice(index, 1);
     }
 
-    function finishTurn(message, errorText) {
+    function lastUserQuestion() {
+      for (var index = state.messages.length - 1; index >= 0; index -= 1) {
+        if (state.messages[index].role === "user") {
+          return state.messages[index].content;
+        }
+      }
+      return "";
+    }
+
+    function wantsGpaCalculation(value) {
+      return /(?:معدل|المعدل|احسب|حساب|حاسبه|الحاسبه|درجات|تقدير)/.test(
+        String(value || "")
+      );
+    }
+
+    // بعد انتهاء رد فيه بيانات حاسبة المعدل: نفتح الحاسبة ونطبّق البيانات
+    // تلقائياً إذا كان طلب المستخدم صريحاً في حساب المعدل. بقية الأدوات تبقى
+    // بضغطة يدوية حفاظاً على بيانات المستخدم.
+    function autoOpenGpa(message) {
+      if (
+        !window.IbnFarisTools ||
+        typeof window.IbnFarisTools.open !== "function"
+      ) {
+        return;
+      }
+
+      var actions = parseToolActions(message.content);
+      var gpa = null;
+
+      for (var index = 0; index < actions.length; index += 1) {
+        if (actions[index] && actions[index].tool === "gpa") {
+          gpa = actions[index];
+          break;
+        }
+      }
+
+      if (!gpa || !wantsGpaCalculation(lastUserQuestion())) return;
+
+      window.setTimeout(function () {
+        if (state.streaming) return;
+        try {
+          window.IbnFarisTools.open(gpa, { auto: true });
+        } catch (error) {
+          // يبقى زر البطاقة اليدوي متاحاً إن تعذّر الفتح التلقائي.
+        }
+      }, 700);
+    }
+
+    function finishTurn(message, errorText, options) {
       if (!message || message.turn !== state.turn) return;
 
       cancelScheduledRender();
@@ -1585,9 +1644,12 @@
         );
       }
 
-      // لا نطبّق أوامر الأدوات تلقائياً بعد الرد: قد تستبدل بيانات المستخدم
-      // في الحاسبة أو التوثيق أو العجلة. تبقى البطاقة ظاهرة، والتطبيق بضغطة
-      // صريحة من المستخدم فقط (مع تأكيد للأدوات التي تستبدل الحالة).
+      // الأدوات الأخرى لا تُطبّق تلقائياً: قد تستبدل بيانات المستخدم في
+      // الحاسبة أو التوثيق أو العجلة. حاسبة المعدل وحدها تُفتح وتُطبّق تلقائياً
+      // بعد طلب حساب صريح، لأنها وجهة الطلب المقصودة.
+      if (!errorText && !(options && options.noAuto)) {
+        autoOpenGpa(message);
+      }
     }
 
     // ----------------------------------------------------------
@@ -1719,7 +1781,7 @@
         })
         .catch(function (error) {
           if (controller.signal.aborted) {
-            finishTurn(assistant, null);
+            finishTurn(assistant, null, { noAuto: true });
             return;
           }
 
@@ -1895,6 +1957,7 @@
 
       if (!ENDPOINT || !ANON_KEY) {
         showAlert("خدمة ابن فارس غير متاحة حاليًا. حاول لاحقًا.");
+        setAuthLoading(false);
         setAuthStatus("خدمة ابن فارس غير متاحة حاليًا.", "error");
         els.input.disabled = true;
         if (els.send) els.send.disabled = true;
@@ -1915,6 +1978,7 @@
           }
 
           setAuthBusy(true);
+          setAuthLoading(false);
           setAuthStatus("جارٍ فتح صفحة جوجل…", "");
           AUTH.signInWithGoogle().catch(function () {
             setAuthBusy(false);

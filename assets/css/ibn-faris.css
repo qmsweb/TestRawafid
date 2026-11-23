@@ -638,11 +638,23 @@ html[data-theme="dark"] .if-overlay {
 }
 
 .if-auth-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-height: 20px;
   margin: 14px 0 0;
   color: var(--if-graphite);
   font-size: 13px;
   line-height: 1.6;
+}
+
+.if-auth-typing {
+  padding: 0;
+}
+
+.if-auth-status:not(.is-loading) .if-auth-typing,
+.if-auth-status:not(.is-loading) .if-auth-status-hint {
+  display: none;
 }
 
 .if-auth-status.is-error {
