@@ -1560,8 +1560,11 @@
     }
 
     function wantsGpaCalculation(value) {
-      return /(?:معدل|المعدل|احسب|حساب|حاسبه|الحاسبه|درجات|تقدير)/.test(
-        String(value || "")
+      var text = String(value || "");
+      return (
+        /(?:معدل|المعدل|احسب|حساب|حاسبه|الحاسبه|درجات|تقدير|مواد|ماده)/.test(
+          text
+        ) || /(?:^|\s)[A-F][+-]?(?=\s|$)/i.test(text)
       );
     }
 
