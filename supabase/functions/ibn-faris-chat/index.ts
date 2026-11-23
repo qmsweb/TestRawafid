@@ -1508,7 +1508,10 @@ function sanitizeSingleToolBlock(
   } | null = null;
 
   try {
-    action = JSON.parse(body.trim()) as typeof action;
+    action = JSON.parse(body.trim()) as {
+      tool?: unknown;
+      data?: { courses?: unknown };
+    };
   } catch {
     return full;
   }
