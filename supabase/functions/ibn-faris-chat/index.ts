@@ -1472,7 +1472,40 @@ function findPlanCourseEntry(
   const exact = candidates.filter(
     (entry) => normalizedCourseName(entry.course.name) === normalized,
   );
-  const matches = byId.length > 0 ? byId : exact;
+  let matches = byId.length > 0 ? byId : exact;
+
+  // مطابقة تقريبية آمنة: كل كلمات الاسم الأقصر موجودة في الأطول، بشرط أن
+  // تكون النتيجة فريدة. تلتقط «اللسانيات العامة» مقابل «اللسانيات»، ولا
+  // تخلط «النحو» بين «النحو 1» و«النحو 2» لأنها غامضة.
+  if (matches.length === 0) {
+    const normalizedWords = normalized
+      .split(" ")
+      .filter((word) => word.length >= 3);
+    if (normalizedWords.length === 0) return null;
+
+    const fuzzy = candidates.filter((entry) => {
+      const courseWords = normalizedCourseName(entry.course.name)
+        .split(" ")
+        .filter((word) => word.length >= 3);
+      if (courseWords.length === 0) return false;
+
+      const shorter =
+        courseWords.length <= normalizedWords.length
+          ? courseWords
+          : normalizedWords;
+      const longer =
+        courseWords.length <= normalizedWords.length
+          ? normalizedWords
+          : courseWords;
+
+      return shorter.every((word) => longer.includes(word));
+    });
+
+    const fuzzyIds = new Set(fuzzy.map((entry) => entry.course.id));
+    if (fuzzyIds.size !== 1) return null;
+    matches = fuzzy;
+  }
+
   if (matches.length === 0) return null;
 
   // اسم مشترك بين أكثر من مقرر (مثل «مقرر اختياري»): نقبله فقط إذا اتفقت
